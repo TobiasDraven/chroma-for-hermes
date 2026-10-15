@@ -313,6 +313,44 @@ async function fetchTweakcnTheme(ref) {
   return theme
 }
 
+/** Parse raw shadcn CSS into a DesktopTheme. */
+function parseCssTheme(css, name) {
+  if (typeof css !== 'string' || !css.trim()) return null
+
+  const rootMatch = css.match(/:root\s*\{([^}]+)\}/i)
+  if (!rootMatch) return null
+
+  const darkMatch = css.match(/\.dark\s*\{([^}]+)\}/i)
+
+  const parseVars = block => {
+    const vars = {}
+    const re = /(--[\w-]+)\s*:\s*([^;]+)/gi
+    let m
+    while ((m = re.exec(block)) !== null) {
+      const key = m[1].trim().replace(/^--/, '')
+      vars[key] = m[2].trim()
+    }
+    return vars
+  }
+
+  const lightVars = parseVars(rootMatch[1])
+  const darkVars = darkMatch ? parseVars(darkMatch[1]) : null
+
+  const hasDark = darkVars && Object.keys(darkVars).length > 0
+
+  return tweakcnToDesktopTheme({
+    name: name || 'custom-css',
+    cssVars: {
+      theme: {
+        'font-sans': lightVars['font-sans'],
+        'font-mono': lightVars['font-mono']
+      },
+      light: lightVars,
+      ...(hasDark ? { dark: darkVars } : {})
+    }
+  })
+}
+
 // ---------------------------------------------------------------------------
 // Persistence for imported themes. Desktop resolves a stored theme on the next
 // boot's first frame from this key, before any plugin registers.
@@ -383,6 +421,7 @@ function ThemePickerPanel() {
   const [imported, setImported] = useState([])
   const [ref, setRef] = useState('')
   const [busy, setBusy] = useState(false)
+  const [importMode, setImportMode] = useState('url')
 
   // Imported themes registered this session, plus anything already stored.
   useEffect(() => {
@@ -420,7 +459,10 @@ function ThemePickerPanel() {
     if (!target || busy) return
     setBusy(true)
     try {
-      const theme = await fetchTweakcnTheme(target)
+      const theme = importMode === 'css'
+        ? parseCssTheme(target, 'custom-css')
+        : await fetchTweakcnTheme(target)
+      if (!theme) throw new Error('Could not parse that CSS')
       registerTheme(theme)
       persistTheme(theme)
       setImported(prev => [theme, ...prev.filter(t => t.name !== theme.name)])
@@ -429,11 +471,11 @@ function ThemePickerPanel() {
       setTheme(theme.name)
       host.notify({ kind: 'success', message: `Imported ${theme.label}` })
     } catch (error) {
-      host.notify({ kind: 'error', message: `TweakCN import failed: ${error && error.message ? error.message : error}` })
+      host.notify({ kind: 'error', message: `Import failed: ${error && error.message ? error.message : error}` })
     } finally {
       setBusy(false)
     }
-  }, [ref, busy, setTheme])
+  }, [ref, busy, importMode, setTheme])
 
   return jsxs('div', {
     className: 'flex flex-col gap-3 border-t border-(--ui-stroke-secondary) pt-4',
@@ -471,20 +513,41 @@ function ThemePickerPanel() {
       jsxs('div', {
         className: 'flex flex-wrap items-center gap-2',
         children: [
-          jsx('div', {
-            className: 'min-w-48 flex-1',
-            children: jsx(Input, {
-              placeholder: 'TweakCN preset name or URL (e.g. catppuccin)',
-              value: ref,
-              onChange: event => setRef(event && event.target ? event.target.value : '')
-            })
+          jsx(SegmentedControl, {
+            options: [
+              { id: 'url', label: 'URL' },
+              { id: 'css', label: 'CSS' }
+            ],
+            value: importMode,
+            onChange: next => {
+              if (next === 'url' || next === 'css') setImportMode(next)
+            }
           }),
+          importMode === 'url'
+            ? jsx('div', {
+                className: 'min-w-48 flex-1',
+                children: jsx(Input, {
+                  placeholder: 'TweakCN preset name or URL (e.g. catppuccin)',
+                  value: ref,
+                  onChange: event => setRef(event && event.target ? event.target.value : '')
+                })
+              })
+            : jsx('div', {
+                className: 'min-w-48 flex-1',
+                children: jsx('textarea', {
+                  placeholder: 'Paste shadcn CSS (:root and .dark blocks)',
+                  value: ref,
+                  onChange: event => setRef(event && event.target ? event.target.value : ''),
+                  className: 'w-full rounded-md border border-(--ui-stroke-secondary) bg-(--ui-background) px-3 py-2 text-xs',
+                  rows: 4
+                })
+              }),
           jsx(Button, {
             type: 'button',
             variant: 'secondary',
             disabled: busy || !ref.trim(),
             onClick: onImport,
-            children: busy ? 'Importing…' : 'Import from TweakCN'
+            children: busy ? 'Importing…' : importMode === 'url' ? 'Import from TweakCN' : 'Import from CSS'
           })
         ]
       }),

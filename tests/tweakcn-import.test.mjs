@@ -39,7 +39,7 @@ function loadPlugin(storage = new Map(), fetchImpl = null) {
       .replace(/import\s+\{[^}]*\}\s+from\s+'react\/jsx-runtime'\n/, '')
       .replace(/import\s+\{[^}]*\}\s+from\s+'react'\n/, '')
       .replace('export default {', 'globalThis.plugin = {')
-      + '\nglobalThis.testHelpers = { cssColorToHex, tweakcnToDesktopTheme, tweakcnUrl, fetchTweakcnTheme, sceneToDesktopTheme, catalog: CATALOG }\n'
+      + '\nglobalThis.testHelpers = { cssColorToHex, tweakcnToDesktopTheme, tweakcnUrl, fetchTweakcnTheme, parseCssTheme, sceneToDesktopTheme, catalog: CATALOG }\n'
 
     const context = {
       console,
@@ -231,4 +231,75 @@ test('registers the catalog as pure data without any apply machinery', async () 
   assert.equal(contributions.filter(c => c.area === 'appearance.extra').length, 1)
   assert.equal(contributions.filter(c => c.area === 'routes').length, 0)
   assert.equal(contributions.filter(c => c.area === 'statusbar-right').length, 0)
+})
+
+// --- CSS paste import -----------------------------------------------------
+
+const SHADCN_CSS = `:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0 0 0);
+  --card: oklch(0.97 0 0);
+  --card-foreground: oklch(0 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.9 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.885 0 0);
+  --muted-foreground: oklch(0.51 0 0);
+  --accent: oklch(0.9 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --border: oklch(0.9 0 0);
+  --input: oklch(0.9 0 0);
+  --ring: oklch(0.7 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(1 0 0);
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "Fira Code", monospace;
+}
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --border: oklch(0.269 0 0);
+}`
+
+test('parses raw shadcn CSS into a DesktopTheme', async () => {
+  const { __test } = await loadPlugin()
+  const theme = __test.parseCssTheme(SHADCN_CSS, 'my-theme')
+
+  assert.equal(theme.name, 'my-theme')
+  assert.equal(theme.label, 'My Theme')
+  assert.equal(theme.themePickerSource, 'tweakcn')
+  assert.equal(theme.typography.fontSans, '"Inter", sans-serif')
+  assert.equal(theme.typography.fontMono, '"Fira Code", monospace')
+
+  for (const key of ['background', 'foreground', 'primary']) {
+    assert.match(theme.colors[key], /^#[0-9a-f]{6}$/, key)
+  }
+  assert.equal(theme.colors.cardForeground, '#000000')
+  assert.ok(theme.darkColors)
+  assert.notEqual(theme.darkColors.background, theme.colors.background)
+})
+
+test('parses CSS without a dark block (light-only theme)', async () => {
+  const { __test } = await loadPlugin()
+  const css = `:root { --background: #ffffff; --foreground: #000000; --primary: #333333; }`
+  const theme = __test.parseCssTheme(css, 'light-only')
+
+  assert.equal(theme.name, 'light-only')
+  assert.equal(theme.colors.background, '#ffffff')
+  assert.equal(theme.darkColors, undefined)
+})
+
+test('rejects CSS without a :root block', async () => {
+  const { __test } = await loadPlugin()
+  assert.equal(__test.parseCssTheme('not css at all', 'bad'), null)
+  assert.equal(__test.parseCssTheme('', 'empty'), null)
+  assert.equal(__test.parseCssTheme(null, 'null'), null)
+})
+
+test('refuses to shadow a built-in desktop theme name', async () => {
+  const { __test } = await loadPlugin()
+  assert.equal(__test.parseCssTheme(SHADCN_CSS, 'nous'), null)
 })
