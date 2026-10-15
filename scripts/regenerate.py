@@ -459,7 +459,11 @@ def main() -> int:
         print(f"ERROR: template not found at {template}", file=sys.stderr)
         return 1
 
-    plugin = template.read_text(encoding="utf-8").replace("__SKINS_DATA__", data)
+    # Normalise newlines before substitution: read_text() applies universal-newline
+    # decoding, and a CR-CR-LF template (Windows write_text translation) would turn
+    # into a blank line after every line of the generated plugin.
+    template_text = template.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
+    plugin = template_text.replace("__SKINS_DATA__", data)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(plugin, encoding="utf-8", newline="\n")
 
