@@ -391,18 +391,34 @@ def main() -> int:
         print('ERROR: PyYAML is required to read skin files; refusing to replace plugin.js.', file=sys.stderr)
         return 1
 
+    # Pull flags out first, so `--template <path>` never lands in a positional
+    # slot. Positional order stays [skins_dir] [out_plugin_js].
+    argv = list(sys.argv[1:])
+    template_override = None
+    out_override = None
+    for flag in ("--template", "--out"):
+        if flag in argv:
+            idx = argv.index(flag)
+            if idx + 1 < len(argv):
+                value = Path(argv[idx + 1])
+                if flag == "--template":
+                    template_override = value
+                else:
+                    out_override = value
+            del argv[idx:idx + 2]
+
     # Default skins dir: the repo's own skins/ folder when running from a
     # checkout (self-contained), else the Hermes home's skins folder.
     script_dir = Path(__file__).resolve().parent
     repo_skins = script_dir.parent / "skins"
     default_skins = repo_skins if repo_skins.is_dir() else home / "skins"
-    skins_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else default_skins
+    skins_dir = Path(argv[0]) if len(argv) > 0 else default_skins
 
     # Default output: the repo's plugin/plugin.js when running from a checkout,
     # else the in-place desktop-plugins location.
     repo_out = script_dir.parent / "plugin" / "plugin.js"
     default_out = repo_out if (script_dir.parent / "plugin").is_dir() else home / "desktop-plugins" / "theme-picker" / "plugin.js"
-    out_path = Path(sys.argv[2]) if len(sys.argv) > 2 else default_out
+    out_path = Path(argv[1]) if len(argv) > 1 else (out_override or default_out)
 
     user_skins = []
     for p in sorted(skins_dir.glob("*.yaml")):
@@ -434,7 +450,7 @@ def main() -> int:
     # Template lives in the project's plugin/ dir (repo layout) or next to the
     # plugin folder root (in-place layout: ../plugin.template.js).
     script_dir = Path(__file__).resolve().parent
-    template = (
+    template = template_override or (
         script_dir.parent / "plugin" / "plugin.template.js"  # repo layout
         if (script_dir.parent / "plugin" / "plugin.template.js").exists()
         else script_dir.parent / "plugin.template.js"          # in-place layout
