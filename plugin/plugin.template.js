@@ -26,10 +26,13 @@
 
 import {
   Badge,
+  Button,
   cn,
   EmptyState,
   haptic,
   host,
+  Input,
+  oklchToHex,
   PALETTE_AREA,
   ROUTES_AREA,
   ScrollArea,
@@ -44,7 +47,11 @@ import {
 import { jsx, jsxs } from 'react/jsx-runtime'
 import { useEffect, useMemo, useState } from 'react'
 
+let _rest = null
+
 const ID = 'theme-picker'
+
+const IMPORTED_SKINS = []
 const PAGE_PATH = '/theme-picker'
 // Desktop reads this cache before plugins register, so a selected contributed
 // theme remains resolvable during the next app startup.
@@ -84,6 +91,7 @@ let desktopThemeApi = null
 // ---------------------------------------------------------------------------
 
 const SKINS = __SKINS_DATA__
+const CATALOG = SKINS
 
 // ---------------------------------------------------------------------------
 // Color math — faithful port of apps/desktop/src/themes/color.ts
@@ -225,6 +233,207 @@ function sceneToDesktopTheme(scene) {
     darkColors: dark.colors,
     typography: SCENE_TYPOGRAPHY[scene.name],
     themePickerManaged: true
+  }
+}
+
+// -------------------------------------------------------------------
+// TweakCN importer — grafted from v2. Additive to v1's shell.
+// -------------------------------------------------------------------
+
+const TWEAKCN_BASE = 'https://tweakcn.com/r/themes/'
+
+const slug = value =>
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+function cssColorToHex(value) {
+  if (typeof value !== 'string') return undefined
+  const input = value.trim()
+  const m = input.match(/^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i)
+  if (m) {
+    let next = m[0]
+    if (next.length === 4) next = '#' + [...next.slice(1)].map(c => c + c).join('')
+    if (next.length === 5) next = '#' + [...next.slice(1, 4)].map(c => c + c).join('') + next.slice(4)
+    if (next.length === 9) next = next.slice(0, 7)
+    return next.toLowerCase()
+  }
+  const rgb = input.match(/^rgba?\(\s*([0-9.]+)%?\s*,\s*([0-9.]+)%?\s*,\s*([0-9.]+)%?/i)
+  if (rgb) {
+    let r = Number(rgb[1]), g = Number(rgb[2]), b = Number(rgb[3])
+    if (input.includes('%')) { r = Math.round(r * 2.55); g = Math.round(g * 2.55); b = Math.round(b * 2.55) }
+    const h = n => Math.round(n).toString(16).padStart(2, '0')
+    return ('#' + h(r) + h(g) + h(b)).toLowerCase()
+  }
+  const oklch = input.match(/^oklch\(\s*([0-9.]+)[^)]*\)/i)
+  if (oklch) {
+    const num = Number(oklch[1])
+    let hue = 0
+    const hueMatch = input.match(/([0-9.]+)deg/)
+    if (hueMatch) hue = Number(hueMatch[1])
+    const cMatch = input.match(/^oklch\(\s*[0-9.]+\s+([0-9.]+)/i)
+    const c = cMatch ? Number(cMatch[1]) : 0
+    try { return oklchToHex({ l: num, c: c, h: hue }) } catch (e) { return undefined }
+  }
+  return undefined
+}
+
+function tweakcnTokens(group) {
+  if (!group || typeof group !== 'object') return {}
+  const out = {}
+  for (const key in group) out[key.replace(/^--/, '')] = group[key]
+  return out
+}
+
+function tweakcnThemeName(item) {
+  const name = (item && (item.name || item.slug)) || 'tweakcn'
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'tweakcn'
+}
+
+function tweakcnColors(group) {
+  const g = group || {}
+  const at = key => cssColorToHex(g[key])
+  const background = at('background') || '#111111'
+  const foreground = at('foreground') || readableOn(background)
+  const primary = at('primary') || foreground
+  const border = at('border') || at('input') || mix(background, foreground, 0.2)
+
+  const colors = {
+    background,
+    foreground,
+    card: at('card') || background,
+    cardForeground: at('card-foreground') || foreground,
+    muted: at('muted') || mix(background, foreground, 0.12),
+    mutedForeground: at('muted-foreground') || mix(background, foreground, 0.45),
+    popover: at('popover') || background,
+    popoverForeground: at('popover-foreground') || foreground,
+    primary,
+    primaryForeground: at('primary-foreground') || readableOn(primary),
+    secondary: at('secondary') || mix(background, foreground, 0.12),
+    secondaryForeground: at('secondary-foreground') || foreground,
+    accent: at('accent') || mix(background, primary, 0.3),
+    accentForeground: at('accent-foreground') || foreground,
+    border,
+    input: at('input') || border,
+    ring: at('ring') || primary,
+    destructive: at('destructive') || '#b94a3a',
+    destructiveForeground: at('destructive-foreground') || '#ffffff',
+    sidebarBackground: at('sidebar') || at('sidebar-background') || mix(background, foreground, 0.03),
+    sidebarBorder: at('sidebar-border') || border,
+    userBubble: at('sidebar-accent') || mix(background, primary, 0.18),
+    userBubbleBorder: at('sidebar-border') || border
+  }
+
+  return colors
+}
+
+function tweakcnToDesktopTheme(item) {
+  if (!item || typeof item !== 'object') return null
+  const name = slug(item.name)
+  if (!name || CORE_DESKTOP_THEMES.has(name)) return null
+
+  const cssVars = item.cssVars || {}
+  const fontTheme = Object.assign({}, cssVars.light || {}, cssVars.theme || {})
+  const hasDark = cssVars.dark && Object.keys(cssVars.dark).length > 0
+  const fontSans = typeof fontTheme['font-sans'] === 'string' ? fontTheme['font-sans'] : undefined
+  const fontMono = typeof fontTheme['font-mono'] === 'string' ? fontTheme['font-mono'] : undefined
+
+  return {
+    name,
+    label: name.replace(/-/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase()),
+    description: `TweakCN${fontSans ? ` \u00b7 ${fontSans.split(',')[0].trim()}` : ''}`,
+    colors: tweakcnColors(cssVars.light),
+    ...(hasDark ? { darkColors: tweakcnColors(cssVars.dark) } : {}),
+    typography: {
+      fontSans: fontSans || DEFAULT_FONT_SANS,
+      fontMono: fontMono || DEFAULT_FONT_MONO
+    },
+    themePickerManaged: true,
+    themePickerSource: 'tweakcn'
+  }
+}
+
+function tweakcnUrl(ref) {
+  ref = (ref || '').trim()
+  if (!ref) return null
+  if (/^https?:\/\//i.test(ref)) return ref
+  return `${TWEAKCN_BASE}${slug(ref)}.json`
+}
+
+async function fetchTweakcnTheme(ref) {
+  const url = tweakcnUrl(ref)
+  if (!url) throw new Error('provide a TweakCN preset name or URL')
+  const r = await fetch(url)
+  if (!r.ok) throw new Error(`TweakCN request failed: ${r.status}`)
+  const json = await r.json()
+  const theme = tweakcnToDesktopTheme(json)
+  if (!theme || !theme.name || !theme.colors || !theme.colors.background) throw new Error('TweakCN response is not a usable theme')
+  if (CORE_DESKTOP_THEMES && CORE_DESKTOP_THEMES.has(theme.name)) throw new Error('refusing to shadow a built-in theme')
+  return theme
+}
+ function parseCssTheme(css, name) {
+   if (css == null) return null
+   const text = String(css)
+   const rootMatch = text.match(/:root\s*\{([^}]*)\}/m)
+   if (!rootMatch) return null
+   const rootTokens = tweakcnTokens(splitCssVars(rootMatch[1]))
+   const darkMatch = text.match(/\.dark\s*\{([^}]*)\}/m)
+   const darkTokens = darkMatch ? tweakcnTokens(splitCssVars(darkMatch[1])) : {}
+   const item = {
+     name: name || 'pasted',
+     cssVars: { light: rootTokens, dark: darkTokens, theme: {} }
+   }
+   const theme = tweakcnToDesktopTheme(item)
+   if (!theme || !theme.colors || !theme.colors.background) return null
+   return theme
+ }
+
+function splitCssVars(block) {
+  const out = {}
+  const re = /--([a-zA-Z0-9-]+)\s*:\s*([^;]+);/g
+  let m
+  while ((m = re.exec(block))) out['--' + m[1]] = m[2].trim()
+  return out
+}
+
+function readStoredThemes() {
+  try {
+    const l = (typeof window !== 'undefined' && window.localStorage) ? window.localStorage : null
+    const raw = l ? l.getItem('hermes-desktop-user-themes-v1') : null
+    const parsed = raw ? JSON.parse(raw) : {}
+    return (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) ? parsed : {}
+  } catch (e) { return {} }
+}
+
+function persistTheme(theme) {
+  const stored = readStoredThemes()
+  stored[theme.name] = theme
+  try {
+    const l = (typeof window !== 'undefined' && window.localStorage) ? window.localStorage : null
+    if (l) l.setItem('hermes-desktop-user-themes-v1', JSON.stringify(stored))
+  } catch (e) { }
+  return true
+}
+
+async function importTweakcnIntoSkins(name, theme) {
+  if (!_rest) throw new Error('plugin backend not ready')
+  const r = await _rest('import', { method: 'POST', body: JSON.stringify({ name, theme }) })
+  return r
+}
+
+let _importedLoaded = false
+function ensureImportedSkinsLoaded() {
+  if (_importedLoaded) return
+  _importedLoaded = true
+  for (const t of readStoredThemes()) {
+    if (t && t.themePickerSource === 'tweakcn') {
+      const scene = { name: t.name, label: t.label || t.name, description: t.description || 'TweakCN import',
+        modeSupport: t.darkColors ? 'dynamic' : 'light', palette: t.darkColors ? 'dynamic' : 'light',
+        colors: t.colors, lightColors: t.colors, darkColors: t.darkColors, typography: t.typography }
+      if (!IMPORTED_SKINS.some(s => s.name === scene.name)) IMPORTED_SKINS.push(scene)
+    }
   }
 }
 
@@ -763,6 +972,12 @@ function ThemePicker() {
   const profile = useValue(host.state.profile) || 'default'
   const viewport = useValue(host.state.viewport)
   const [mode, setMode] = useState(() => desktopModeFor(profile, document.documentElement.dataset.hermesMode))
+  const [importMode, setImportMode] = useState('url')
+  const [importRef, setImportRef] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [importedTick, setImportedTick] = useState(0)
+
+  useEffect(() => { ensureImportedSkinsLoaded() }, [])
 
   useEffect(() => {
     const root = document.documentElement
@@ -775,8 +990,47 @@ function ThemePicker() {
 
   const allSkins = useMemo(() => {
     const known = new Set(SKINS.map(s => s.name))
-    return [...SKINS, ...live.filter(s => !known.has(s.name))]
-  }, [live])
+    const imported = IMPORTED_SKINS.filter(s => !known.has(s.name))
+    return [...imported, ...SKINS, ...live.filter(s => !known.has(s.name) && !IMPORTED_SKINS.some(x => x.name === s.name))]
+  }, [live, importedTick])
+
+  const importTweakcn = async () => {
+    const ref = importRef.trim()
+    if (!ref || busy) return
+    setBusy(true)
+    try {
+      const theme = (importMode === 'url')
+        ? await fetchTweakcnTheme(ref)
+        : await parseCssTheme(ref, ref.split('/').pop() || 'pasted')
+      if (CORE_DESKTOP_THEMES && CORE_DESKTOP_THEMES.has(theme.name)) throw new Error('refusing to shadow a built-in theme')
+      persistTheme(theme)
+      const scene = {
+        name: theme.name,
+        label: theme.label || theme.name,
+        description: theme.description || 'TweakCN import',
+        modeSupport: theme.darkColors ? 'dynamic' : 'light',
+        palette: theme.darkColors ? 'dynamic' : 'light',
+        colors: theme.colors,
+        lightColors: theme.colors,
+        darkColors: theme.darkColors || theme.colors,
+        typography: theme.typography,
+        themePickerManaged: true,
+        themePickerSource: 'tweakcn'
+      }
+      if (!IMPORTED_SKINS.some(s => s.name === scene.name)) IMPORTED_SKINS.push(scene)
+      await importTweakcnIntoSkins(theme.name, theme).catch(() => null)
+      haptic('tap')
+      try { await host.request('config.set', { key: 'skin', value: theme.name }) } catch (e) { }
+      try { applyScene(scene, scene.modeSupport === 'dynamic' ? mode : scene.modeSupport, () => {}, desktopTheme) } catch (e) { }
+      setImportedTick(n => n + 1)
+      setImportRef('')
+      host.notify({ kind: 'info', message: 'Imported ' + (theme.label || theme.name) })
+    } catch (e) {
+      host.notify({ kind: 'error', message: 'TweakCN import failed: ' + (e && e.message ? e.message : e) })
+    } finally {
+      setBusy(false)
+    }
+  }
 
   const filtered = useMemo(() => {
     const ql = q.trim().toLowerCase()
@@ -852,6 +1106,20 @@ function ThemePicker() {
             ],
             value: mode,
             onChange: onModeChange
+          }),
+          jsx('div', {
+            className: 'flex items-center gap-2',
+            children: [
+              jsx(SegmentedControl, {
+                options: [ { id: 'url', label: 'URL' }, { id: 'css', label: 'CSS' } ],
+                value: importMode,
+                onChange: v => { if (v === 'url' || v === 'css') setImportMode(v) }
+              }),
+              importMode === 'url'
+                ? jsx(Input, { placeholder: 'TweakCN preset name or URL (e.g. catppuccin)', value: importRef, onChange: e => setImportRef(e && e.target ? e.target.value : '') })
+                : jsx('textarea', { className: 'flex-1 rounded-md border border-(--chrome-stroke) bg-(--chrome-surface) px-2 py-1 text-[0.75rem] font-mono text-(--chrome-text)', placeholder: 'Paste shadcn CSS (:root and .dark blocks)', value: importRef, rows: 3, onChange: e => setImportRef(e && e.target ? e.target.value : '') }),
+              jsx(Button, { variant: 'secondary', disabled: busy || !importRef.trim(), onClick: importTweakcn, children: busy ? 'Importing…' : 'Import' })
+            ]
           })
         ]
       }),
@@ -898,21 +1166,45 @@ function ThemePicker() {
 function ThemeChip() {
   useDesktopThemeApi()
   const [active] = useActiveSkin()
+  const { mode, setMode } = useTheme()
+  const activeSkin = active
+    ? (SKINS.find(s => s.name === active) || IMPORTED_SKINS.find(s => s.name === active)) || null
+    : null
+  const supportsBoth = !!(activeSkin && activeSkin.darkColors)
+  const toggleMode = () => {
+    if (!supportsBoth) return
+    haptic('tap')
+    setMode(mode === 'light' ? 'dark' : 'light')
+  }
+  const activeColors = activeSkin && activeSkin.colors ? activeSkin.colors : null
+  const activeLabel = activeSkin?.label || (active ? active.replace(/-/g, ' ') : 'Nous')
 
-  return jsx('button', {
-    type: 'button',
-    onClick: () => {
-      haptic('tap')
-      host.navigate(PAGE_PATH)
-    },
-    title: `Active theme: ${active || 'nous'} — open Theme Picker`,
-    className: 'flex h-full items-center gap-1 px-1.5 text-[0.6875rem] text-(--ui-text-secondary) transition-colors hover:bg-(--chrome-action-hover) hover:text-foreground',
+  return jsxs('div', {
+    className: 'flex h-full items-center gap-0.5',
     children: [
-      jsx('span', {
-        className: 'h-2 w-2 shrink-0 rounded-full',
-        style: { backgroundColor: (SKINS.find(s => s.name === active) || {}).colors?.ui_accent || 'var(--ui-accent)' }
+      jsx('button', {
+        type: 'button',
+        onClick: () => {
+          haptic('tap')
+          host.navigate(PAGE_PATH)
+        },
+        title: `Active theme: ${active || 'nous'} — open Theme Picker`,
+        className: 'flex h-full items-center gap-1.5 px-1.5 text-[0.6875rem] text-(--ui-text-secondary) transition-colors hover:bg-(--chrome-action-hover) hover:text-foreground',
+        children: [
+          jsx('span', {
+            className: 'h-2 w-2 shrink-0 rounded-full',
+            style: { backgroundColor: activeColors?.ui_accent || activeColors?.banner_accent || 'var(--ui-accent)' }
+          }),
+          jsx('span', { className: 'max-w-24 truncate', children: activeLabel })
+        ]
       }),
-      jsx('span', { className: 'max-w-24 truncate', children: active ? (SKINS.find(s => s.name === active)?.label || active.replace(/-/g, ' ')) : 'Nous' })
+      supportsBoth ? jsx('button', {
+        type: 'button',
+        onClick: toggleMode,
+        title: `Switch to ${mode === 'light' ? 'dark' : 'light'} mode`,
+        className: 'flex h-full items-center px-1 text-[0.6875rem] text-(--ui-text-secondary) transition-colors hover:bg-(--chrome-action-hover) hover:text-foreground',
+        children: jsx('span', { className: 'codicon codicon-lightbulb' })
+      }) : null
     ]
   })
 }
@@ -925,6 +1217,7 @@ export default {
   id: ID,
   name: 'Theme Picker',
   register(ctx) {
+    _rest = ctx.rest
     migrateAppearanceAliases()
     // Register each scene as one Desktop theme. Matched scenes carry a true
     // light palette plus darkColors, so Desktop's mode switch changes polarity

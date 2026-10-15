@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import vm from 'node:vm'
 
-const pluginPath = new URL('../plugin/plugin.v2.js', import.meta.url)
+const pluginPath = new URL('../plugin/plugin.js', import.meta.url)
 
 /**
  * Reference OKLCH -> sRGB hex, standing in for the SDK's `oklchToHex`. The real
@@ -48,9 +48,12 @@ function loadPlugin(storage = new Map(), fetchImpl = null) {
       fetch: fetchImpl || (() => Promise.reject(new Error('no fetch in test'))),
       oklchToHex: oklchToHexRef,
       haptic: () => {},
-      host: { notify: () => {}, navigate: () => {} },
+      host: { notify: () => {}, navigate: () => {}, onEvent: () => {} },
       APPEARANCE_AREAS: { extra: 'appearance.extra' },
       PALETTE_AREA: 'palette',
+      ROUTES_AREA: 'routes',
+      SIDEBAR_NAV_AREA: 'sidebar',
+      STATUSBAR_AREAS: { right: 'statusbar-right' },
       THEMES_AREA: 'themes',
       Badge: () => null,
       Button: () => null,
@@ -72,7 +75,7 @@ function loadPlugin(storage = new Map(), fetchImpl = null) {
       setTimeout: fn => fn()
     }
     context.globalThis = context
-    vm.runInNewContext(executable, context, { filename: 'plugin.v2.js' })
+    vm.runInNewContext(executable, context, { filename: 'plugin.js' })
     context.plugin.__test = context.testHelpers
     return context.plugin
   })
@@ -227,10 +230,10 @@ test('registers the catalog as pure data without any apply machinery', async () 
     assert.ok(contribution.id.startsWith('theme:'))
     assert.match(contribution.data.colors.background, /^#[0-9a-fA-F]{6}$/)
   }
-  // One Appearance-page control, and no route/statusbar/pane surface.
-  assert.equal(contributions.filter(c => c.area === 'appearance.extra').length, 1)
-  assert.equal(contributions.filter(c => c.area === 'routes').length, 0)
-  assert.equal(contributions.filter(c => c.area === 'statusbar-right').length, 0)
+  // One picker route, the statusbar chip, and no Appearance panel (importer lives in the picker page).
+  assert.equal(contributions.filter(c => c.area === 'appearance.extra').length, 0)
+  assert.equal(contributions.filter(c => c.area === 'routes').length, 1)
+  assert.equal(contributions.filter(c => c.area === 'statusbar-right').length, 1)
 })
 
 // --- CSS paste import -----------------------------------------------------
