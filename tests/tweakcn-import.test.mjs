@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import vm from 'node:vm'
 
-const pluginPath = new URL('../plugin/plugin.js', import.meta.url)
+const pluginPath = new URL('../desktop/plugin.js', import.meta.url)
 
 /**
  * Reference OKLCH -> sRGB hex, standing in for the SDK's `oklchToHex`. The real

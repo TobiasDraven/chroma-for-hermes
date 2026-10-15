@@ -414,10 +414,10 @@ def main() -> int:
     default_skins = repo_skins if repo_skins.is_dir() else home / "skins"
     skins_dir = Path(argv[0]) if len(argv) > 0 else default_skins
 
-    # Default output: the repo's plugin/plugin.js when running from a checkout,
+    # Default output: the repo's desktop/plugin.js when running from a checkout (the package layout).
     # else the in-place desktop-plugins location.
-    repo_out = script_dir.parent / "plugin" / "plugin.js"
-    default_out = repo_out if (script_dir.parent / "plugin").is_dir() else home / "desktop-plugins" / "theme-picker" / "plugin.js"
+    repo_out = script_dir.parent / "desktop" / "plugin.js"
+    default_out = repo_out if (script_dir.parent / "desktop").is_dir() else home / "desktop-plugins" / "theme-picker" / "plugin.js"
     out_path = Path(argv[1]) if len(argv) > 1 else (out_override or default_out)
 
     user_skins = []
@@ -451,8 +451,8 @@ def main() -> int:
     # plugin folder root (in-place layout: ../plugin.template.js).
     script_dir = Path(__file__).resolve().parent
     template = template_override or (
-        script_dir.parent / "plugin" / "plugin.template.js"  # repo layout
-        if (script_dir.parent / "plugin" / "plugin.template.js").exists()
+        script_dir.parent / "desktop" / "plugin.template.js"  # repo layout
+        if (script_dir.parent / "desktop" / "plugin.template.js").exists()
         else script_dir.parent / "plugin.template.js"          # in-place layout
     )
     if not template.exists():
@@ -466,8 +466,9 @@ def main() -> int:
     print(f"Rebuilt {out_path} with {len(catalog)} scenes from "
           f"{len(user_skins)} bundled skins + {len(builtins)} backend built-ins "
           f"and {transport_count} gateway transports.")
-    print("Next: copy plugin.js to the desktop machine and run "
-          "'Reload desktop plugins' (Ctrl+K).")
+    print("Next: this repo root IS the plugin package. Put (or link) it at "
+          "<hermes home>/plugins/theme-picker and restart Hermes Desktop once "
+          "(Capabilities -> Plugins -> Rescan after that).")
     return 0
 
 

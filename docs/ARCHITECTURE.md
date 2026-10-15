@@ -20,7 +20,7 @@ gateway while retaining local application as the immediate path and fallback.
 
 ## Scene model
 
-`plugin/plugin.js` embeds a generated `SKINS` array. Each entry is a scene with:
+`desktop/plugin.js` embeds a generated `SKINS` array. Each entry is a scene with:
 
 - a stable scene name and display label;
 - `modeSupport`: `dynamic`, `dark`, or `light`;
@@ -101,8 +101,8 @@ another device.
 - loads the nine canonical backend built-ins from the pinned
   `scripts/backend-builtins.json` snapshot, independent of the locally
   installed Hermes package;
-- writes compact, key-sorted JSON into `plugin/plugin.template.js` to produce
-  deterministic `plugin/plugin.js` output.
+- writes compact, key-sorted JSON into `desktop/plugin.template.js` to produce
+  deterministic `desktop/plugin.js` output.
 
 A no-skin guard prevents an empty or broken regeneration from replacing the
 installed plugin.
@@ -129,8 +129,8 @@ Desktop build.
 
 | File | Purpose |
 |---|---|
-| `plugin/plugin.js` | Generated deliverable copied into Desktop |
-| `plugin/plugin.template.js` | Source of truth for picker UI and behavior |
+| `desktop/plugin.js` | Generated deliverable copied into Desktop |
+| `desktop/plugin.template.js` | Source of truth for picker UI and behavior |
 | `skins/` | 140 vendored YAML palettes |
 | `gateway-skins/` | 114 mode-locked light/dark transports for all 57 Dynamic Scenes |
 | `scripts/regenerate.py` | Builds scenes and regenerates `plugin.js` |

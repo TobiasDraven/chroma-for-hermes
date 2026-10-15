@@ -7,9 +7,9 @@ installer_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 repo_root=$(dirname -- "$installer_dir")
 
 # Support both layouts:
-# - a source checkout: <repo>/plugin/plugin.js
+# - a source checkout: <repo>/desktop/plugin.js
 # - a small distributable bundle: <bundle>/theme-picker/plugin.js
-checkout_plugin="$repo_root/plugin/plugin.js"
+checkout_plugin="$repo_root/desktop/plugin.js"
 bundled_plugin="$installer_dir/theme-picker/plugin.js"
 if [ -f "$checkout_plugin" ]; then
   source_plugin=$checkout_plugin

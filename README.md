@@ -67,7 +67,7 @@ set and otherwise installs under `~/.hermes`.
 
 ### Linux or manual installation
 
-Copy `plugin/plugin.js` to the exact destination for your platform:
+Copy `desktop/plugin.js` to the exact destination for your platform:
 
 | Platform | Destination |
 |---|---|
@@ -80,7 +80,7 @@ If `HERMES_HOME` is set, use it in place of `%LOCALAPPDATA%\hermes` or
 ```bash
 hermes_home="${HERMES_HOME:-$HOME/.hermes}"
 mkdir -p "$hermes_home/desktop-plugins/theme-picker"
-cp plugin/plugin.js "$hermes_home/desktop-plugins/theme-picker/plugin.js"
+cp desktop/plugin.js "$hermes_home/desktop-plugins/theme-picker/plugin.js"
 ```
 
 ### Enable gateway-wide themes
@@ -137,7 +137,7 @@ Hermes skins are YAML files containing a name, description, and colors.
 ### Regenerate the catalog
 
 ```bash
-# Bundled skins/ → plugin/plugin.js
+# Bundled skins/ → desktop/plugin.js
 python3 scripts/regenerate.py
 
 # Read another skin directory
@@ -158,8 +158,8 @@ Set-ExecutionPolicy -Scope Process Bypass
 If needed, install PyYAML with `py -m pip install --user PyYAML`. The generator
 refuses to replace `plugin.js` when no valid skins are found.
 
-For UI changes, edit `plugin/plugin.template.js`, run the generator, then copy
-the rebuilt `plugin/plugin.js` into Hermes Desktop and reload plugins.
+For UI changes, edit `desktop/plugin.template.js`, run the generator, then copy
+the rebuilt `desktop/plugin.js` into Hermes Desktop and reload plugins.
 
 ## Project layout
 

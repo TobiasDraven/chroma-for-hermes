@@ -1,42 +1,56 @@
-# Installs Theme Picker (v2) into the active Windows Hermes home.
-# Theme Picker is now a UNIFIED plugin: a desktop UI half AND a Python backend.
+# Installs Theme Picker into the active Windows Hermes home.
+#
+# The repo root IS the plugin package now:
+#     desktop/plugin.js        <- the desktop UI half
+#     dashboard/manifest.json  <- the Python backend
+#     dashboard/plugin_api.py
+#
+# The Desktop app COPIES a package's desktop half out of
+# <hermes home>/plugins/<name>/desktop/ into <hermes home>/desktop-plugins/<name>/
+# by itself, and — when the package folder is a symlink — re-syncs on every save.
+# So installing is just placing this folder at <hermes home>/plugins/theme-picker.
+#
+# Modes:
+#   -Link (default on Windows when run as admin) : junction to this checkout (dev)
+#   -Copy                                        : copy the package (stable install)
 $ErrorActionPreference = 'Stop'
 
-$bundle = Split-Path -Parent $MyInvocation.MyCommand.Path
+param(
+  [switch]$Copy
+)
 
-# Support both layouts:
-# - a source checkout: <repo>\plugin\plugin.js + <repo>\dashboard\*
-# - a distributable bundle: <bundle>\theme-picker\{plugin.js, dashboard\*}
-$checkoutPlugin = Join-Path (Split-Path -Parent $bundle) 'plugin\plugin.js'
-$bundledPlugin = Join-Path $bundle 'theme-picker\plugin.js'
-$checkoutDash = Join-Path (Split-Path -Parent $bundle) 'dashboard'
-$bundledDash = Join-Path $bundle 'theme-picker\dashboard'
-$sourcePlugin = if (Test-Path -LiteralPath $checkoutPlugin) { $checkoutPlugin } elseif (Test-Path -LiteralPath $bundledPlugin) { $bundledPlugin } else { throw "Theme Picker desktop file not found (expected '$checkoutPlugin' or '$bundledPlugin')." }
-$sourceDash = if (Test-Path -LiteralPath $checkoutDash) { $checkoutDash } elseif (Test-Path -LiteralPath $bundledDash) { $bundledDash } else { throw "Theme Picker dashboard folder not found (expected '$checkoutDash' or '$bundledDash')." }
+$repo = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 $desktopHome = Join-Path $env:LOCALAPPDATA 'hermes'
 $cliHome = Join-Path $env:USERPROFILE '.hermes'
 $hermesHome = if ($env:HERMES_HOME) { $env:HERMES_HOME } elseif (Test-Path $desktopHome) { $desktopHome } else { $cliHome }
 
-# Desktop UI (kept under desktop-plugins AND plugins/<id>/desktop so both runtime
-# doors discover it — see runtime-loader.ts: the desktop half may live at either).
-$pluginDir = Join-Path $hermesHome 'desktop-plugins\theme-picker'
-$unifiedRoot = Join-Path $hermesHome 'plugins\theme-picker'
-$desktopDir   = Join-Path $unifiedRoot 'desktop'
-$dashboardDir = Join-Path $unifiedRoot 'dashboard'
-New-Item -ItemType Directory -Force -Path $pluginDir, $desktopDir, $dashboardDir | Out-Null
-Copy-Item -LiteralPath $sourcePlugin -Destination (Join-Path $pluginDir 'plugin.js') -Force
-Copy-Item -LiteralPath $sourcePlugin -Destination (Join-Path $desktopDir 'plugin.js') -Force
-Get-ChildItem -LiteralPath $sourceDash -File | ForEach-Object {
-  Copy-Item -LiteralPath $_.FullName -Destination $dashboardDir -Force
+$pluginsRoot = Join-Path $hermesHome 'plugins'
+$target = Join-Path $pluginsRoot 'theme-picker'
+
+New-Item -ItemType Directory -Force -Path $pluginsRoot | Out-Null
+
+if (Test-Path -LiteralPath $target) {
+  Write-Host "Removing existing '$target' first (kept nothing)." -ForegroundColor Yellow
+  Remove-Item -LiteralPath $target -Recurse -Force
+}
+
+if ($Copy) {
+  New-Item -ItemType Directory -Force -Path $target | Out-Null
+  Copy-Item -Path (Join-Path $repo 'desktop')   -Destination $target -Recurse -Force
+  Copy-Item -Path (Join-Path $repo 'dashboard') -Destination $target -Recurse -Force
+  Write-Host "Copied the package to: $target" -ForegroundColor Green
+} else {
+  # A junction needs no admin rights and the app follows it (listDirs followLinks).
+  $null = New-Item -ItemType Junction -Path $target -Target $repo
+  Write-Host "Linked $target -> $repo" -ForegroundColor Green
+  Write-Host 'Editing the checkout and saving now hot-reloads the pane.'
 }
 
 Write-Host ''
-Write-Host "Installed Theme Picker into: $unifiedRoot" -ForegroundColor Green
-Write-Host '  Desktop UI : desktop\plugin.js (in desktop-plugins too, for the rescan path)'
-Write-Host '  Backend    : dashboard\manifest.json + plugin_api.py'
+Write-Host 'REMAINING STEP:' -ForegroundColor Yellow
+Write-Host ' Restart Hermes Desktop once so the Python backend mounts.'
+Write-Host ' (Then Capabilities -> Plugins -> Rescan if the row does not appear.)'
 Write-Host ''
-Write-Host 'REMAINING STEPS (Python backend mounts only at startup):' -ForegroundColor Yellow
-Write-Host " 1) Ensure config.yaml lists 'theme-picker' under plugins.enabled."
-Write-Host ' 2) Fully quit and restart Hermes Desktop on the running machine.'
-Write-Host ' 3) Ctrl+K -> Reload desktop plugins.'
+Write-Host 'If you previously installed by hand, delete the stale folder:' -ForegroundColor Yellow
+Write-Host "   $hermesHome\desktop-plugins\theme-picker"

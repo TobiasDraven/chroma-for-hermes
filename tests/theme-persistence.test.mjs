@@ -4,7 +4,7 @@ import test from 'node:test'
 import vm from 'node:vm'
 
 const USER_THEMES_KEY = 'hermes-desktop-user-themes-v1'
-const pluginPath = new URL('../plugin/plugin.js', import.meta.url)
+const pluginPath = new URL('../desktop/plugin.js', import.meta.url)
 
 function loadPlugin(storage, exposeTestHelpers = false, requestHandler = null, profileGetter = () => 'default') {
   return readFile(pluginPath, 'utf8').then(source => {
