@@ -129,18 +129,15 @@ Desktop build.
 
 | File | Purpose |
 |---|---|
-| `plugin/plugin.js` | Generated deliverable copied into Desktop (v2, data-first) |
-| `plugin/plugin.template.js` | Source of truth for picker UI and behavior (v2) |
-| `plugin/plugin.v1.js` | Archived v1 build — manual paint + gateway sync. Swap-in fallback only |
-| `plugin/plugin.v1.template.js` | Archived v1 source |
+| `plugin/plugin.js` | Generated deliverable copied into Desktop |
+| `plugin/plugin.template.js` | Source of truth for picker UI and behavior |
 | `skins/` | 140 vendored YAML palettes |
 | `gateway-skins/` | 114 mode-locked light/dark transports for all 57 Dynamic Scenes |
 | `scripts/regenerate.py` | Builds scenes and regenerates `plugin.js` |
 | `scripts/backend-builtins.json` | Pinned backend palettes for environment-independent generation |
 | `scripts/cliffwade-v1.1.0-sha256.json` | Pinned byte-identity manifest for the 100 vendored CliffWade v1.1.0 YAML files |
 | `tests/test_regenerate.py` | Generator, pairing, mode-category, and installer tests |
-| `tests/theme-persistence.test.mjs` | v1 apply/paint/gateway contract — tests the archived v1 build |
-| `tests/tweakcn-import.test.mjs` | v2 catalog registration, TweakCN registry import, and CSS paste import |
+| `tests/theme-persistence.test.mjs` | Desktop cache, grouping, persistence, and responsive tests |
 | `install/install-macos.command` | macOS installer |
 | `install/install-gateway-skins.sh` | Installs all synchronized palettes on a gateway host |
 | `install/install-windows.ps1` | Windows installer |

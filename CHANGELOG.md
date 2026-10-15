@@ -3,32 +3,6 @@
 Notable changes to Hermes Theme Picker are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
-## [Unreleased]
-
-### The data-first picker ships as the default
-
-- `plugin/plugin.js` is now the v2 rewrite. Every catalog theme registers as
-  pure `THEMES_AREA` data, and applying goes through
-  `useTheme().setTheme` / `setMode` — so Desktop's own ThemeProvider owns the
-  paint, the per-profile persistence, and the mode. The v1 revert bug cannot
-  recur, because nothing writes theme state the app does not own.
-- The installer and the README install path therefore ship v2. Previously they
-  copied a v1 `plugin.js` while v2 sat unused beside it.
-- The v1 build is kept as `plugin/plugin.v1.js` (source
-  `plugin/plugin.v1.template.js`) as a swap-in fallback; its test suite
-  (`tests/theme-persistence.test.mjs`) now targets that archived build.
-
-### TweakCN import
-
-- Imports a preset by name or URL from `tweakcn.com/r/themes/<name>.json`, or
-  by pasting the theme's `:root` + `.dark` CSS. Both paths run through one
-  token map, so a paste and a fetch produce the same theme.
-- `oklch()`, `rgb()` and hex tokens are normalised to `#rrggbb` using the SDK's
-  own `oklchToHex`.
-- Imported themes register live and persist to
-  `hermes-desktop-user-themes-v1`, the key Desktop reads on the next boot's
-  first frame. A preset that would shadow a built-in theme name is refused.
-
 ## [1.5.1] - 2026-08-08
 
 ### Product-focused documentation
