@@ -196,7 +196,37 @@ test('resolves a preset name to the registry URL and passes a URL through', asyn
     __test.tweakcnUrl('https://tweakcn.com/r/themes/custom.json'),
     'https://tweakcn.com/r/themes/custom.json'
   )
+  // A theme PAGE url serves HTML; the preset name is its last path segment.
+  assert.equal(
+    __test.tweakcnUrl('https://tweakcn.com/themes/catppuccin'),
+    'https://tweakcn.com/r/themes/catppuccin.json'
+  )
+  assert.equal(
+    __test.tweakcnUrl('https://tweakcn.com/themes/catppuccin/'),
+    'https://tweakcn.com/r/themes/catppuccin.json'
+  )
+  assert.equal(
+    __test.tweakcnUrl('https://www.tweakcn.com/themes/doom-64?ref=x'),
+    'https://tweakcn.com/r/themes/doom-64.json'
+  )
+  // Not tweakcn: hand the URL through untouched.
+  assert.equal(__test.tweakcnUrl('https://example.com/theme.json'), 'https://example.com/theme.json')
   assert.equal(__test.tweakcnUrl('  '), null)
+})
+
+test('reports an HTML answer as a bad preset instead of a JSON parse error', async () => {
+  // tweakcn answers an unknown preset with 500 + an HTML body, and a theme page
+  // URL with 200 + HTML; both used to surface "Unexpected token '<'" / doctype.
+  const htmlFetch = async () => ({
+    ok: true,
+    status: 200,
+    json: async () => { throw new SyntaxError('Unexpected token \'<\', "<!DOCTYPE " is not valid JSON') }
+  })
+  const { __test } = await loadPlugin(new Map(), htmlFetch)
+  await assert.rejects(
+    () => __test.fetchTweakcnTheme('https://tweakcn.com/themes/nope'),
+    /did not return a preset/
+  )
 })
 
 test('fetches and converts a preset, and surfaces a bad response', async () => {
