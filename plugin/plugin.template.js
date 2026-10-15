@@ -1,58 +1,51 @@
 /**
- * theme-picker — browse and apply Hermes skins from a full-page picker.
+ * theme-picker v2 — data-first, no paint.
  *
- * Self-contained: all scene color data is embedded (no Python backend, no REST),
- * so it works identically on any machine running Hermes Desktop. Applying a
- * scene paints Desktop's root tokens immediately AND hands the switch to
- * Desktop's own ThemeProvider (useTheme().setTheme/setMode), so the provider's
- * React state agrees and the next render keeps the theme instead of reverting to
- * its stale state. The scene and mode are saved for the next boot — no
- * navigation or renderer reload. The
- * selected concrete light/dark variant is also queued through gateway
- * `config.set`, which broadcasts it to every connected Desktop and CLI.
+ * v1 painted Desktop's root tokens itself and pushed the pick to the gateway.
+ * Desktop's ThemeProvider then re-applied its own React state on the next
+ * render, so the theme reverted on any navigation or click. v2 removes the
+ * whole fight:
  *
- * It also registers every scene via THEMES_AREA, so the same scenes show up
- * in Settings → Appearance and can be switched there (works even offline).
+ *   - Every catalog theme is registered as pure THEMES_AREA data, so it appears
+ *     in the native Appearance picker and Cmd-K like a built-in.
+ *   - Applying goes through the app's own useTheme().setTheme/setMode. The app
+ *     owns the paint, the per-profile persistence, and the mode.
+ *   - The only UI is one contribution at the END of the Appearance page
+ *     (APPEARANCE_AREAS.extra): a searchable swatch grid plus a TweakCN
+ *     importer.
  *
- * Live discovery: when a skin is applied from elsewhere (CLI /skin, another
- * surface) the `skin.changed` event carries its full palette, so a skin NOT in
- * the embedded catalog (e.g. one you just installed) appears in the picker
- * immediately. To also have it in the browsable catalog before applying, run
- * the regeneration script (see scripts/regenerate.py) and re-copy plugin.js.
+ * There is no manual repaint, no gateway sync, no MutationObserver, no custom
+ * route and no statusbar chip. Nothing here can develop v1's revert bug,
+ * because nothing here writes theme state that the app does not own.
  *
  * Plain ESM loaded uncompiled: UI is jsx() calls, NOT JSX syntax; only
  * @hermes/plugin-sdk, react, react/jsx-runtime resolve.
  */
 
 import {
+  APPEARANCE_AREAS,
   Badge,
+  Button,
   cn,
-  EmptyState,
   haptic,
   host,
+  Input,
   PALETTE_AREA,
-  ROUTES_AREA,
-  ScrollArea,
   SearchField,
   SegmentedControl,
-  SIDEBAR_NAV_AREA,
-  STATUSBAR_AREAS,
   THEMES_AREA,
-  useTheme,
-  useValue
+  oklchToHex,
+  useTheme
 } from '@hermes/plugin-sdk'
 import { jsx, jsxs } from 'react/jsx-runtime'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 const ID = 'theme-picker'
-const PAGE_PATH = '/theme-picker'
-// Desktop reads this cache before plugins register, so a selected contributed
-// theme remains resolvable during the next app startup.
+// Desktop reads this cache before plugins register, so an imported theme
+// resolves on the next boot's first frame instead of waiting for us.
 const USER_THEMES_KEY = 'hermes-desktop-user-themes-v1'
-const SKIN_KEY = 'hermes-desktop-theme-v2'
-const MODE_KEY = 'hermes-desktop-mode-v1'
-const PROFILE_SKINS_KEY = 'hermes-desktop-profile-themes-v1'
-const PROFILE_MODES_KEY = 'hermes-desktop-profile-modes-v1'
+// TweakCN serves each preset as a shadcn registry item.
+const TWEAKCN_BASE = 'https://tweakcn.com/r/themes/'
 const CORE_DESKTOP_THEMES = new Set(['nous', 'midnight', 'ember', 'mono', 'cyberpunk', 'slate'])
 const EMOJI_FALLBACK = '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", emoji'
 const DEFAULT_FONT_SANS = '"Segoe WPC", "Segoe UI", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif, ' + EMOJI_FALLBACK
@@ -66,27 +59,17 @@ const SCENE_TYPOGRAPHY = {
     fontMono: `"Courier New", Courier, monospace, ${EMOJI_FALLBACK}`
   }
 }
-let gatewaySyncQueue = Promise.resolve()
-let applyGeneration = 0
-const latestAppearanceByProfile = new Map()
-
-// Desktop's own ThemeProvider API, captured from a mounted host component.
-// The plugin paints root tokens for an instant switch, but Desktop re-applies
-// its React state on the next render — so a manual-only paint reverts on any
-// navigation, click, or profile switch. Holding setTheme/setMode lets the
-// plugin hand the switch to the provider so state, persistence, and the paint
-// all agree. Null until a component mounts (e.g. under the test harness).
-let desktopThemeApi = null
 
 // ---------------------------------------------------------------------------
-// Embedded skin catalog — generated from ~/.hermes/skins/*.yaml + backend
-// built-ins (see scripts/regenerate.py at the bottom of this folder).
+// Embedded skin catalog — generated from the repo's skins/ by
+// scripts/regenerate.py (see __SKINS_DATA__).
 // ---------------------------------------------------------------------------
 
 const SKINS = __SKINS_DATA__
 
 // ---------------------------------------------------------------------------
-// Color math — faithful port of apps/desktop/src/themes/color.ts
+// Colour math — faithful port of apps/desktop/src/themes/color.ts, used only
+// to translate a Hermes CLI skin's palette into DesktopThemeColors.
 // ---------------------------------------------------------------------------
 
 function hexToRgb(hex) {
@@ -116,90 +99,48 @@ function luminance(hex) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }
 
-function relativeLuminance(hex) {
-  const rgb = hexToRgb(hex)
-  if (!rgb) return 0
-  const linear = v => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)
-  const [r, g, b] = rgb.map(v => linear(v / 255))
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b
-}
-
-function contrastRatio(a, b) {
-  const la = relativeLuminance(a)
-  const lb = relativeLuminance(b)
-  return la >= lb ? (la + 0.05) / (lb + 0.05) : (lb + 0.05) / (la + 0.05)
-}
-
 function readableOn(hex) {
-  return relativeLuminance(hex) > 0.58 ? '#161616' : '#ffffff'
-}
-
-function ensureContrast(color, bg, min) {
-  if (contrastRatio(color, bg) >= min) return color
-  const towards = relativeLuminance(bg) < 0.5 ? '#ffffff' : '#000000'
-  let best = color
-  for (let amount = 0.2; amount <= 1.0001; amount += 0.2) {
-    best = mix(color, towards, Math.min(amount, 1))
-    if (contrastRatio(best, bg) >= min) return best
-  }
-  return best
+  return luminance(hex) > 0.5 ? '#161616' : '#ffffff'
 }
 
 // ---------------------------------------------------------------------------
-// Skin → DesktopTheme — faithful port of skinToDesktopTheme() (themes/skin.ts)
+// Hermes CLI skin -> DesktopThemeColors (same mapping v1 used).
 // ---------------------------------------------------------------------------
 
 function skinToDesktopTheme(skin) {
-  const colors = skin.colors || {}
-  const pick = keys => {
-    for (const key of keys) {
-      const v = colors[key]
-      if (typeof v === 'string' && hexToRgb(v)) return v
-    }
-    return null
-  }
-
-  const seededBg = pick(['background', 'status_bar_bg']) || '#000000'
-  const foregroundSeed = pick(['ui_text', 'banner_text', 'status_bar_text']) || null
-  const background = seededBg !== '#000000'
-    ? seededBg
-    : foregroundSeed && luminance(foregroundSeed) > 0.5 ? '#141414' : '#f7f7f8'
-  const dark = luminance(background) < 0.4
-  const foreground = foregroundSeed || (dark ? '#e6e6e6' : '#161616')
-
-  const accentSeed = pick(['ui_accent', 'banner_accent', 'banner_title']) || mix(foreground, background, 0.55)
-  const sidebar = mix(background, foreground, dark ? 0.02 : 0.012)
-  const accent = ensureContrast(accentSeed, sidebar, 4.5)
-  const border = pick(['ui_border', 'banner_border']) || mix(background, foreground, dark ? 0.16 : 0.14)
-  const mutedForeground = pick(['banner_dim', 'session_border']) || mix(foreground, background, 0.45)
-  const destructive = pick(['ui_error']) || '#e25563'
+  const c = skin.colors || {}
+  const pick = (...keys) => keys.map(k => c[k]).find(v => typeof v === 'string' && v)
+  const background = pick('background', 'status_bar_bg') || '#111111'
+  const foreground = pick('banner_text', 'ui_text') || readableOn(background)
+  const accent = pick('ui_accent', 'banner_accent', 'banner_title') || foreground
+  const border = pick('ui_border', 'banner_border') || mix(background, foreground, 0.2)
+  const surface = pick('completion_menu_bg', 'status_bar_bg') || mix(background, foreground, 0.04)
+  const raised = pick('completion_menu_current_bg') || mix(background, foreground, 0.08)
+  const muted = pick('banner_dim', 'ui_label') || mix(background, foreground, 0.45)
 
   const palette = {
     background,
     foreground,
-    card: mix(background, foreground, dark ? 0.04 : 0.025),
+    card: surface,
     cardForeground: foreground,
-    muted: mix(background, foreground, dark ? 0.06 : 0.04),
-    mutedForeground,
-    popover: mix(background, foreground, dark ? 0.08 : 0.05),
+    muted: mix(background, foreground, 0.12),
+    mutedForeground: muted,
+    popover: raised,
     popoverForeground: foreground,
     primary: accent,
     primaryForeground: readableOn(accent),
-    secondary: mix(accent, background, dark ? 0.72 : 0.86),
+    secondary: mix(background, accent, 0.22),
     secondaryForeground: foreground,
-    accent: mix(accent, background, dark ? 0.82 : 0.88),
+    accent: mix(background, accent, 0.3),
     accentForeground: foreground,
     border,
-    input: pick(['completion_menu_bg']) || mix(background, foreground, dark ? 0.1 : 0.06),
+    input: border,
     ring: accent,
-    midground: accent,
-    midgroundForeground: readableOn(accent),
-    composerRing: accent,
-    destructive,
-    destructiveForeground: readableOn(destructive),
-    sidebarBackground: sidebar,
+    destructive: pick('ui_error') || '#b94a3a',
+    destructiveForeground: readableOn(pick('ui_error') || '#b94a3a'),
+    sidebarBackground: mix(background, foreground, 0.03),
     sidebarBorder: border,
-    userBubble: mix(background, accent, dark ? 0.18 : 0.12),
+    userBubble: mix(background, accent, 0.18),
     userBubbleBorder: border
   }
 
@@ -228,749 +169,443 @@ function sceneToDesktopTheme(scene) {
   }
 }
 
-function renderedModeFor(colors, mode) {
-  return luminance(colors.background) > 0.5 ? 'light' : hexToRgb(colors.background) ? 'dark' : mode
+const CATALOG = SKINS.map(sceneToDesktopTheme).filter(theme => theme && !CORE_DESKTOP_THEMES.has(theme.name))
+
+// ---------------------------------------------------------------------------
+// TweakCN import.
+//
+// A TweakCN preset is a shadcn registry item:
+//   { name, type: 'registry:style',
+//     cssVars: { theme: {font-sans, font-mono, radius, ...},
+//                light: {background, foreground, 'card-foreground', ...},
+//                dark:  {...} } }
+//
+// shadcn writes colours as `oklch(L C H)` (some older presets as hex/rgb/hsl),
+// and Hermes' colour maths is hex-only — so every value is normalised to hex
+// here. The SDK supplies oklchToHex, so nothing perceptual is hand-rolled.
+// ---------------------------------------------------------------------------
+
+const OKLCH_RE = /^oklch\(\s*([^)\s/]+)\s+([^)\s/]+)\s+([^)\s/]+)\s*(?:\/\s*([^)\s]+)\s*)?\)$/i
+const RGB_RE = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)\s*(?:[,/]\s*([\d.]+%?)\s*)?\)$/i
+const HEX_RE = /^#([0-9a-f]{3,8})$/i
+
+/** Normalise one CSS colour token to `#rrggbb`, or undefined if unsupported. */
+function cssColorToHex(value) {
+  if (typeof value !== 'string') return undefined
+  const raw = value.trim()
+  if (!raw) return undefined
+
+  const hex = raw.match(HEX_RE)
+  if (hex) {
+    const d = hex[1].toLowerCase()
+    if (d.length === 3 || d.length === 4) return `#${d.slice(0, 3).split('').map(ch => ch + ch).join('')}`
+    if (d.length === 6 || d.length === 8) return `#${d.slice(0, 6)}`
+    return undefined
+  }
+
+  const ok = raw.match(OKLCH_RE)
+  if (ok) {
+    const l = Number(ok[1].endsWith('%') ? parseFloat(ok[1]) / 100 : ok[1])
+    // `none` is a legal CSS component; treat it as zero chroma / zero hue.
+    const c = ok[2].toLowerCase() === 'none' ? 0 : Number(ok[2].endsWith('%') ? parseFloat(ok[2]) / 100 : ok[2])
+    const h = ok[3].toLowerCase() === 'none' ? 0 : Number(ok[3])
+    if (![l, c, h].every(Number.isFinite)) return undefined
+    const out = oklchToHex({ l, c, h })
+    return out && out.startsWith('#') ? out.slice(0, 7) : undefined
+  }
+
+  const rgb = raw.match(RGB_RE)
+  if (rgb) {
+    return rgbToHex([Number(rgb[1]), Number(rgb[2]), Number(rgb[3])])
+  }
+
+  return undefined
 }
 
-const NEUTRAL_CHROME = { light: '#f3f3f3', dark: '#0d0d0e' }
+/** Map a TweakCN `cssVars` colour group onto DesktopThemeColors. */
+function tweakcnColors(group) {
+  const g = group || {}
+  const at = key => cssColorToHex(g[key])
+  const background = at('background') || '#111111'
+  const foreground = at('foreground') || readableOn(background)
+  const primary = at('primary') || foreground
+  const border = at('border') || at('input') || mix(background, foreground, 0.2)
 
-function mixesFor(isDark) {
+  const colors = {
+    background,
+    foreground,
+    card: at('card') || background,
+    cardForeground: at('card-foreground') || foreground,
+    muted: at('muted') || mix(background, foreground, 0.12),
+    mutedForeground: at('muted-foreground') || mix(background, foreground, 0.45),
+    popover: at('popover') || background,
+    popoverForeground: at('popover-foreground') || foreground,
+    primary,
+    primaryForeground: at('primary-foreground') || readableOn(primary),
+    secondary: at('secondary') || mix(background, foreground, 0.12),
+    secondaryForeground: at('secondary-foreground') || foreground,
+    accent: at('accent') || mix(background, primary, 0.3),
+    accentForeground: at('accent-foreground') || foreground,
+    border,
+    input: at('input') || border,
+    ring: at('ring') || primary,
+    destructive: at('destructive') || '#b94a3a',
+    destructiveForeground: at('destructive-foreground') || '#ffffff',
+    sidebarBackground: at('sidebar') || at('sidebar-background') || mix(background, foreground, 0.03),
+    sidebarBorder: at('sidebar-border') || border,
+    userBubble: at('sidebar-accent') || mix(background, primary, 0.18),
+    userBubbleBorder: at('sidebar-border') || border
+  }
+
+  return colors
+}
+
+const slug = value =>
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+/** Convert a parsed TweakCN registry item into a DesktopTheme. */
+function tweakcnToDesktopTheme(item) {
+  if (!item || typeof item !== 'object') return null
+  const name = slug(item.name)
+  if (!name || CORE_DESKTOP_THEMES.has(name)) return null
+
+  const cssVars = item.cssVars || {}
+  const theme = cssVars.theme || {}
+  const hasDark = cssVars.dark && Object.keys(cssVars.dark).length > 0
+  const fontSans = typeof theme['font-sans'] === 'string' ? theme['font-sans'] : undefined
+  const fontMono = typeof theme['font-mono'] === 'string' ? theme['font-mono'] : undefined
+
   return {
-    '--theme-mix-chrome': isDark ? '74%' : '92%',
-    '--theme-mix-sidebar': '100%',
-    '--theme-mix-card': isDark ? '38%' : '22%',
-    '--theme-mix-elevated': isDark ? '46%' : '28%',
-    '--theme-mix-bubble': isDark ? '46%' : '0%'
+    name,
+    label: name.replace(/-/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase()),
+    description: `TweakCN${fontSans ? ` · ${fontSans.split(',')[0].trim()}` : ''}`,
+    colors: tweakcnColors(cssVars.light),
+    ...(hasDark ? { darkColors: tweakcnColors(cssVars.dark) } : {}),
+    typography: {
+      fontSans: fontSans || DEFAULT_FONT_SANS,
+      fontMono: fontMono || DEFAULT_FONT_MONO
+    },
+    themePickerManaged: true,
+    themePickerSource: 'tweakcn'
   }
 }
 
-/**
- * Immediate local repaint — a source-faithful port of Desktop's applyTheme().
- * The public plugin SDK does not expose ThemeContext.setTheme/setMode, so this
- * updates the same root tokens and native window hooks without navigating or
- * remounting the React app. Persistence is handled separately for next boot.
- */
-function applyDesktopTheme(theme, mode) {
-  const root = document.documentElement
-  const c = mode === 'dark' ? (theme.darkColors || theme.colors) : theme.colors
-  const typo = {
-    fontSans: DEFAULT_FONT_SANS,
-    fontMono: DEFAULT_FONT_MONO,
-    ...(theme.typography || {})
-  }
-  const rendered = renderedModeFor(c, mode)
-  const isDark = rendered === 'dark'
-  const midground = c.midground || c.ring
-
-  root.style.setProperty('color-scheme', rendered)
-  root.dataset.hermesTheme = theme.name
-  root.dataset.hermesMode = rendered
-  root.classList.toggle('dark', isDark)
-
-  const seeds = {
-    '--theme-foreground': c.foreground,
-    '--theme-primary': c.primary,
-    '--theme-secondary': c.secondary,
-    '--theme-accent-soft': c.accent,
-    '--theme-midground': midground,
-    '--theme-warm': c.primary,
-    '--theme-background-seed': c.background,
-    '--theme-sidebar-seed': c.sidebarBackground || c.background,
-    '--theme-card-seed': c.card,
-    '--theme-elevated-seed': c.popover,
-    '--theme-bubble-seed': c.userBubble || c.popover
-  }
-  const palette = {
-    '--dt-primary-foreground': c.primaryForeground,
-    '--dt-secondary-foreground': c.secondaryForeground,
-    '--dt-accent-foreground': c.accentForeground,
-    '--dt-border': c.border,
-    '--dt-input': c.input,
-    '--dt-ring': c.ring,
-    '--dt-muted': c.muted,
-    '--dt-midground-foreground': c.midgroundForeground || readableOn(midground),
-    '--dt-composer-ring': c.composerRing || midground,
-    '--dt-destructive': c.destructive,
-    '--dt-destructive-foreground': c.destructiveForeground,
-    '--dt-sidebar-border': c.sidebarBorder || c.border,
-    '--dt-user-bubble-border': c.userBubbleBorder || c.border,
-    '--dt-font-sans': typo.fontSans,
-    '--dt-font-mono': typo.fontMono,
-    '--noise-opacity-mul': isDark ? 'calc(0.04 / 0.21)' : 'calc(0.34 / 0.21)'
-  }
-  for (const [key, value] of Object.entries({ ...seeds, ...mixesFor(isDark), ...palette })) {
-    if (value) root.style.setProperty(key, value)
-  }
-
-  const chromeBg = mix(c.background, NEUTRAL_CHROME[isDark ? 'dark' : 'light'], isDark ? 0.26 : 0.08)
-  try {
-    window.hermesDesktop?.setTitleBarTheme?.({ background: chromeBg, foreground: c.foreground })
-    window.hermesDesktop?.setNativeTheme?.(rendered)
-  } catch {
-    // Native chrome hooks are optional; the renderer repaint is already done.
-  }
-  try {
-    window.localStorage.setItem('hermes-boot-background', chromeBg)
-    window.localStorage.setItem('hermes-boot-color-scheme', rendered)
-  } catch {
-    // Restricted storage must not block the current in-place repaint.
-  }
-
+/** Resolve a preset name or a full URL to its registry item URL. */
+function tweakcnUrl(ref) {
+  const value = String(ref || '').trim()
+  if (!value) return null
+  if (/^https?:\/\//i.test(value)) return value
+  const name = slug(value)
+  return name ? `${TWEAKCN_BASE}${name}.json` : null
 }
 
-/**
- * Hand a scene switch to Desktop's ThemeProvider so React state stops
- * disagreeing with the painted root tokens. Returns false when no provider API
- * is captured, leaving the manual paint as the only change.
- */
-function syncDesktopState(name, mode, api) {
-  const target = api || desktopThemeApi
-  if (!target || typeof target.setTheme !== 'function') return false
-  try {
-    target.setTheme(name)
-    if (typeof target.setMode === 'function') target.setMode(mode)
-    return true
-  } catch {
-    return false
-  }
+async function fetchTweakcnTheme(ref) {
+  const url = tweakcnUrl(ref)
+  if (!url) throw new Error('Enter a TweakCN preset name or URL')
+  const response = await fetch(url)
+  if (!response.ok) throw new Error(`TweakCN returned ${response.status} for ${url}`)
+  const theme = tweakcnToDesktopTheme(await response.json())
+  if (!theme) throw new Error('That registry item is not a usable theme')
+  return theme
 }
 
-/**
- * Capture Desktop's theme API for the module while the host component lives.
- * Desktop's provider memoizes setTheme/setMode, so the deps stay stable.
- */
-function useDesktopThemeApi() {
-  const api = useTheme()
-  useEffect(() => {
-    if (api && typeof api.setTheme === 'function') {
-      desktopThemeApi = { setTheme: api.setTheme, setMode: api.setMode }
+/** Parse raw shadcn CSS into a DesktopTheme. */
+function parseCssTheme(css, name) {
+  if (typeof css !== 'string' || !css.trim()) return null
+
+  const rootMatch = css.match(/:root\s*\{([^}]+)\}/i)
+  if (!rootMatch) return null
+
+  const darkMatch = css.match(/\.dark\s*\{([^}]+)\}/i)
+
+  const parseVars = block => {
+    const vars = {}
+    const re = /(--[\w-]+)\s*:\s*([^;]+)/gi
+    let m
+    while ((m = re.exec(block)) !== null) {
+      const key = m[1].trim().replace(/^--/, '')
+      vars[key] = m[2].trim()
     }
-    return () => {
-      if (desktopThemeApi && desktopThemeApi.setTheme === (api && api.setTheme)) desktopThemeApi = null
-    }
-  }, [api && api.setTheme, api && api.setMode])
-  return api
-}
-
-function isLegacyPickerTheme(existing, theme) {
-  const legacyLabel = theme.name.charAt(0).toUpperCase() + theme.name.slice(1)
-  const expectedPalette = theme.darkColors || theme.colors
-  const expected = JSON.stringify(expectedPalette)
-  return Boolean(existing && existing.colors && existing.darkColors &&
-    existing.label === legacyLabel && existing.description === theme.description &&
-    JSON.stringify(existing.colors) === expected &&
-    JSON.stringify(existing.darkColors) === expected)
-}
-
-function persistThemesForBoot(themes) {
-  try {
-    const raw = window.localStorage.getItem(USER_THEMES_KEY)
-    const parsed = raw ? JSON.parse(raw) : {}
-    const stored = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}
-
-    let changed = false
-    for (const theme of themes) {
-      // Native imports take precedence over a plugin contribution with the same
-      // name, matching the desktop's user-theme resolution order.
-      const existing = stored[theme.name]
-      if (!existing || existing.themePickerManaged || isLegacyPickerTheme(existing, theme)) {
-        stored[theme.name] = theme
-        changed = true
-      }
-    }
-    if (changed) window.localStorage.setItem(USER_THEMES_KEY, JSON.stringify(stored))
-    return true
-  } catch {
-    // Storage is best-effort; the current session can still use contributed themes.
-    return false
+    return vars
   }
+
+  const lightVars = parseVars(rootMatch[1])
+  const darkVars = darkMatch ? parseVars(darkMatch[1]) : null
+
+  const hasDark = darkVars && Object.keys(darkVars).length > 0
+
+  return tweakcnToDesktopTheme({
+    name: name || 'custom-css',
+    cssVars: {
+      theme: {
+        'font-sans': lightVars['font-sans'],
+        'font-mono': lightVars['font-mono']
+      },
+      light: lightVars,
+      ...(hasDark ? { dark: darkVars } : {})
+    }
+  })
 }
 
-function readRecord(key) {
+// ---------------------------------------------------------------------------
+// Persistence for imported themes. Desktop resolves a stored theme on the next
+// boot's first frame from this key, before any plugin registers.
+// ---------------------------------------------------------------------------
+
+function readStoredThemes() {
   try {
-    const parsed = JSON.parse(window.localStorage.getItem(key) || '{}')
+    const parsed = JSON.parse(window.localStorage.getItem(USER_THEMES_KEY) || '{}')
     return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}
   } catch {
     return {}
   }
 }
 
-function persistAppearance(themeName, mode, profile = 'default') {
+function persistTheme(theme) {
   try {
-    if (profile === 'default') {
-      window.localStorage.setItem(SKIN_KEY, themeName)
-      window.localStorage.setItem(MODE_KEY, mode)
-      return true
-    }
-    window.localStorage.setItem(PROFILE_SKINS_KEY, JSON.stringify({ ...readRecord(PROFILE_SKINS_KEY), [profile]: themeName }))
-    window.localStorage.setItem(PROFILE_MODES_KEY, JSON.stringify({ ...readRecord(PROFILE_MODES_KEY), [profile]: mode }))
+    const stored = readStoredThemes()
+    stored[theme.name] = theme
+    window.localStorage.setItem(USER_THEMES_KEY, JSON.stringify(stored))
     return true
   } catch {
     return false
   }
 }
 
-function readAppearance(profile = 'default') {
-  try {
-    const theme = profile === 'default'
-      ? window.localStorage.getItem(SKIN_KEY)
-      : readRecord(PROFILE_SKINS_KEY)[profile] || window.localStorage.getItem(SKIN_KEY)
-    const mode = profile === 'default'
-      ? window.localStorage.getItem(MODE_KEY)
-      : readRecord(PROFILE_MODES_KEY)[profile] || window.localStorage.getItem(MODE_KEY)
-    return { theme: theme || 'nous', mode: mode === 'dark' ? 'dark' : 'light' }
-  } catch {
-    return { theme: 'nous', mode: 'light' }
-  }
-}
-
-function desktopModeFor(profile, renderedMode) {
-  return renderedMode === 'light' || renderedMode === 'dark'
-    ? renderedMode
-    : readAppearance(profile).mode
-}
-
-function sceneForThemeName(themeName) {
-  return SKINS.find(item =>
-    item.name === themeName || item.lightName === themeName || item.darkName === themeName ||
-    item.gatewayLightName === themeName || item.gatewayDarkName === themeName
-  )
-}
-
-function sceneNameFor(themeName) {
-  const scene = sceneForThemeName(themeName)
-  return scene ? scene.name : themeName
-}
-
-function migrateAppearanceAliases() {
-  let storedThemes = {}
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(USER_THEMES_KEY) || '{}')
-    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) storedThemes = parsed
-  } catch {
-    // A malformed cache must not block ordinary alias migration.
-  }
-
-  const alias = name => {
-    if (name === 'default') return { name: 'nous', mode: null }
-    const lightScene = SKINS.find(item =>
-      (item.lightName === name && item.lightName !== item.name) || item.gatewayLightName === name
-    )
-    if (lightScene) return { name: lightScene.name, mode: 'light' }
-    // Paired source packs conventionally use the dark source name as the new
-    // combined scene name. Only infer dark mode when the selected cached theme
-    // is the legacy picker-managed single-palette shape; otherwise the same
-    // scene name may be an intentional current Light selection or user import.
-    const canonicalDarkScene = SKINS.find(item =>
-      item.modeSupport === 'dynamic' && item.darkName === name && item.name === name
-    )
-    if (canonicalDarkScene) {
-      const combined = sceneToDesktopTheme(canonicalDarkScene)
-      if (isLegacyPickerTheme(storedThemes[name], combined)) {
-        return { name: canonicalDarkScene.name, mode: 'dark' }
-      }
-    }
-    const darkScene = SKINS.find(item =>
-      (item.darkName === name && item.darkName !== item.name) || item.gatewayDarkName === name
-    )
-    return darkScene ? { name: darkScene.name, mode: 'dark' } : null
-  }
-
-  try {
-    const globalTheme = window.localStorage.getItem(SKIN_KEY)
-    const globalAlias = alias(globalTheme)
-    if (globalAlias) {
-      window.localStorage.setItem(SKIN_KEY, globalAlias.name)
-      if (globalAlias.mode) window.localStorage.setItem(MODE_KEY, globalAlias.mode)
-    }
-
-    const themes = readRecord(PROFILE_SKINS_KEY)
-    const modes = readRecord(PROFILE_MODES_KEY)
-    let changed = false
-    for (const [profile, name] of Object.entries(themes)) {
-      const match = alias(name)
-      if (!match) continue
-      themes[profile] = match.name
-      if (match.mode) modes[profile] = match.mode
-      changed = true
-    }
-    if (changed) {
-      window.localStorage.setItem(PROFILE_SKINS_KEY, JSON.stringify(themes))
-      window.localStorage.setItem(PROFILE_MODES_KEY, JSON.stringify(modes))
-    }
-  } catch {
-    // Migration is best-effort and must not prevent plugin registration.
-  }
-}
-
-function columnsForWidth(width) {
-  if (width >= 900) return 4
-  if (width >= 620) return 3
-  return 2
-}
-
-function buildThemeGroups(scenes) {
-  return [
-    { id: 'dynamic', title: 'Dynamic Scenes', scenes: scenes.filter(scene => scene.modeSupport === 'dynamic') },
-    { id: 'dark', title: 'Dark Mode Only', scenes: scenes.filter(scene => scene.modeSupport === 'dark') },
-    { id: 'light', title: 'Light Mode Only', scenes: scenes.filter(scene => scene.modeSupport === 'light') }
-  ]
-}
-
 // ---------------------------------------------------------------------------
-// Active-skin tracking + live discovery of skins applied elsewhere.
-// `skin.changed` events carry the full palette of the newly active skin, so a
-// skin installed after this plugin was built shows up as soon as it is applied.
+// UI — one contribution at the end of the Appearance page.
 // ---------------------------------------------------------------------------
 
-function useActiveSkin() {
-  const profile = useValue(host.state.profile) || 'default'
-  const [active, setActive] = useState(() => sceneNameFor(readAppearance(profile).theme))
-  const [live, setLive] = useState([])
-
-  useEffect(() => {
-    let mounted = true
-    setActive(sceneNameFor(readAppearance(profile).theme))
-
-    const root = document.documentElement
-    const sync = () => {
-      if (mounted && root.dataset.hermesTheme) setActive(sceneNameFor(root.dataset.hermesTheme))
-    }
-    sync()
-    const observer = new MutationObserver(sync)
-    observer.observe(root, { attributes: true, attributeFilter: ['data-hermes-theme'] })
-
-    const off = host.onEvent('skin.changed', event => {
-      if (!mounted) return
-      const skin = event && event.payload
-      const name = skin && skin.name
-      if (!name) return
-      // Live-discover skins outside the embedded catalog (freshly installed).
-      if (!sceneForThemeName(name)) {
-        setLive(prev => {
-          if (prev.some(s => s.name === name)) return prev
-          return [...prev, normalizeLiveSkin(skin)]
-        })
-      }
-    })
-
-    return () => {
-      mounted = false
-      observer.disconnect()
-      off()
-    }
-  }, [profile])
-
-  return [active, setActive, live]
+function themeStrip(theme, mode) {
+  const c = (mode === 'dark' ? theme.darkColors : theme.colors) || theme.colors || {}
+  return [c.background, c.primary, c.accent, c.foreground, c.border].filter(Boolean)
 }
 
-function normalizeLiveSkin(skin) {
-  const colors = (skin && skin.colors) || {}
-  const isHex = v => typeof v === 'string' && /^#([0-9a-f]{6})$/i.test(v)
-  const bg = isHex(colors.background) ? colors.background : isHex(colors.status_bar_bg) ? colors.status_bar_bg : ''
-  const text = isHex(colors.banner_text) ? colors.banner_text : isHex(colors.ui_text) ? colors.ui_text : ''
-  const isDark = bg ? luminance(bg) < 0.5 : text ? luminance(text) < 0.5 : true
-  return {
-    name: skin.name,
-    label: skin.name.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-    description: skin.description || 'Newly installed skin',
-    category: 'New',
-    source: 'live',
-    modeSupport: isDark ? 'dark' : 'light',
-    lightColors: isDark ? null : colors,
-    darkColors: isDark ? colors : null,
-    lightName: isDark ? null : skin.name,
-    darkName: isDark ? skin.name : null,
-    colors
-  }
-}
-
-function gatewaySkinNameFor(scene, mode) {
-  return mode === 'dark'
-    ? scene.gatewayDarkName || scene.darkName || scene.name
-    : scene.gatewayLightName || scene.lightName || scene.name
-}
-
-function persistLatestAppearance(profile) {
-  const latest = latestAppearanceByProfile.get(profile)
-  return latest ? persistAppearance(latest.scene.name, latest.mode, profile) : true
-}
-
-function snapshotPersistedAppearances() {
-  const themes = readRecord(PROFILE_SKINS_KEY)
-  const modes = readRecord(PROFILE_MODES_KEY)
-  const profiles = new Set(['default', ...Object.keys(themes), ...Object.keys(modes)])
-  const snapshot = new Map()
-  for (const profile of profiles) {
-    const appearance = readAppearance(profile)
-    const scene = sceneForThemeName(appearance.theme)
-    if (scene) snapshot.set(profile, { scene, mode: appearance.mode })
-  }
-  return snapshot
-}
-
-function syncSceneToGateway(scene, mode, profile, generation) {
-  const skinName = gatewaySkinNameFor(scene, mode)
-  const perform = async () => {
-    if ((host.state.profile.get() || 'default') !== profile) return false
-    // Capture every persisted profile before config.set can broadcast and let
-    // Desktop overwrite the newly active profile with this request's alias.
-    const recoveryAppearances = snapshotPersistedAppearances()
-    try {
-      await host.request('config.set', { key: 'skin', value: skinName })
-      // The broadcast applies the concrete gateway variant in Desktop before
-      // this RPC resolves. ThemeProvider may apply that concrete skin through
-      // its stale internal mode (the SDK has no setMode), so restore the latest
-      // combined scene both visibly and durably. A stale acknowledgement must
-      // never overwrite or repaint over a newer rapid selection.
-      const latest = latestAppearanceByProfile.get(profile)
-      const activeProfile = host.state.profile.get() || 'default'
-      const isActiveProfile = activeProfile === profile
-      if (latest && isActiveProfile) {
-        applyDesktopTheme(sceneToDesktopTheme(latest.scene), latest.mode)
-        syncDesktopState(latest.scene.name, latest.mode)
-      } else if (!isActiveProfile) {
-        // config.set broadcasts before resolving, so this old-profile request
-        // may have just repainted the profile the user switched into. Restore
-        // that active profile from its own latest selection, never from the
-        // completed request's old-profile map entry.
-        const activeRecovery = latestAppearanceByProfile.get(activeProfile) ||
-          recoveryAppearances.get(activeProfile) || recoveryAppearances.get('default')
-        if (activeRecovery) {
-          applyDesktopTheme(sceneToDesktopTheme(activeRecovery.scene), activeRecovery.mode)
-          syncDesktopState(activeRecovery.scene.name, activeRecovery.mode)
-          persistAppearance(activeRecovery.scene.name, activeRecovery.mode, activeProfile)
-        }
-      }
-      const durable = persistLatestAppearance(profile)
-      if (!durable && latestAppearanceByProfile.get(profile)?.generation === generation) {
-        host.notify({
-          kind: 'warning',
-          message: `${scene.label || scene.name} synchronized, but its combined scene could not be saved for restart`
-        })
-      }
-      return true
-    } catch {
-      const latest = latestAppearanceByProfile.get(profile)
-      const isLatest = latest?.generation === generation
-      const isActiveProfile = (host.state.profile.get() || 'default') === profile
-      if (isLatest && isActiveProfile) {
-        // An older queued request may already have broadcast and repainted the
-        // root before this latest request failed. Reassert the user's latest
-        // optimistic selection in the live Desktop as well as in persistence.
-        applyDesktopTheme(sceneToDesktopTheme(latest.scene), latest.mode)
-        syncDesktopState(latest.scene.name, latest.mode)
-      }
-      persistLatestAppearance(profile)
-      if (isLatest && isActiveProfile) {
-        host.notify({
-          kind: 'warning',
-          message: `${scene.label || scene.name} is active here, but the connected gateway could not apply "${skinName}"`
-        })
-      }
-      return false
-    }
-  }
-  const queued = gatewaySyncQueue.then(perform, perform)
-  gatewaySyncQueue = queued.then(() => undefined, () => undefined)
-  return queued
-}
-
-function applyScene(scene, mode, setActive, api) {
-  const profile = host.state.profile.get() || 'default'
-  const generation = ++applyGeneration
-  latestAppearanceByProfile.set(profile, { generation, scene, mode })
-  const theme = sceneToDesktopTheme(scene)
-  const bootThemeSaved = CORE_DESKTOP_THEMES.has(scene.name) || persistThemesForBoot([theme])
-  applyDesktopTheme(theme, mode)
-  // Keep Desktop's own React state in step with the paint; otherwise its
-  // provider repaints the previous theme on the next render and the switch
-  // appears to revert (navigation, click, profile switch).
-  syncDesktopState(scene.name, mode, api)
-  const appearanceSaved = persistAppearance(scene.name, mode, profile)
-  const persisted = bootThemeSaved && appearanceSaved
-  haptic('tap')
-  setActive(scene.name)
-  if (!persisted) {
-    host.notify({
-      kind: 'warning',
-      message: `${scene.label || scene.name} applied for this session but could not be saved for restart`
-    })
-  }
-  return syncSceneToGateway(scene, mode, profile, generation)
-}
-
-// ---------------------------------------------------------------------------
-// Picker UI (shared by the pane and the full page)
-// ---------------------------------------------------------------------------
-
-function ThemeCard({ scene, mode, active, applying, onApply }) {
-  const c = (mode === 'dark' ? scene.darkColors : scene.lightColors) || scene.colors || {}
-  const isActive = scene.name === active
-  const strip = [
-    c.background || c.status_bar_bg,
-    c.ui_accent || c.banner_accent || c.banner_title,
-    c.ui_tool || c.banner_accent || c.banner_title,
-    c.banner_text || c.ui_text,
-    c.ui_border || c.banner_border
-  ].filter(Boolean)
-
+function ThemeButton({ theme, mode, active, onApply }) {
+  const strip = themeStrip(theme, mode)
   return jsxs('button', {
     type: 'button',
-    onClick: () => onApply(scene),
-    disabled: applying === scene.name,
-    title: `${scene.description || scene.name} (${scene.modeSupport === 'dynamic' ? `${mode} variant` : `${scene.modeSupport} only`})`,
+    onClick: () => onApply(theme),
+    title: theme.description || theme.name,
     className: cn(
-      'group flex w-full flex-col gap-1 rounded-lg border p-1.5 text-left transition-colors',
-      isActive
-        ? 'border-(--ui-accent) bg-(--ui-bg-tertiary)'
-        : 'border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)'
+      'group flex w-full flex-col gap-1.5 rounded-md border p-2 text-left transition-colors',
+      active ? 'border-(--ui-accent)' : 'border-(--ui-stroke-secondary) hover:border-(--ui-accent)'
     ),
     children: [
-      jsx('div', {
-        className: 'flex h-5 w-full overflow-hidden rounded-[4px] ring-1 ring-black/15',
-        children: strip.map((color, i) =>
-          jsx('span', { key: i, className: 'h-full flex-1', style: { backgroundColor: color } })
-        )
+      jsx('span', {
+        className: 'flex h-5 w-full overflow-hidden rounded-sm',
+        children: strip.map((colour, index) => jsx('span', { key: index, className: 'flex-1', style: { backgroundColor: colour } }))
       }),
-      jsxs('div', {
-        className: 'flex w-full items-center justify-between gap-1',
+      jsxs('span', {
+        className: 'flex items-center justify-between gap-1',
         children: [
-          jsxs('span', {
-            className: 'flex min-w-0 items-center gap-1',
-            children: [
-              jsx('span', {
-                className: cn('shrink-0 text-[0.6875rem] leading-none', mode === 'dark' ? 'text-(--ui-accent)' : 'text-(--ui-warn)'),
-                children: scene.modeSupport === 'dynamic' ? '⇄' : scene.modeSupport === 'dark' ? '☾' : '☀'
-              }),
-              jsx('span', { className: 'truncate text-[0.6875rem] font-medium', children: scene.label || scene.name.replace(/-/g, ' ') })
-            ]
-          }),
-          isActive
+          jsx('span', { className: 'truncate text-[0.6875rem] font-medium', children: theme.label || theme.name }),
+          active
             ? jsx(Badge, { variant: 'outline', className: 'shrink-0 px-1 text-[0.5625rem] text-(--ui-accent)', children: 'ACTIVE' })
-            : jsx('span', { className: 'shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)', children: scene.modeSupport === 'dynamic' ? mode : scene.modeSupport })
+            : theme.themePickerSource === 'tweakcn'
+              ? jsx('span', { className: 'shrink-0 text-[0.5625rem] uppercase text-(--ui-text-tertiary)', children: 'tweakcn' })
+              : null
         ]
       })
     ]
   })
 }
 
-function ThemePicker() {
-  const [active, setActive, live] = useActiveSkin()
-  const desktopTheme = useDesktopThemeApi()
-  const [q, setQ] = useState('')
-  const [applying, setApplying] = useState(null)
-  const profile = useValue(host.state.profile) || 'default'
-  const viewport = useValue(host.state.viewport)
-  const [mode, setMode] = useState(() => desktopModeFor(profile, document.documentElement.dataset.hermesMode))
+function ThemePickerPanel() {
+  const { themeName, mode, setTheme, setMode } = useTheme()
+  const [query, setQuery] = useState('')
+  const [imported, setImported] = useState([])
+  const [ref, setRef] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [importMode, setImportMode] = useState('url')
 
+  // Imported themes registered this session, plus anything already stored.
   useEffect(() => {
-    const root = document.documentElement
-    const sync = () => setMode(desktopModeFor(profile, root.dataset.hermesMode))
-    sync()
-    const observer = new MutationObserver(sync)
-    observer.observe(root, { attributes: true, attributeFilter: ['data-hermes-mode'] })
-    return () => observer.disconnect()
-  }, [profile])
+    const stored = readStoredThemes()
+    setImported(
+      Object.values(stored)
+        .filter(theme => theme && theme.themePickerManaged && !CORE_DESKTOP_THEMES.has(theme.name))
+        .sort((a, b) => String(a.name).localeCompare(String(b.name)))
+    )
+  }, [])
 
-  const allSkins = useMemo(() => {
-    const known = new Set(SKINS.map(s => s.name))
-    return [...SKINS, ...live.filter(s => !known.has(s.name))]
-  }, [live])
+  const previewMode = mode === 'light' ? 'light' : 'dark'
 
-  const filtered = useMemo(() => {
-    const ql = q.trim().toLowerCase()
-    return allSkins.filter(s => {
-      if (ql && !`${s.name} ${s.label || ''} ${s.description || ''}`.toLowerCase().includes(ql)) return false
+  const themes = useMemo(() => {
+    const seen = new Set()
+    const all = [...imported, ...CATALOG].filter(theme => {
+      if (!theme || seen.has(theme.name)) return false
+      seen.add(theme.name)
       return true
     })
-  }, [allSkins, q])
+    const q = query.trim().toLowerCase()
+    return q ? all.filter(t => `${t.name} ${t.label || ''} ${t.description || ''}`.toLowerCase().includes(q)) : all
+  }, [imported, query])
 
-  const onApply = scene => {
-    const nextMode = scene.modeSupport === 'dynamic' ? mode : scene.modeSupport
-    setApplying(scene.name)
+  const onApply = useCallback(
+    theme => {
+      haptic('tap')
+      setTheme(theme.name)
+    },
+    [setTheme]
+  )
+
+  const onImport = useCallback(async () => {
+    const target = ref.trim()
+    if (!target || busy) return
+    setBusy(true)
     try {
-      applyScene(scene, nextMode, setActive, desktopTheme)
+      const theme = importMode === 'css'
+        ? parseCssTheme(target, 'custom-css')
+        : await fetchTweakcnTheme(target)
+      if (!theme) throw new Error('Could not parse that CSS')
+      registerTheme(theme)
+      persistTheme(theme)
+      setImported(prev => [theme, ...prev.filter(t => t.name !== theme.name)])
+      setRef('')
+      haptic('tap')
+      setTheme(theme.name)
+      host.notify({ kind: 'success', message: `Imported ${theme.label}` })
+    } catch (error) {
+      host.notify({ kind: 'error', message: `Import failed: ${error && error.message ? error.message : error}` })
     } finally {
-      setApplying(null)
+      setBusy(false)
     }
-  }
-
-  const onModeChange = next => {
-    if (next !== 'light' && next !== 'dark') return
-    setMode(next)
-    const scene = allSkins.find(item => item.name === active)
-    if (scene) applyScene(scene, next, setActive, desktopTheme)
-  }
-
-  const cols = columnsForWidth(viewport.width)
-  const gap = cols > 2 ? 12 : 8
-  const cardWidth = `calc((100% - ${gap * (cols - 1)}px) / ${cols})`
-  const groups = buildThemeGroups(filtered).filter(group => group.scenes.length)
-  const activeScene = allSkins.find(scene => scene.name === active)
-  const activeColors = activeScene && ((mode === 'dark' ? activeScene.darkColors : activeScene.lightColors) || activeScene.colors)
+  }, [ref, busy, importMode, setTheme])
 
   return jsxs('div', {
-    className: 'flex h-full min-h-0 flex-col',
+    className: 'flex flex-col gap-3 border-t border-(--ui-stroke-secondary) pt-4',
     children: [
       jsxs('div', {
-        className: 'flex flex-col gap-2 border-b border-(--ui-stroke-secondary) p-3',
+        className: 'flex items-center justify-between gap-2',
         children: [
-          jsxs('div', {
-            className: 'flex items-center justify-between gap-2',
-            children: [
-              jsx('div', { className: 'text-sm font-semibold', children: 'Theme Picker' }),
-              jsxs('div', {
-                className: 'flex min-w-0 items-center gap-1.5',
-                children: [
-                  active
-                    ? jsxs('span', {
-                        className: 'flex min-w-0 items-center gap-1 rounded-full border border-(--ui-stroke-secondary) px-2 py-0.5',
-                        children: [
-                          jsx('span', {
-                            className: 'h-2 w-2 shrink-0 rounded-full',
-                            style: { backgroundColor: activeColors?.ui_accent || activeColors?.banner_accent || 'var(--ui-accent)' }
-                          }),
-                          jsx('span', { className: 'truncate text-[0.6875rem] text-(--ui-text-secondary)', children: activeScene?.label || active.replace(/-/g, ' ') })
-                        ]
-                      })
-                    : null,
-                  jsx(Badge, { variant: 'muted', children: `${filtered.length}` })
-                ]
-              })
-            ]
-          }),
-          jsx(SearchField, {
-            placeholder: 'Search scenes…',
-            value: q,
-            onChange: v => setQ(typeof v === 'string' ? v : '')
+          jsx('div', { className: 'text-sm font-semibold', children: 'Theme Picker' }),
+          jsx(Badge, { variant: 'muted', children: `${themes.length}` })
+        ]
+      }),
+      jsxs('div', {
+        className: 'flex flex-wrap items-center gap-2',
+        children: [
+          jsx('div', {
+            className: 'min-w-48 flex-1',
+            children: jsx(SearchField, {
+              placeholder: 'Search themes…',
+              value: query,
+              onChange: v => setQuery(typeof v === 'string' ? v : '')
+            })
           }),
           jsx(SegmentedControl, {
             options: [
-              { id: 'dark', label: '☾ Dark mode' },
-              { id: 'light', label: '☀ Light mode' }
+              { id: 'dark', label: '☾' },
+              { id: 'light', label: '☀' }
             ],
-            value: mode,
-            onChange: onModeChange
+            value: previewMode,
+            onChange: next => {
+              if (next === 'light' || next === 'dark') setMode(next)
+            }
           })
         ]
       }),
-      jsx(ScrollArea, {
-        className: 'min-h-0 flex-1 p-2',
-        children:
-          filtered.length === 0
-            ? jsx(EmptyState, { title: 'No scenes found', description: 'Try a different search.' })
-            : jsx('div', {
-                className: 'flex flex-col gap-4',
-                children: groups.map((group, index) =>
-                  jsxs('section', {
-                    key: group.id,
-                    className: index ? 'border-t border-(--ui-stroke-secondary) pt-4' : '',
-                    children: [
-                      jsx('div', {
-                        className: 'mb-2 text-[0.6875rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)',
-                        children: `${group.title} (${group.scenes.length})`
-                      }),
-                      jsx('div', {
-                        className: 'flex flex-wrap',
-                        style: { gap },
-                        children: group.scenes.map(scene =>
-                          jsx('div', {
-                            key: scene.name,
-                            style: { width: cardWidth },
-                            children: jsx(ThemeCard, { scene, mode: scene.modeSupport === 'dynamic' ? mode : scene.modeSupport, active, applying, onApply })
-                          })
-                        )
-                      })
-                    ]
-                  })
-                )
+      jsxs('div', {
+        className: 'flex flex-wrap items-center gap-2',
+        children: [
+          jsx(SegmentedControl, {
+            options: [
+              { id: 'url', label: 'URL' },
+              { id: 'css', label: 'CSS' }
+            ],
+            value: importMode,
+            onChange: next => {
+              if (next === 'url' || next === 'css') setImportMode(next)
+            }
+          }),
+          importMode === 'url'
+            ? jsx('div', {
+                className: 'min-w-48 flex-1',
+                children: jsx(Input, {
+                  placeholder: 'TweakCN preset name or URL (e.g. catppuccin)',
+                  value: ref,
+                  onChange: event => setRef(event && event.target ? event.target.value : '')
+                })
               })
+            : jsx('div', {
+                className: 'min-w-48 flex-1',
+                children: jsx('textarea', {
+                  placeholder: 'Paste shadcn CSS (:root and .dark blocks)',
+                  value: ref,
+                  onChange: event => setRef(event && event.target ? event.target.value : ''),
+                  className: 'w-full rounded-md border border-(--ui-stroke-secondary) bg-(--ui-background) px-3 py-2 text-xs',
+                  rows: 4
+                })
+              }),
+          jsx(Button, {
+            type: 'button',
+            variant: 'secondary',
+            disabled: busy || !ref.trim(),
+            onClick: onImport,
+            children: busy ? 'Importing…' : importMode === 'url' ? 'Import from TweakCN' : 'Import from CSS'
+          })
+        ]
+      }),
+      jsx('div', {
+        className: 'grid gap-2',
+        style: { gridTemplateColumns: 'repeat(auto-fill, minmax(9rem, 1fr))' },
+        children:
+          themes.length === 0
+            ? jsx('div', { className: 'text-xs text-(--ui-text-tertiary)', children: 'No themes match that search.' })
+            : themes.map(theme => jsx(ThemeButton, { theme, mode: previewMode, active: theme.name === themeName, onApply }, theme.name))
       })
     ]
   })
 }
 
 // ---------------------------------------------------------------------------
-// Statusbar chip — shows the active theme, opens the Theme Picker page
+// Registration
 // ---------------------------------------------------------------------------
 
-function ThemeChip() {
-  useDesktopThemeApi()
-  const [active] = useActiveSkin()
+// Kept so an import can register its theme from inside the panel, after load.
+let registerContribution = () => {}
 
-  return jsx('button', {
-    type: 'button',
-    onClick: () => {
-      haptic('tap')
-      host.navigate(PAGE_PATH)
-    },
-    title: `Active theme: ${active || 'nous'} — open Theme Picker`,
-    className: 'flex h-full items-center gap-1 px-1.5 text-[0.6875rem] text-(--ui-text-secondary) transition-colors hover:bg-(--chrome-action-hover) hover:text-foreground',
-    children: [
-      jsx('span', {
-        className: 'h-2 w-2 shrink-0 rounded-full',
-        style: { backgroundColor: (SKINS.find(s => s.name === active) || {}).colors?.ui_accent || 'var(--ui-accent)' }
-      }),
-      jsx('span', { className: 'max-w-24 truncate', children: active ? (SKINS.find(s => s.name === active)?.label || active.replace(/-/g, ' ')) : 'Nous' })
-    ]
-  })
+function registerTheme(theme) {
+  if (!theme || !theme.name) return
+  registerContribution({ id: `theme:${theme.name}`, area: THEMES_AREA, data: theme })
 }
-
-// ---------------------------------------------------------------------------
-// Plugin registration
-// ---------------------------------------------------------------------------
 
 export default {
   id: ID,
   name: 'Theme Picker',
   register(ctx) {
-    migrateAppearanceAliases()
-    // Register each scene as one Desktop theme. Matched scenes carry a true
-    // light palette plus darkColors, so Desktop's mode switch changes polarity
-    // without creating duplicate Appearance entries. Core names stay native.
-    const userThemes = SKINS
-      .filter(scene => !CORE_DESKTOP_THEMES.has(scene.name))
-      .map(sceneToDesktopTheme)
-      .filter(Boolean)
-    persistThemesForBoot(userThemes)
-    for (const theme of userThemes) {
-      ctx.register({
-        id: `theme:${theme.name}`,
-        area: THEMES_AREA,
-        data: theme
-      })
+    registerContribution = contribution => ctx.register(contribution)
+
+    // Every catalog theme as pure data: it lands in the native Appearance grid
+    // and Cmd-K automatically. No render, no apply, no state of ours.
+    for (const theme of CATALOG) registerTheme(theme)
+
+    // Anything imported on a previous run, re-registered for this session.
+    for (const theme of Object.values(readStoredThemes())) {
+      if (theme && theme.themePickerManaged && !CORE_DESKTOP_THEMES.has(theme.name)) registerTheme(theme)
     }
 
-    // A full page — reachable from the statusbar chip, sidebar nav, and palette.
+    // The one piece of UI: a control row at the end of the Appearance page.
     ctx.register({
-      id: 'theme-picker-page',
-      area: ROUTES_AREA,
-      data: { path: PAGE_PATH },
-      render: () => jsx('div', { className: 'h-full', children: jsx(ThemePicker, {}) })
+      id: 'theme-picker-appearance',
+      area: APPEARANCE_AREAS.extra,
+      render: () => jsx(ThemePickerPanel, {})
     })
-    ctx.register({
-      id: 'theme-picker-nav',
-      area: SIDEBAR_NAV_AREA,
-      data: { path: PAGE_PATH, label: 'Theme Picker', codicon: 'paintcan' }
-    })
+
     ctx.register({
       id: 'theme-picker-command',
       area: PALETTE_AREA,
       data: {
         id: 'theme-picker.open',
-        label: 'Open Theme Picker',
-        keywords: ['theme', 'skin', 'appearance', 'color'],
-        run: () => host.navigate(PAGE_PATH)
+        label: 'Open Appearance settings',
+        keywords: ['theme', 'skin', 'appearance', 'color', 'tweakcn'],
+        run: () => host.navigate('/settings?tab=appearance')
       }
-    })
-
-    // Statusbar chip: current theme at a glance; click opens the picker.
-    ctx.register({
-      id: 'theme-picker-chip',
-      area: STATUSBAR_AREAS.right,
-      order: 130,
-      render: () => jsx(ThemeChip, {})
     })
   }
 }
