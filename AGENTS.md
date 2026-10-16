@@ -64,7 +64,61 @@ install/                  platform installers for the plugin
 7. **The backend `_hex` accepts only `#rrggbb` / `#rgb`.** Anything else must be normalised at the edge
    and the loss made visible, never silently dropped mid-pipeline.
 
-## 4. How to verify anything
+## 4. Serena is available — use it for structure, and claim the slot first
+
+Serena is a symbol-level code-intelligence server (LSP-backed) for this repo. Reach for it before
+editing anything non-trivial: it answers "who defines this, who calls it" and finds the re-export
+alias, the barrel file and the second render path that a text search cannot see.
+
+```bash
+SERENA=~/.local/bin/serena.exe        # v1.7.0; NOT on PATH, call it by path
+curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:9123/mcp   # 406 = alive, 200 is NOT success
+```
+
+`406` is the alive signal: a bare `GET` is not a valid MCP request, so the server answers "not
+acceptable" and that is exactly what a healthy server says. Start it detached, because it must
+outlive the shell that started it, and clear `PYTHONPATH` first or it fails on pydantic:
+
+```powershell
+Remove-Item Env:PYTHONPATH -ErrorAction SilentlyContinue
+Start-Process serena.exe start-mcp-server --transport streamable-http --port 9123 -WindowStyle Hidden
+```
+
+**One active project per server, shared by every concurrent session.** Call `get_current_config`
+before symbol work; if the active project is not this repo, call `activate_project` with a
+**Windows-native** path (`C:/DEV/hermes-theme-picker`) — an MSYS `/c/DEV/...` path fails. Then check
+that returned paths really belong to this repo: a wrong-project answer reads like a normal answer.
+Starting the server with `--project C:/DEV/hermes-theme-picker` (a real flag, from
+`start-mcp-server --help`) avoids the race entirely — do that if you own the machine.
+
+`.serena/` is recreated in the repo whenever a project is activated; it is gitignored, keep it so. A
+cold LSP start takes about 90 seconds, and the first query can report an empty language-server list:
+that is lazy-startup noise, not failure.
+
+**CLI vs tools — they are not the same surface.** The CLI *manages* Serena:
+
+```bash
+"$SERENA" project create|index|index-file|health-check|is_ignored_path
+"$SERENA" memories list|read|write|edit|delete|rename|check|initialize
+"$SERENA" tools list|description          # lists and describes tools — it does NOT run symbol queries
+"$SERENA" mode list|create|edit|delete ;  "$SERENA" context list|create|edit|delete
+"$SERENA" config edit ; "$SERENA" memories check     # check = referential integrity across memories
+```
+
+Symbol work is done through the **MCP tools**: `activate_project`, `get_symbols_overview`,
+`find_symbol` (its argument is `name_path_pattern`, not `name_path`), `find_referencing_symbols`,
+`find_declaration`, `find_implementations`, `replace_symbol_body`, `replace_content`,
+`create_text_file`, `rename_symbol`, `get_diagnostics_for_file`. If the server answers on 9123 but the
+tools are missing from the catalog, drive it over HTTP yourself: a minimal streamable-http client needs
+`initialize` (protocolVersion `2025-06-18`) -> `tools/list` -> `tools/call`, handling the
+`Mcp-Session-Id` header and SSE frames. Do not restart the server to "fix" a catalog gap.
+
+Two habits that pay: call `find_referencing_symbols` before changing any shared function, and treat
+**clean diagnostics on a plain `.js` file as worthless** — with no `checkJs` and no node_modules, the
+LSP reports "cannot find module" and says nothing about identifiers that do not exist. Only a runtime
+harness can catch an undefined global here (§5).
+
+## 5. How to verify anything
 
 ```bash
 node --test tests/<name>.test.mjs      # one suite; WITHOUT a pipe, so you see the real exit code
@@ -87,7 +141,7 @@ Environment truths that change the answer:
 - The plugin loads from the LOCAL machine's `desktop-plugins/chroma/`. A changed build is invisible in
   Desktop until it is copied/reinstalled and Desktop restarts.
 
-## 5. Pits we have already fallen into — do not repeat them
+## 6. Pits we have already fallen into — do not repeat them
 
 - **The test harness derives its stubs from the BUILD'S OWN import statements.** Never hand-stub a hook:
   a harness that stubbed `useRef` for a build that forgot to import it kept every suite green while the
@@ -117,7 +171,7 @@ Environment truths that change the answer:
 - **Do not touch `rigour.yml` thresholds to pass a check.** If a finding is a false positive, adjudicate
   it in `docs/TASKS.md` with the evidence, as the existing entries do.
 
-## 6. Parity discipline — how a change to a mapper or a card is proven
+## 7. Parity discipline — how a change to a mapper or a card is proven
 
 Behaviour-preserving work is proven, never asserted:
 
@@ -131,7 +185,7 @@ Behaviour-preserving work is proven, never asserted:
 5. Mind what a digest cannot see: the card digest records handlers as their presence (`[fn]`), not their
    behaviour, so structural parity does not prove a handler still works.
 
-## 7. Delivery contract
+## 8. Delivery contract
 
 - **Commits:** Conventional Commits. One concern per commit. Generated artifacts (`rigour-report.json`,
   `rigour-fix-packet.json`, `.rigour/`, `__pycache__/`) are gitignored — never commit them.
@@ -144,7 +198,7 @@ Behaviour-preserving work is proven, never asserted:
   not regenerate the build or edit the tree under review.
 - **Never report a flow as working from its first green step.** Walk every step of the user's path.
 
-## 8. Known limitations, deliberate and documented
+## 9. Known limitations, deliberate and documented
 
 - iTerm2 `.itermcolors` import is **refused by name** (a plist parser with no dependencies, plus a
   perceptual colour matrix, for a format with no Windows relevance) — a v1.1 candidate.
@@ -155,7 +209,7 @@ Behaviour-preserving work is proven, never asserted:
 - Complexity and file-size debt is tracked, not hidden: `desktop/plugin.template.js` is far past the
   500-line gate, and the honest fix is splitting it.
 
-## 9. Quality gates
+## 10. Quality gates
 
 `rigour.yml` is committed and is not to be weakened. The standing gates are complexity 10 per function,
 500 lines per file, no TODO/FIXME, and the required docs files must exist. Rigour's own agent
