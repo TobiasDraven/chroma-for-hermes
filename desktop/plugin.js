@@ -586,50 +586,87 @@ function base16Theme(text) {
   }
 }
 
+// The workbench colour keys that stand in for each palette role, in priority
+// order. A theme carrying none of a role's aliases falls back to the foreground
+// colour, which is what the reader saw before this table existed.
+const VSCODE_ROLE_KEYS = [
+  ['border', ['panel.border', 'editorGroup.border', 'focusBorder']],
+  ['muted', ['descriptionForeground', 'statusBar.foreground']],
+  ['primary', ['button.background', 'activityBarBadge.background']],
+  ['accent', ['textLink.foreground', 'list.activeSelectionBackground']],
+  ['cardForeground', ['surface.foreground', 'titleBar.activeForeground']],
+  ['destructive', ['errorForeground', 'inputValidation.errorBackground']]
+]
+
+// VS Code names its mode as a word that CONTAINS the mode: the legacy `uiTheme`
+// values are 'vs-dark' and 'vs-light', and high contrast has names of its own.
+// Tested in this order, so a value carrying two words still resolves the way the
+// original alternation did ('dark' before 'light', 'hc-black' before 'hc-light').
+const VSCODE_MODE_WORDS = [
+  ['dark', 'dark'],
+  ['hc-black', 'dark'],
+  ['light', 'light'],
+  ['hc-light', 'light']
+]
+
+// First key that carries a real hex colour wins; a theme is free to omit any of them.
+function vsCodePick(src, keys) {
+  for (const key of keys) {
+    const hex = normHex(src[key])
+    if (hex) return hex
+  }
+  return null
+}
+
+// The palette to read: the workbench colours, else the colour customisations
+// block, else nothing to import.
+function vsCodeSource(theme) {
+  const colors = theme && theme.colors
+  if (colors && typeof colors === 'object') return colors
+  const custom = theme && theme.workbench && theme.workbench.colorCustomizations
+  if (custom && typeof custom === 'object') return custom
+  return null
+}
+
+// A theme names its mode as a word; when it names nothing, the background decides.
+function vsCodeVariant(theme, background) {
+  const ui = String(theme.uiTheme || theme.type || '').toLowerCase()
+  for (const [word, variant] of VSCODE_MODE_WORDS) {
+    if (ui.indexOf(word) !== -1) return variant
+  }
+  return luminance(background) < 0.5 ? 'dark' : 'light'
+}
+
+function vsCodeColors(src, background, foreground) {
+  const colors = { background, foreground }
+  for (const [key, aliases] of VSCODE_ROLE_KEYS) {
+    colors[key] = vsCodePick(src, aliases) || foreground
+  }
+  return colors
+}
+
 /** VS Code colour theme. The only one of these formats with genuine UI
  *  semantics, including real error colours for `destructive`. Requires the
  *  workbench `colors` block: many marketplace themes ship syntax-only
  *  tokenColors, and those have no palette to import. */
 function vsCodeTheme(theme) {
-  const custom = theme && theme.workbench && theme.workbench.colorCustomizations
-  const src = (theme && theme.colors && typeof theme.colors === 'object')
-    ? theme.colors
-    : (custom && typeof custom === 'object' ? custom : null)
+  const src = vsCodeSource(theme)
   if (!src) {
     throw new Error('no workbench colors found - a syntax-only VS Code theme carries no palette to import')
   }
-  const pick = (...keys) => {
-    for (let i = 0; i < keys.length; i += 1) {
-      const h = normHex(src[keys[i]])
-      if (h) return h
-    }
-    return null
-  }
-  const background = pick('editor.background', 'sideBar.background', 'panel.background', 'background')
-  const foreground = pick('editor.foreground', 'foreground')
+  const background = vsCodePick(src, ['editor.background', 'sideBar.background', 'panel.background', 'background'])
+  const foreground = vsCodePick(src, ['editor.foreground', 'foreground'])
   if (!background || !foreground) {
     throw new Error('this VS Code theme has no editor.background and editor.foreground')
   }
-  const ui = String(theme.uiTheme || theme.type || '')
-  const variant = /dark|hc-black/i.test(ui) ? 'dark'
-    : (/light|hc-light/i.test(ui) ? 'light' : (luminance(background) < 0.5 ? 'dark' : 'light'))
   const label = theme.name || 'VS Code theme'
-  const colors = {
-    background,
-    foreground,
-    border: pick('panel.border', 'editorGroup.border', 'focusBorder') || foreground,
-    muted: pick('descriptionForeground', 'statusBar.foreground') || foreground,
-    primary: pick('button.background', 'activityBarBadge.background') || foreground,
-    accent: pick('textLink.foreground', 'list.activeSelectionBackground') || foreground,
-    cardForeground: pick('surface.foreground', 'titleBar.activeForeground') || foreground,
-    destructive: pick('errorForeground', 'inputValidation.errorBackground') || foreground
-  }
+  const colors = vsCodeColors(src, background, foreground)
   return {
     name: slug(label),
     label,
     description: 'VS Code color theme',
     source: 'vscode',
-    variant,
+    variant: vsCodeVariant(theme, background),
     colors,
     darkColors: copyColors(colors)
   }
