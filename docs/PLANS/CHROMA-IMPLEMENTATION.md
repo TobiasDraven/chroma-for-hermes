@@ -471,3 +471,53 @@ hermes plugins validate .                                       # catalog admiss
 
 **The tests load `desktop/plugin.js`, not the template** — an unregenerated
 template is invisible to every suite. Regenerate or you are testing the past.
+
+---
+
+## Tooling enablement — Serena and Rigour
+
+Both were used during this campaign, which is not the same as being enabled for the
+project. Two gaps were closed.
+
+**Serena.** The server was already running (port 9123) with this project in its single
+shared active slot, but the project had NO memories at all. Onboarding is now complete:
+`mem:core` as the entry point, plus `tech_stack`, `suggested_commands`, `conventions`
+and `task_completion`, and per-module `mem:desktop/core` and `mem:backend/core`. They
+record the invariants that are expensive to rediscover — the template-vs-generated-build
+rule, the three resolvable specifiers, the missing-hook defect and why the harness must
+derive its stubs from the build's own imports, `previewTheme` repainting the whole app,
+`chroma-*` storage keys only, backend route order, and `normHex` dropping alpha on
+purpose — and they point at `docs/SPEC.md`, `ARCH.md`, `DECISIONS.md` and `TASKS.md`
+rather than duplicating them. `serena memories check` reports no referential integrity
+issues.
+
+**Rigour.** The repo had no `rigour.yml`, so `rigour check` and `check --ci` exited 2
+(CONFIG_ERROR) with no output at all — which reads as a broken gate rather than a
+missing config, and is why every earlier run in this repo used the zero-config `scan`.
+The standard generated file is now adopted UNMODIFIED: its thresholds are the standard,
+tuning them to pass would defeat the gate, and the file itself says not to modify it.
+
+**The four required docs were 0-line stubs** that `rigour init` wrote to satisfy
+`structure-check`. Files that exist only to satisfy a checker are not documentation, so
+all four now carry real content: `docs/SPEC.md` (what it is, surfaces, route contract,
+import rules, non-goals, acceptance), `docs/ARCH.md` (layout, build pipeline, runtime
+constraints, transport, appearance and storage ownership, test architecture),
+`docs/DECISIONS.md` (twelve decisions with their reasons and costs) and `docs/TASKS.md`
+(open work with the trigger that brings each item back). `structure-check` passes because
+the documents exist, not because placeholders do.
+
+**Pruned** the editor integration `rigour init` also installed (`.claude`, `.cursor`,
+`.gemini`, `.clinerules`, `.windsurf`, `.windsurfrules`, `CLAUDE.md`): this project's
+agents are Hermes and Pi, and rigour is already an MCP server for them, so those files
+wired editors we do not use into a public repo. Regenerable with `rigour init --ide all`.
+Kept `AGENTS.md` and `docs/AGENT_INSTRUCTIONS.md`, which are tool-agnostic.
+
+**Evidence:** `rigour check --ci` → exit 1, FAIL, 16 violations, 37/100 with
+`structure-check` and `test-quality` PASS. The per-file probe unlocked by having a config,
+`rigour check --no-cache desktop/plugin.template.js` → exit 1, 55/100 (a subset score, so
+it is not comparable with the full-scan number). `hermes plugins validate .` → Validation
+passed. 88 JS tests and 34 backend tests green.
+
+**A real finding that `check` surfaced and `scan` could not:** `skinToDesktopTheme` has
+cyclomatic complexity 24 against a max of 10. Logged in `docs/TASKS.md` with the note that
+it must be reduced by removing actual branching, not by relocating it into helpers.
