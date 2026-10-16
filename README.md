@@ -1,13 +1,23 @@
-# Hermes Theme Picker
+# Chroma for Hermes
 
-**Current version: v1.5.1** · [See what changed](CHANGELOG.md)
+**A hard fork of [Hermes Theme Picker](https://github.com/jdtimothy/hermes-chroma), originally by Joshua Timothy.** · [See what changed](CHANGELOG.md)
 
-Give Hermes a look that feels like yours. **Hermes Theme Picker** turns the
-entire app into a gallery of beautiful, one-click themes, led by Dynamic Themes
-that include both light and dark modes. Pick a style and watch it appear
-instantly across every device connected to your gateway — including the CLI.
+> **Credits and provenance.** Chroma is a fork. The original plugin — its theme
+> catalog, its bundled skin packs, and the apply path that hands theme switches
+> to Hermes' own ThemeProvider — is the work of Joshua Timothy, and it is
+> licensed MIT. Chroma adds the TweakCN importer, the skin backend that mints
+> real gateway skins, and the skin-management features described below.
+> The original copyright notice and the bundled skin licences are retained in
+> [`LICENSE`](LICENSE) and [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+> This project is not endorsed by, and is not affiliated with, the original
+> author or Nous Research.
 
-![Hermes Theme Picker showing Dynamic Themes in dark mode](docs/hermes-theme-picker.png)
+Give Hermes a look that feels like yours. **Chroma** turns the entire app into a
+gallery of beautiful, one-click themes, led by Dynamic Themes that include both
+light and dark modes. Pick a style and watch it appear instantly across every
+device connected to your gateway — including the CLI.
+
+![Chroma for Hermes showing Dynamic Themes in dark mode](docs/hermes-chroma.png)
 
 ## Highlights
 
@@ -71,16 +81,16 @@ Copy `desktop/plugin.js` to the exact destination for your platform:
 
 | Platform | Destination |
 |---|---|
-| Windows | `%LOCALAPPDATA%\hermes\desktop-plugins\theme-picker\plugin.js` |
-| macOS / Linux | `~/.hermes/desktop-plugins/theme-picker/plugin.js` |
+| Windows | `%LOCALAPPDATA%\hermes\desktop-plugins\chroma\plugin.js` |
+| macOS / Linux | `~/.hermes/desktop-plugins/chroma/plugin.js` |
 
 If `HERMES_HOME` is set, use it in place of `%LOCALAPPDATA%\hermes` or
 `~/.hermes`.
 
 ```bash
 hermes_home="${HERMES_HOME:-$HOME/.hermes}"
-mkdir -p "$hermes_home/desktop-plugins/theme-picker"
-cp desktop/plugin.js "$hermes_home/desktop-plugins/theme-picker/plugin.js"
+mkdir -p "$hermes_home/desktop-plugins/chroma"
+cp desktop/plugin.js "$hermes_home/desktop-plugins/chroma/plugin.js"
 ```
 
 ### Enable gateway-wide themes
@@ -101,8 +111,8 @@ Finally, in Hermes Desktop:
 
 1. Open the Command Palette and run **Reload desktop plugins** (or restart the
    app).
-2. Click the current theme in the status bar, select **Theme Picker** in the
-   sidebar, or run **Open Theme Picker** from the Command Palette.
+2. Click the current theme in the status bar, select **Chroma** in the
+   sidebar, or run **Open Chroma** from the Command Palette.
 3. Pick a theme and choose **Light mode** or **Dark mode**.
 
 ## How synchronization works
@@ -175,7 +185,7 @@ THIRD_PARTY_NOTICES.md         Licenses for bundled palettes
 
 ## Uninstall
 
-Delete the `theme-picker` directory from the local `desktop-plugins` folder,
+Delete the `chroma` directory from the local `desktop-plugins` folder,
 then reload Desktop plugins or restart Hermes. Your skin files are not removed.
 
 ## Credits

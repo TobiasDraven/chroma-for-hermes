@@ -10,9 +10,9 @@ $hermesHome = if ($env:HERMES_HOME) {
 }
 $bundledSkins = Join-Path $bundle '..\skins'
 $liveSkins = Join-Path $hermesHome 'skins'
-$pluginPath = Join-Path $hermesHome 'desktop-plugins\theme-picker\plugin.js'
+$pluginPath = Join-Path $hermesHome 'desktop-plugins\chroma\plugin.js'
 $regenerator = Join-Path $bundle '..\scripts\regenerate.py'
-$stagingSkins = Join-Path ([System.IO.Path]::GetTempPath()) "hermes-theme-picker-skins-$PID"
+$stagingSkins = Join-Path ([System.IO.Path]::GetTempPath()) "hermes-chroma-skins-$PID"
 
 if (-not (Get-Command py -ErrorAction SilentlyContinue)) {
   throw 'Python launcher (py) was not found. Install Python 3, then run this script again.'

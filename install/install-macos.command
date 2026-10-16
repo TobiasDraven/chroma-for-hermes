@@ -8,9 +8,9 @@ repo_root=$(dirname -- "$installer_dir")
 
 # Support both layouts:
 # - a source checkout: <repo>/desktop/plugin.js
-# - a small distributable bundle: <bundle>/theme-picker/plugin.js
+# - a small distributable bundle: <bundle>/chroma/plugin.js
 checkout_plugin="$repo_root/desktop/plugin.js"
-bundled_plugin="$installer_dir/theme-picker/plugin.js"
+bundled_plugin="$installer_dir/chroma/plugin.js"
 if [ -f "$checkout_plugin" ]; then
   source_plugin=$checkout_plugin
 elif [ -f "$bundled_plugin" ]; then
@@ -22,7 +22,7 @@ else
 fi
 
 hermes_home=${HERMES_HOME:-"$HOME/.hermes"}
-plugin_dir="$hermes_home/desktop-plugins/theme-picker"
+plugin_dir="$hermes_home/desktop-plugins/chroma"
 installed_plugin="$plugin_dir/plugin.js"
 
 mkdir -p "$plugin_dir"

@@ -1,6 +1,6 @@
 # Architecture
 
-How the Theme Picker works internally — written so the next maintainer (or a
+How the Chroma works internally — written so the next maintainer (or a
 fork for another setup) does not have to re-derive it from the Desktop source.
 
 ## Three-layer theme system (Desktop)

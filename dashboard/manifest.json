@@ -1,11 +1,11 @@
 {
-  "name": "theme-picker",
-  "label": "Theme Picker",
+  "name": "chroma",
+  "label": "Chroma",
   "description": "Browse, import, and apply Hermes themes — including TweakCN imports that mint real gateway skins.",
   "icon": "Paintbrush",
   "version": "2.0.0",
   "tab": {
-    "path": "/theme-picker",
+    "path": "/chroma",
     "position": "end",
     "hidden": true
   },

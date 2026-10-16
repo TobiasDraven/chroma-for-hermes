@@ -1,6 +1,6 @@
-"""Theme Picker plugin — backend API (unified package).
+"""Chroma plugin — backend API (unified package).
 
-Mounted at /api/plugins/theme-picker/ by the dashboard plugin system.
+Mounted at /api/plugins/chroma/ by the dashboard plugin system.
 
 The single endpoint writes an imported TweakCN theme as a real Hermes skin
 YAML (top-level <hermes home>/skins/<slug>.yaml) so the gateway's skin
@@ -19,27 +19,48 @@ import re
 from pathlib import Path
 from typing import Any
 
-import sys
+import os
+
 HERMES_HOME = None
 try:
-    from hermes_constants import get_hermes_home
-    HERMES_HOME = get_hermes_home()
-except Exception:
-    from pathlib import Path
-    import os
+    from hermes_constants import get_hermes_home  # documented way to resolve <hermes home>
+    HERMES_HOME = Path(get_hermes_home())
+except Exception:  # pragma: no cover - fallback for direct import
     HERMES_HOME = Path(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")))
 
-# `from utils import atomic_yaml_write` resolves when loaded as a Hermes plugin
-# (the gateway inserts hermes-agent onto sys.path).
-try:
-    from utils import atomic_yaml_write
-except Exception:  # pragma: no cover - fallback for direct import
-    import sys as _sys
-    _sys.path.insert(0, str(Path(HERMES_HOME).parent.parent / "hermes-agent"))
-    from utils import atomic_yaml_write
-    del _sys
 
-import hermes_yaml as yaml  # type: ignore[import-not-found]
+# This module deliberately imports NOTHING private from the Hermes core.
+# The catalog admission lint refuses `utils.*` / `hermes_yaml` (rule 9: public
+# surfaces only, since they can break on any release), so the small skin shape
+# below is serialised here and written atomically with the standard library.
+
+
+def _yaml_scalar(value: Any) -> str:
+    """Emit one YAML scalar. Only plain strings reach here (hex colours, names,
+    descriptions), so single-quoting with doubled quotes is sufficient."""
+    return "'" + str(value).replace("'", "''") + "'"
+
+
+def _dump_skin_yaml(data: dict[str, Any]) -> str:
+    """Serialise the known skin shape: top-level scalars plus string->string maps."""
+    lines: list[str] = []
+    for key, value in data.items():
+        if isinstance(value, dict):
+            lines.append(f"{key}:")
+            for inner_key, inner_value in value.items():
+                lines.append(f"  {inner_key}: {_yaml_scalar(inner_value)}")
+        else:
+            lines.append(f"{key}: {_yaml_scalar(value)}")
+    return "\n".join(lines) + "\n"
+
+
+def _atomic_write_text(path: Path, text: str) -> None:
+    """Write via a sibling temp file then os.replace, so the gateway's skin watcher
+    never observes a half-written YAML (and never a partial palette)."""
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(text, encoding="utf-8", newline="\n")
+    os.replace(tmp, path)
+
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -191,6 +212,6 @@ def import_skin(req: ImportRequest) -> dict[str, Any]:
         }
         data["dark_colors"] = dark_map
 
-    atomic_yaml_write(target, data, default_flow_style=False, sort_keys=False)
+    _atomic_write_text(target, _dump_skin_yaml(data))
     logger.info("wrote skin %s", target)
     return {"ok": True, "name": name, "path": str(target)}

@@ -1,7 +1,34 @@
 # Changelog
 
-Notable changes to Hermes Theme Picker are documented here. This project uses
+Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
+
+## [2.0.0] - 2026-10-16
+
+### Chroma — hard fork
+
+- Renames the plugin from *Hermes Theme Picker* to **Chroma for Hermes** and the
+  plugin id from `theme-picker` to `chroma` (page route, contribution ids,
+  dashboard manifest and install paths follow).
+- Credits the original: Joshua Timothy's MIT-licensed *Hermes Theme Picker*. The
+  upstream copyright still governs `LICENSE`, and `THIRD_PARTY_NOTICES.md` still
+  covers the bundled BChop and CliffWade skin packs. The fork is not endorsed by
+  the original author or by Nous Research.
+- Adds `plugin.yaml`, the agent-side manifest the Hermes catalog admission gate
+  requires. `hermes plugins validate .` now passes every check, with the security
+  scan reporting `safe`.
+- Removes the last private Hermes-core imports (`utils.atomic_yaml_write`,
+  `hermes_yaml`) from the plugin backend. The skin YAML is serialised locally and
+  written with `os.replace`, standard library only — catalog rule 9 refuses
+  private surfaces because they can break on any release.
+- Adds the TweakCN page-URL rewrite and a real error for an HTML answer, so a
+  theme page URL or an unknown preset no longer surfaces a JSON parse error.
+- Restores the generator's line-ending guarantee: a CRLF template can no longer
+  double every line of the built plugin.
+- Fixes the package layout: `plugin/` is now `desktop/`, so the repository root
+  is the plugin package and Hermes Desktop installs it natively.
+
+Roadmap for the next features: [`docs/PLANS/CHROMA-ROADMAP.md`](docs/PLANS/CHROMA-ROADMAP.md).
 
 ## [1.5.1] - 2026-08-08
 
@@ -11,7 +38,7 @@ Notable changes to Hermes Theme Picker are documented here. This project uses
   on Dynamic Themes, coordinated Light and Dark modes, and gateway-wide updates.
 - Condenses installation, synchronization, customization, and maintenance
   guidance without removing the platform-specific setup details.
-- Adds an updated Theme Picker screenshot showing the expanded Dynamic Scenes
+- Adds an updated Chroma screenshot showing the expanded Dynamic Scenes
   gallery and mode control.
 - Clarifies the relationship between 104 scenes, 57 Dynamic Themes, and 140
   bundled skin palettes.
@@ -23,7 +50,7 @@ unchanged from v1.5.0.
 
 ### Dynamic Scenes — the main event
 
-Hermes Theme Picker now treats matching Light and Dark palettes as one cohesive
+Chroma now treats matching Light and Dark palettes as one cohesive
 **Dynamic Scene**. Choose a scene once, switch its mode from the top of the
 picker, and cycle through the catalog without leaving your current chat.
 
@@ -65,7 +92,7 @@ picker, and cycle through the catalog without leaving your current chat.
 
 ### Migration and reliability
 
-- Safely upgrades exact legacy Theme Picker cache entries into combined Dynamic
+- Safely upgrades exact legacy Chroma cache entries into combined Dynamic
   Scenes without overwriting unrelated user-imported themes.
 - Preserves current Light selections and restores legacy dark-source selections
   to Dark mode where the complete canonical palette matches.
@@ -80,5 +107,5 @@ theme absent from the embedded catalog, recovery may fall back to the default
 catalog appearance. Embedded scenes and newer in-session selections recover
 correctly.
 
-[1.5.1]: https://github.com/jdtimothy/hermes-theme-picker/releases/tag/v1.5.1
-[1.5.0]: https://github.com/jdtimothy/hermes-theme-picker/releases/tag/v1.5.0
+[1.5.1]: https://github.com/jdtimothy/chroma/releases/tag/v1.5.1
+[1.5.0]: https://github.com/jdtimothy/chroma/releases/tag/v1.5.0

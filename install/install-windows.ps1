@@ -8,7 +8,7 @@
 # The Desktop app COPIES a package's desktop half out of
 # <hermes home>/plugins/<name>/desktop/ into <hermes home>/desktop-plugins/<name>/
 # by itself, and — when the package folder is a symlink — re-syncs on every save.
-# So installing is just placing this folder at <hermes home>/plugins/theme-picker.
+# So installing is just placing this folder at <hermes home>/plugins/chroma.
 #
 # Modes:
 #   -Link (default on Windows when run as admin) : junction to this checkout (dev)
@@ -26,7 +26,7 @@ $cliHome = Join-Path $env:USERPROFILE '.hermes'
 $hermesHome = if ($env:HERMES_HOME) { $env:HERMES_HOME } elseif (Test-Path $desktopHome) { $desktopHome } else { $cliHome }
 
 $pluginsRoot = Join-Path $hermesHome 'plugins'
-$target = Join-Path $pluginsRoot 'theme-picker'
+$target = Join-Path $pluginsRoot 'chroma'
 
 New-Item -ItemType Directory -Force -Path $pluginsRoot | Out-Null
 
@@ -53,4 +53,4 @@ Write-Host ' Restart Hermes Desktop once so the Python backend mounts.'
 Write-Host ' (Then Capabilities -> Plugins -> Rescan if the row does not appear.)'
 Write-Host ''
 Write-Host 'If you previously installed by hand, delete the stale folder:' -ForegroundColor Yellow
-Write-Host "   $hermesHome\desktop-plugins\theme-picker"
+Write-Host "   $hermesHome\desktop-plugins\chroma"

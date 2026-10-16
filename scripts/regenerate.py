@@ -471,7 +471,7 @@ def main() -> int:
           f"{len(user_skins)} bundled skins + {len(builtins)} backend built-ins "
           f"and {transport_count} gateway transports.")
     print("Next: this repo root IS the plugin package. Put (or link) it at "
-          "<hermes home>/plugins/theme-picker and restart Hermes Desktop once "
+          "<hermes home>/plugins/chroma and restart Hermes Desktop once "
           "(Capabilities -> Plugins -> Rescan after that).")
     return 0
 
