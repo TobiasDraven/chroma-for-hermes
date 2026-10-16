@@ -13,3 +13,7 @@ build/
 rigour-report.json
 rigour-fix-packet.json
 
+# Serena project store (created by activate_project; the index cache once
+# reached 25 MB and polluted a reviewer's file counts)
+.serena/
+
