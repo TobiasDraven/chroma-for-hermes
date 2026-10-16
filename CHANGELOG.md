@@ -10,6 +10,9 @@ Notable changes to Chroma are documented here. This project uses
 - Renames the plugin from *Hermes Theme Picker* to **Chroma for Hermes** and the
   plugin id from `theme-picker` to `chroma` (page route, contribution ids,
   dashboard manifest and install paths follow).
+- Renames the repository from `hermes-theme-picker` to `chroma-for-hermes`;
+  GitHub redirects the old URL, but existing clones should update their
+  `origin` remote.
 - Credits the original: Joshua Timothy's MIT-licensed *Hermes Theme Picker*. The
   upstream copyright still governs `LICENSE`, and `THIRD_PARTY_NOTICES.md` still
   covers the bundled BChop and CliffWade skin packs. The fork is not endorsed by
@@ -107,5 +110,5 @@ theme absent from the embedded catalog, recovery may fall back to the default
 catalog appearance. Embedded scenes and newer in-session selections recover
 correctly.
 
-[1.5.1]: https://github.com/jdtimothy/chroma/releases/tag/v1.5.1
-[1.5.0]: https://github.com/jdtimothy/chroma/releases/tag/v1.5.0
+[1.5.1]: https://github.com/jdtimothy/hermes-theme-picker/releases/tag/v1.5.1
+[1.5.0]: https://github.com/jdtimothy/hermes-theme-picker/releases/tag/v1.5.0

@@ -10,7 +10,7 @@
 | | |
 |:--|:--|
 | Upstream | [jdtimothy/hermes-theme-picker](https://github.com/jdtimothy/hermes-theme-picker) (MIT, © 2026 Joshua Timothy) |
-| Our fork | `TobiasDraven/hermes-theme-picker` (working name) |
+| Our fork | [`TobiasDraven/chroma-for-hermes`](https://github.com/TobiasDraven/chroma-for-hermes) |
 | New name | **Chroma for Hermes** |
 | Plugin id | `theme-picker` → **`chroma`** |
 | Version | `1.5.1` → **`2.0.0`** |

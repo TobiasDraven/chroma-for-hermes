@@ -1,6 +1,6 @@
 # Chroma for Hermes
 
-**A hard fork of [Hermes Theme Picker](https://github.com/jdtimothy/hermes-chroma), originally by Joshua Timothy.** · [See what changed](CHANGELOG.md)
+**A hard fork of [Hermes Theme Picker](https://github.com/jdtimothy/hermes-theme-picker), originally by Joshua Timothy.** · [See what changed](CHANGELOG.md)
 
 > **Credits and provenance.** Chroma is a fork. The original plugin — its theme
 > catalog, its bundled skin packs, and the apply path that hands theme switches
@@ -32,6 +32,9 @@ device connected to your gateway — including the CLI.
 - **Works offline** — the catalog is embedded in the plugin, and themes are also
   available in **Settings → Appearance** when the gateway is unavailable.
 - **Made to stick** — each profile remembers its theme and mode across restarts.
+- **Bring your own theme** — paste a TweakCN preset, a Windows Terminal scheme,
+  a Base16/Base24 palette, or a VS Code color theme and it becomes a real
+  gateway skin. Rename, export as hand-editable YAML, or delete from the card.
 
 The plugin includes **140 skin palettes**, organized into 57 Dynamic Themes plus
 dark-only and light-only scenes. See [Third-Party Notices](THIRD_PARTY_NOTICES.md)
@@ -47,8 +50,22 @@ for palette credits.
 - **Python 3.8+** and `PyYAML` only if you want to regenerate the catalog. They
   are not required to use the picker.
 
-Clone or download this repository, then install the Desktop plugin on each
-computer where you use Hermes Desktop.
+The easiest route is to install straight from this repository. In Hermes
+Desktop's plugin page, give it this URL:
+
+```text
+https://github.com/TobiasDraven/chroma-for-hermes
+```
+
+Or from a terminal:
+
+```bash
+hermes plugins install TobiasDraven/chroma-for-hermes
+```
+
+Both routes put the plugin in your Desktop home's `desktop-plugins/chroma/`
+directory. Prefer doing it by hand? Clone or download this repository, then
+follow your platform below.
 
 ### Windows
 
@@ -174,7 +191,7 @@ the rebuilt `desktop/plugin.js` into Hermes Desktop and reload plugins.
 ## Project layout
 
 ```text
-plugin/                        Desktop plugin and source template
+desktop/                      Desktop plugin and source template
 skins/                         Bundled source palettes
 gateway-skins/                 Mode-locked gateway transport palettes
 scripts/regenerate.py          Catalog generator
