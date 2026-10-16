@@ -63,6 +63,11 @@ const PROFILE_MODES_KEY = 'hermes-desktop-profile-modes-v1'
 // Plugin-owned and per profile. Never an app-owned `hermes-desktop-*` key: the
 // Desktop owns those and would overwrite or misread anything we wrote there.
 const APPLY_SCOPE_KEY = 'chroma-apply-scope-v1'
+// Also plugin-owned. The card shape is a view preference, not a per-profile
+// selection, so it is not namespaced by profile the way the apply scope is:
+// two profiles on one machine describe the same window.
+const CARD_SHAPE_KEY = 'chroma-card-shape-v1'
+const CARD_SHAPES = ['square', 'rectangle', 'circle']
 const CORE_DESKTOP_THEMES = new Set(['nous', 'midnight', 'ember', 'mono', 'cyberpunk', 'slate'])
 const EMOJI_FALLBACK = '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", emoji'
 const DEFAULT_FONT_SANS = '"Segoe WPC", "Segoe UI", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif, ' + EMOJI_FALLBACK
@@ -1060,6 +1065,24 @@ function writeApplyScope(profile, scope) {
   }
 }
 
+/** Defaults to squares on anything unrecognised, including a storage failure:
+ *  the gallery must always render. */
+function readCardShape() {
+  let stored = null
+  try { stored = window.localStorage.getItem(CARD_SHAPE_KEY) } catch (e) { return 'square' }
+  return CARD_SHAPES.indexOf(stored) >= 0 ? stored : 'square'
+}
+
+function writeCardShape(shape) {
+  if (CARD_SHAPES.indexOf(shape) < 0) return false
+  try {
+    window.localStorage.setItem(CARD_SHAPE_KEY, shape)
+    return true
+  } catch {
+    return false
+  }
+}
+
 function desktopModeFor(profile, renderedMode) {
   return renderedMode === 'light' || renderedMode === 'dark'
     ? renderedMode
@@ -1139,10 +1162,35 @@ function migrateAppearanceAliases() {
   }
 }
 
-function columnsForWidth(width) {
-  if (width >= 900) return 4
-  if (width >= 620) return 3
-  return 2
+/** Grid target width in CSS px, deliberately FIXED rather than derived from a
+ *  column count. The previous layout divided the viewport into a column count
+ *  capped at four, so on a wide window the squares grew instead of the gallery
+ *  showing more of them - four ~330px squares on a 1400px window, which is what
+ *  "the squares are very big" was.
+ *
+ *  104px is about a third of what that produced. A card still fits its swatch, a
+ *  truncated name and the preview pill; below roughly 90px the pill starts to
+ *  dominate the square it sits in. */
+const CARD_MIN = 104
+
+/** A rectangle is wider than it is tall, so it needs a wider slot to keep a
+ *  usable height. A circle needs a square slot, exactly like a square card. */
+function cardMinFor(shape) {
+  return shape === 'rectangle' ? Math.round(CARD_MIN * 1.6) : CARD_MIN
+}
+
+/** The card's aspect ratio. The shape the user picked carries the look, not the
+ *  width the grid happened to hand it. */
+function cardAspect(shape) {
+  return shape === 'rectangle' ? '16 / 10' : '1'
+}
+
+/** Corner and padding treatment per shape. A circle needs looser padding: its
+ *  inscribed area is narrower than its bounding box, so text set to the edges of
+ *  the box would fall outside the circle. */
+function cardShapeClasses(shape) {
+  if (shape === 'circle') return 'rounded-full p-2.5'
+  return 'rounded-lg p-1.5'
 }
 
 function buildThemeGroups(scenes) {
@@ -1403,7 +1451,7 @@ function PreviewCountdown({ until }) {
   return jsx('span', { children: previewSecondsLeft(until, Date.now()) + 's' })
 }
 
-function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, localScope }) {
+function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, shape, localScope }) {
   const [renaming, setRenaming] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [draft, setDraft] = useState('')
@@ -1420,13 +1468,15 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   const card = jsxs('button', {
     type: 'button',
     onClick: () => onApply(scene),
-    // Square: the aspect ratio is what makes the grid read as a gallery rather
-    // than a list, and the colour block below takes whatever height is left.
-    style: { aspectRatio: '1' },
+    // The aspect ratio is what makes the grid read as a gallery rather than a
+    // list: the colour block takes whatever height is left. The ratio itself is
+    // the shape the user picked.
+    style: { aspectRatio: cardAspect(shape) },
     disabled: applying === scene.name,
     title: `${scene.description || scene.name} (${scene.modeSupport === 'dynamic' ? `${mode} variant` : `${scene.modeSupport} only`})`,
     className: cn(
-      'flex w-full flex-col gap-1 rounded-lg border p-1.5 text-left transition-colors',
+      'flex w-full flex-col gap-1 border text-left transition-colors',
+      cardShapeClasses(shape),
       isActive
         ? 'border-(--ui-accent) bg-(--ui-bg-tertiary)'
         : 'border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)'
@@ -1567,7 +1617,6 @@ function ThemePicker() {
   const [q, setQ] = useState('')
   const [applying, setApplying] = useState(null)
   const profile = useValue(host.state.profile) || 'default'
-  const viewport = useValue(host.state.viewport)
   const [mode, setMode] = useState(() => desktopModeFor(profile, document.documentElement.dataset.hermesMode))
   const [importMode, setImportMode] = useState('url')
   // Scope governs whether a pick is broadcast. Read per profile, so two profiles
@@ -1578,6 +1627,13 @@ function ThemePicker() {
     if (next !== APPLY_SCOPE_LOCAL && next !== APPLY_SCOPE_EVERYWHERE) return
     writeApplyScope(profile, next)
     setScope(next)
+    haptic('tap')
+  }
+  const [shape, setShape] = useState(() => readCardShape())
+  const changeShape = next => {
+    if (CARD_SHAPES.indexOf(next) < 0) return
+    writeCardShape(next)
+    setShape(next)
     haptic('tap')
   }
   const [importRef, setImportRef] = useState('')
@@ -1812,14 +1868,12 @@ function ThemePicker() {
     if (scene) applyScene(scene, next, setActive, desktopTheme)
   }
 
-  // Square cards. The old layout computed an exact per-column width and laid the
-  // cards out with flex-wrap. A grid with auto-fill does the same job and adapts
-  // to a resized window without a second calculation -- the aspect ratio carries
-  // the look, not the width, which is the whole point of squares.
-  const viewportWidth = (viewport && viewport.width) || 900
-  const cols = columnsForWidth(viewportWidth)
-  const gap = cols > 2 ? 12 : 8
-  const cardMin = Math.max(76, Math.floor((viewportWidth - gap * (cols - 1)) / cols) - 12)
+  // Cards. A grid with auto-fill adapts to a resized window without a second
+  // calculation -- the aspect ratio carries the look, not the width. The target
+  // width is fixed, so a wide window shows MORE cards rather than four enormous
+  // ones.
+  const gap = 10
+  const cardMin = cardMinFor(shape)
   const groups = buildThemeGroups(filtered).filter(group => group.scenes.length)
   const activeScene = allSkins.find(scene => scene.name === active)
   const activeColors = activeScene && ((mode === 'dark' ? activeScene.darkColors : activeScene.lightColors) || activeScene.colors)
@@ -1874,6 +1928,18 @@ function ThemePicker() {
             ],
             value: mode,
             onChange: onModeChange
+          }),
+          jsx('div', {
+            title: 'Card shape: squares, rectangles or circles',
+            children: jsx(SegmentedControl, {
+              options: [
+                { id: 'square', label: '□' },
+                { id: 'rectangle', label: '▭' },
+                { id: 'circle', label: '○' }
+              ],
+              value: shape,
+              onChange: changeShape
+            })
           }),
           jsx(SegmentedControl, {
             // The scope is a first-class control, not a setting buried elsewhere:
@@ -1941,6 +2007,7 @@ function ThemePicker() {
                             previewUntil: preview ? preview.until : 0,
                             onPreview: startPreview,
                             onStopPreview: stopPreview,
+                            shape,
                             localScope: scope === APPLY_SCOPE_LOCAL
                           })
                         )

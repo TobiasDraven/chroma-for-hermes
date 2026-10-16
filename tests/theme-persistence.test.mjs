@@ -14,7 +14,7 @@ function loadPlugin(storage, exposeTestHelpers = false, requestHandler = null, p
       .replace(/import\s+\{[^}]*\}\s+from\s+'react'\n/, '')
       .replace('export default {', 'globalThis.plugin = {')
     if (exposeTestHelpers) {
-      executable += '\nglobalThis.testHelpers = { columnsForWidth, buildThemeGroups, persistAppearance, sceneNameFor, sceneToDesktopTheme, desktopModeFor, applyScene, readApplyScope, writeApplyScope, APPLY_SCOPE_LOCAL, APPLY_SCOPE_EVERYWHERE, scenes: SKINS }\n'
+      executable += '\nglobalThis.testHelpers = { buildThemeGroups, persistAppearance, sceneNameFor, sceneToDesktopTheme, desktopModeFor, applyScene, readApplyScope, writeApplyScope, APPLY_SCOPE_LOCAL, APPLY_SCOPE_EVERYWHERE, cardMinFor, cardAspect, cardShapeClasses, readCardShape, writeCardShape, CARD_MIN, CARD_SHAPES, scenes: SKINS }\n'
     }
 
     const css = new Map()
@@ -245,14 +245,53 @@ test('active variant names resolve to their dynamic scene card', async () => {
   assert.equal(plugin.__test.sceneNameFor('unknown-theme'), 'unknown-theme')
 })
 
-test('responsive columns step down from four to three to two', async () => {
+// --- Card geometry --------------------------------------------------------
+//
+// The grid target used to be derived from a column count capped at four, so a
+// wide window produced four enormous squares (~330px each at 1400px wide). The
+// target is fixed now and the responsive work belongs to the grid's auto-fill:
+// a wider window shows MORE cards, not bigger ones. This test replaces the one
+// that asserted the old column count, which is what caused the ballooning.
+
+test('the grid target is fixed, so a wide window shows more cards, not bigger ones', async () => {
+  const plugin = await loadPlugin(new Map(), true)
+  const { cardMinFor, cardAspect, CARD_MIN, CARD_SHAPES } = plugin.__test
+
+  assert.equal(CARD_MIN, 104)
+  // Array.from: CARD_SHAPES is built inside the VM, so its prototype is the VM's
+  // Array and deepStrictEqual would reject it as a different structure.
+  assert.deepEqual(Array.from(CARD_SHAPES), ['square', 'rectangle', 'circle'])
+
+  assert.equal(cardMinFor('square'), CARD_MIN)
+  assert.equal(cardMinFor('circle'), CARD_MIN, 'a circle wants a square slot, like a square card')
+  assert.ok(
+    cardMinFor('rectangle') > CARD_MIN,
+    'a rectangle is wider than it is tall, so it needs a wider slot to keep a usable height'
+  )
+  assert.ok(cardMinFor('rectangle') < CARD_MIN * 3, 'but not so wide that a card fills the row')
+
+  assert.equal(cardAspect('square'), '1')
+  assert.equal(cardAspect('circle'), '1', 'a circle is round by radius, not by ratio')
+  assert.equal(cardAspect('rectangle'), '16 / 10')
+})
+
+test('the card shape is remembered, and an unknown shape falls back to squares', async () => {
   const storage = new Map()
   const plugin = await loadPlugin(storage, true)
-  const { columnsForWidth } = plugin.__test
+  const { readCardShape, writeCardShape, cardShapeClasses } = plugin.__test
 
-  assert.equal(columnsForWidth(1200), 4)
-  assert.equal(columnsForWidth(720), 3)
-  assert.equal(columnsForWidth(480), 2)
+  assert.equal(readCardShape(), 'square', 'the gallery must render before anything is stored')
+
+  assert.equal(writeCardShape('circle'), true)
+  assert.equal(readCardShape(), 'circle', 'a view preference must survive a reload')
+  assert.equal(storage.get('chroma-card-shape-v1'), 'circle')
+
+  assert.equal(writeCardShape('hexagon'), false, 'an unknown shape must not be stored')
+  assert.equal(readCardShape(), 'circle', 'and must not clobber the stored one')
+
+  assert.ok(cardShapeClasses('circle').includes('rounded-full'), 'a circle needs a full radius')
+  assert.ok(cardShapeClasses('square').includes('rounded-lg'))
+  assert.ok(!cardShapeClasses('square').includes('rounded-full'), 'the shapes must differ')
 })
 
 test('themes are grouped as dynamic, dark-only, then light-only', async () => {
