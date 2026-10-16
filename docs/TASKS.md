@@ -64,3 +64,24 @@ not workarounds:
   `docs/PLANS/CHROMA-IMPLEMENTATION.md`.
 - **Line-number relocation reads as a new finding.** The `promise-safety` entry on
   `tests/test_regenerate.py` is the same code at a new line after edits above it.
+
+## Import fidelity — what the VS Code research makes visible (open, 2026-10-16)
+
+A read-only scout parsed 23 real published themes and cited schema/loader sources, not memory. Its
+report is kept at `docs/PLANS/VSCODE-MAPPING-RESEARCH.md` (moved out of prunable scratch). Its counts,
+its JSONC claim and the themes it says we refuse were re-verified here against the live files.
+
+None of this is a defect in the table refactor — the mapping is byte-identical to what it was. These
+are decisions the data now makes visible:
+
+| Finding | Evidence | Decision needed |
+|:--|:--|:--|
+| About a fifth of real colour values carry alpha and we flatten them | 787/3966 values across 20/23 themes; `nord.json` `button.background = #88c0d0ee` (verified) | Keep flattening — the backend `_hex` accepts only `#rrggbb` — or carry alpha through the backend and every palette consumer |
+| Two first-party themes are refused, and the refusal MISDIAGNOSES them | `dark_plus.json` and `light_plus.json` inherit their palette through `include`: we answer "a syntax-only VS Code theme carries no palette to import" (verified by running the parser on the real files) | Reword to name the `include` target ("this theme inherits from ./dark_vs.json"), or resolve `include`, which needs a second file the renderer cannot fetch |
+| Some fallback links can never fire in practice | bare `background` is not a documented key at all (0/23); `surface.foreground` 0/23; `sideBar.background` / `panel.background` / bare `foreground` resolve 0/23 *as background or foreground fallbacks* | Keep them (harmless, and they cover hand-written files) or drop the dead links |
+| `workbench.colorCustomizations` is a user setting, never a theme property | 0/23 themes carry it; it is registered through `IConfigurationRegistry` (cited) | Keep the branch — it is what lets a pasted settings snippet import |
+
+**Instrument note.** `stripJsonNoise` already survives `//` inside a QUOTED value
+(`"vscode://schemas/color-theme"`), a trailing `//` comment, a block comment and a trailing comma. A
+verification probe that stripped comments naively broke on exactly that file: the check was wrong, not
+the parser.
