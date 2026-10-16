@@ -11,7 +11,7 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started · `[!]` blocked ·
 | N | Provenance index + `GET /skins` | done | `98a7ac5` |
 | F2 | CLI-capable badges | done | `06e72d8` |
 | F1 | Delete / rename a skin | backend + UI done | `08d639b`, `bf36a63` |
-| F3 | Export | backend done, UI open | `73374d6` |
+| F3 | Export | done | `7337536` + `8aff397` |
 | F6 | Square-card picker UI | done | `7637536` |
 | F4 | Import from more sources | **NOT STARTED** | — |
 | F5 | Per-profile skins (scoped apply) | done | `4d22198` |
@@ -156,7 +156,7 @@ green test count is the exact failure this session has been recovering from.
 
 ---
 
-## F3 — Export — BACKEND DONE, UI OPEN
+## F3 — Export — DONE
 
 The Captain's list says *"Export individual or all skins"*. Importing the exported
 file is F4 territory (more sources), so this is deliberately export-only.
@@ -180,13 +180,33 @@ file is F4 territory (more sources), so this is deliberately export-only.
 
 **Evidence:** `tests/test_plugin_api.py` 34/34 (was 27).
 
-### UI — NOT DONE
+### UI — done (`8aff397`)
 
-- [ ] `Export` on an owned card, and `Export all` in the header
-- [ ] Save path: check for a host file-save API before falling back to a blob and
-      a temporary `<a download>` anchor. **Verify on the G15** — the renderer may
-      sandbox downloads
-- [ ] Say in the UI that an export is hand-editable and re-importable
+- [x] `Export` on an owned card, and `Export all` in the header (disabled while an
+      export runs, and disabled when Chroma owns nothing — an empty bulk export
+      would otherwise fail at the artifact step instead of the click)
+- [x] **Save path resolved, not assumed.** `host` exposes no file-save API —
+      checked against the SDK source (`apps/desktop/src/sdk/index.ts`), where the
+      surface ends at `navigate` / `request` / `notify`. The renderer therefore
+      writes an anchor + blob, and that is the *supported* path rather than a
+      fallback: Electron's `will-download` handler routes renderer anchor/blob
+      downloads to the Downloads folder with a save dialog
+      (`installDownloadHandling`, `apps/desktop/electron/main.ts`). The call site
+      documents this so a future reader does not go hunting for a save API.
+      **Still needs a real click on the G15** — the source says the path exists;
+      only your machine proves it opens
+- [x] Says what an export is, in the UI: `title` on both controls — hand-editable
+      YAML you can edit and re-import; the header button names the bundle
+- [x] `exportArtifact` is pure, so the envelope → file mapping is testable
+      without a DOM. One skin saves as its own YAML byte for byte; a bulk save is
+      the bundle under the backend's declared `chroma-skins.json`; an empty or
+      malformed payload **throws** rather than writing a dead file
+- [x] Export has its own `exporting` state. Reusing `busy` would make the Import
+      button read `Importing…` while an export runs — a label that lies
+- [x] Fault-injected: disabling the single-skin branch fails the byte-for-byte
+      test (exit 1); restoring passes 4/4
+
+**Evidence:** `tests/export.test.mjs` 4/4.
 
 ---
 
@@ -216,11 +236,12 @@ file is F4 territory (more sources), so this is deliberately export-only.
       wiring it — `(name: string, mode: 'light' | 'dark')`, not a theme object.
       An invented signature here would have failed silently at the only moment it
       is used
-- [ ] Per-card overflow menu grouping Export / Rename / Delete (Rename and Delete
-      are currently inline buttons; Export has no UI yet — see F3)
+- [ ] Per-card overflow menu grouping Export / Rename / Delete (all three are now
+      inline buttons in one row; folding them into a menu is a layout call, not a
+      gap — the row currently fits three `0.625rem` buttons on the square card)
 
-**Evidence:** guard 9/9, importer 16/16, persistence 30/30; `node --check` clean;
-`hermes plugins validate .` → Validation passed.
+**Evidence:** guard 9/9, importer 16/16, persistence 34/34, render-smoke 3/3;
+`node --check` clean; `hermes plugins validate .` → Validation passed.
 
 ---
 
@@ -347,6 +368,7 @@ instrument that can.
 ```bash
 python scripts/regenerate.py                                    # ALWAYS after editing the template
 node --test tests/render-smoke.test.mjs                         # the render guard (3) — proves the build resolves its own imports
+node --test tests/export.test.mjs                               # F3 export mapping (4)
 node --test tests/surfaces-regression.test.mjs                  # the safety net (9)
 node --test tests/tweakcn-import.test.mjs                       # importer (16)
 node --test tests/theme-persistence.test.mjs                    # apply/paint/gateway (34)
