@@ -182,24 +182,119 @@ Two candidate designs:
 **Decision required from the Captain before any code.**
 **Depends on:** a scoping spike; do not start before F1–F4 land.
 
-### F6 — Picker UI rework: squares, not long rectangles
+### F6 — Picker UI rework: squares, not long rectangles — DONE, then corrected
 
-**Why:** the current cards are full-width rows. With 100+ entries they read as a
-list, not a gallery, and comparison across the grid is poor.
+**Why:** the cards were full-width rows. With 100+ entries they read as a list,
+not a gallery, and comparison across the grid is poor.
 
-**Approach.**
-- Fixed-aspect **square** cards in a responsive auto-fill grid
+**Shipped (`7637536`), then corrected twice from the field:**
+
+- Fixed-aspect square cards in an auto-fill grid
   (`grid-template-columns: repeat(auto-fill, minmax(<n>, 1fr))`).
-- Each square shows the palette as a **colour block**, the label, and the state
-  badges from F2 (Gateway / Desktop only).
-- Hover = preview (via `useTheme().previewTheme`), click = commit. Leave = revert.
-- A density control, since squares trade off how many are visible at once.
-- Actions (Export, Rename, Delete) move into a per-card overflow menu so the
-  square stays clean.
+- Each square shows the palette as a **colour block**, the label, and the F2
+  badges (Gateway / Desktop only).
+- **Hover preview was wrong, and is gone.** `previewTheme` repaints the whole
+  app, so arming it 140ms after the pointer entered a card meant that sweeping
+  the pointer across a hundred cards repainted Hermes over and over — reported
+  from the field as the gallery being "horribly slow". Replaced by a
+  click-triggered pill that holds a preview for `PREVIEW_MS` and reverts. The
+  revert timer is owned by the **picker**, not by the card, so it still fires if
+  the previewing card leaves the tree; the pill's countdown is display-only.
+- **The size was a layout bug, not a taste problem.** `columnsForWidth` capped
+  the column count at four, and the card width was derived from the viewport
+  divided by that count — so the squares GREW with the window (~330px each on a
+  1400px window). The target is now the fixed `CARD_MIN` (104px, about a third
+  of that) and auto-fill does the responsive work, so a wide window shows more
+  cards instead of four enormous ones.
+- A shape control (square / rectangle / circle), persisted under a plugin-owned
+  `chroma-*` key and **global** rather than per profile: two profiles on one
+  machine describe the same window.
+
+**Still open.**
+- The per-card **overflow menu** for Export / Rename / Delete. The actions row
+  sits under the card today and cannot move into the square: a button inside a
+  button is invalid HTML, and the card is itself a button.
+- `CARD_MIN` is a judgement, not a measurement — it is the size that still fits a
+  swatch, a truncated label and the pill. Roughly 90px is the floor.
+- The circle gets looser padding on the same reasoning: its inscribed area is
+  narrower than its bounding box, so text set to the box edge falls outside it.
 
 **Risk:** readability at small sizes — the label must truncate, never wrap, and
 the colour block must stay legible against the card chrome.
 **Depends on:** F1, F2, F3 (they supply the badges and the menu actions).
+
+### F7 — Sort and group by main hue
+
+**Why:** 104 scenes are grouped only by mode (dynamic / dark-only / light-only),
+so finding "something green" means reading every swatch. The palette is already
+in the data; it is just not organising anything.
+
+**Approach.**
+- Derive each scene's main hue from its accent (`ui_accent`, falling back to
+  `banner_accent`) — the same preference order the colour strip already uses.
+- Group into named buckets (red / orange / yellow / green / cyan / blue / violet /
+  pink / neutral) rather than a continuous sort, so the section headers stay
+  stable while scrolling.
+- Keep mode as one axis and hue as the other. The mode grouping carries a real
+  capability difference (`dynamic` means two coordinated palettes); hue does not.
+- **Neutral must be its own bucket**, not a leftover. A grey theme must not land
+  in whichever hue its border happens to carry.
+
+**Open:** does hue grouping belong in the picker UI, or only as a sort option?
+**Depends on:** F6 (the grid it groups).
+
+### F8 — Adjust a skin's tint, value and brightness
+
+**Why:** the catalog is take-it-or-leave-it. "This one, but warmer" is the most
+common reaction to a palette, and the only answer today is to export the YAML,
+edit it by hand, and re-import.
+
+**Approach.**
+- **Reuse the SDK's OKLCH helpers** — `hexToOklch`, `oklchToHex`,
+  `oklchToSrgb255`, `maxChroma`, `contrastRatio` — rather than hand-rolling
+  colour maths. They are already a dependency, and the official accent-picker
+  plugin proves the workflow (see F9).
+- Work in OKLCH: hue rotation and lightness are separable there, where the same
+  edit in sRGB muddies the colours.
+- **`contrastRatio` is not optional.** Every adjustment re-checks the pairs that
+  carry meaning (text on background, accent on chrome) and refuses or warns
+  rather than shipping an unreadable palette.
+- An adjustment either produces a NEW owned skin (exportable, renameable) or is
+  non-destructive scratch state. It must never silently mutate a catalog skin.
+
+**Open:** does an adjustment create a derived skin, or mutate the source in place?
+**Depends on:** F3 (export is how an adjustment becomes permanent), F9 (shared
+primitives and the same "scratch state, never persisted" rule).
+
+### F9 — Interoperate with the official accent-picker plugin
+
+**Why:** Nous Research's `accent-picker` (MIT, in
+`NousResearch/hermes-official-plugins`; formerly `hermes-desktop-accent-picker`,
+now archived) already retints live: an OKLCH wheel in the status bar, with the
+palette re-deriving from the one colour you pick. It reads and writes
+`$accentOverride` / `setAccentOverride` and registers a `PALETTE_AREA`. Two
+plugins writing one appearance is exactly the bug class this project keeps
+re-learning.
+
+**What it is, from its own README at `abec9e8`:**
+- an **authoring tool** — the colour is scratch state and is never persisted
+- ships `Accent: reset to the theme default` and `Accent: copy the current color`
+- installs from the catalog as `accent-picker`
+
+**Approach.**
+- Decide and DOCUMENT the precedence. A Chroma skin apply and an accent override
+  are two writers of one appearance: whichever wins, the other must not be left
+  holding stale state.
+- Check whether an installed accent override survives `setTheme`. If it does not,
+  the UI must say so rather than let the user discover it.
+- Reuse rather than duplicate: the primitives it uses are the same ones F8 needs,
+  so if F8 lands this entry shrinks to a precedence question and may never need a
+  hard dependency on the other plugin.
+- Do NOT drive another plugin's internals. Anything built here goes through the
+  shared SDK surface.
+
+**Open:** is interop wanted at all, or is a documented precedence rule enough?
+**Depends on:** F8 (likely subsumes most of it).
 
 ### Explicitly out of scope
 
@@ -221,3 +316,6 @@ the colour block must stay legible against the card chrome.
 | 4 | F6 squares | Do it once F1–F3 supply the badges and actions |
 | 5 | F4 more sources | Independent; a good follow-on to F3 |
 | 6 | F5 per-profile | Needs a spike and a decision first |
+| 7 | F8 tint/value/brightness | Highest value of the three: "this one, but warmer" is what people actually want to do to a palette |
+| 8 | F7 hue grouping | Cheap once the grid is settled; purely organisational |
+| 9 | F9 accent-picker interop | Settle the precedence question first; F8 may make it unnecessary |

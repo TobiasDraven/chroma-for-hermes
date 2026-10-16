@@ -12,7 +12,7 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started · `[!]` blocked ·
 | F2 | CLI-capable badges | done | `06e72d8` |
 | F1 | Delete / rename a skin | backend + UI done | `08d639b`, `bf36a63` |
 | F3 | Export | done | `7337536` + `8aff397` |
-| F6 | Square-card picker UI | done | `7637536` |
+| F6 | Square-card picker UI | done, then corrected in the field | `7637536` + `39b592c`, `d48750e` |
 | F4 | Import from more sources | done (3 of 4; iTerm2 deferred) | `see F4 section` |
 | F5 | Per-profile skins (scoped apply) | done | `4d22198` |
 | P0 | Missing react hooks (`useRef`/`useCallback`) | done | `see P0 section` |
@@ -221,12 +221,10 @@ file is F4 territory (more sources), so this is deliberately export-only.
       square card, which is where the palette should be doing the talking
 - [x] Label truncates (`truncate`, `min-w-0`) so a long name cannot break layout
 - [x] F2's `CliBadge` rides on the card
-- [x] Hover preview: `previewTheme(scene.name, mode)` after a 140 ms debounce,
-      `clearThemePreview()` on leave, and the timer cleared on unmount. Debounced
-      because a preview repaints the whole app and a 100+ card grid would thrash
-      on mousemove; cleaned up because a preview left armed when the card
-      unmounts strands the user on a theme they never chose — the exact bug class
-      this plugin exists to remove
+- [x] Hover preview: `previewTheme(scene.name, mode)` after a 140 ms debounce —
+      **shipped, then REMOVED.** It repainted the whole app on pointer travel and
+      was reported from the field as "horribly slow". See *Revised in the field*
+      below
 - [x] Still `jsx()` / `jsxs()` calls throughout — no JSX syntax
 - [x] **Proven a rendering-only change**: the surfaces guard passes all six
       registration assertions after the rework (route, sidebar, statusbar, palette,
@@ -240,8 +238,45 @@ file is F4 territory (more sources), so this is deliberately export-only.
       inline buttons in one row; folding them into a menu is a layout call, not a
       gap — the row currently fits three `0.625rem` buttons on the square card)
 
-**Evidence:** guard 9/9, importer 16/16, persistence 34/34, render-smoke 3/3;
-`node --check` clean; `hermes plugins validate .` → Validation passed.
+### Revised in the field (`39b592c`, `d48750e`)
+
+Two reports from the Captain after installing the fork, plus one request.
+
+- **"the preview over hover makes it horribly slow"** — correct, and the cause was
+  structural rather than a missing debounce. `previewTheme` repaints the entire
+  app, so the cost scaled with pointer travel instead of intent: sweeping across a
+  hundred cards repainted Hermes a hundred times. The hover path is gone,
+  replaced by a **pill inside each square** that previews on click and reverts
+  after `PREVIEW_MS` (10 s). The picker owns the single revert timer, so the
+  revert still fires if the previewing card is filtered away or scrolled out of
+  the tree; the pill's countdown is display-only and re-renders only itself. The
+  timer is also cleared when the picker unmounts and when a theme is committed —
+  a revert firing against the theme the user just chose is the same bug class as a
+  preview left armed. The pill is a DOM **sibling** of the card (a button inside a
+  button is invalid HTML) in a positioned wrapper, and reveals on hover as a CSS
+  opacity flip on one element, not an app repaint.
+- **"the squares are very big, let's make them 1/3rd of the size"** — the size was
+  a layout bug, not taste. `columnsForWidth` capped the column count at four and
+  `cardMin` was derived from viewport ÷ count, so cards GREW with the window
+  (~330 px at 1400 px wide). Replaced by a fixed `CARD_MIN` (104 px) plus
+  auto-fill, so a wide window shows more cards. `columnsForWidth` and the
+  `viewport` subscription that existed only to feed it are deleted — along with
+  the test that asserted the old column count, which asserted the very mechanism
+  that caused the bug.
+- **Shape control** (square / rectangle / circle), requested at the same time: a
+  `SegmentedControl` in the header, persisted under `chroma-card-shape-v1`.
+  Global rather than per profile — two profiles on one machine describe the same
+  window. Rectangles take a wider slot (`cardMinFor` ×1.6) so their height stays
+  usable; circles take a square slot and are round by radius, with looser padding
+  because their inscribed area is narrower than their bounding box.
+
+**Not verified on this machine:** the rendered result. 104 px, the ×1.6 rectangle
+slot and the circle padding are judgements reasoned from the arithmetic, not
+measurements — the Captain's screen is the only thing that can settle them.
+
+**Evidence:** guard 9/9, importer 16/16, persistence 35/35, render-smoke 3/3,
+preview-pill 8/8, export 4/4; `node --check` clean; backend 34/34;
+`hermes plugins validate .` → Validation passed.
 
 ---
 
