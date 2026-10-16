@@ -6,16 +6,16 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started · `[!]` blocked ·
 
 | # | Work | State | Commit |
 |:--|:--|:--|:--|
-| F0 | Surfaces regression guard | [x] | |
-| 0 | Remove stale v2 leftovers | [x] | |
-| N | Provenance index + `GET /skins` | [ ] | |
-| F2 | CLI-capable badges | [ ] | |
-| F1 | Delete / rename a skin | [ ] | |
-| F3 | Export / import | [ ] | |
-| F6 | Square-card picker UI | [ ] | |
-| F4 | Import from more sources | [ ] | |
-| F5 | Per-profile skins (spike, then decide) | [ ] | |
-| ✓ | Review | [ ] | |
+| F0 | Surfaces regression guard | done | `ab0b77f` |
+| 0 | Remove stale v2 leftovers | done | `461336d` |
+| N | Provenance index + `GET /skins` | done | `98a7ac5` |
+| F2 | CLI-capable badges | done | `06e72d8` |
+| F1 | Delete / rename a skin | backend + UI done | `08d639b`, `bf36a63` |
+| F3 | Export | backend done, UI open | `73374d6` |
+| F6 | Square-card picker UI | done | `7637536` |
+| F4 | Import from more sources | **NOT STARTED** | — |
+| F5 | Per-profile skins (spike, then decide) | **NOT STARTED** | — |
+| ✓ | Review | in progress | — |
 
 ---
 
