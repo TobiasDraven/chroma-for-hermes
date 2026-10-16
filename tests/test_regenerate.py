@@ -18,6 +18,28 @@ regenerate = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(regenerate)
 
 
+def _symlinks_supported() -> bool:
+    """Windows refuses symlink creation without developer mode or the
+    SeCreateSymbolicLinkPrivilege (OSError 1314), so a test that needs one must
+    ask first instead of reporting an environment limit as a failure."""
+    with tempfile.TemporaryDirectory() as probe:
+        target = Path(probe) / 'target.txt'
+        target.write_text('probe', encoding='utf-8')
+        try:
+            (Path(probe) / 'link.txt').symlink_to(target)
+        except (OSError, NotImplementedError):
+            return False
+    return True
+
+
+SYMLINKS_SUPPORTED = _symlinks_supported()
+
+MACOS_ONLY = unittest.skipUnless(
+    sys.platform == 'darwin',
+    'the macOS installer is a .command shell script and cannot run on this host',
+)
+
+
 class ResolveHermesHomeTests(unittest.TestCase):
     def test_prefers_windows_localappdata_when_hermes_home_is_unset(self):
         home = regenerate.resolve_hermes_home(
@@ -38,10 +60,10 @@ class RegenerateSafetyTests(unittest.TestCase):
             (scripts_dir / 'backend-builtins.json').write_bytes(
                 (SCRIPT.parent / 'backend-builtins.json').read_bytes()
             )
-            plugin_dir = repo / 'plugin'
+            plugin_dir = repo / 'desktop'
             plugin_dir.mkdir()
             (plugin_dir / 'plugin.template.js').write_bytes(
-                (SCRIPT.parents[1] / 'plugin' / 'plugin.template.js').read_bytes()
+                (SCRIPT.parents[1] / 'desktop' / 'plugin.template.js').read_bytes()
             )
             gateway_dir = repo / 'gateway-skins'
             gateway_dir.mkdir()
@@ -65,6 +87,8 @@ class RegenerateSafetyTests(unittest.TestCase):
                     malformed = skins_dir / 'broken.yaml'
                     malformed.unlink(missing_ok=True)
                     if contents == 'symlink':
+                        if not SYMLINKS_SUPPORTED:
+                            self.skipTest('this host cannot create symlinks')
                         regular_skin = repo / 'outside.yaml'
                         regular_skin.write_text(
                             'name: linked\ncolors:\n  background: "#000000"\n',
@@ -233,10 +257,11 @@ class WindowsRunnerTests(unittest.TestCase):
         self.assertIn("scripts\\regenerate.py", source)
 
 
+@MACOS_ONLY
 class MacInstallerTests(unittest.TestCase):
     def test_installs_plugin_into_explicit_hermes_home(self):
         installer = SCRIPT.parents[1] / 'install' / 'install-macos.command'
-        expected_plugin = SCRIPT.parents[1] / 'plugin' / 'plugin.js'
+        expected_plugin = SCRIPT.parents[1] / 'desktop' / 'plugin.js'
 
         with tempfile.TemporaryDirectory() as temp_dir:
             hermes_home = Path(temp_dir) / 'custom-hermes-home'
@@ -251,13 +276,13 @@ class MacInstallerTests(unittest.TestCase):
                 text=True,
             )
 
-            installed_plugin = hermes_home / 'desktop-plugins' / 'theme-picker' / 'plugin.js'
+            installed_plugin = hermes_home / 'desktop-plugins' / 'chroma' / 'plugin.js'
             self.assertEqual(installed_plugin.read_bytes(), expected_plugin.read_bytes())
             self.assertIn(f'Installed Theme Picker into: {installed_plugin.parent}', result.stdout)
 
     def test_installs_plugin_into_default_home_when_hermes_home_is_unset(self):
         installer = SCRIPT.parents[1] / 'install' / 'install-macos.command'
-        expected_plugin = SCRIPT.parents[1] / 'plugin' / 'plugin.js'
+        expected_plugin = SCRIPT.parents[1] / 'desktop' / 'plugin.js'
 
         with tempfile.TemporaryDirectory() as temp_dir:
             home = Path(temp_dir) / 'home with spaces'
@@ -273,7 +298,7 @@ class MacInstallerTests(unittest.TestCase):
                 text=True,
             )
 
-            installed_plugin = home / '.hermes' / 'desktop-plugins' / 'theme-picker' / 'plugin.js'
+            installed_plugin = home / '.hermes' / 'desktop-plugins' / 'chroma' / 'plugin.js'
             self.assertEqual(installed_plugin.read_bytes(), expected_plugin.read_bytes())
 
 
@@ -332,6 +357,7 @@ class GatewaySkinInstallerTests(unittest.TestCase):
             )
             self.assertEqual(collision.read_bytes(), (repo / 'skins' / collision.name).read_bytes())
 
+    @unittest.skipUnless(SYMLINKS_SUPPORTED, 'needs symlink creation privilege')
     def test_force_still_refuses_destination_symlinks(self):
         repo = SCRIPT.parents[1]
         installer = repo / 'install' / 'install-gateway-skins.sh'

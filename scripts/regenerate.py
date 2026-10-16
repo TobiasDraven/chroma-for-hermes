@@ -137,6 +137,10 @@ def _luminance(hex_color: str) -> float | None:
 
 
 def _parse_skin_file(path: Path) -> dict | None:
+    # Deliberately broad, and deliberately silent: this runs over EVERY bundled
+    # skin, and one unreadable or malformed file must not abort the build. The
+    # caller reports the surviving count, so a file skipped here shows up as a
+    # smaller catalog rather than as a crash.
     try:
         data = yaml.safe_load(path.read_text(encoding="utf-8")) if yaml else None
     except Exception:

@@ -6,7 +6,7 @@
 // this file.
 //
 //   node tests/regenerate-scene-parity.mjs
-import { readFile, writeFile } from 'node:fs/promises'
+import { writeFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { loadPlugin } from './helpers/load-plugin.mjs'
 import { EDGE_SKINS, GOLDEN_EDGES, GOLDEN_SCENES } from './helpers/parity-cases.mjs'
@@ -48,6 +48,5 @@ for (const name of GOLDEN_SCENES) {
 
 const target = new URL('./fixtures/scene-theme-parity.json', import.meta.url)
 await writeFile(target, JSON.stringify(fixture, null, 1) + '\n')
-const written = JSON.parse(await readFile(target, 'utf8'))
-console.log(`wrote ${Object.keys(written.scenes).length} scenes, ${Object.keys(written.edges).length} edges, `
-  + `${Object.keys(written.goldens).length} goldens`)
+console.log(`wrote ${Object.keys(fixture.scenes).length} scenes, ${Object.keys(fixture.edges).length} edges, `
+  + `${Object.keys(fixture.goldens).length} goldens`)
