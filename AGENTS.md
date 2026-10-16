@@ -172,6 +172,12 @@ Environment truths that change the answer:
 - **Serena:** call `activate_project` with a Windows-native path before any symbol query, and keep
   `.serena/` gitignored. `find_symbol` takes `name_path_pattern`, not `name_path`.
 - **`npm root -g` lies under the Hermes shell** — it reports the bundled node's directory.
+- **A battery that prints only DERIVED counts hides its own failure.** A loop that greps
+  `pass`/`fail` out of a test run, and discards the raw output, reported every suite failing with no
+  numbers at all - and the discarded text was the only thing that could have said why. Print the raw
+  output, or write it to a file and read it. A summary you cannot explain is worth less than nothing.
+- **A background process starts in the scratch directory, not the repo.** `cd` explicitly in the
+  command; a relative path or a glob will quietly resolve against the wrong tree.
 - **Do not touch `rigour.yml` thresholds to pass a check.** If a finding is a false positive, adjudicate
   it in `docs/TASKS.md` with the evidence, as the existing entries do.
 
