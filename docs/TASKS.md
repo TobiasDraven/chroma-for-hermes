@@ -43,3 +43,24 @@ not workarounds:
 | `prototype-pollution` | A pre-existing `Object.assign` merge, not introduced by this work |
 | `style-drift` | **Adjudicated false positive.** The hint asks `plugin_api.py` and `regenerate.py` to "use snake_case for function names" — and all 30 `def`s across those two files are already snake_case (`grep -E "^def [a-z]+[A-Z]"` finds none; 18 defs in one, 12 in the other). The detector's baseline was evidently built from a different file set, so it asks compliant code to comply. Evidence over churn: no code changed |
 | `inconsistent-error-handling` | **Adjudicated.** The seven catches are deliberate: narrow types (`ValueError`, `OSError`, `RuntimeError`) where one error is expected, and broad ones exactly where an arbitrary file or a JSON load must not abort the build — one of which re-raises with context. The single silent broad catch, `_parse_skin_file`, is now documented in place, and the catalog's surviving-count reporting is what surfaces a skipped file. Uniformising these to satisfy the heuristic would make the error handling worse, not better |
+
+## Reading rigour's own numbers (learned the hard way, 2026-10-16)
+
+- **Read the live `rigour check --ci` output or its `--json`, not `.rigour/last-scan.json`.** On
+  the same tree the live run reported 15 findings while `last-scan.json` held 16 with a different
+  by-id mix (it still listed the third `style-drift`, and it lags the actual run). The live pair
+  (console and `--json`) agreed with each other; the cached file did not.
+- **The score is not monotone in the finding list, so never quote it as progress.** Measured
+  across this session's runs on one tree: 17 findings → score 41, then 15 findings → score 39.
+  A HIGH-severity `file-guard` finding disappeared and the headline score went DOWN by two. Report
+  the finding list, which is deterministic and diffable; treat the score as a band.
+- **`file-guard` flags UNCOMMITTED edits under `protected_paths` (`docs/**`, `rigour.yml`,
+  `.github/**`).** It runs `git status --porcelain` and deliberately ignores untracked files, so
+  creating docs passes and editing a committed doc trips it until the commit lands. Confirmed:
+  the finding cleared on the next run after committing the doc change. It is a tripwire for
+  "did you mean to touch this", not a defect to fix.
+- **`AST_COMPLEXITY` names only the worst function and truncates its list at five.** The real
+  worklist needs a probe reusing the gate's own parser — see the complexity section in
+  `docs/PLANS/CHROMA-IMPLEMENTATION.md`.
+- **Line-number relocation reads as a new finding.** The `promise-safety` entry on
+  `tests/test_regenerate.py` is the same code at a new line after edits above it.
