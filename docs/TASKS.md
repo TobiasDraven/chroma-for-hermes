@@ -85,3 +85,12 @@ are decisions the data now makes visible:
 (`"vscode://schemas/color-theme"`), a trailing `//` comment, a block comment and a trailing comma. A
 verification probe that stripped comments naively broke on exactly that file: the check was wrong, not
 the parser.
+## Doc hygiene (open, 2026-10-16)
+
+- **Two architecture docs.** `docs/ARCHITECTURE.md` came in with the hard fork (`3444cf2`) and describes
+  UPSTREAM's layout and Desktop's three-layer theme system; `docs/ARCH.md` (`46945f1`) describes this
+  plugin. Both are accurate about different things, which is worse than one being wrong. Decide: archive
+  the upstream one under `docs/PLANS/` as background, or merge the parts that still apply into `ARCH.md`
+  and drop it. Delete nothing until that call is made.
+- `rigour-fix-packet.json` / `rigour-report.json` sit in the repo root as run artifacts. They are
+  gitignored, but confirm that before any bulk `git add`.

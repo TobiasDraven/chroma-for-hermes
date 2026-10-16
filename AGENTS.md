@@ -36,7 +36,9 @@ skins/ gateway-skins/     bundled and gateway-provided skins (data, not code)
 tests/                    node:test suites + helpers; fixtures/ holds pinned parity data
   helpers/load-plugin.mjs THE harness: loads the built plugin into a vm context
 docs/SPEC.md              surfaces, features, backend contract, acceptance commands
-docs/ARCH.md              layout, build pipeline, load-time constraints, test strategy
+docs/ARCH.md              layout, build pipeline, load-time constraints, test strategy — THIS one
+docs/ARCHITECTURE.md      pre-fork reference from upstream (Desktop's three-layer theme system);
+                          not this plugin's architecture — kept for background only
 docs/DECISIONS.md         numbered decisions and WHY (read before proposing a redesign)
 docs/TASKS.md             open work, adjudicated gate findings, quality-gate debt
 docs/PLANS/               campaign tracker, roadmap, research artifacts
