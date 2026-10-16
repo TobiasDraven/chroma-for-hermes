@@ -1380,35 +1380,34 @@ function CliBadge({ scene, localScope }) {
   })
 }
 
-function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewTheme, clearThemePreview, localScope }) {
+/** How long a click-triggered preview holds before it reverts. */
+const PREVIEW_MS = 10000
+
+/** Seconds left on a preview, floored at zero and never negative. Pure, so the
+ *  countdown can be asserted without a clock. */
+function previewSecondsLeft(until, now) {
+  if (!until) return 0
+  return Math.max(0, Math.ceil((until - now) / 1000))
+}
+
+/** Display-only countdown. The picker owns the single revert timer; this only
+ *  re-renders the pill it lives in, so a preview never re-renders the whole
+ *  gallery. `previewTheme` repaints the entire app, which is why the previous
+ *  hover-driven version made the page crawl. */
+function PreviewCountdown({ until }) {
+  const [, tick] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => tick(n => n + 1), 250)
+    return () => clearInterval(id)
+  }, [])
+  return jsx('span', { children: previewSecondsLeft(until, Date.now()) + 's' })
+}
+
+function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, localScope }) {
   const [renaming, setRenaming] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [draft, setDraft] = useState('')
-  const previewTimer = useRef(null)
   const c = (mode === 'dark' ? scene.darkColors : scene.lightColors) || scene.colors || {}
-
-  // Hover preview. `previewTheme(name, mode)` repaints the whole app, so it is
-  // debounced hard: firing on every mousemove across a hundred cards would
-  // thrash the app, and a preview left armed when the card unmounts would strand
-  // the user on a theme they never chose — which is the exact class of bug this
-  // plugin exists to stop.
-  const schedulePreview = () => {
-    if (typeof previewTheme !== 'function') return
-    if (previewTimer.current) clearTimeout(previewTimer.current)
-    previewTimer.current = setTimeout(() => {
-      previewTimer.current = null
-      try { previewTheme(scene.name, mode === 'dark' ? 'dark' : 'light') } catch (e) { }
-    }, 140)
-  }
-  const cancelPreview = () => {
-    if (previewTimer.current) { clearTimeout(previewTimer.current); previewTimer.current = null }
-    if (typeof clearThemePreview === 'function') {
-      try { clearThemePreview() } catch (e) { }
-    }
-  }
-  useEffect(() => () => {
-    if (previewTimer.current) clearTimeout(previewTimer.current)
-  }, [])
   const isActive = scene.name === active
   const strip = [
     c.background || c.status_bar_bg,
@@ -1421,15 +1420,13 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   const card = jsxs('button', {
     type: 'button',
     onClick: () => onApply(scene),
-    onMouseEnter: schedulePreview,
-    onMouseLeave: cancelPreview,
     // Square: the aspect ratio is what makes the grid read as a gallery rather
     // than a list, and the colour block below takes whatever height is left.
     style: { aspectRatio: '1' },
     disabled: applying === scene.name,
     title: `${scene.description || scene.name} (${scene.modeSupport === 'dynamic' ? `${mode} variant` : `${scene.modeSupport} only`})`,
     className: cn(
-      'group flex w-full flex-col gap-1 rounded-lg border p-1.5 text-left transition-colors',
+      'flex w-full flex-col gap-1 rounded-lg border p-1.5 text-left transition-colors',
       isActive
         ? 'border-(--ui-accent) bg-(--ui-bg-tertiary)'
         : 'border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)'
@@ -1465,6 +1462,26 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
       })
     ]
   })
+
+  // The preview pill sits visually INSIDE the square but is a DOM sibling of the
+  // card: the card is itself a button, and a button inside a button is invalid
+  // HTML. It reveals on hover (a CSS opacity change, not an app repaint) and on
+  // keyboard focus, so it is reachable without a pointer.
+  const previewPill = jsx('button', {
+    type: 'button',
+    onClick: () => { if (previewing) onStopPreview(); else onPreview(scene) },
+    title: previewing ? 'Stop the preview and go back to your theme' : 'Preview this theme for 10 seconds, then revert',
+    className: cn(
+      'absolute inset-x-1 bottom-1 z-10 rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity',
+      previewing
+        ? 'border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100'
+        : 'border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
+    ),
+    children: previewing
+      ? jsx(PreviewCountdown, { until: previewUntil })
+      : 'Preview 10s'
+  })
+  const stacked = jsxs('div', { className: 'group relative w-full', children: [card, previewPill] })
 
   // The manage actions live OUTSIDE the card button. A button inside a button is
   // invalid HTML, and the card is itself a button because the whole card applies
@@ -1540,8 +1557,8 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
       })
     : null
 
-  if (!owned) return card
-  return jsxs('div', { className: 'flex w-full flex-col', children: [card, actions] })
+  if (!owned) return stacked
+  return jsxs('div', { className: 'flex w-full flex-col', children: [stacked, actions] })
 }
 
 function ThemePicker() {
@@ -1739,7 +1756,46 @@ function ThemePicker() {
     })
   }, [allSkins, q])
 
+  // One preview at a time, and exactly one authority for the revert: the timer
+  // below. The countdown in the pill is display-only, so the revert still fires
+  // if a previewing card is filtered away or scrolled out of the tree.
+  const [preview, setPreview] = useState(null)
+  const previewTimer = useRef(null)
+  const themeApiRef = useRef(desktopTheme)
+  themeApiRef.current = desktopTheme
+  const revertPreview = useCallback(() => {
+    const api = themeApiRef.current
+    if (api && typeof api.clearThemePreview === 'function') {
+      try { api.clearThemePreview() } catch (e) { }
+    }
+    setPreview(null)
+  }, [])
+  const stopPreview = useCallback(() => {
+    if (previewTimer.current) { clearTimeout(previewTimer.current); previewTimer.current = null }
+    revertPreview()
+  }, [revertPreview])
+  const startPreview = useCallback(scene => {
+    const api = themeApiRef.current
+    if (!api || typeof api.previewTheme !== 'function') return
+    if (previewTimer.current) clearTimeout(previewTimer.current)
+    const previewMode = scene.modeSupport === 'dynamic' ? mode : scene.modeSupport
+    try { api.previewTheme(scene.name, previewMode === 'dark' ? 'dark' : 'light') } catch (e) { }
+    setPreview({ name: scene.name, until: Date.now() + PREVIEW_MS })
+    previewTimer.current = setTimeout(() => { previewTimer.current = null; revertPreview() }, PREVIEW_MS)
+  }, [mode, revertPreview])
+  // A preview left armed when the picker unmounts would strand the user on a
+  // theme they never chose — the exact class of bug this plugin exists to stop.
+  useEffect(() => () => {
+    if (previewTimer.current) clearTimeout(previewTimer.current)
+    const api = themeApiRef.current
+    if (api && typeof api.clearThemePreview === 'function') { try { api.clearThemePreview() } catch (e) { } }
+  }, [])
+
   const onApply = scene => {
+    // Committing a theme while a preview is armed would leave the revert timer
+    // to fire against the theme the user just chose.
+    if (previewTimer.current) { clearTimeout(previewTimer.current); previewTimer.current = null }
+    setPreview(null)
     const nextMode = scene.modeSupport === 'dynamic' ? mode : scene.modeSupport
     setApplying(scene.name)
     try {
@@ -1881,8 +1937,10 @@ function ThemePicker() {
                             onDelete: removeSkin,
                             onRename: renameSkin,
                             onExport: exportSkin,
-                            previewTheme: desktopTheme && desktopTheme.previewTheme,
-                            clearThemePreview: desktopTheme && desktopTheme.clearThemePreview,
+                            previewing: !!preview && preview.name === scene.name,
+                            previewUntil: preview ? preview.until : 0,
+                            onPreview: startPreview,
+                            onStopPreview: stopPreview,
                             localScope: scope === APPLY_SCOPE_LOCAL
                           })
                         )
