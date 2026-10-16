@@ -14,7 +14,7 @@ function loadPlugin(storage, exposeTestHelpers = false, requestHandler = null, p
       .replace(/import\s+\{[^}]*\}\s+from\s+'react'\n/, '')
       .replace('export default {', 'globalThis.plugin = {')
     if (exposeTestHelpers) {
-      executable += '\nglobalThis.testHelpers = { columnsForWidth, buildThemeGroups, persistAppearance, sceneNameFor, sceneToDesktopTheme, desktopModeFor, applyScene, scenes: SKINS }\n'
+      executable += '\nglobalThis.testHelpers = { columnsForWidth, buildThemeGroups, persistAppearance, sceneNameFor, sceneToDesktopTheme, desktopModeFor, applyScene, readApplyScope, writeApplyScope, APPLY_SCOPE_LOCAL, APPLY_SCOPE_EVERYWHERE, scenes: SKINS }\n'
     }
 
     const css = new Map()
@@ -330,6 +330,77 @@ test('applying a dynamic scene immediately repaints locally and synchronizes its
   )
   assert.equal(plugin.__state.reloads, 0)
   assert.deepEqual(plugin.__state.notifications, [])
+})
+
+// --- F5: apply scope -------------------------------------------------------
+//
+// Per-profile Desktop themes are the Desktop's own behaviour; Chroma inherits
+// them by applying through setTheme. What flattens a per-profile choice is OUR
+// gateway broadcast, so the scope decides only whether that broadcast happens.
+//
+// The NEGATIVE assertion is the whole feature. A test that only proved the
+// everywhere case would pass unchanged on a build where the scope did nothing.
+
+test('a profile-scoped pick repaints locally and sends NO gateway broadcast', async () => {
+  const plugin = await loadPlugin(new Map(), true)
+  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+
+  plugin.__test.writeApplyScope('default', plugin.__test.APPLY_SCOPE_LOCAL)
+  assert.equal(plugin.__test.readApplyScope('default'), plugin.__test.APPLY_SCOPE_LOCAL)
+
+  await plugin.__test.applyScene(scene, 'dark', () => {})
+
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(plugin.__state.requests)),
+    [],
+    'a locally scoped pick must not touch the gateway at all'
+  )
+  // The local half still has to work: the theme must actually be applied.
+  assert.equal(plugin.__state.root.dataset.hermesTheme, 'shadow-thief')
+})
+
+test('the default scope is unchanged, so an existing pick still broadcasts', async () => {
+  const plugin = await loadPlugin(new Map(), true)
+  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+
+  // Nothing written: this is the state every existing user is in.
+  assert.equal(plugin.__test.readApplyScope('default'), plugin.__test.APPLY_SCOPE_EVERYWHERE)
+
+  await plugin.__test.applyScene(scene, 'dark', () => {})
+
+  assert.deepEqual(
+    plugin.__state.requests.map(request => request.payload.value),
+    ['theme-picker-shadow-thief-dark']
+  )
+})
+
+test('the scope is remembered per profile, not globally', async () => {
+  const plugin = await loadPlugin(new Map(), true)
+  plugin.__test.writeApplyScope('default', plugin.__test.APPLY_SCOPE_LOCAL)
+
+  assert.equal(plugin.__test.readApplyScope('default'), plugin.__test.APPLY_SCOPE_LOCAL)
+  assert.equal(
+    plugin.__test.readApplyScope('work'),
+    plugin.__test.APPLY_SCOPE_EVERYWHERE,
+    'scoping one profile must not scope another'
+  )
+})
+
+test('clearing the scope restores the broadcast', async () => {
+  const plugin = await loadPlugin(new Map(), true)
+  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+
+  plugin.__test.writeApplyScope('default', plugin.__test.APPLY_SCOPE_LOCAL)
+  await plugin.__test.applyScene(scene, 'dark', () => {})
+  assert.equal(plugin.__state.requests.length, 0)
+
+  plugin.__test.writeApplyScope('default', plugin.__test.APPLY_SCOPE_EVERYWHERE)
+  await plugin.__test.applyScene(scene, 'light', () => {})
+  assert.equal(
+    plugin.__state.requests.length,
+    1,
+    'switching back to Everywhere must resume broadcasting'
+  )
 })
 
 test('rapid scene changes preserve gateway request order while repainting locally immediately', async () => {

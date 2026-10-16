@@ -60,6 +60,9 @@ const SKIN_KEY = 'hermes-desktop-theme-v2'
 const MODE_KEY = 'hermes-desktop-mode-v1'
 const PROFILE_SKINS_KEY = 'hermes-desktop-profile-themes-v1'
 const PROFILE_MODES_KEY = 'hermes-desktop-profile-modes-v1'
+// Plugin-owned and per profile. Never an app-owned `hermes-desktop-*` key: the
+// Desktop owns those and would overwrite or misread anything we wrote there.
+const APPLY_SCOPE_KEY = 'chroma-apply-scope-v1'
 const CORE_DESKTOP_THEMES = new Set(['nous', 'midnight', 'ember', 'mono', 'cyberpunk', 'slate'])
 const EMOJI_FALLBACK = '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", emoji'
 const DEFAULT_FONT_SANS = '"Segoe WPC", "Segoe UI", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif, ' + EMOJI_FALLBACK
@@ -691,6 +694,40 @@ function readAppearance(profile = 'default') {
   }
 }
 
+// --- apply scope -----------------------------------------------------------
+//
+// Per-profile Desktop themes are the Desktop's OWN behaviour: ThemeProvider
+// persists the active skin per profile (skinPref -> PROFILE_SKINS_KEY) and Chroma
+// inherits it because it applies through setTheme(). What flattens the user's
+// per-profile intent is OUR gateway broadcast -- config.set writes the one global
+// display.skin and broadcasts skin.changed, and an inbound broadcast is drained
+// through setTheme, which persists into whichever profile is active right then.
+//
+// So the scope decides only whether a pick is BROADCAST. The default is
+// 'everywhere', which is today's behaviour: silently changing what every existing
+// pick does would repeat the gateway-sync removal.
+
+const APPLY_SCOPE_LOCAL = 'profile'
+const APPLY_SCOPE_EVERYWHERE = 'everywhere'
+
+function readApplyScope(profile = 'default') {
+  return readRecord(APPLY_SCOPE_KEY)[profile] === APPLY_SCOPE_LOCAL
+    ? APPLY_SCOPE_LOCAL
+    : APPLY_SCOPE_EVERYWHERE
+}
+
+function writeApplyScope(profile, scope) {
+  try {
+    const next = { ...readRecord(APPLY_SCOPE_KEY) }
+    if (scope === APPLY_SCOPE_LOCAL) next[profile] = APPLY_SCOPE_LOCAL
+    else delete next[profile]
+    window.localStorage.setItem(APPLY_SCOPE_KEY, JSON.stringify(next))
+    return true
+  } catch {
+    return false
+  }
+}
+
 function desktopModeFor(profile, renderedMode) {
   return renderedMode === 'light' || renderedMode === 'dark'
     ? renderedMode
@@ -880,6 +917,10 @@ function syncSceneToGateway(scene, mode, profile, generation) {
   const skinName = gatewaySkinNameFor(scene, mode)
   const perform = async () => {
     if ((host.state.profile.get() || 'default') !== profile) return false
+    // Scoped to this profile: do NOT broadcast. setTheme has already persisted
+    // the pick into this profile, and config.set would write the one global
+    // display.skin, pulling the CLI and every other machine along with it.
+    if (readApplyScope(profile) === APPLY_SCOPE_LOCAL) return false
     // Capture every persisted profile before config.set can broadcast and let
     // Desktop overwrite the newly active profile with this request's alias.
     const recoveryAppearances = snapshotPersistedAppearances()
@@ -986,21 +1027,28 @@ function isGatewayCapable(scene) {
   return !!(scene && (scene.gatewayLightName || scene.gatewayDarkName))
 }
 
-function CliBadge({ scene }) {
+function CliBadge({ scene, localScope }) {
   const gateway = isGatewayCapable(scene)
+  // The badge must never claim what the current scope suppresses. With a local
+  // scope a gateway-capable scene does NOT reach the CLI, so it says so rather
+  // than showing a `CLI` it will not honour.
+  const reachesCli = gateway && !localScope
+  const title = !gateway
+    ? 'Desktop only — the CLI cannot use this theme'
+    : localScope
+      ? 'Gateway skin, but scope is "This profile" — the CLI will NOT follow until you switch to Everywhere'
+      : 'Gateway skin — the CLI and every connected Desktop follow this theme'
   return jsx('span', {
-    title: gateway
-      ? 'Gateway skin — the CLI and every connected Desktop follow this theme'
-      : 'Desktop only — the CLI cannot use this theme',
+    title,
     className: cn(
       'shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide',
-      gateway ? 'bg-(--ui-accent)/15 text-(--ui-accent)' : 'text-(--ui-text-tertiary)'
+      reachesCli ? 'bg-(--ui-accent)/15 text-(--ui-accent)' : 'text-(--ui-text-tertiary)'
     ),
-    children: gateway ? 'CLI' : 'desktop'
+    children: reachesCli ? 'CLI' : gateway ? 'cli off' : 'desktop'
   })
 }
 
-function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, previewTheme, clearThemePreview }) {
+function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, previewTheme, clearThemePreview, localScope }) {
   const [renaming, setRenaming] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [draft, setDraft] = useState('')
@@ -1075,7 +1123,7 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
                 children: scene.modeSupport === 'dynamic' ? '⇄' : scene.modeSupport === 'dark' ? '☾' : '☀'
               }),
               jsx('span', { className: 'truncate text-[0.6875rem] font-medium', children: scene.label || scene.name.replace(/-/g, ' ') }),
-              jsx(CliBadge, { scene })
+              jsx(CliBadge, { scene, localScope })
             ]
           }),
           isActive
@@ -1165,6 +1213,16 @@ function ThemePicker() {
   const viewport = useValue(host.state.viewport)
   const [mode, setMode] = useState(() => desktopModeFor(profile, document.documentElement.dataset.hermesMode))
   const [importMode, setImportMode] = useState('url')
+  // Scope governs whether a pick is broadcast. Read per profile, so two profiles
+  // on one Desktop can answer this differently.
+  const [scope, setScope] = useState(() => readApplyScope(profile))
+  useEffect(() => { setScope(readApplyScope(profile)) }, [profile])
+  const changeScope = next => {
+    if (next !== APPLY_SCOPE_LOCAL && next !== APPLY_SCOPE_EVERYWHERE) return
+    writeApplyScope(profile, next)
+    setScope(next)
+    haptic('tap')
+  }
   const [importRef, setImportRef] = useState('')
   const [busy, setBusy] = useState(false)
   const [importedTick, setImportedTick] = useState(0)
@@ -1213,10 +1271,20 @@ function ThemePicker() {
     setManaging(name)
     try {
       const result = await renameOwnedSkin(name, target, active)
-      // The gateway still holds the OLD name. Left unset, the CLI resolves a skin
-      // that no longer exists and silently falls back to the default.
+      // Renaming the ACTIVE skin leaves the gateway holding a name that no longer
+      // resolves. Under 'everywhere' we repair it by broadcasting the new name.
+      // Under a local scope we must NOT broadcast -- that would overwrite another
+      // machine's choice -- so we say how to repair it rather than leave the CLI
+      // silently on a dead name.
       if (result && result.wasActive) {
-        try { await host.request('config.set', { key: 'skin', value: result.to }) } catch (e) { }
+        if (readApplyScope(profile) === APPLY_SCOPE_EVERYWHERE) {
+          try { await host.request('config.set', { key: 'skin', value: result.to }) } catch (e) { }
+        } else {
+          host.notify({
+            kind: 'info',
+            message: 'Renamed. The CLI may still name "' + name + '"; set scope to Everywhere and re-apply to repair it.'
+          })
+        }
       }
       haptic('tap')
       await refreshOwned()
@@ -1272,7 +1340,10 @@ function ThemePicker() {
       if (!IMPORTED_SKINS.some(s => s.name === scene.name)) IMPORTED_SKINS.push(scene)
       await importTweakcnIntoSkins(theme.name, theme).catch(() => null)
       haptic('tap')
-      try { await host.request('config.set', { key: 'skin', value: theme.name }) } catch (e) { }
+      // An import is still an apply, so it obeys the scope too.
+      if (readApplyScope(profile) === APPLY_SCOPE_EVERYWHERE) {
+        try { await host.request('config.set', { key: 'skin', value: theme.name }) } catch (e) { }
+      }
       try { applyScene(scene, scene.modeSupport === 'dynamic' ? mode : scene.modeSupport, () => {}, desktopTheme) } catch (e) { }
       setImportedTick(n => n + 1)
       setImportRef('')
@@ -1367,6 +1438,17 @@ function ThemePicker() {
             value: mode,
             onChange: onModeChange
           }),
+          jsx(SegmentedControl, {
+            // The scope is a first-class control, not a setting buried elsewhere:
+            // it decides whether a pick reaches the CLI, and the badges below
+            // change meaning with it.
+            options: [
+              { id: APPLY_SCOPE_LOCAL, label: 'This profile' },
+              { id: APPLY_SCOPE_EVERYWHERE, label: 'Everywhere' }
+            ],
+            value: scope,
+            onChange: changeScope
+          }),
           jsx('div', {
             className: 'flex items-center gap-2',
             children: [
@@ -1418,7 +1500,8 @@ function ThemePicker() {
                             onDelete: removeSkin,
                             onRename: renameSkin,
                             previewTheme: desktopTheme && desktopTheme.previewTheme,
-                            clearThemePreview: desktopTheme && desktopTheme.clearThemePreview
+                            clearThemePreview: desktopTheme && desktopTheme.clearThemePreview,
+                            localScope: scope === APPLY_SCOPE_LOCAL
                           })
                         )
                       })

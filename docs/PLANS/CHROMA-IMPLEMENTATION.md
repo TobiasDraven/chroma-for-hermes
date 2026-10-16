@@ -238,16 +238,62 @@ interface, reusing the backend writer so every source mints a REAL gateway skin.
 
 ---
 
-## F5 — Per-profile skins (spike first, then decide)
+## F5 — Per-profile skins — DONE (scoped apply), limitation recorded
 
-**The honest problem.** Per-profile *gateway* skins are not achievable in-plugin:
+**The correction that made this small.** Per-profile *Desktop* themes are the
+Desktop's own native behaviour, not something to build: `ThemeProvider` persists
+the active skin per profile (`profilePref` -> `skinPref` -> `PROFILE_SKINS_KEY`,
+with the legacy global `SKIN_KEY` only as inheritance fallback), and
+`setTheme()` does `skinPref.assign(liveProfile(), next)`. Chroma already inherits
+that, because it applies through `setTheme()`.
+
+So F5 was never "build per-profile skins". It was **"stop our own gateway
+broadcast flattening the per-profile choice."**
+
+### Delivered
+
+- [x] `APPLY_SCOPE_KEY = 'chroma-apply-scope-v1'` — plugin-owned, stored per
+      profile. Never an app-owned `hermes-desktop-*` key
+- [x] Scope control in the picker toolbar: **This profile** vs **Everywhere**
+- [x] `This profile` -> `setTheme` only; the app's per-profile persistence does
+      the rest, and **no `config.set` is issued**
+- [x] `Everywhere` -> unchanged: `setTheme` + `config.set`, keeping the
+      write-then-activate ordering that imported skins depend on
+- [x] All three gateway writes gated: `syncSceneToGateway`, the import path, and
+      the rename `wasActive` re-broadcast
+- [x] **The badge no longer lies.** With a local scope a gateway-capable scene
+      does not reach the CLI, so `CliBadge` renders `cli off` instead of a `CLI`
+      the scope suppresses — the tooltip says why
+- [x] **Verified before wiring:** the plugin's `skin.changed` handler only
+      DISCOVERS (feeds the `live` list); it never applies. So an inbound
+      broadcast cannot be applied into a locally-scoped profile by us
+- [x] Default is `Everywhere` — today's behaviour. Silently flipping what every
+      existing pick does would repeat the gateway-sync removal
+
+### The limitation, stated plainly
+
+**Per-profile *CLI* skins are not achievable and are not attempted.**
 `display.skin` is one global value and two profiles' CLIs can run at once, so the
-CLI cannot show two skins at the same time.
+CLI cannot show two skins simultaneously. One unavoidable consequence: under
+`This profile` the CLI keeps whatever `display.skin` was last set to, so it can
+**disagree** with the active Desktop profile. That is inherent to a single global
+value — it is stated here rather than discovered later.
 
-- [ ] Spike: confirm there is no per-profile skin-resolution hook
-- [ ] Implement the achievable design (per-profile DESKTOP theme, gateway
-      broadcast made explicit) — or park it with the reason recorded
-- [ ] State the limitation plainly. Do not fake parity.
+### Not done
+
+- [ ] Option B — "pin this profile so an inbound broadcast cannot rewrite it".
+      This means re-asserting via `setTheme` when a `skin.changed` arrives while
+      pinned. A legitimate SDK call, not the old CSS-var band-aid — but still a
+      race against the ThemeProvider, which is the exact failure this project came
+      from. Deliberately not in the first cut
+- [ ] **Verify on the G15.** This is renderer behaviour (a scope control plus a
+      conditional badge); tests and source prove the logic, not the pixels
+
+**Evidence:** persistence 34/34 (was 30 — 4 scope tests), guard 9/9, importer
+16/16, backend 34/34; `hermes plugins validate .` -> Validation passed.
+The load-bearing assertion is the NEGATIVE one:
+`a profile-scoped pick repaints locally and sends NO gateway broadcast` proves
+zero `config.set`, which a positive-only test could never do.
 
 ---
 
