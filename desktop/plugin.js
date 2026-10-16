@@ -1465,6 +1465,46 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
     c.ui_border || c.banner_border
   ].filter(Boolean)
 
+  const modeBits = jsxs('span', {
+    className: 'flex min-w-0 items-center gap-1',
+    children: [
+      jsx('span', {
+        className: cn('shrink-0 text-[0.6875rem] leading-none', mode === 'dark' ? 'text-(--ui-accent)' : 'text-(--ui-warn)'),
+        children: scene.modeSupport === 'dynamic' ? '⇄' : scene.modeSupport === 'dark' ? '☾' : '☀'
+      }),
+      jsx('span', { className: 'truncate text-[0.6875rem] font-medium', children: scene.label || scene.name.replace(/-/g, ' ') }),
+      jsx(CliBadge, { scene, localScope })
+    ]
+  })
+  const stateBit = isActive
+    ? jsx(Badge, { variant: 'outline', className: 'shrink-0 px-1 text-[0.5625rem] text-(--ui-accent)', children: 'ACTIVE' })
+    : jsx('span', { className: 'shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)', children: scene.modeSupport === 'dynamic' ? mode : scene.modeSupport })
+
+  // A circle holds only its palette. `rounded-full` does not clip children, so a
+  // label row set at the bottom of a circle's bounding box paints OUTSIDE the
+  // circle - over the page background, which looks broken. Circle mode therefore
+  // moves the label under the card instead of inside it.
+  const cardChildren = [
+    jsx('div', {
+      // The colour block fills the card. `h-5` was right for a rectangle card and
+      // wastes the middle of a square one, which is where the palette should be
+      // doing the talking.
+      className: cn(
+        'flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15',
+        shape === 'circle' ? 'rounded-full' : 'rounded-[4px]'
+      ),
+      children: strip.map((color, i) =>
+        jsx('span', { key: i, className: 'h-full flex-1', style: { backgroundColor: color } })
+      )
+    })
+  ]
+  if (shape !== 'circle') {
+    cardChildren.push(jsxs('div', {
+      className: 'flex w-full items-center justify-between gap-1',
+      children: [modeBits, stateBit]
+    }))
+  }
+
   const card = jsxs('button', {
     type: 'button',
     onClick: () => onApply(scene),
@@ -1481,36 +1521,7 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
         ? 'border-(--ui-accent) bg-(--ui-bg-tertiary)'
         : 'border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)'
     ),
-    children: [
-      jsx('div', {
-        // The colour block fills the square. `h-5` was right for a rectangle card
-        // and wastes the middle of a square one, which is where the palette
-        // should be doing the talking.
-        className: 'flex min-h-0 w-full flex-1 overflow-hidden rounded-[4px] ring-1 ring-black/15',
-        children: strip.map((color, i) =>
-          jsx('span', { key: i, className: 'h-full flex-1', style: { backgroundColor: color } })
-        )
-      }),
-      jsxs('div', {
-        className: 'flex w-full items-center justify-between gap-1',
-        children: [
-          jsxs('span', {
-            className: 'flex min-w-0 items-center gap-1',
-            children: [
-              jsx('span', {
-                className: cn('shrink-0 text-[0.6875rem] leading-none', mode === 'dark' ? 'text-(--ui-accent)' : 'text-(--ui-warn)'),
-                children: scene.modeSupport === 'dynamic' ? '⇄' : scene.modeSupport === 'dark' ? '☾' : '☀'
-              }),
-              jsx('span', { className: 'truncate text-[0.6875rem] font-medium', children: scene.label || scene.name.replace(/-/g, ' ') }),
-              jsx(CliBadge, { scene, localScope })
-            ]
-          }),
-          isActive
-            ? jsx(Badge, { variant: 'outline', className: 'shrink-0 px-1 text-[0.5625rem] text-(--ui-accent)', children: 'ACTIVE' })
-            : jsx('span', { className: 'shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)', children: scene.modeSupport === 'dynamic' ? mode : scene.modeSupport })
-        ]
-      })
-    ]
+    children: cardChildren
   })
 
   // The preview pill sits visually INSIDE the square but is a DOM sibling of the
@@ -1522,7 +1533,10 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
     onClick: () => { if (previewing) onStopPreview(); else onPreview(scene) },
     title: previewing ? 'Stop the preview and go back to your theme' : 'Preview this theme for 10 seconds, then revert',
     className: cn(
-      'absolute inset-x-1 bottom-1 z-10 rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity',
+      // Centred inside the card, not anchored to its bottom edge: a circle's
+      // bottom edge lies OUTSIDE the circle, so a bottom-anchored pill would
+      // poke out of the shape. Centring also keeps it clear of the label row.
+      'absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity',
       previewing
         ? 'border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100'
         : 'border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
@@ -1531,7 +1545,15 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
       ? jsx(PreviewCountdown, { until: previewUntil })
       : 'Preview 10s'
   })
-  const stacked = jsxs('div', { className: 'group relative w-full', children: [card, previewPill] })
+  const wrapperChildren = [card, previewPill]
+  if (shape === 'circle') {
+    // Under the circle, where the round edge cannot reach it.
+    wrapperChildren.push(jsx('div', {
+      className: 'mt-1 flex w-full items-center justify-center gap-1',
+      children: modeBits
+    }))
+  }
+  const stacked = jsxs('div', { className: 'group relative w-full', children: wrapperChildren })
 
   // The manage actions live OUTSIDE the card button. A button inside a button is
   // invalid HTML, and the card is itself a button because the whole card applies

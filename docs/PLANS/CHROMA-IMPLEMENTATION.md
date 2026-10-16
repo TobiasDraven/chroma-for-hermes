@@ -267,8 +267,13 @@ Two reports from the Captain after installing the fork, plus one request.
   `SegmentedControl` in the header, persisted under `chroma-card-shape-v1`.
   Global rather than per profile — two profiles on one machine describe the same
   window. Rectangles take a wider slot (`cardMinFor` ×1.6) so their height stays
-  usable; circles take a square slot and are round by radius, with looser padding
-  because their inscribed area is narrower than their bounding box.
+  usable.
+- **A circle holds only its palette.** `rounded-full` does not clip children, so a
+  label row set at the bottom of a circle's bounding box paints outside the
+  circle, over the page background. Circle mode therefore moves the label into a
+  caption UNDER the card, and the preview pill is centred rather than
+  bottom-anchored for the same reason — a bottom-anchored pill pokes out of the
+  round edge.
 
 **Not verified on this machine:** the rendered result. 104 px, the ×1.6 rectangle
 slot and the circle padding are judgements reasoned from the arithmetic, not
