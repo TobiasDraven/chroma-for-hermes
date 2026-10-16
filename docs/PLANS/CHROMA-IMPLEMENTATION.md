@@ -521,3 +521,63 @@ passed. 88 JS tests and 34 backend tests green.
 **A real finding that `check` surfaced and `scan` could not:** `skinToDesktopTheme` has
 cyclomatic complexity 24 against a max of 10. Logged in `docs/TASKS.md` with the note that
 it must be reduced by removing actual branching, not by relocating it into helpers.
+
+---
+
+## Complexity reduction - batch 1 (four functions, parity-proven)
+
+**The gate named one function. There were seventeen.** `rigour` reports only the
+worst offender and truncates its list ("showing first 5 violations"), so the real
+worklist had to be derived: a probe that loads the gate's OWN bundled TypeScript
+(5.9.3) and reproduces its exact rule - `gates/ast-handlers/typescript.js:176`:
+start at 1, count `if`/`case`/`default`/all loops/ternaries/`&&`/`||`, **`??` is not
+counted**, and a nested function-like node is excluded because it has its own
+budget. The probe reproduces rigour's own answer for the named function (24)
+exactly, which is what makes the rest of the list trustworthy.
+
+Over budget, before: `ThemeCard` 32, `tweakcnColors` 27, `skinToDesktopTheme` 24,
+`vsCodeTheme` 23, `parseImportedTheme` 20, `perform` 20, `stripJsonNoise` 16,
+`applyDesktopTheme` 16, `importTweakcn` 16, `tweakcnToDesktopTheme` 15,
+`normalizeLiveSkin` 15, `ThemePicker` 15, `ThemeChip` 14, `base16Theme` 13,
+`cssColorToHex` 11, `windowsTerminalTheme` 11, `migrateAppearanceAliases` 11.
+
+**Fixed in this batch (17 to 13):**
+
+| Function | Was | Now | How |
+|:--|:--|:--|:--|
+| `skinToDesktopTheme` | 24 | 1 | Nine `dark ? a : b` mix ratios became the `SKIN_RAMP` table; the eight `pick(...) || fallback` call sites became `pickColor(colors, keys, fallback)`. Palette assembly now branches not at all |
+| `tweakcnColors` | 27 | 7 | 22 `at(key) || fallback` lines became a spec table of `[key, aliases, fallback]`; the builder is one loop with one `||` in it |
+| `parseImportedTheme` | 20 | 7 | The dispatcher split into `parseImportedJson` and `windowsTerminalFromJson`, each small enough to read; the format checks stay ordered because the order is semantic |
+| `tweakcnToDesktopTheme` | 15 | 8 | CSS-var resolution moved to `tweakcnVars`; the font fallbacks stopped being repeated `||` chains |
+
+**Parity is the proof, not the test count.** Refactoring a numeric pipeline can
+move a value while every test stays green, so the mapper was pinned first: a dump
+of all 104 catalog scenes (light AND dark) plus seven hand-built edge skins -
+no seeds, a black surface seed, a light text seed, junk values, 3-digit shorthand -
+digested per scene. The refactor then produced a **byte-identical** dump. That
+comparison is now a permanent guard: `tests/scene-parity.test.mjs` against
+`tests/fixtures/scene-theme-parity.json`, regenerated only by
+`tests/regenerate-scene-parity.mjs` when a palette change is intended.
+
+The guard was fault-injected before it was trusted: moving one mix ratio
+(`card: 0.04` to `0.05`) failed three of its four tests; restoring returned four
+green and a byte-identical source file.
+
+One real finding from writing it: a skin's own seed colours pass through with their
+original case (`#F8FAFF`) while every derived colour is lowercase, so a
+lowercase-only hex assertion was wrong about the contract, not the code.
+
+**Evidence at this commit:** scene-parity 4, tweakcn-import 16, import-formats 11,
+export 4, render-smoke 3, surfaces 9, preview-pill 10, persistence 35 = 92 JS
+tests, backend 34/34, `hermes plugins validate .` passed, scene parity identical.
+
+**Remaining 13, and why they are a staged job rather than one commit:**
+`ThemeCard` 32, `vsCodeTheme` 23, `perform` 20, `stripJsonNoise` 16,
+`applyDesktopTheme` 16, `importTweakcn` 16, `normalizeLiveSkin` 15, `ThemePicker` 15,
+`ThemeChip` 14, `base16Theme` 13, `cssColorToHex` 11, `windowsTerminalTheme` 11,
+`migrateAppearanceAliases` 11. The pure mappers and parsers (`vsCodeTheme`,
+`stripJsonNoise`, `base16Theme`, `cssColorToHex`, `windowsTerminalTheme`,
+`normalizeLiveSkin`) can be pinned the same way the mapper now is. The React
+components (`ThemeCard`, `ThemePicker`, `ThemeChip`) are the harder half: their
+branching is JSX structure, so the fix is extracting sub-components and `resolve*`
+helpers, and the guard is the render harness rather than a palette digest.

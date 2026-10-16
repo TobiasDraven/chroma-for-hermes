@@ -165,48 +165,76 @@ function ensureContrast(color, bg, min) {
 // Skin → DesktopTheme — faithful port of skinToDesktopTheme() (themes/skin.ts)
 // ---------------------------------------------------------------------------
 
-function skinToDesktopTheme(skin) {
-  const colors = skin.colors || {}
-  const pick = keys => {
-    for (const key of keys) {
-      const v = colors[key]
-      if (typeof v === 'string' && hexToRgb(v)) return v
-    }
-    return null
+// The two mix ramps a skin-derived palette is built from, as data. Nine
+// `dark ? a : b` ternaries used to be scattered through the mapper below; as a
+// table the two ramps sit side by side, and the palette builder branches not at
+// all. Values are verbatim from those ternaries - this is a move, not a change.
+const SKIN_RAMP = {
+  dark: {
+    background: '#141414',
+    foreground: '#e6e6e6',
+    mix: { sidebar: 0.02, card: 0.04, muted: 0.06, popover: 0.08, input: 0.1, border: 0.16, bubble: 0.18, secondary: 0.72, accent: 0.82 }
+  },
+  light: {
+    background: '#f7f7f8',
+    foreground: '#161616',
+    mix: { sidebar: 0.012, card: 0.025, muted: 0.04, popover: 0.05, input: 0.06, border: 0.14, bubble: 0.12, secondary: 0.86, accent: 0.88 }
   }
+}
 
-  const seededBg = pick(['background', 'status_bar_bg']) || '#000000'
-  const foregroundSeed = pick(['ui_text', 'banner_text', 'status_bar_text']) || null
-  const background = seededBg !== '#000000'
-    ? seededBg
-    : foregroundSeed && luminance(foregroundSeed) > 0.5 ? '#141414' : '#f7f7f8'
+// The first present, valid hex among `keys`, else the fallback. The fallback is
+// an argument, so no caller needs a `||`.
+function pickColor(colors, keys, fallback) {
+  for (const key of keys) {
+    const value = colors[key]
+    if (typeof value === 'string' && hexToRgb(value)) return value
+  }
+  return fallback
+}
+
+// What a skin's own records say about its surface: the seeds it carries, the tone
+// they imply, and the ramp that follows from it.
+function skinSeeds(skin) {
+  const colors = skin.colors || {}
+  const surface = pickColor(colors, ['background', 'status_bar_bg'], null)
+  const text = pickColor(colors, ['ui_text', 'banner_text', 'status_bar_text'], null)
+  // Text light enough to read on dark chrome means the skin wanted a dark surface.
+  const lightText = Boolean(text && luminance(text) > 0.5)
+  // A black surface seed has always read as absent here, so fall back to the tone.
+  const absent = !surface || surface === '#000000'
+  const background = absent ? SKIN_RAMP[lightText ? 'dark' : 'light'].background : surface
   const dark = luminance(background) < 0.4
-  const foreground = foregroundSeed || (dark ? '#e6e6e6' : '#161616')
+  const ramp = SKIN_RAMP[dark ? 'dark' : 'light']
+  return { colors, ramp, background, foreground: text || ramp.foreground }
+}
 
-  const accentSeed = pick(['ui_accent', 'banner_accent', 'banner_title']) || mix(foreground, background, 0.55)
-  const sidebar = mix(background, foreground, dark ? 0.02 : 0.012)
+// The Desktop palette for a skin. No branching at all: every ratio comes from the
+// ramp, and every seed falls back through pickColor.
+function skinPalette({ colors, ramp, background, foreground }) {
+  const ratios = ramp.mix
+  const accentSeed = pickColor(colors, ['ui_accent', 'banner_accent', 'banner_title'], mix(foreground, background, 0.55))
+  const sidebar = mix(background, foreground, ratios.sidebar)
   const accent = ensureContrast(accentSeed, sidebar, 4.5)
-  const border = pick(['ui_border', 'banner_border']) || mix(background, foreground, dark ? 0.16 : 0.14)
-  const mutedForeground = pick(['banner_dim', 'session_border']) || mix(foreground, background, 0.45)
-  const destructive = pick(['ui_error']) || '#e25563'
-
-  const palette = {
+  const border = pickColor(colors, ['ui_border', 'banner_border'], mix(background, foreground, ratios.border))
+  const mutedForeground = pickColor(colors, ['banner_dim', 'session_border'], mix(foreground, background, 0.45))
+  const destructive = pickColor(colors, ['ui_error'], '#e25563')
+  return {
     background,
     foreground,
-    card: mix(background, foreground, dark ? 0.04 : 0.025),
+    card: mix(background, foreground, ratios.card),
     cardForeground: foreground,
-    muted: mix(background, foreground, dark ? 0.06 : 0.04),
+    muted: mix(background, foreground, ratios.muted),
     mutedForeground,
-    popover: mix(background, foreground, dark ? 0.08 : 0.05),
+    popover: mix(background, foreground, ratios.popover),
     popoverForeground: foreground,
     primary: accent,
     primaryForeground: readableOn(accent),
-    secondary: mix(accent, background, dark ? 0.72 : 0.86),
+    secondary: mix(accent, background, ratios.secondary),
     secondaryForeground: foreground,
-    accent: mix(accent, background, dark ? 0.82 : 0.88),
+    accent: mix(accent, background, ratios.accent),
     accentForeground: foreground,
     border,
-    input: pick(['completion_menu_bg']) || mix(background, foreground, dark ? 0.1 : 0.06),
+    input: pickColor(colors, ['completion_menu_bg'], mix(background, foreground, ratios.input)),
     ring: accent,
     midground: accent,
     midgroundForeground: readableOn(accent),
@@ -215,10 +243,13 @@ function skinToDesktopTheme(skin) {
     destructiveForeground: readableOn(destructive),
     sidebarBackground: sidebar,
     sidebarBorder: border,
-    userBubble: mix(background, accent, dark ? 0.18 : 0.12),
+    userBubble: mix(background, accent, ratios.bubble),
     userBubbleBorder: border
   }
+}
 
+function skinToDesktopTheme(skin) {
+  const palette = skinPalette(skinSeeds(skin))
   return {
     name: skin.name,
     label: skin.name.charAt(0).toUpperCase() + skin.name.slice(1),
@@ -300,41 +331,62 @@ function tweakcnThemeName(item) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'tweakcn'
 }
 
+// Every palette key, its CSS-var aliases in priority order, and the colour to use
+// when none of them is present. This was 22 `at(key) || fallback` lines; as a spec
+// the whole mapping is readable at once and the builder has one `||` in it.
 function tweakcnColors(group) {
   const g = group || {}
-  const at = key => cssColorToHex(g[key])
-  const background = at('background') || '#111111'
-  const foreground = at('foreground') || readableOn(background)
-  const primary = at('primary') || foreground
-  const border = at('border') || at('input') || mix(background, foreground, 0.2)
-
-  const colors = {
-    background,
-    foreground,
-    card: at('card') || background,
-    cardForeground: at('card-foreground') || foreground,
-    muted: at('muted') || mix(background, foreground, 0.12),
-    mutedForeground: at('muted-foreground') || mix(background, foreground, 0.45),
-    popover: at('popover') || background,
-    popoverForeground: at('popover-foreground') || foreground,
-    primary,
-    primaryForeground: at('primary-foreground') || readableOn(primary),
-    secondary: at('secondary') || mix(background, foreground, 0.12),
-    secondaryForeground: at('secondary-foreground') || foreground,
-    accent: at('accent') || mix(background, primary, 0.3),
-    accentForeground: at('accent-foreground') || foreground,
-    border,
-    input: at('input') || border,
-    ring: at('ring') || primary,
-    destructive: at('destructive') || '#b94a3a',
-    destructiveForeground: at('destructive-foreground') || '#ffffff',
-    sidebarBackground: at('sidebar') || at('sidebar-background') || mix(background, foreground, 0.03),
-    sidebarBorder: at('sidebar-border') || border,
-    userBubble: at('sidebar-accent') || mix(background, primary, 0.18),
-    userBubbleBorder: at('sidebar-border') || border
+  const at = keys => {
+    for (const key of keys) {
+      const hex = cssColorToHex(g[key])
+      if (hex) return hex
+    }
+    return null
   }
 
+  const background = at(['background']) || '#111111'
+  const foreground = at(['foreground']) || readableOn(background)
+  const primary = at(['primary']) || foreground
+  const border = at(['border']) || at(['input']) || mix(background, foreground, 0.2)
+  const soft = mix(background, foreground, 0.12)
+
+  const spec = [
+    ['card', ['card'], background],
+    ['cardForeground', ['card-foreground'], foreground],
+    ['muted', ['muted'], soft],
+    ['mutedForeground', ['muted-foreground'], mix(background, foreground, 0.45)],
+    ['popover', ['popover'], background],
+    ['popoverForeground', ['popover-foreground'], foreground],
+    ['primary', [], primary],
+    ['primaryForeground', ['primary-foreground'], readableOn(primary)],
+    ['secondary', ['secondary'], soft],
+    ['secondaryForeground', ['secondary-foreground'], foreground],
+    ['accent', ['accent'], mix(background, primary, 0.3)],
+    ['accentForeground', ['accent-foreground'], foreground],
+    ['border', [], border],
+    ['input', ['input'], border],
+    ['ring', ['ring'], primary],
+    ['destructive', ['destructive'], '#b94a3a'],
+    ['destructiveForeground', ['destructive-foreground'], '#ffffff'],
+    ['sidebarBackground', ['sidebar', 'sidebar-background'], mix(background, foreground, 0.03)],
+    ['sidebarBorder', ['sidebar-border'], border],
+    ['userBubble', ['sidebar-accent'], mix(background, primary, 0.18)],
+    ['userBubbleBorder', ['sidebar-border'], border]
+  ]
+
+  const colors = { background, foreground }
+  for (const [key, aliases, fallback] of spec) colors[key] = at(aliases) || fallback
   return colors
+}
+
+// TweakCN ships CSS variables in up to three groups: light, dark, and a theme
+// group that carries the fonts.
+function tweakcnVars(item) {
+  const cssVars = (item && item.cssVars) || {}
+  const theme = Object.assign({}, cssVars.light || {}, cssVars.theme || {})
+  const font = key => (typeof theme[key] === 'string' ? theme[key] : null)
+  const dark = cssVars.dark && Object.keys(cssVars.dark).length > 0
+  return { cssVars, fontSans: font('font-sans'), fontMono: font('font-mono'), hasDark: Boolean(dark) }
 }
 
 function tweakcnToDesktopTheme(item) {
@@ -342,21 +394,20 @@ function tweakcnToDesktopTheme(item) {
   const name = slug(item.name)
   if (!name || CORE_DESKTOP_THEMES.has(name)) return null
 
-  const cssVars = item.cssVars || {}
-  const fontTheme = Object.assign({}, cssVars.light || {}, cssVars.theme || {})
-  const hasDark = cssVars.dark && Object.keys(cssVars.dark).length > 0
-  const fontSans = typeof fontTheme['font-sans'] === 'string' ? fontTheme['font-sans'] : undefined
-  const fontMono = typeof fontTheme['font-mono'] === 'string' ? fontTheme['font-mono'] : undefined
+  const vars = tweakcnVars(item)
+  const fontSans = vars.fontSans || DEFAULT_FONT_SANS
+  const fontMono = vars.fontMono || DEFAULT_FONT_MONO
+  const fontLabel = vars.fontSans ? ` \u00b7 ${vars.fontSans.split(',')[0].trim()}` : ''
 
   return {
     name,
     label: name.replace(/-/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase()),
-    description: `TweakCN${fontSans ? ` \u00b7 ${fontSans.split(',')[0].trim()}` : ''}`,
-    colors: tweakcnColors(cssVars.light),
-    ...(hasDark ? { darkColors: tweakcnColors(cssVars.dark) } : {}),
+    description: 'TweakCN' + fontLabel,
+    colors: tweakcnColors(vars.cssVars.light),
+    ...(vars.hasDark ? { darkColors: tweakcnColors(vars.cssVars.dark) } : {}),
     typography: {
-      fontSans: fontSans || DEFAULT_FONT_SANS,
-      fontMono: fontMono || DEFAULT_FONT_MONO
+      fontSans,
+      fontMono
     },
     themePickerManaged: true,
     themePickerSource: 'tweakcn'
@@ -615,37 +666,37 @@ function looksLikeVsCode(json) {
 /** One entry point for pasted text. Sniffs the format, then hands it to the
  *  matching parser; TweakCN CSS keeps its own path so existing pastes still
  *  work. iTerm2 is recognised but deliberately refused rather than half-read. */
+// One Windows Terminal settings file can carry many schemes; the file names the
+// one it uses, and the scheme it names wins over simply being first.
+function windowsTerminalFromJson(json) {
+  if (!Array.isArray(json.schemes)) return windowsTerminalTheme(json)
+  if (!json.schemes.length) throw new Error('this Windows Terminal settings file has no schemes')
+  if (json.schemes.length === 1) return windowsTerminalTheme(json.schemes[0])
+  const wanted = json.profiles && json.profiles.defaults && json.profiles.defaults.colorScheme
+  const chosen = (wanted && json.schemes.filter(s => s && s.name === wanted)[0]) || json.schemes[0]
+  if (!chosen) throw new Error('the scheme this settings file selects is missing from its own schemes list')
+  return windowsTerminalTheme(chosen)
+}
+
+function parseImportedJson(t) {
+  const json = parseTolerantJson(t)
+  if (looksLikeWindowsTerminal(json)) return windowsTerminalFromJson(json)
+  if (looksLikeVsCode(json)) return vsCodeTheme(json)
+  throw new Error('this JSON is neither a Windows Terminal scheme nor a VS Code color theme')
+}
+
 function parseImportedTheme(text) {
   const t = (text || '').trim()
   if (!t) throw new Error('nothing to import')
-  // Real .itermcolors files open with `<?xml version=...?>`, so matching only
-  // the `<plist` or doctype prologue would miss every file in the wild.
+  // Real .itermcolors files open with `<?xml version=...?>`, so matching only the
+  // `<plist` prologue would miss every file in the wild.
   if (t[0] === '<' && /plist/i.test(t)) {
     throw new Error('iTerm2 .itermcolors is not supported yet - export it as Windows Terminal, Base16 or VS Code JSON first')
   }
-  if (t[0] === '{' || t[0] === '[') {
-    const json = parseTolerantJson(t)
-    if (looksLikeWindowsTerminal(json)) {
-      if (Array.isArray(json.schemes)) {
-        if (!json.schemes.length) throw new Error('this Windows Terminal settings file has no schemes')
-        if (json.schemes.length > 1) {
-          const wanted = json.profiles && json.profiles.defaults && json.profiles.defaults.colorScheme
-          const chosen = (wanted && json.schemes.filter(s => s && s.name === wanted)[0]) || json.schemes[0]
-          if (!chosen) throw new Error('the scheme this settings file selects is missing from its own schemes list')
-          return windowsTerminalTheme(chosen)
-        }
-        return windowsTerminalTheme(json.schemes[0])
-      }
-      return windowsTerminalTheme(json)
-    }
-    if (looksLikeVsCode(json)) return vsCodeTheme(json)
-    throw new Error('this JSON is neither a Windows Terminal scheme nor a VS Code color theme')
-  }
-  // TweakCN CSS keeps its own parser so existing pastes still work. Checked
-  // before the YAML sniff because a stylesheet can contain `name:`-looking text.
-  if (/:root\s*{/.test(t)) {
-    return parseCssTheme(text, 'pasted.css')
-  }
+  if (t[0] === '{' || t[0] === '[') return parseImportedJson(t)
+  // TweakCN CSS keeps its own parser so existing pastes still work. Checked before
+  // the YAML sniff because a stylesheet can contain `name:`-looking text.
+  if (/:root\s*{/.test(t)) return parseCssTheme(text, 'pasted.css')
   if (/^[ \t]*(scheme|name|system)[ \t]*:/m.test(t) || /base[0-9a-fA-F]{2}[ \t]*:/.test(t)) {
     return base16Theme(t)
   }

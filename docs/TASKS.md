@@ -36,7 +36,7 @@ not workarounds:
 
 | Finding | Detail |
 |:--|:--|
-| `AST_COMPLEXITY` | `skinToDesktopTheme` has cyclomatic complexity 24 against a max of 10. Reduce actual branching (Map lookups, early returns), not by moving branches into helpers |
+| `AST_COMPLEXITY` | **17 functions were over the max of 10, not one.** `rigour` names only the worst and truncates its list at five, so measure with a probe that reuses the gate's own parser and rule (`gates/ast-handlers/typescript.js`: start at 1, count if/case/default/loops/ternaries/`&&`/`||`, `??` does not count, nested functions excluded). Batch 1 fixed four - `skinToDesktopTheme` (24), `tweakcnColors` (27), `tweakcnToDesktopTheme` (15), `parseImportedTheme` (20) - by moving repeated ternaries into data tables. **13 remain**, led by `ThemeCard` (32), `vsCodeTheme` (23) and `perform` (20). Reduce real branching; do not put a `??` where a `||` was, and do not move branches into one large helper |
 | `file-size` | `desktop/plugin.js` and `desktop/plugin.template.js` exceed 500 lines. The build is generated from the template; splitting the template is the only real fix |
 | `hallucinated-imports` | Reported for `@hermes/plugin-sdk` and `react`, which the plugin deliberately does not declare as dependencies. Verified false positive: those are the only three specifiers Desktop resolves |
 | `promise-safety` | One `.then(onFulfilled, onRejected)` chain whose rejection handler IS the second argument. Converting it would discard that control flow and break the queue it protects |
