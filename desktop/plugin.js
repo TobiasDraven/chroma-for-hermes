@@ -915,7 +915,7 @@ let _importedLoaded = false
 function ensureImportedSkinsLoaded() {
   if (_importedLoaded) return
   _importedLoaded = true
-  for (const t of readStoredThemes()) {
+  for (const t of Object.values(readStoredThemes())) {
     if (t && IMPORT_SOURCES.indexOf(t.themePickerSource) >= 0) {
       const scene = { name: t.name, label: t.label || t.name, description: t.description || 'Imported theme',
         modeSupport: sceneModeSupport(t), palette: sceneModeSupport(t),
@@ -1601,7 +1601,7 @@ function ThemeCardPalette({ strip, shape }) {
       shape === 'circle' ? 'rounded-full' : 'rounded-[4px]'
     ),
     children: strip.map((color, i) =>
-      jsx('span', { key: i, className: 'w-full flex-1', style: { backgroundColor: color } })
+      jsx('span', { key: i, className: 'w-full min-h-4 flex-1', style: { backgroundColor: color } })
     )
   })
 }
@@ -2146,7 +2146,7 @@ function ThemePicker() {
             onChange: changeScope
           }),
           jsx('div', {
-            className: 'flex items-center gap-2',
+            className: 'flex items-center gap-2 min-w-0',
             children: [
               jsx(SegmentedControl, {
                 options: [ { id: 'url', label: 'URL' }, { id: 'css', label: 'CSS' } ],
