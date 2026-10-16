@@ -484,6 +484,44 @@ async function renameOwnedSkin(source, target, activeName) {
   })
 }
 
+async function exportOwnedSkins(name) {
+  if (!_rest) throw new Error('plugin backend not ready')
+  const path = name ? 'export?name=' + encodeURIComponent(name) : 'export'
+  return await _rest(path)
+}
+
+/** Pure: which file a saved export carries, and its contents. Kept pure so the
+ *  test asserts the mapping without needing a DOM or a Blob.
+ *  A single skin saves as its own YAML. A bulk export saves the backend's JSON
+ *  bundle of {name, yaml} pairs — the envelope the backend already names
+ *  chroma-skins.json, so the file matches what the API declared. */
+function exportArtifact(payload) {
+  if (!payload || !Array.isArray(payload.files) || !payload.files.length) {
+    throw new Error('export returned no files')
+  }
+  if (payload.files.length === 1 && typeof payload.filename === 'string' && /\.ya?ml$/i.test(payload.filename)) {
+    return { filename: payload.filename, text: payload.files[0].yaml }
+  }
+  return { filename: payload.filename || 'chroma-skins.json', text: JSON.stringify(payload, null, 2) }
+}
+
+/** Save a text file from the renderer. `host` exposes no save API, so this uses
+ *  an anchor + blob — which is not a fallback but the supported path: Electron's
+ *  will-download handler routes renderer anchor/blob downloads to the user's
+ *  Downloads folder with a save dialog (installDownloadHandling in
+ *  apps/desktop/electron/main.ts). */
+function saveTextFile(filename, text) {
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
 let _importedLoaded = false
 function ensureImportedSkinsLoaded() {
   if (_importedLoaded) return
@@ -1048,7 +1086,7 @@ function CliBadge({ scene, localScope }) {
   })
 }
 
-function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, previewTheme, clearThemePreview, localScope }) {
+function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewTheme, clearThemePreview, localScope }) {
   const [renaming, setRenaming] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [draft, setDraft] = useState('')
@@ -1183,6 +1221,14 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
               ]
             : [
                 jsx('button', {
+                  key: 'export',
+                  type: 'button',
+                  onClick: () => onExport(scene.name),
+                  title: 'Save this skin as hand-editable YAML you can edit and re-import',
+                  className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)',
+                  children: 'Export'
+                }),
+                jsx('button', {
                   key: 'rename',
                   type: 'button',
                   onClick: () => { setDraft(scene.name); setRenaming(true) },
@@ -1225,6 +1271,7 @@ function ThemePicker() {
   }
   const [importRef, setImportRef] = useState('')
   const [busy, setBusy] = useState(false)
+  const [exporting, setExporting] = useState(false)
   const [importedTick, setImportedTick] = useState(0)
   const [owned, setOwned] = useState({})
   const [managing, setManaging] = useState(null)
@@ -1294,6 +1341,38 @@ function ThemePicker() {
       host.notify({ kind: 'error', message: 'Rename failed: ' + (e && e.message ? e.message : e) })
     } finally {
       setManaging(null)
+    }
+  }
+
+  const exportSkin = async (name) => {
+    if (managing || exporting) return
+    setExporting(true)
+    try {
+      const payload = await exportOwnedSkins(name)
+      const art = exportArtifact(payload)
+      saveTextFile(art.filename, art.text)
+      haptic('tap')
+      host.notify({ kind: 'info', message: 'Exported ' + name + ' as ' + art.filename })
+    } catch (e) {
+      host.notify({ kind: 'error', message: 'Export failed: ' + (e && e.message ? e.message : e) })
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  const exportAllSkins = async () => {
+    if (managing || exporting) return
+    setExporting(true)
+    try {
+      const payload = await exportOwnedSkins('')
+      const art = exportArtifact(payload)
+      saveTextFile(art.filename, art.text)
+      haptic('tap')
+      host.notify({ kind: 'info', message: 'Exported ' + payload.count + ' skins as ' + art.filename })
+    } catch (e) {
+      host.notify({ kind: 'error', message: 'Export failed: ' + (e && e.message ? e.message : e) })
+    } finally {
+      setExporting(false)
     }
   }
 
@@ -1420,6 +1499,14 @@ function ThemePicker() {
                         ]
                       })
                     : null,
+                  jsx('button', {
+                    type: 'button',
+                    onClick: exportAllSkins,
+                    disabled: exporting || Object.keys(owned).length === 0,
+                    title: 'Save every skin Chroma owns as one hand-editable bundle',
+                    className: 'rounded border border-(--ui-stroke-secondary) px-1.5 py-0.5 text-[0.625rem] hover:border-(--ui-stroke-strong) disabled:opacity-50',
+                    children: exporting ? 'Exporting…' : 'Export all'
+                  }),
                   jsx(Badge, { variant: 'muted', children: `${filtered.length}` })
                 ]
               })
@@ -1499,6 +1586,7 @@ function ThemePicker() {
                             managing: managing === scene.name,
                             onDelete: removeSkin,
                             onRename: renameSkin,
+                            onExport: exportSkin,
                             previewTheme: desktopTheme && desktopTheme.previewTheme,
                             clearThemePreview: desktopTheme && desktopTheme.clearThemePreview,
                             localScope: scope === APPLY_SCOPE_LOCAL
