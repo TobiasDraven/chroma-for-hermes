@@ -148,5 +148,150 @@ class SkinListingTests(BackendTestCase):
             self._import("twice")
 
 
+class DeleteTests(BackendTestCase):
+    def _import(self, name):
+        self.api.import_skin(
+            self.api.ImportRequest(
+                name=name,
+                theme={"colors": {"background": "#101010", "foreground": "#eeeeee", "primary": "#ff0000"}},
+                description=f"TweakCN {name}",
+            )
+        )
+
+    def test_refuses_a_builtin(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException):
+            self.api.delete_skin("nord")
+
+    def test_refuses_a_skin_chroma_does_not_own(self):
+        """A hand-written skin has no provenance record. We must not delete work
+        the plugin never created."""
+        from fastapi import HTTPException
+
+        (Path(self.home) / "skins").mkdir(parents=True, exist_ok=True)
+        (Path(self.home) / "skins" / "handmade.yaml").write_text("name: 'handmade'\n", encoding="utf-8")
+        with self.assertRaises(HTTPException):
+            self.api.delete_skin("handmade")
+        self.assertTrue((Path(self.home) / "skins" / "handmade.yaml").is_file())
+
+    def test_refuses_a_path_traversal_name(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException):
+            self.api.delete_skin("../../escape")
+
+    def test_refuses_the_active_skin(self):
+        from fastapi import HTTPException
+
+        self._import("live")
+        with self.assertRaises(HTTPException):
+            self.api.delete_skin("live", active="live")
+        self.assertTrue((Path(self.home) / "skins" / "live.yaml").is_file())
+
+    def test_moves_to_trash_rather_than_unlinking(self):
+        self._import("mistake")
+        result = self.api.delete_skin("mistake")
+        self.assertTrue(result["deleted"])
+        self.assertFalse((Path(self.home) / "skins" / "mistake.yaml").is_file())
+        trashed = Path(result["trashed"])
+        self.assertTrue(trashed.is_file(), "the file must survive in the trash")
+        self.assertIn("_trash", trashed.parts)
+        self.assertIn("name: ", trashed.read_text(encoding="utf-8"))
+
+    def test_removes_the_provenance_record(self):
+        self._import("forget-me")
+        self.api.delete_skin("forget-me")
+        self.assertNotIn("forget-me", self.api._read_index())
+        self.assertEqual(self.api.list_chroma_skins()["count"], 0)
+
+    def test_a_vanished_file_drops_the_record_and_says_so(self):
+        self._import("phantom")
+        (Path(self.home) / "skins" / "phantom.yaml").unlink()
+        result = self.api.delete_skin("phantom")
+        self.assertFalse(result["deleted"], "nothing was deleted, and the response says so")
+        self.assertNotIn("phantom", self.api._read_index())
+
+
+class RenameTests(BackendTestCase):
+    def _import(self, name):
+        self.api.import_skin(
+            self.api.ImportRequest(
+                name=name,
+                theme={"colors": {"background": "#101010", "foreground": "#eeeeee", "primary": "#ff0000"}},
+                description=f"TweakCN {name}",
+            )
+        )
+
+    def test_renames_the_file_the_record_and_the_inner_name(self):
+        self._import("old-name")
+        result = self.api.rename_skin(self.api.RenameRequest(source="old-name", target="new-name"))
+        self.assertTrue(result["ok"])
+
+        skins = Path(self.home) / "skins"
+        self.assertFalse((skins / "old-name.yaml").is_file())
+        self.assertTrue((skins / "new-name.yaml").is_file())
+
+        # The engine reads the `name:` field, so a stale one would give the CLI
+        # a name that disagrees with the filename.
+        body = (skins / "new-name.yaml").read_text(encoding="utf-8")
+        self.assertIn("name: 'new-name'", body)
+        self.assertNotIn("old-name", body)
+
+        index = self.api._read_index()
+        self.assertNotIn("old-name", index)
+        self.assertIn("new-name", index)
+        # GET /skins reads its label from the index, so a stale one would show
+        # the old name on the card while the skin file disagreed with it.
+        self.assertEqual(index["new-name"]["label"], "TweakCN new-name")
+
+    def test_reports_whether_the_renamed_skin_was_active(self):
+        self._import("live")
+        active = self.api.rename_skin(
+            self.api.RenameRequest(source="live", target="live-2", active="live")
+        )
+        self.assertTrue(active["wasActive"], "the caller must know to re-broadcast")
+
+        self._import("idle")
+        idle = self.api.rename_skin(self.api.RenameRequest(source="idle", target="idle-2"))
+        self.assertFalse(idle["wasActive"])
+
+    def test_refuses_a_builtin_target(self):
+        from fastapi import HTTPException
+
+        self._import("mine")
+        with self.assertRaises(HTTPException):
+            self.api.rename_skin(self.api.RenameRequest(source="mine", target="nord"))
+
+    def test_refuses_an_unowned_source(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException):
+            self.api.rename_skin(self.api.RenameRequest(source="not-mine", target="whatever"))
+
+    def test_refuses_a_target_that_exists(self):
+        from fastapi import HTTPException
+
+        self._import("one")
+        self._import("two")
+        with self.assertRaises(HTTPException):
+            self.api.rename_skin(self.api.RenameRequest(source="one", target="two"))
+        self.assertTrue((Path(self.home) / "skins" / "one.yaml").is_file())
+
+    def test_refuses_a_traversal_target(self):
+        from fastapi import HTTPException
+
+        self._import("safe")
+        with self.assertRaises(HTTPException):
+            self.api.rename_skin(self.api.RenameRequest(source="safe", target="../escape"))
+
+    def test_refuses_renaming_onto_itself(self):
+        from fastapi import HTTPException
+
+        self._import("same")
+        with self.assertRaises(HTTPException):
+            self.api.rename_skin(self.api.RenameRequest(source="same", target="same"))
+
+
 if __name__ == "__main__":
     unittest.main()

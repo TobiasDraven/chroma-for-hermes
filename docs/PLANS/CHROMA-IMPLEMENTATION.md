@@ -101,16 +101,49 @@ backend, because this is catalog data plus a render.
 
 ---
 
-## F1 — Delete and rename a skin
+## F1 — Delete and rename a skin — BACKEND DONE, UI OPEN
 
-- [ ] `DELETE /api/plugins/chroma/skins/{name}`
-- [ ] `POST /api/plugins/chroma/skins/rename` `{from, to}`
-- [ ] Guards, all mandatory: built-in name refused; name must be in the
-      provenance index; the active skin refused; slug validated hard
-      (`^[a-z0-9][a-z0-9._-]*$`, reject `..`, `/`, `\`) because the name becomes a path
-- [ ] Delete MOVES to a trash folder — never unlink
-- [ ] Rename updates the live skin name from the Desktop plugin via
-      `config.set` AFTER the backend confirms (write-then-broadcast ordering)
+**Status is deliberately split.** The backend is complete and tested; the
+user-visible part is not built yet, and calling this "done" on the strength of a
+green test count is the exact failure this session has been recovering from.
+
+### Backend — done
+
+- [x] `DELETE /api/plugins/chroma/skins/{name}`
+- [x] `POST /api/plugins/chroma/skins/rename` `{source, target, active}`
+- [x] Guards, all mandatory and all tested: built-in name refused (the UNION of
+      the Desktop theme names and the skin-engine built-ins — guarding with only
+      one half mints a skin the other half refuses); name must be in the
+      provenance index; the active skin refused; slug validated hard, because the
+      name becomes a path
+- [x] Delete MOVES to `.chroma/_trash/<name>-<µs>.yaml` — never unlink.
+      Microsecond resolution because two deletes in the same second would
+      otherwise collide and `os.replace` would silently destroy the first copy,
+      defeating the recoverability it exists for
+- [x] Rename rewrites the file, the `name:` field, the `description` (it carries
+      the import label) AND the index label — a test caught the description, and
+      the same staleness in the index would have made `GET /skins` name a skin
+      that no longer exists
+- [x] Rename returns `wasActive` — see the open half below
+- [x] Route-order comment on `/skins/rename`, so a future session does not add
+      `POST /skins/{name}` and shadow it
+
+**Evidence:** `tests/test_plugin_api.py` 27/27 in the Hermes venv.
+
+### UI — NOT DONE (blocks "delete and rename skins" as a Captain-visible feature)
+
+- [ ] Per-card Delete / Rename actions on IMPORTED skins (the catalog scenes are
+      bundled; only Chroma-owned skins can be managed)
+- [ ] **`wasActive` must be consumed.** If the user renames the active skin, the
+      gateway still holds the old name, resolution fails, and the CLI silently
+      drops to the default. The plugin must call
+      `config.set {key:'skin', value:<new name>}` after the backend confirms.
+      The backend cannot do this itself — only the Desktop knows the active skin.
+- [ ] Delete must confirm first. It sits one hover from the card the user meant
+      to apply
+- [ ] Note in the UI: skins imported before the provenance index existed have no
+      record and so cannot be managed until re-imported once. Say it, do not
+      silently show them as unmanaged
 - [ ] Backend change ⇒ **full Hermes restart**, not a rescan
 
 ---

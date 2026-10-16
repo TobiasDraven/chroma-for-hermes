@@ -156,9 +156,20 @@ def list_chroma_skins() -> dict[str, Any]:
         )
     return {"ok": True, "count": len(skins), "skins": skins}
 
+# Names Chroma must never mint, because a built-in already owns them.
+#
+# This is the UNION of the two sets that actually matter, and the union is the
+# point. The Desktop plugin refuses to register anything in its own
+# CORE_DESKTOP_THEMES (nous, midnight, ember, mono, cyberpunk, slate), while the
+# skin engine ships built-ins of its own. Guarding with only one half mints a
+# skin the other half refuses: a file the CLI can see and the Desktop silently
+# ignores.
 CORE_NAMES = frozenset(
     {
-        "default", "classic", "minimal", "slate", "nord", "dracula",
+        # Desktop theme names the picker must not shadow.
+        "nous", "midnight", "ember", "mono", "cyberpunk", "slate",
+        # skin-engine built-ins.
+        "default", "classic", "minimal", "nord", "dracula",
         "monokai", "solarized-light", "solarized-dark", "ansi",
     }
 )
@@ -192,6 +203,15 @@ class ImportRequest(BaseModel):
     name: str
     theme: dict[str, Any]
     description: str = ""
+
+
+class RenameRequest(BaseModel):
+    source: str
+    target: str
+    # The caller (the Desktop plugin) knows which skin is live. We cannot read
+    # it here without importing Hermes internals, and this only decides whether
+    # the caller must re-broadcast, so it is advisory rather than trusted.
+    active: str = ""
 
 
 def _hex(v: Any) -> str | None:
@@ -315,3 +335,147 @@ def import_skin(req: ImportRequest) -> dict[str, Any]:
 
     logger.info("wrote skin %s", target)
     return {"ok": True, "name": name, "path": str(target)}
+
+
+# --- F1: delete and rename -------------------------------------------------
+#
+# Both operations act only on skins Chroma owns, and both refuse the same three
+# things. The refusals are the feature: without them, a user-supplied name
+# becomes a path, and "delete" becomes a way to destroy work the plugin never
+# created.
+
+
+def _guard_name(value: str, *, field: str) -> str:
+    """Normalise and vet a user-supplied skin name. The name becomes a path."""
+    clean = (value or "").strip().lower()
+    if _is_unsafe_name(clean):
+        raise HTTPException(400, f"{field} must be a slug (lower-case, hyphens)")
+    if clean in CORE_NAMES:
+        raise HTTPException(409, f"'{clean}' is a built-in skin")
+    return clean
+
+
+def _owned_record(name: str) -> dict[str, Any]:
+    """Return the provenance record, or refuse.
+
+    An unknown name means we did not write it. That includes a skin the user
+    hand-authored, which we must not delete or rename — we cannot know what it
+    is for.
+    """
+    record = _read_index().get(name)
+    if not isinstance(record, dict):
+        raise HTTPException(404, f"'{name}' is not a skin Chroma manages")
+    return record
+
+
+def _rewrite_skin_name(path: Path, old_name: str, new_name: str) -> None:
+    """Update the identity fields inside a renamed skin.
+
+    Two fields, for two different reasons. `name:` is what the engine resolves,
+    so leaving it stale gives the CLI one name for a file called another. The
+    `description` normally carries the import label, which mentions the old name
+    — leaving that stale shows the user a skin named one thing with a subtitle
+    naming another.
+    """
+    text = path.read_text(encoding="utf-8")
+
+    text, count = re.subn(r"^name:.*$", f"name: '{new_name}'", text, count=1, flags=re.M)
+    if count == 0:
+        text = f"name: '{new_name}'\n{text}"
+
+    text, _ = re.subn(
+        r"^description:.*$",
+        lambda m: m.group(0).replace(old_name, new_name),
+        text,
+        count=1,
+        flags=re.M,
+    )
+
+    _atomic_write_text(path, text)
+
+
+@router.delete("/skins/{name}")
+def delete_skin(name: str, active: str = "") -> dict[str, Any]:
+    """Remove a skin Chroma imported.
+
+    Deletion MOVES the file into the trash directory rather than unlinking it.
+    A mistaken click is then recoverable without a backup, which matters because
+    the button sits one hover away from the card the user meant to apply.
+    """
+    clean = _guard_name(name, field="skin name")
+    record = _owned_record(clean)
+
+    if (active or "").strip().lower() == clean:
+        raise HTTPException(409, f"'{clean}' is the active skin; switch to another theme first")
+
+    skins_dir = _skins_dir()
+    target = skins_dir / f"{clean}.yaml"
+
+    if not target.is_file():
+        # The index remembers a skin whose file is gone. Drop the record so the
+        # picker stops offering it, and say so rather than reporting a delete
+        # that removed nothing.
+        index = _read_index()
+        index.pop(clean, None)
+        _write_index(index)
+        return {"ok": True, "name": clean, "deleted": False, "note": "the file was already gone; the record is removed"}
+
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-%f")
+    trashed = _trash_dir() / f"{clean}-{stamp}.yaml"
+    os.replace(target, trashed)
+
+    index = _read_index()
+    index.pop(clean, None)
+    _write_index(index)
+
+    logger.info("trashed skin %s -> %s", target, trashed)
+    return {"ok": True, "name": clean, "deleted": True, "trashed": str(trashed), "label": record.get("label") or clean}
+
+
+# Keep this route ABOVE any future `POST /skins/{name}`: FastAPI matches in
+# registration order, so a path-parameter route declared first would swallow
+# "rename" as though it were a skin name.
+@router.post("/skins/rename")
+def rename_skin(req: RenameRequest) -> dict[str, Any]:
+    """Rename a skin Chroma imported.
+
+    Returns `wasActive` so the caller knows whether it must re-broadcast the
+    skin name: the gateway holds the OLD name until something sets it again, and
+    a rename that skips that leaves the CLI on a skin that no longer exists.
+    """
+    source = _guard_name(req.source, field="current name")
+    target = _guard_name(req.target, field="new name")
+
+    if source == target:
+        raise HTTPException(400, "the new name is the same as the current name")
+
+    record = _owned_record(source)
+
+    skins_dir = _skins_dir()
+    src = skins_dir / f"{source}.yaml"
+    dst = skins_dir / f"{target}.yaml"
+
+    if not src.is_file():
+        raise HTTPException(404, f"'{source}' has no skin file")
+    if dst.exists():
+        raise HTTPException(409, f"'{target}' already exists")
+
+    # Move first, then the index, then the identity fields: the skin file is what
+    # the engine reads, so it must never point at a file that is not there.
+    os.replace(src, dst)
+    _rewrite_skin_name(dst, source, target)
+
+    index = _read_index()
+    index.pop(source, None)
+    updated = dict(record) if isinstance(record, dict) else {}
+    label = updated.get("label") or target
+    # The label carries the import name, so it goes stale exactly as the file's
+    # description does. `or` alone would keep the old truthy string, and then
+    # GET /skins would name a skin that no longer exists.
+    updated["label"] = label.replace(source, target)
+    index[target] = updated
+    _write_index(index)
+
+    was_active = (req.active or "").strip().lower() == source
+    logger.info("renamed skin %s -> %s (wasActive=%s)", source, target, was_active)
+    return {"ok": True, "from": source, "to": target, "wasActive": was_active, "label": updated["label"]}
