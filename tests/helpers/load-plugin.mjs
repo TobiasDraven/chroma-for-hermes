@@ -87,7 +87,7 @@ export async function loadPlugin(overrides = {}) {
     .replace(/import\s+\{[^}]*\}\s+from\s+'react\/jsx-runtime'\n/, '')
     .replace(/import\s+\{[^}]*\}\s+from\s+'react'\n/, '')
     .replace('export default {', 'globalThis.plugin = {')
-    + '\nglobalThis.testHelpers = { ThemeCard, ThemePicker, ThemeChip, exportArtifact, exportOwnedSkins }\n'
+    + '\nglobalThis.testHelpers = { ThemeCard, ThemePicker, ThemeChip, exportArtifact, exportOwnedSkins, parseImportedTheme, normHex, windowsTerminalTheme, base16Theme, vsCodeTheme }\n'
 
   const context = rendererGlobals()
 

@@ -22,6 +22,26 @@ the generator test suite.
 The Hermes Desktop Theme Pack also served as the initial inspiration for this
 project's theme-switcher concept; no code from it is included.
 
+## F4 import parsers (Windows Terminal, Base16/24, VS Code)
+
+The import parsers in `desktop/plugin.template.js` (`normHex`, `luminance`,
+`stripJsonNoise`, `windowsTerminalTheme`, `base16Theme`, `vsCodeTheme`) are
+original, dependency-free implementations — the plugin is plain ESM with no
+`package.json`, so no parser library could be added. No code was copied
+verbatim. What *was* taken from the following MIT projects, and is credited
+here because it shaped the implementation:
+
+| Source | What was taken |
+|---|---|
+| [mbadolato/iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes) (MIT) | The Windows Terminal scheme field inventory (`tools/templates/windowsterminal.json`): `background`, `foreground`, the 16 ANSI names, and the optional `cursorColor` / `selectionBackground` |
+| [tinted-theming/base16-builder-node](https://github.com/tinted-theming/base16-builder-node) (MIT) | The `baseNN` key filter and the tolerant `#`-stripping (`lib/systems/basex/scheme.js`), needed because the legacy spec forbids `#` while the Tinted 0.11 spec allows it |
+| [chriskempson/base16](https://github.com/chriskempson/base16) (MIT) | The `base00`–`base0F` role semantics (`styling.md`) behind the Base16 colour mapping |
+| [microsoft/vscode](https://github.com/microsoft/vscode) (MIT) | Workbench colour identifiers and their meanings, and the fact that theme JSON permits comments and trailing commas (`src/vs/workbench/services/themes/common/colorThemeSchema.ts`), which `stripJsonNoise` exists to honour |
+
+Mapping tables that have no basis in an upstream spec — the ANSI-role guesses
+for Windows Terminal and the `baseNN` → design-token guesses for Base16 — are
+marked as guesses in the source at the point of use.
+
 ## MIT License — Copyright (c) 2026 BChop
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -13,7 +13,7 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started · `[!]` blocked ·
 | F1 | Delete / rename a skin | backend + UI done | `08d639b`, `bf36a63` |
 | F3 | Export | done | `7337536` + `8aff397` |
 | F6 | Square-card picker UI | done | `7637536` |
-| F4 | Import from more sources | **NOT STARTED** | — |
+| F4 | Import from more sources | done (3 of 4; iTerm2 deferred) | `see F4 section` |
 | F5 | Per-profile skins (scoped apply) | done | `4d22198` |
 | P0 | Missing react hooks (`useRef`/`useCallback`) | done | `see P0 section` |
 | ✓ | Review | in progress | — |
@@ -102,11 +102,11 @@ backend, because this is catalog data plus a render.
 
 ---
 
-## F1 — Delete and rename a skin — BACKEND DONE, UI OPEN
+## F1 — Delete and rename a skin — DONE
 
-**Status is deliberately split.** The backend is complete and tested; the
-user-visible part is not built yet, and calling this "done" on the strength of a
-green test count is the exact failure this session has been recovering from.
+**Status: both halves shipped.** The backend landed in `08d639b`, the
+user-visible controls in `bf36a63`. What follows records *why* the design is
+split the way it is, which is still load-bearing.
 
 ### Backend — done
 
@@ -245,18 +245,69 @@ file is F4 territory (more sources), so this is deliberately export-only.
 
 ---
 
-## F4 — Import from more sources
+## F4 — Import from more sources — DONE for 3 of 4 formats
 
-Parsers live in JS beside `parseCssTheme`, behind one `parseToColors(text, format)`
-interface, reusing the backend writer so every source mints a REAL gateway skin.
+**Research first.** A read-only scout fetched the specs and reference
+implementations before any parser was written (evidence rule: cite the file, or
+mark it unverified). Its adoption order is followed: Windows Terminal →
+Base16/24 → VS Code, iTerm2 deferred.
 
-- [ ] VS Code theme (`.json`, `colors` map)
-- [ ] Windows Terminal scheme (`.json`)
-- [ ] Base16 / Base24 (fixed 16-colour contract)
-- [ ] iTerm2 (`.itermcolors`, XML plist — `DOMParser` is available)
-- [ ] One fixture + one test per format; token mapping is a judgement call and
-      lossy, so the mapping table is written down
-- [ ] Each needs a mocked `fetch` in the harness if it fetches
+**Design deviation from the original sketch.** The plan said one
+`parseToColors(text, format)` interface, which asks the user to pick a format.
+Shipped instead: `parseImportedTheme(text)` **sniffs** the format (plist → JSON
+split by shape → TweakCN CSS → Base16 YAML). The user pastes text; making them
+name the format is a question the parser can answer itself.
+
+- [x] **Windows Terminal** — single scheme or a whole `settings.json`; when several
+      schemes are present it selects `profiles.defaults.colorScheme` (the one the
+      user is actually running) and otherwise falls back to the first
+- [x] **Base16 / Base24** — both spec generations: legacy flat (bare hex, no `#`)
+      and Tinted 0.11 nested `palette:` (explicit `variant:`). One line-regex, no
+      YAML library — the plugin is plain ESM with **no `package.json`**, so no
+      npm parser could be added (that constraint was confirmed, not assumed)
+- [x] **VS Code** — workbench `colors`, tolerant of comments and trailing commas
+      because `colorThemeSchema.ts` allows both, so `JSON.parse` alone would
+      reject a file VS Code accepts. Syntax-only themes (no `colors` block) are
+      **refused with the reason**, not imported as an empty palette
+- [x] **iTerm2 — DEFERRED.** Three extra burdens for the least Windows-relevant
+      format: XML plist parsing with no deps, the P3 colour-space matrix, and
+      ANSI-only mapping. It is *recognised* by the sniffer and refused by name
+      rather than silently treated as unrecognised text
+- [x] `normHex` normalises every colour to `#rrggbb` and drops alpha **deliberately**
+      — the backend's `_hex` discards alpha anyway, so flattening here is visible
+      instead of silent at the API
+- [x] Single-palette sources report `modeSupport` as `light` or `dark`, never
+      `dynamic`: two identical palettes would offer a light/dark toggle that
+      changes nothing. `'dark'` was already first-class (group "Dark Mode Only",
+      ☾ badge, `nextMode`), so dark-only schemes land honestly
+- [x] Provenance is per-source (`windows-terminal` / `base16` / `vscode`), gated
+      by `IMPORT_SOURCES` so a stray localStorage entry cannot become a card
+- [x] Mapping tables grounded in a spec (Base16 `baseNN` roles) vs. the guesses
+      (ANSI roles for Windows Terminal, `baseNN` → design tokens) are labelled as
+      guesses at the point of use, and the shaping MIT sources are credited in
+      `THIRD_PARTY_NOTICES.md`
+
+**Three real defects the tests caught before wiring — not staged injections:**
+
+1. iTerm2 detection matched only the `<plist`/doctype prologue, but every real
+   file opens with `<?xml ...?>`, so all of them fell through to the generic
+   "could not recognise" error.
+2. A syntax-only VS Code theme has no `colors` key at all, so it was not
+   recognised as VS Code — the user was told the *format* was unknown instead of
+   being told no workbench palette exists.
+3. `assert.rejects` silently misses a synchronous throw; the assertions now use
+   `async` arrows.
+
+A fourth was mine and would have shipped: a second `function luminance()` that
+shadowed the existing one module-wide. Naive scores `#808080` at `0.502` (light)
+and WCAG at `0.216` (dark), so `renderedModeFor`'s `0.5` threshold would have
+repainted mid-tone themes in the wrong mode. Deleted; the existing helper is
+reused.
+
+**Evidence:** `tests/import-formats.test.mjs` 11/11, export 4/4, render-smoke
+3/3, surfaces 9/9, tweakcn-import 16/16, persistence 34/34, backend 34/34,
+`hermes plugins validate .` → Validation passed. `rigour scan` FAIL 45 —
+identical to F3 (same severity breakdown, zero new finding types).
 
 ---
 
@@ -369,6 +420,7 @@ instrument that can.
 python scripts/regenerate.py                                    # ALWAYS after editing the template
 node --test tests/render-smoke.test.mjs                         # the render guard (3) — proves the build resolves its own imports
 node --test tests/export.test.mjs                               # F3 export mapping (4)
+node --test tests/import-formats.test.mjs                       # F4 import formats (11)
 node --test tests/surfaces-regression.test.mjs                  # the safety net (9)
 node --test tests/tweakcn-import.test.mjs                       # importer (16)
 node --test tests/theme-persistence.test.mjs                    # apply/paint/gateway (34)

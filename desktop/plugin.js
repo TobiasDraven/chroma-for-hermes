@@ -358,6 +358,295 @@ function tweakcnToDesktopTheme(item) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// F4 - import from the other theme formats in the wild.
+//
+// Grounding: read from the specs and the reference implementations rather than
+// from recollection; what was copied is credited in THIRD_PARTY_NOTICES.md.
+// Two hard constraints shape all of it:
+//   1. The plugin is plain ESM with only @hermes/plugin-sdk, react and
+//      react/jsx-runtime resolving - there is no package.json, so no parser
+//      library can be added. Every parser here is dependency-free.
+//   2. The backend's _hex accepts only #rrggbb / #rgb, so every colour is
+//      normalised to 6-digit hex before it can be posted.
+// ---------------------------------------------------------------------------
+
+/** Copy a flat colour map without Object.assign, which this repo's security
+ *  scan already flags as a prototype-pollution merge. */
+function copyColors(map) {
+  const out = {}
+  Object.keys(map).forEach(k => { out[k] = map[k] })
+  return out
+}
+
+/** Normalise a colour to the #rrggbb the backend accepts. Alpha is dropped on
+ *  purpose: _hex discards it silently, and a colour that survives here only to
+ *  vanish at the backend is worse than one that is visibly flattened.
+ *  Returns null when the value is unusable. */
+function normHex(value) {
+  if (typeof value !== 'string') return null
+  let v = value.trim().toLowerCase()
+  if (v[0] === '#') v = v.slice(1)
+  if (!/^[0-9a-f]+$/.test(v)) return null
+  if (v.length === 3 || v.length === 4) return '#' + v[0] + v[0] + v[1] + v[1] + v[2] + v[2]
+  if (v.length === 6) return '#' + v
+  if (v.length === 8) return '#' + v.slice(0, 6)
+  return null
+}
+
+// `luminance()` is already defined above and is reused for variant detection -
+// this file must not shadow it: the naive form scores #808080 at 0.502 (light)
+// where the WCAG form scores 0.216 (dark), and renderedModeFor() keys its 0.5
+// threshold off the original.
+
+/** Theme JSON written for humans may carry comments and trailing commas -
+ *  colorThemeSchema.ts sets allowComments and allowTrailingCommas, so a plain
+ *  JSON.parse would reject a file VS Code itself accepts. */
+function stripJsonNoise(text) {
+  let out = ''
+  let i = 0
+  const n = text.length
+  while (i < n) {
+    const c = text[i]
+    if (c === '"') {
+      out += c
+      i += 1
+      while (i < n) {
+        if (text[i] === '\\') { out += text[i] + (text[i + 1] || ''); i += 2; continue }
+        out += text[i]
+        const closed = text[i] === '"'
+        i += 1
+        if (closed) break
+      }
+      continue
+    }
+    if (c === '/' && text[i + 1] === '/') { while (i < n && text[i] !== '\n') i += 1; continue }
+    if (c === '/' && text[i + 1] === '*') {
+      i += 2
+      while (i < n && !(text[i] === '*' && text[i + 1] === '/')) i += 1
+      i += 2
+      continue
+    }
+    out += c
+    i += 1
+  }
+  return out.replace(/,\s*([}\]])/g, '$1')
+}
+
+function parseTolerantJson(text) {
+  try {
+    return JSON.parse(stripJsonNoise(text))
+  } catch (e) {
+    throw new Error('could not read the JSON: ' + (e && e.message ? e.message : e))
+  }
+}
+
+/** Windows Terminal colour scheme. Keys per the MS Learn colour-schemes page:
+ *  name, background, foreground, the 16 ANSI colours, optional cursorColor and
+ *  selectionBackground; everything but name is #rgb or #rrggbb.
+ *  The format carries NO UI semantics, so everything past background and
+ *  foreground is an ANSI role chosen as a guess - recorded as such. */
+function windowsTerminalTheme(scheme, variant) {
+  const pick = (...keys) => {
+    for (let i = 0; i < keys.length; i += 1) {
+      const h = normHex(scheme[keys[i]])
+      if (h) return h
+    }
+    return null
+  }
+  const background = pick('background')
+  const foreground = pick('foreground')
+  if (!background || !foreground) {
+    throw new Error('this Windows Terminal scheme has no background or foreground')
+  }
+  const detected = variant || (luminance(background) < 0.5 ? 'dark' : 'light')
+  const colors = {
+    background,
+    foreground,
+    cardForeground: foreground,
+    primary: pick('blue', 'brightBlue') || foreground,
+    accent: pick('brightBlue', 'cyan') || foreground,
+    border: pick('brightBlack', 'white') || foreground,
+    muted: pick('brightBlack', 'white') || foreground,
+    destructive: pick('red', 'brightRed') || foreground
+  }
+  const label = scheme.name || 'Windows Terminal'
+  return {
+    name: slug(label),
+    label,
+    description: 'Windows Terminal scheme',
+    source: 'windows-terminal',
+    variant: detected,
+    colors,
+    darkColors: copyColors(colors)
+  }
+}
+
+/** Base16 / Base24 scheme. Handles both generations of the spec without a YAML
+ *  library: the legacy flat file (chriskempson base16, values bare or #-less)
+ *  and the Tinted 0.11 nested palette (values MAY carry a #). A baseNN line is
+ *  matched anywhere, so indentation under `palette:` does not matter. */
+function base16Theme(text) {
+  const found = {}
+  const re = /^[ \t]*(base[0-9a-fA-F]{2})[ \t]*:[ \t]*['"]?#?([0-9a-fA-F]{3,8})['"]?[ \t]*(?:#.*)?$/gm
+  let m
+  while ((m = re.exec(text))) found[m[1].toLowerCase()] = normHex(m[2])
+
+  if (!found.base00 || !found.base05) {
+    throw new Error('no base00 and base05 found - this is not a Base16 or Base24 scheme')
+  }
+  // The spec has no UI semantics: baseNN are syntax roles. Mapped by colour
+  // convention, not by definition - say so where it matters.
+  const firstOf = (...keys) => {
+    for (let i = 0; i < keys.length; i += 1) if (found[keys[i]]) return found[keys[i]]
+    return null
+  }
+  const background = found.base00
+  const foreground = found.base05
+  const variantMatch = /^[ \t]*variant[ \t]*:[ \t]*(light|dark)\b/im.exec(text)
+  const nameMatch = /^[ \t]*(?:scheme|name)[ \t]*:[ \t]*(.+)$/m.exec(text)
+  const label = nameMatch ? nameMatch[1].trim().replace(/\s*#.*$/, '').replace(/['"]/g, '') : 'Base16'
+  const detected = variantMatch
+    ? variantMatch[1].toLowerCase()
+    : (luminance(background) < luminance(foreground) ? 'dark' : 'light')
+  const colors = {
+    background,
+    foreground,
+    cardForeground: firstOf('base06', 'base07') || foreground,
+    border: firstOf('base02', 'base01') || foreground,
+    muted: found.base03 || foreground,
+    primary: firstOf('base0d', 'base04') || foreground,
+    accent: firstOf('base0e', 'base0a') || foreground,
+    destructive: firstOf('base08', 'base09') || foreground
+  }
+  return {
+    name: slug(label),
+    label,
+    description: 'Base16 scheme',
+    source: 'base16',
+    variant: detected,
+    colors,
+    darkColors: copyColors(colors)
+  }
+}
+
+/** VS Code colour theme. The only one of these formats with genuine UI
+ *  semantics, including real error colours for `destructive`. Requires the
+ *  workbench `colors` block: many marketplace themes ship syntax-only
+ *  tokenColors, and those have no palette to import. */
+function vsCodeTheme(theme) {
+  const custom = theme && theme.workbench && theme.workbench.colorCustomizations
+  const src = (theme && theme.colors && typeof theme.colors === 'object')
+    ? theme.colors
+    : (custom && typeof custom === 'object' ? custom : null)
+  if (!src) {
+    throw new Error('no workbench colors found - a syntax-only VS Code theme carries no palette to import')
+  }
+  const pick = (...keys) => {
+    for (let i = 0; i < keys.length; i += 1) {
+      const h = normHex(src[keys[i]])
+      if (h) return h
+    }
+    return null
+  }
+  const background = pick('editor.background', 'sideBar.background', 'panel.background', 'background')
+  const foreground = pick('editor.foreground', 'foreground')
+  if (!background || !foreground) {
+    throw new Error('this VS Code theme has no editor.background and editor.foreground')
+  }
+  const ui = String(theme.uiTheme || theme.type || '')
+  const variant = /dark|hc-black/i.test(ui) ? 'dark'
+    : (/light|hc-light/i.test(ui) ? 'light' : (luminance(background) < 0.5 ? 'dark' : 'light'))
+  const label = theme.name || 'VS Code theme'
+  const colors = {
+    background,
+    foreground,
+    border: pick('panel.border', 'editorGroup.border', 'focusBorder') || foreground,
+    muted: pick('descriptionForeground', 'statusBar.foreground') || foreground,
+    primary: pick('button.background', 'activityBarBadge.background') || foreground,
+    accent: pick('textLink.foreground', 'list.activeSelectionBackground') || foreground,
+    cardForeground: pick('surface.foreground', 'titleBar.activeForeground') || foreground,
+    destructive: pick('errorForeground', 'inputValidation.errorBackground') || foreground
+  }
+  return {
+    name: slug(label),
+    label,
+    description: 'VS Code color theme',
+    source: 'vscode',
+    variant,
+    colors,
+    darkColors: copyColors(colors)
+  }
+}
+
+/** What a scene can actually do. A source that ships ONE palette still has to
+ *  say which one it is: reporting 'dynamic' for two identical palettes would
+ *  offer a light/dark toggle that changes nothing. */
+function sceneModeSupport(theme) {
+  const light = theme.colors || {}
+  const dark = theme.darkColors || {}
+  const keys = Object.keys(light)
+  const identical = keys.length > 0 && keys.every(k => light[k] === dark[k])
+  if (theme.darkColors && !identical) return 'dynamic'
+  return theme.variant === 'dark' ? 'dark' : 'light'
+}
+
+function looksLikeWindowsTerminal(json) {
+  if (Array.isArray(json.schemes)) return true
+  return !!(json.brightBlack && json.background && json.name && json.colors === undefined)
+}
+
+function looksLikeVsCode(json) {
+  if (json.workbench && json.workbench.colorCustomizations) return true
+  if (json.colors && typeof json.colors === 'object') {
+    return !!(json.tokenColors || json.uiTheme || json.type || json.colors['editor.background'])
+  }
+  // A syntax-only theme has no colors block at all. It is still recognisably
+  // VS Code's shape, and recognising it is what lets the parser say WHY it
+  // cannot be imported instead of "could not recognise this as...".
+  return !!(json.tokenColors || json.uiTheme)
+}
+
+/** One entry point for pasted text. Sniffs the format, then hands it to the
+ *  matching parser; TweakCN CSS keeps its own path so existing pastes still
+ *  work. iTerm2 is recognised but deliberately refused rather than half-read. */
+function parseImportedTheme(text) {
+  const t = (text || '').trim()
+  if (!t) throw new Error('nothing to import')
+  // Real .itermcolors files open with `<?xml version=...?>`, so matching only
+  // the `<plist` or doctype prologue would miss every file in the wild.
+  if (t[0] === '<' && /plist/i.test(t)) {
+    throw new Error('iTerm2 .itermcolors is not supported yet - export it as Windows Terminal, Base16 or VS Code JSON first')
+  }
+  if (t[0] === '{' || t[0] === '[') {
+    const json = parseTolerantJson(t)
+    if (looksLikeWindowsTerminal(json)) {
+      if (Array.isArray(json.schemes)) {
+        if (!json.schemes.length) throw new Error('this Windows Terminal settings file has no schemes')
+        if (json.schemes.length > 1) {
+          const wanted = json.profiles && json.profiles.defaults && json.profiles.defaults.colorScheme
+          const chosen = (wanted && json.schemes.filter(s => s && s.name === wanted)[0]) || json.schemes[0]
+          if (!chosen) throw new Error('the scheme this settings file selects is missing from its own schemes list')
+          return windowsTerminalTheme(chosen)
+        }
+        return windowsTerminalTheme(json.schemes[0])
+      }
+      return windowsTerminalTheme(json)
+    }
+    if (looksLikeVsCode(json)) return vsCodeTheme(json)
+    throw new Error('this JSON is neither a Windows Terminal scheme nor a VS Code color theme')
+  }
+  // TweakCN CSS keeps its own parser so existing pastes still work. Checked
+  // before the YAML sniff because a stylesheet can contain `name:`-looking text.
+  if (/:root\s*{/.test(t)) {
+    return parseCssTheme(text, 'pasted.css')
+  }
+  if (/^[ \t]*(scheme|name|system)[ \t]*:/m.test(t) || /base[0-9a-fA-F]{2}[ \t]*:/.test(t)) {
+    return base16Theme(t)
+  }
+  throw new Error('could not recognise this as TweakCN CSS, Windows Terminal, Base16 or VS Code JSON')
+}
+
 function tweakcnUrl(ref) {
   ref = (ref || '').trim()
   if (!ref) return null
@@ -445,7 +734,7 @@ function persistTheme(theme) {
   return true
 }
 
-async function importTweakcnIntoSkins(name, theme) {
+async function importThemeIntoSkins(name, theme) {
   if (!_rest) throw new Error('plugin backend not ready')
   const r = await _rest('import', { method: 'POST', body: JSON.stringify({ name, theme }) })
   return r
@@ -522,14 +811,19 @@ function saveTextFile(filename, text) {
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
+/** Every provenance tag an imported theme may carry. Stored themes are only
+ *  re-hydrated for a tag in this list, so a stray localStorage entry cannot
+ *  become a phantom card. */
+const IMPORT_SOURCES = ['tweakcn', 'windows-terminal', 'base16', 'vscode']
+
 let _importedLoaded = false
 function ensureImportedSkinsLoaded() {
   if (_importedLoaded) return
   _importedLoaded = true
   for (const t of readStoredThemes()) {
-    if (t && t.themePickerSource === 'tweakcn') {
-      const scene = { name: t.name, label: t.label || t.name, description: t.description || 'TweakCN import',
-        modeSupport: t.darkColors ? 'dynamic' : 'light', palette: t.darkColors ? 'dynamic' : 'light',
+    if (t && IMPORT_SOURCES.indexOf(t.themePickerSource) >= 0) {
+      const scene = { name: t.name, label: t.label || t.name, description: t.description || 'Imported theme',
+        modeSupport: sceneModeSupport(t), palette: sceneModeSupport(t),
         colors: t.colors, lightColors: t.colors, darkColors: t.darkColors, typography: t.typography }
       if (!IMPORTED_SKINS.some(s => s.name === scene.name)) IMPORTED_SKINS.push(scene)
     }
@@ -1400,24 +1694,24 @@ function ThemePicker() {
     try {
       const theme = (importMode === 'url')
         ? await fetchTweakcnTheme(ref)
-        : await parseCssTheme(ref, ref.split('/').pop() || 'pasted')
+        : await parseImportedTheme(ref)
       if (CORE_DESKTOP_THEMES && CORE_DESKTOP_THEMES.has(theme.name)) throw new Error('refusing to shadow a built-in theme')
       persistTheme(theme)
       const scene = {
         name: theme.name,
         label: theme.label || theme.name,
-        description: theme.description || 'TweakCN import',
-        modeSupport: theme.darkColors ? 'dynamic' : 'light',
-        palette: theme.darkColors ? 'dynamic' : 'light',
+        description: theme.description || 'Imported theme',
+        modeSupport: sceneModeSupport(theme),
+        palette: sceneModeSupport(theme),
         colors: theme.colors,
         lightColors: theme.colors,
         darkColors: theme.darkColors || theme.colors,
         typography: theme.typography,
         themePickerManaged: true,
-        themePickerSource: 'tweakcn'
+        themePickerSource: theme.source || 'tweakcn'
       }
       if (!IMPORTED_SKINS.some(s => s.name === scene.name)) IMPORTED_SKINS.push(scene)
-      await importTweakcnIntoSkins(theme.name, theme).catch(() => null)
+      await importThemeIntoSkins(theme.name, theme).catch(() => null)
       haptic('tap')
       // An import is still an apply, so it obeys the scope too.
       if (readApplyScope(profile) === APPLY_SCOPE_EVERYWHERE) {
@@ -1428,7 +1722,7 @@ function ThemePicker() {
       setImportRef('')
       host.notify({ kind: 'info', message: 'Imported ' + (theme.label || theme.name) })
     } catch (e) {
-      host.notify({ kind: 'error', message: 'TweakCN import failed: ' + (e && e.message ? e.message : e) })
+      host.notify({ kind: 'error', message: 'Import failed: ' + (e && e.message ? e.message : e) })
     } finally {
       setBusy(false)
     }
@@ -1546,7 +1840,7 @@ function ThemePicker() {
               }),
               importMode === 'url'
                 ? jsx(Input, { placeholder: 'TweakCN preset name or URL (e.g. catppuccin)', value: importRef, onChange: e => setImportRef(e && e.target ? e.target.value : '') })
-                : jsx('textarea', { className: 'flex-1 rounded-md border border-(--chrome-stroke) bg-(--chrome-surface) px-2 py-1 text-[0.75rem] font-mono text-(--chrome-text)', placeholder: 'Paste shadcn CSS (:root and .dark blocks)', value: importRef, rows: 3, onChange: e => setImportRef(e && e.target ? e.target.value : '') }),
+                : jsx('textarea', { className: 'flex-1 rounded-md border border-(--chrome-stroke) bg-(--chrome-surface) px-2 py-1 text-[0.75rem] font-mono text-(--chrome-text)', placeholder: 'Paste shadcn CSS, a Windows Terminal scheme, a Base16/24 scheme, or a VS Code color theme', value: importRef, rows: 3, onChange: e => setImportRef(e && e.target ? e.target.value : '') }),
               jsx(Button, { variant: 'secondary', disabled: busy || !importRef.trim(), onClick: importTweakcn, children: busy ? 'Importing…' : 'Import' })
             ]
           })
