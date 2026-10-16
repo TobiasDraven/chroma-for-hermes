@@ -448,6 +448,39 @@ async function importTweakcnIntoSkins(name, theme) {
   return r
 }
 
+/**
+ * Skins Chroma owns, keyed by name.
+ *
+ * Only these can be deleted or renamed: the catalog scenes are bundled with the
+ * plugin and the backend refuses anything without a provenance record. A skin
+ * imported before the index existed has no record either, so it reports as
+ * unmanaged — which is honest, and why the picker says so instead of pretending.
+ */
+async function listOwnedSkins() {
+  if (!_rest) return {}
+  const result = await _rest('skins')
+  const rows = (result && result.skins) || []
+  const owned = {}
+  for (const row of rows) owned[row.name] = row
+  return owned
+}
+
+async function deleteOwnedSkin(name, activeName) {
+  if (!_rest) throw new Error('plugin backend not ready')
+  // The active-skin guard is enforced by the caller first; this query is the
+  // second line of defence, so a stale caller cannot delete the live theme.
+  const suffix = activeName ? '?active=' + encodeURIComponent(activeName) : ''
+  return await _rest('skins/' + encodeURIComponent(name) + suffix, { method: 'DELETE' })
+}
+
+async function renameOwnedSkin(source, target, activeName) {
+  if (!_rest) throw new Error('plugin backend not ready')
+  return await _rest('skins/rename', {
+    method: 'POST',
+    body: JSON.stringify({ source, target, active: activeName || '' })
+  })
+}
+
 let _importedLoaded = false
 function ensureImportedSkinsLoaded() {
   if (_importedLoaded) return
@@ -967,7 +1000,10 @@ function CliBadge({ scene }) {
   })
 }
 
-function ThemeCard({ scene, mode, active, applying, onApply }) {
+function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename }) {
+  const [renaming, setRenaming] = useState(false)
+  const [confirming, setConfirming] = useState(false)
+  const [draft, setDraft] = useState('')
   const c = (mode === 'dark' ? scene.darkColors : scene.lightColors) || scene.colors || {}
   const isActive = scene.name === active
   const strip = [
@@ -978,7 +1014,7 @@ function ThemeCard({ scene, mode, active, applying, onApply }) {
     c.ui_border || c.banner_border
   ].filter(Boolean)
 
-  return jsxs('button', {
+  const card = jsxs('button', {
     type: 'button',
     onClick: () => onApply(scene),
     disabled: applying === scene.name,
@@ -1017,6 +1053,75 @@ function ThemeCard({ scene, mode, active, applying, onApply }) {
       })
     ]
   })
+
+  // The manage actions live OUTSIDE the card button. A button inside a button is
+  // invalid HTML, and the card is itself a button because the whole card applies
+  // the theme.
+  const actions = owned
+    ? jsxs('div', {
+        className: 'mt-1 flex items-center gap-1 text-[0.625rem]',
+        children: renaming
+          ? [
+              jsx('input', {
+                key: 'name',
+                type: 'text',
+                value: draft,
+                onChange: e => setDraft(e.target.value),
+                onKeyDown: e => {
+                  if (e.key === 'Enter') { onRename(scene.name, draft); setRenaming(false) }
+                  if (e.key === 'Escape') { setRenaming(false) }
+                },
+                className: 'min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5'
+              }),
+              jsx('button', {
+                key: 'save',
+                type: 'button',
+                disabled: managing,
+                onClick: () => { onRename(scene.name, draft); setRenaming(false) },
+                className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)',
+                children: managing ? 'Saving…' : 'Save'
+              })
+            ]
+          : confirming
+            ? [
+                jsx('span', { key: 'q', className: 'text-(--ui-text-tertiary)', children: 'Delete? It goes to the trash.' }),
+                jsx('button', {
+                  key: 'yes',
+                  type: 'button',
+                  disabled: managing,
+                  onClick: () => { onDelete(scene.name); setConfirming(false) },
+                  className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 text-(--ui-error) hover:border-(--ui-stroke-strong)',
+                  children: managing ? 'Deleting…' : 'Yes'
+                }),
+                jsx('button', {
+                  key: 'no',
+                  type: 'button',
+                  onClick: () => setConfirming(false),
+                  className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)',
+                  children: 'No'
+                })
+              ]
+            : [
+                jsx('button', {
+                  key: 'rename',
+                  type: 'button',
+                  onClick: () => { setDraft(scene.name); setRenaming(true) },
+                  className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)',
+                  children: 'Rename'
+                }),
+                jsx('button', {
+                  key: 'delete',
+                  type: 'button',
+                  onClick: () => setConfirming(true),
+                  className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)',
+                  children: 'Delete'
+                })
+              ]
+      })
+    : null
+
+  if (!owned) return card
+  return jsxs('div', { className: 'flex w-full flex-col', children: [card, actions] })
 }
 
 function ThemePicker() {
@@ -1031,6 +1136,66 @@ function ThemePicker() {
   const [importRef, setImportRef] = useState('')
   const [busy, setBusy] = useState(false)
   const [importedTick, setImportedTick] = useState(0)
+  const [owned, setOwned] = useState({})
+  const [managing, setManaging] = useState(null)
+
+  const refreshOwned = useCallback(async () => {
+    try {
+      setOwned(await listOwnedSkins())
+    } catch (e) {
+      // A backend that is not mounted yet is not worth shouting about. The
+      // manage actions simply stay hidden until it answers, which is the
+      // truthful state of affairs.
+      setOwned({})
+    }
+  }, [])
+
+  useEffect(() => { refreshOwned() }, [refreshOwned, importedTick])
+
+  const removeSkin = async (name) => {
+    if (managing) return
+    if (name === active) {
+      host.notify({ kind: 'error', message: 'Switch to another theme before deleting this one' })
+      return
+    }
+    setManaging(name)
+    try {
+      const result = await deleteOwnedSkin(name, active)
+      haptic('tap')
+      await refreshOwned()
+      setImportedTick(n => n + 1)
+      host.notify({
+        kind: 'info',
+        message: result && result.deleted ? 'Deleted ' + name + ' (recoverable from the Chroma trash)' : 'Removed the record for ' + name
+      })
+    } catch (e) {
+      host.notify({ kind: 'error', message: 'Delete failed: ' + (e && e.message ? e.message : e) })
+    } finally {
+      setManaging(null)
+    }
+  }
+
+  const renameSkin = async (name, next) => {
+    const target = (next || '').trim().toLowerCase()
+    if (!target || target === name || managing) return
+    setManaging(name)
+    try {
+      const result = await renameOwnedSkin(name, target, active)
+      // The gateway still holds the OLD name. Left unset, the CLI resolves a skin
+      // that no longer exists and silently falls back to the default.
+      if (result && result.wasActive) {
+        try { await host.request('config.set', { key: 'skin', value: result.to }) } catch (e) { }
+      }
+      haptic('tap')
+      await refreshOwned()
+      setImportedTick(n => n + 1)
+      host.notify({ kind: 'info', message: 'Renamed to ' + target })
+    } catch (e) {
+      host.notify({ kind: 'error', message: 'Rename failed: ' + (e && e.message ? e.message : e) })
+    } finally {
+      setManaging(null)
+    }
+  }
 
   useEffect(() => { ensureImportedSkinsLoaded() }, [])
 
@@ -1204,7 +1369,20 @@ function ThemePicker() {
                           jsx('div', {
                             key: scene.name,
                             style: { width: cardWidth },
-                            children: jsx(ThemeCard, { scene, mode: scene.modeSupport === 'dynamic' ? mode : scene.modeSupport, active, applying, onApply })
+                            children: jsx(ThemeCard, {
+                              scene,
+                              mode: scene.modeSupport === 'dynamic' ? mode : scene.modeSupport,
+                              active,
+                              applying,
+                              onApply,
+                              // Only skins Chroma owns can be managed. The catalog
+                              // scenes ship with the plugin and the backend
+                              // refuses anything without a provenance record.
+                              owned: !!owned[scene.name],
+                              managing: managing === scene.name,
+                              onDelete: removeSkin,
+                              onRename: renameSkin
+                            })
                           })
                         )
                       })

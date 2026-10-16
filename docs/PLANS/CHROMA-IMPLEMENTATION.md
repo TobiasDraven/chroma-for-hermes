@@ -130,21 +130,28 @@ green test count is the exact failure this session has been recovering from.
 
 **Evidence:** `tests/test_plugin_api.py` 27/27 in the Hermes venv.
 
-### UI — NOT DONE (blocks "delete and rename skins" as a Captain-visible feature)
+### UI — DONE
 
-- [ ] Per-card Delete / Rename actions on IMPORTED skins (the catalog scenes are
-      bundled; only Chroma-owned skins can be managed)
-- [ ] **`wasActive` must be consumed.** If the user renames the active skin, the
-      gateway still holds the old name, resolution fails, and the CLI silently
-      drops to the default. The plugin must call
+- [x] Per-card **Rename** / **Delete** actions, shown only on skins Chroma owns
+      (the catalog scenes are bundled; the backend refuses anything without a
+      provenance record)
+- [x] **`wasActive` is consumed.** Renaming the active skin re-broadcasts
       `config.set {key:'skin', value:<new name>}` after the backend confirms.
-      The backend cannot do this itself — only the Desktop knows the active skin.
-- [ ] Delete must confirm first. It sits one hover from the card the user meant
-      to apply
-- [ ] Note in the UI: skins imported before the provenance index existed have no
-      record and so cannot be managed until re-imported once. Say it, do not
-      silently show them as unmanaged
+      Without it the gateway keeps the old name, resolution fails, and the CLI
+      silently drops to the default skin
+- [x] Delete confirms inline first — it sits one click from the card the user
+      meant to apply — and the confirmation says the skin goes to the trash
+- [x] The actions live **outside** the card button: a button inside a button is
+      invalid HTML, and the card is itself a button
+- [x] No `window.confirm` / `window.prompt`: both are unreliable in the renderer,
+      and a confirm that silently returns true is worse than none
+- [ ] Skins imported before the provenance index existed have no record and
+      cannot be managed until re-imported once. **Still to say in the UI** — they
+      currently just show no actions
 - [ ] Backend change ⇒ **full Hermes restart**, not a rescan
+
+**Evidence:** backend 27/27; guard 9/9, importer 16/16, persistence 30/30;
+`hermes plugins validate .` → Validation passed.
 
 ---
 
