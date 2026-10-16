@@ -479,3 +479,52 @@ def rename_skin(req: RenameRequest) -> dict[str, Any]:
     was_active = (req.active or "").strip().lower() == source
     logger.info("renamed skin %s -> %s (wasActive=%s)", source, target, was_active)
     return {"ok": True, "from": source, "to": target, "wasActive": was_active, "label": updated["label"]}
+
+
+# --- F3: export ------------------------------------------------------------
+
+
+@router.get("/export")
+def export_skins(name: str = "") -> dict[str, Any]:
+    """Export one owned skin, or every one, as hand-editable YAML.
+
+    The YAML written here is byte-for-byte what the importer writes, so an export
+    round-trips: a user can export, hand-edit the file, and bring it back.
+
+    Returned as JSON rather than as a raw file/zip download because the plugin's
+    only channel back to the pane is a JSON REST call. Wrapping the text keeps it
+    working over that channel; the pane turns it into a file the user saves. A zip
+    here would have to survive that same channel, and a binary body is the one
+    thing it is least likely to carry intact.
+    """
+    skins_dir = _skins_dir()
+    index = _read_index()
+
+    def read_one(skin: str) -> str:
+        path = skins_dir / f"{skin}.yaml"
+        if not path.is_file():
+            raise HTTPException(404, f"'{skin}' has no skin file")
+        return path.read_text(encoding="utf-8")
+
+    if name:
+        clean = _guard_name(name, field="skin name")
+        _owned_record(clean)
+        return {
+            "ok": True,
+            "filename": f"{clean}.yaml",
+            "count": 1,
+            "files": [{"name": clean, "yaml": read_one(clean)}],
+        }
+
+    files = [
+        {"name": skin, "yaml": read_one(skin)}
+        for skin in sorted(index)
+        if (skins_dir / f"{skin}.yaml").is_file()
+    ]
+    return {
+        "ok": True,
+        "filename": "chroma-skins.json",
+        "count": len(files),
+        "index": index,
+        "files": files,
+    }

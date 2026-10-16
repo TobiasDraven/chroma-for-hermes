@@ -155,15 +155,37 @@ green test count is the exact failure this session has been recovering from.
 
 ---
 
-## F3 — Export / import
+## F3 — Export — BACKEND DONE, UI OPEN
 
-- [ ] `GET /api/plugins/chroma/export?name=<n>` → one YAML
-- [ ] `GET /api/plugins/chroma/export` (no name) → zip of every owned skin + index
-- [ ] Import accepts `.yaml` or `.zip`, validated through the same writer
-- [ ] Export round-trips through the SAME schema the importer writes, so an
-      export is also a hand-editable file — say so in the UI
-- [ ] Renderer save path: check for a host file-save API before falling back to
-      a blob + temporary `<a download>`
+The Captain's list says *"Export individual or all skins"*. Importing the exported
+file is F4 territory (more sources), so this is deliberately export-only.
+
+### Backend — done
+
+- [x] `GET /api/plugins/chroma/export?name=<n>` → one skin's YAML
+- [x] `GET /api/plugins/chroma/export` → every owned skin + the index
+- [x] Refusals match F1: built-in, unowned, traversal name
+- [x] **JSON envelope, not a zip, and that is a deliberate call.** The pane's only
+      channel back from the backend is a JSON REST call, and a binary body is the
+      one thing it is least likely to carry intact. The YAML text rides inside
+      the JSON; the pane turns it into a file the user saves. A zip here would
+      look more conventional and fail at the only place it matters
+- [x] Round-trip proven: the tests parse the exported YAML back with a real YAML
+      parser and assert the schema the importer writes
+- [x] A vanished file is skipped in the bulk export rather than 500-ing the whole
+      download
+- [x] A deleted skin's content is still readable from the trash — deletion is
+      recoverable, and this is how a user actually recovers it
+
+**Evidence:** `tests/test_plugin_api.py` 34/34 (was 27).
+
+### UI — NOT DONE
+
+- [ ] `Export` on an owned card, and `Export all` in the header
+- [ ] Save path: check for a host file-save API before falling back to a blob and
+      a temporary `<a download>` anchor. **Verify on the G15** — the renderer may
+      sandbox downloads
+- [ ] Say in the UI that an export is hand-editable and re-importable
 
 ---
 

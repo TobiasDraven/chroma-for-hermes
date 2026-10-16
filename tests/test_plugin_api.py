@@ -293,5 +293,74 @@ class RenameTests(BackendTestCase):
             self.api.rename_skin(self.api.RenameRequest(source="same", target="same"))
 
 
+class ExportTests(BackendTestCase):
+    def _import(self, name):
+        self.api.import_skin(
+            self.api.ImportRequest(
+                name=name,
+                theme={"colors": {"background": "#101010", "foreground": "#eeeeee", "primary": "#ff0000"}},
+                description=f"TweakCN {name}",
+            )
+        )
+
+    def test_exports_one_skin_as_reimportable_yaml(self):
+        yaml = __import__("yaml")
+        self._import("catppuccin")
+        result = self.api.export_skins(name="catppuccin")
+
+        self.assertEqual(result["count"], 1)
+        self.assertEqual(result["filename"], "catppuccin.yaml")
+        body = result["files"][0]["yaml"]
+
+        # The export must round-trip: the importer writes this schema, so a user
+        # can export, hand-edit and bring the file back.
+        parsed = yaml.safe_load(body)
+        self.assertEqual(parsed["name"], "catppuccin")
+        self.assertIn("colors", parsed)
+        self.assertTrue(parsed["colors"]["background"].startswith("#"))
+
+    def test_exports_every_owned_skin(self):
+        self._import("one")
+        self._import("two")
+        result = self.api.export_skins()
+        self.assertEqual(result["count"], 2)
+        self.assertEqual(sorted(f["name"] for f in result["files"]), ["one", "two"])
+        self.assertIn("one", result["index"])
+
+    def test_refuses_an_unowned_skin(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException):
+            self.api.export_skins(name="not-mine")
+
+    def test_refuses_a_traversal_name(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException):
+            self.api.export_skins(name="../../escape")
+
+    def test_exporting_nothing_is_an_empty_result_not_an_error(self):
+        result = self.api.export_skins()
+        self.assertEqual(result["count"], 0)
+        self.assertEqual(result["files"], [])
+
+    def test_a_missing_file_is_skipped_in_the_bulk_export(self):
+        self._import("present")
+        self._import("gone")
+        (Path(self.home) / "skins" / "gone.yaml").unlink()
+        result = self.api.export_skins()
+        self.assertEqual(result["count"], 1, "a vanished file must not break the export")
+        self.assertEqual(result["files"][0]["name"], "present")
+
+    def test_a_deleted_skin_can_be_exported_from_the_trash(self):
+        """Deletion is recoverable, and the export is how a user recovers the
+        content — so the trashed file must still be readable YAML."""
+        yaml = __import__("yaml")
+        self._import("mistake")
+        deletion = self.api.delete_skin("mistake")
+        body = Path(deletion["trashed"]).read_text(encoding="utf-8")
+        self.assertEqual(yaml.safe_load(body)["name"], "mistake")
+
+
 if __name__ == "__main__":
     unittest.main()
