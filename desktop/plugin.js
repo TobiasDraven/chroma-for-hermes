@@ -67,7 +67,9 @@ const APPLY_SCOPE_KEY = 'chroma-apply-scope-v1'
 // selection, so it is not namespaced by profile the way the apply scope is:
 // two profiles on one machine describe the same window.
 const CARD_SHAPE_KEY = 'chroma-card-shape-v1'
+const CARD_SIZE_KEY = 'chroma-card-size-v1'
 const CARD_SHAPES = ['square', 'rectangle', 'circle']
+const CARD_SIZES = ['sm', 'md', 'lg']
 const CORE_DESKTOP_THEMES = new Set(['nous', 'midnight', 'ember', 'mono', 'cyberpunk', 'slate'])
 const EMOJI_FALLBACK = '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", emoji'
 const DEFAULT_FONT_SANS = '"Segoe WPC", "Segoe UI", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif, ' + EMOJI_FALLBACK
@@ -1171,6 +1173,24 @@ function writeCardShape(shape) {
   }
 }
 
+/** Defaults to medium on anything unrecognised, including a storage failure:
+ *  the gallery must always render. */
+function readCardSize() {
+  let stored = null
+  try { stored = window.localStorage.getItem(CARD_SIZE_KEY) } catch (e) { return 'md' }
+  return CARD_SIZES.indexOf(stored) >= 0 ? stored : 'md'
+}
+
+function writeCardSize(size) {
+  if (CARD_SIZES.indexOf(size) < 0) return false
+  try {
+    window.localStorage.setItem(CARD_SIZE_KEY, size)
+    return true
+  } catch {
+    return false
+  }
+}
+
 function desktopModeFor(profile, renderedMode) {
   return renderedMode === 'light' || renderedMode === 'dark'
     ? renderedMode
@@ -1262,9 +1282,12 @@ function migrateAppearanceAliases() {
 const CARD_MIN = 104
 
 /** A rectangle is wider than it is tall, so it needs a wider slot to keep a
- *  usable height. A circle needs a square slot, exactly like a square card. */
-function cardMinFor(shape) {
-  return shape === 'rectangle' ? Math.round(CARD_MIN * 1.6) : CARD_MIN
+ *  usable height. A circle needs a square slot, exactly like a square card.
+ *  Size multiplies the base: sm = 0.77x, md = 1x, lg = 1.35x. */
+function cardMinFor(shape, size) {
+  const base = shape === 'rectangle' ? Math.round(CARD_MIN * 1.6) : CARD_MIN
+  const multiplier = size === 'sm' ? 0.77 : (size === 'lg' ? 1.35 : 1)
+  return Math.round(base * multiplier)
 }
 
 /** The card's aspect ratio. The shape the user picked carries the look, not the
@@ -1574,11 +1597,11 @@ function ThemeCardPalette({ strip, shape }) {
     // `h-5` was right for a rectangle card and wastes the middle of a square one,
     // which is where the palette should be doing the talking.
     className: cn(
-      'flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15',
+      'flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15',
       shape === 'circle' ? 'rounded-full' : 'rounded-[4px]'
     ),
     children: strip.map((color, i) =>
-      jsx('span', { key: i, className: 'h-full flex-1', style: { backgroundColor: color } })
+      jsx('span', { key: i, className: 'w-full flex-1', style: { backgroundColor: color } })
     )
   })
 }
@@ -1728,10 +1751,11 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   const labelClass = shape === 'circle'
     ? 'mt-1 flex w-full items-center justify-center gap-1'
     : 'flex w-full items-center justify-between gap-1'
-  const cardChildren = [jsx(ThemeCardPalette, { strip, shape })]
+  const cardChildren = []
   if (shape !== 'circle') {
     cardChildren.push(jsx(ThemeCardLabel, { scene, mode, active, localScope, showState: true, className: labelClass }))
   }
+  cardChildren.push(jsx(ThemeCardPalette, { strip, shape }))
   const card = jsxs('button', {
     type: 'button',
     onClick: () => onApply(scene),
@@ -1784,6 +1808,13 @@ function ThemePicker() {
     if (CARD_SHAPES.indexOf(next) < 0) return
     writeCardShape(next)
     setShape(next)
+    haptic('tap')
+  }
+  const [size, setSize] = useState(() => readCardSize())
+  const changeSize = next => {
+    if (CARD_SIZES.indexOf(next) < 0) return
+    writeCardSize(next)
+    setSize(next)
     haptic('tap')
   }
   const [importRef, setImportRef] = useState('')
@@ -2023,7 +2054,7 @@ function ThemePicker() {
   // width is fixed, so a wide window shows MORE cards rather than four enormous
   // ones.
   const gap = 10
-  const cardMin = cardMinFor(shape)
+  const cardMin = cardMinFor(shape, size)
   const groups = buildThemeGroups(filtered).filter(group => group.scenes.length)
   const activeScene = allSkins.find(scene => scene.name === active)
   const activeColors = activeScene && ((mode === 'dark' ? activeScene.darkColors : activeScene.lightColors) || activeScene.colors)
@@ -2089,6 +2120,18 @@ function ThemePicker() {
               ],
               value: shape,
               onChange: changeShape
+            })
+          }),
+          jsx('div', {
+            title: 'Card size: small, medium or large',
+            children: jsx(SegmentedControl, {
+              options: [
+                { id: 'sm', label: 'S' },
+                { id: 'md', label: 'M' },
+                { id: 'lg', label: 'L' }
+              ],
+              value: size,
+              onChange: changeSize
             })
           }),
           jsx(SegmentedControl, {

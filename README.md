@@ -35,6 +35,9 @@ device connected to your gateway — including the CLI.
 - **Bring your own theme** — paste a TweakCN preset, a Windows Terminal scheme,
   a Base16/Base24 palette, or a VS Code color theme and it becomes a real
   gateway skin. Rename, export as hand-editable YAML, or delete from the card.
+- **Preview before you commit** — hover any card and click "Preview 10s" to
+  apply the theme temporarily. A countdown shows the remaining time, and the
+  theme reverts automatically when it reaches zero. Click again to stop early.
 
 The plugin includes **140 skin palettes**, organized into 57 Dynamic Themes plus
 dark-only and light-only scenes. See [Third-Party Notices](THIRD_PARTY_NOTICES.md)
@@ -132,6 +135,13 @@ Finally, in Hermes Desktop:
    sidebar, or run **Open Chroma** from the Command Palette.
 3. Pick a theme and choose **Light mode** or **Dark mode**.
 
+## The statusbar lightbulb
+
+The statusbar chip shows the active theme with a color dot. When the active
+theme supports both light and dark modes, a **lightbulb icon** (💡) appears
+next to it. Click the lightbulb to toggle between light and dark mode without
+opening the picker. The choice persists per profile.
+
 ## How synchronization works
 
 A selection is applied in two coordinated steps:
@@ -204,6 +214,44 @@ THIRD_PARTY_NOTICES.md         Licenses for bundled palettes
 
 Delete the `chroma` directory from the local `desktop-plugins` folder,
 then reload Desktop plugins or restart Hermes. Your skin files are not removed.
+
+## FAQ
+
+**Q: The plugin does not appear in Hermes Desktop.**
+A: Install it, then reload desktop plugins. Open the Command Palette and run
+**Reload desktop plugins**, or restart the app. The plugin loads from
+`desktop-plugins/chroma/plugin.js` — confirm that file exists.
+
+**Q: The theme reverts after a few seconds.**
+A: An older version wrote CSS variables directly to `:root`, which ThemeProvider
+overwrote on re-render. Update to the latest version. The current plugin uses
+`requestTheme()`, which is the supported code path.
+
+**Q: The lightbulb icon does not appear in the statusbar.**
+A: The lightbulb only appears when the active theme supports both light and
+dark modes. Single-mode themes (dark-only or light-only) do not show it.
+
+**Q: I imported a theme but it does not show up.**
+A: Check the import format. Supported formats: TweakCN preset name or URL,
+shadcn CSS, Windows Terminal scheme, Base16/Base24 scheme, or VS Code color
+theme JSON. The import box shows a hint for the expected format.
+
+**Q: How do I delete a theme I imported?**
+A: Hover the card and click the manage buttons (Export, Rename, Delete). Delete
+moves the skin to the Chroma trash — it is recoverable.
+
+**Q: What does "This profile" vs "Everywhere" mean?**
+A: "This profile" applies the theme only to the current Hermes profile.
+"Everywhere" broadcasts the theme to every connected Desktop and CLI via the
+gateway. Use "Everywhere" when you want all your devices to follow.
+
+**Q: Can I use Chromeskin without a gateway?**
+A: Yes. The local catalog works offline. The current Desktop applies and saves
+themes locally. Gateway sync is optional.
+
+**Q: How do I create my own skin?**
+A: Place a YAML file in `~/.hermes/skins/`. It appears in the picker after a
+reload. See [Add your own skins](#add-your-own-skins) above.
 
 ## Credits
 

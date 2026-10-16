@@ -21,57 +21,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -101,6 +50,57 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "dark"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -165,57 +165,6 @@
      "htmlType": "button",
      "children": [
       {
-       "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-       "type": "div",
-       "children": [
-        {
-         "className": "h-full flex-1",
-         "key": 0,
-         "style": {
-          "backgroundColor": "#1b1f27"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "h-full flex-1",
-         "key": 1,
-         "style": {
-          "backgroundColor": "#5aa9e6"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "h-full flex-1",
-         "key": 2,
-         "style": {
-          "backgroundColor": "#2b3444"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "h-full flex-1",
-         "key": 3,
-         "style": {
-          "backgroundColor": "#e8edf5"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "h-full flex-1",
-         "key": 4,
-         "style": {
-          "backgroundColor": "#39445a"
-         },
-         "type": "span",
-         "children": null
-        }
-       ]
-      },
-      {
        "className": "flex w-full items-center justify-between gap-1",
        "type": "div",
        "children": [
@@ -245,6 +194,57 @@
          "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
          "type": "span",
          "children": "dark"
+        }
+       ]
+      },
+      {
+       "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+       "type": "div",
+       "children": [
+        {
+         "className": "w-full flex-1",
+         "key": 0,
+         "style": {
+          "backgroundColor": "#1b1f27"
+         },
+         "type": "span",
+         "children": null
+        },
+        {
+         "className": "w-full flex-1",
+         "key": 1,
+         "style": {
+          "backgroundColor": "#5aa9e6"
+         },
+         "type": "span",
+         "children": null
+        },
+        {
+         "className": "w-full flex-1",
+         "key": 2,
+         "style": {
+          "backgroundColor": "#2b3444"
+         },
+         "type": "span",
+         "children": null
+        },
+        {
+         "className": "w-full flex-1",
+         "key": 3,
+         "style": {
+          "backgroundColor": "#e8edf5"
+         },
+         "type": "span",
+         "children": null
+        },
+        {
+         "className": "w-full flex-1",
+         "key": 4,
+         "style": {
+          "backgroundColor": "#39445a"
+         },
+         "type": "span",
+         "children": null
         }
        ]
       }
@@ -280,57 +280,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -360,6 +309,57 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "light"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -428,57 +428,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -508,6 +457,57 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "dark"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -576,11 +576,11 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
          "type": "div",
          "children": [
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 0,
            "style": {
             "backgroundColor": "#1b1f27"
@@ -589,7 +589,7 @@
            "children": null
           },
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 1,
            "style": {
             "backgroundColor": "#5aa9e6"
@@ -598,7 +598,7 @@
            "children": null
           },
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 2,
            "style": {
             "backgroundColor": "#2b3444"
@@ -607,7 +607,7 @@
            "children": null
           },
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 3,
            "style": {
             "backgroundColor": "#e8edf5"
@@ -616,7 +616,7 @@
            "children": null
           },
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 4,
            "style": {
             "backgroundColor": "#39445a"
@@ -713,11 +713,11 @@
      "htmlType": "button",
      "children": [
       {
-       "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+       "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
        "type": "div",
        "children": [
         {
-         "className": "h-full flex-1",
+         "className": "w-full flex-1",
          "key": 0,
          "style": {
           "backgroundColor": "#1b1f27"
@@ -726,7 +726,7 @@
          "children": null
         },
         {
-         "className": "h-full flex-1",
+         "className": "w-full flex-1",
          "key": 1,
          "style": {
           "backgroundColor": "#5aa9e6"
@@ -735,7 +735,7 @@
          "children": null
         },
         {
-         "className": "h-full flex-1",
+         "className": "w-full flex-1",
          "key": 2,
          "style": {
           "backgroundColor": "#2b3444"
@@ -744,7 +744,7 @@
          "children": null
         },
         {
-         "className": "h-full flex-1",
+         "className": "w-full flex-1",
          "key": 3,
          "style": {
           "backgroundColor": "#e8edf5"
@@ -753,7 +753,7 @@
          "children": null
         },
         {
-         "className": "h-full flex-1",
+         "className": "w-full flex-1",
          "key": 4,
          "style": {
           "backgroundColor": "#39445a"
@@ -821,11 +821,11 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
          "type": "div",
          "children": [
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 0,
            "style": {
             "backgroundColor": "#1b1f27"
@@ -834,7 +834,7 @@
            "children": null
           },
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 1,
            "style": {
             "backgroundColor": "#5aa9e6"
@@ -843,7 +843,7 @@
            "children": null
           },
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 2,
            "style": {
             "backgroundColor": "#2b3444"
@@ -852,7 +852,7 @@
            "children": null
           },
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 3,
            "style": {
             "backgroundColor": "#e8edf5"
@@ -861,7 +861,7 @@
            "children": null
           },
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 4,
            "style": {
             "backgroundColor": "#39445a"
@@ -965,57 +965,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -1045,6 +994,57 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "dark"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -1116,57 +1116,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -1193,6 +1142,57 @@
            ]
           },
           null
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
+          }
          ]
         }
        ]
@@ -1260,57 +1260,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -1340,6 +1289,57 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "dark"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -1408,57 +1408,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -1485,6 +1434,57 @@
            ]
           },
           null
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
+          }
          ]
         }
        ]
@@ -1552,57 +1552,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -1632,6 +1581,57 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "dark"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -1700,30 +1700,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#101010"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#eeeeee"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -1753,6 +1729,30 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "light"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#101010"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#eeeeee"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -1821,39 +1821,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#ff9900"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#aa0000"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#00aa00"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -1883,6 +1850,39 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "light"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#ff9900"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#aa0000"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#00aa00"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -1951,11 +1951,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": []
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -1987,6 +1982,11 @@
            "children": "dark"
           }
          ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": []
         }
        ]
       },
@@ -2053,7 +2053,7 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
          "type": "div",
          "children": []
         }
@@ -2148,11 +2148,11 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
          "type": "div",
          "children": [
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 0,
            "style": {
             "backgroundColor": "#1b1f27"
@@ -2161,7 +2161,7 @@
            "children": null
           },
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 1,
            "style": {
             "backgroundColor": "#5aa9e6"
@@ -2170,7 +2170,7 @@
            "children": null
           },
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 2,
            "style": {
             "backgroundColor": "#2b3444"
@@ -2179,7 +2179,7 @@
            "children": null
           },
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 3,
            "style": {
             "backgroundColor": "#e8edf5"
@@ -2188,7 +2188,7 @@
            "children": null
           },
           {
-           "className": "h-full flex-1",
+           "className": "w-full flex-1",
            "key": 4,
            "style": {
             "backgroundColor": "#39445a"
@@ -2285,57 +2285,6 @@
      "htmlType": "button",
      "children": [
       {
-       "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-       "type": "div",
-       "children": [
-        {
-         "className": "h-full flex-1",
-         "key": 0,
-         "style": {
-          "backgroundColor": "#1b1f27"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "h-full flex-1",
-         "key": 1,
-         "style": {
-          "backgroundColor": "#5aa9e6"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "h-full flex-1",
-         "key": 2,
-         "style": {
-          "backgroundColor": "#2b3444"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "h-full flex-1",
-         "key": 3,
-         "style": {
-          "backgroundColor": "#e8edf5"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "h-full flex-1",
-         "key": 4,
-         "style": {
-          "backgroundColor": "#39445a"
-         },
-         "type": "span",
-         "children": null
-        }
-       ]
-      },
-      {
        "className": "flex w-full items-center justify-between gap-1",
        "type": "div",
        "children": [
@@ -2365,6 +2314,57 @@
          "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
          "type": "span",
          "children": "dark"
+        }
+       ]
+      },
+      {
+       "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+       "type": "div",
+       "children": [
+        {
+         "className": "w-full flex-1",
+         "key": 0,
+         "style": {
+          "backgroundColor": "#1b1f27"
+         },
+         "type": "span",
+         "children": null
+        },
+        {
+         "className": "w-full flex-1",
+         "key": 1,
+         "style": {
+          "backgroundColor": "#5aa9e6"
+         },
+         "type": "span",
+         "children": null
+        },
+        {
+         "className": "w-full flex-1",
+         "key": 2,
+         "style": {
+          "backgroundColor": "#2b3444"
+         },
+         "type": "span",
+         "children": null
+        },
+        {
+         "className": "w-full flex-1",
+         "key": 3,
+         "style": {
+          "backgroundColor": "#e8edf5"
+         },
+         "type": "span",
+         "children": null
+        },
+        {
+         "className": "w-full flex-1",
+         "key": 4,
+         "style": {
+          "backgroundColor": "#39445a"
+         },
+         "type": "span",
+         "children": null
         }
        ]
       }
@@ -2403,57 +2403,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -2483,6 +2432,57 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "dark"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -2551,57 +2551,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -2631,6 +2580,57 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "dark"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -2695,57 +2695,6 @@
      "htmlType": "button",
      "children": [
       {
-       "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-       "type": "div",
-       "children": [
-        {
-         "className": "h-full flex-1",
-         "key": 0,
-         "style": {
-          "backgroundColor": "#1b1f27"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "h-full flex-1",
-         "key": 1,
-         "style": {
-          "backgroundColor": "#5aa9e6"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "h-full flex-1",
-         "key": 2,
-         "style": {
-          "backgroundColor": "#2b3444"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "h-full flex-1",
-         "key": 3,
-         "style": {
-          "backgroundColor": "#e8edf5"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "h-full flex-1",
-         "key": 4,
-         "style": {
-          "backgroundColor": "#39445a"
-         },
-         "type": "span",
-         "children": null
-        }
-       ]
-      },
-      {
        "className": "flex w-full items-center justify-between gap-1",
        "type": "div",
        "children": [
@@ -2775,6 +2724,57 @@
          "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
          "type": "span",
          "children": "dark"
+        }
+       ]
+      },
+      {
+       "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+       "type": "div",
+       "children": [
+        {
+         "className": "w-full flex-1",
+         "key": 0,
+         "style": {
+          "backgroundColor": "#1b1f27"
+         },
+         "type": "span",
+         "children": null
+        },
+        {
+         "className": "w-full flex-1",
+         "key": 1,
+         "style": {
+          "backgroundColor": "#5aa9e6"
+         },
+         "type": "span",
+         "children": null
+        },
+        {
+         "className": "w-full flex-1",
+         "key": 2,
+         "style": {
+          "backgroundColor": "#2b3444"
+         },
+         "type": "span",
+         "children": null
+        },
+        {
+         "className": "w-full flex-1",
+         "key": 3,
+         "style": {
+          "backgroundColor": "#e8edf5"
+         },
+         "type": "span",
+         "children": null
+        },
+        {
+         "className": "w-full flex-1",
+         "key": 4,
+         "style": {
+          "backgroundColor": "#39445a"
+         },
+         "type": "span",
+         "children": null
         }
        ]
       }
@@ -2810,57 +2810,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -2890,6 +2839,57 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "dark"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -2958,48 +2958,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#202020"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#abcdef"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#abcdef"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#123456"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -3029,6 +2987,48 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "dark"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#202020"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#abcdef"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#abcdef"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#123456"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -3097,57 +3097,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -3174,6 +3123,57 @@
            ]
           },
           null
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
+          }
          ]
         }
        ]
@@ -3244,57 +3244,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -3324,6 +3273,57 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "dark"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -3392,57 +3392,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -3472,6 +3421,57 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "dark"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#2b3444"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
@@ -3540,30 +3540,6 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
-         "type": "div",
-         "children": [
-          {
-           "className": "h-full flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#101010"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "h-full flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#eeeeee"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        },
-        {
          "className": "flex w-full items-center justify-between gap-1",
          "type": "div",
          "children": [
@@ -3593,6 +3569,30 @@
            "className": "shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)",
            "type": "span",
            "children": "light"
+          }
+         ]
+        },
+        {
+         "className": "flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "type": "div",
+         "children": [
+          {
+           "className": "w-full flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#101010"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "w-full flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#eeeeee"
+           },
+           "type": "span",
+           "children": null
           }
          ]
         }
