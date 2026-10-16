@@ -1,236 +1,163 @@
-# AGENTS.md - AI Agent Instructions
+# AGENTS.md — the working contract for this repository
 
-This project uses Rigour for quality gates. If Rigour MCP tools are available, they are self-describing — use them. Otherwise use the CLI:
+Read this before touching anything. It is binding for any agent working here, human or model, and it
+is the file **every Hermes subagent inherits automatically** when it works in this workspace — so a
+rule that should steer every child belongs HERE, not in a one-off brief.
+
+**Project:** Chroma for Hermes — a theme-picker plugin for Hermes Desktop. A hard fork of
+`jdtimothy/hermes-theme-picker` (MIT). Plugin id `chroma`; the manifest is `plugin.yaml` and the
+version lives in `VERSION`. Upstream is a different project now — do not "sync" with it by reflex.
+
+---
+
+## 1. The rule that breaks everything
+
+`desktop/plugin.template.js` is the **source of truth**. `desktop/plugin.js` is **generated output**.
 
 ```bash
-npx @rigour-labs/cli check   # Run quality gates (must PASS before task is done)
-npx @rigour-labs/cli explain # Explain failures
+python scripts/regenerate.py      # after EVERY edit to the template
+node --check desktop/plugin.js    # then prove it parses
 ```
 
-## Context Efficiency Protocol
+Editing `plugin.js` by hand is always wrong: the next regenerate discards it without a word. A change
+is not shipped until the build has been regenerated, and the template is the only file to review.
 
-Follow this workflow to minimize token usage without compromising quality:
-
-1. `rigour_recall` — load project memory at session start
-2. `rigour_index` — if the pattern index is missing or stale
-3. `rigour_context_scope` — get minimal file list before reading source files
-4. `rigour_check_pattern` — verify no reinvention before writing new code
-5. Work — only touch files in the scoped edit set
-6. `rigour_review` — review your change before you say done; fix every finding and call it again
-7. `rigour_check` — quality gate unchanged (must PASS before done)
-
-Multi-agent teams: set `RIGOUR_MCP_TOOLS=governance` in the MCP server's environment to add `rigour_agent_register` (claim a scope), `rigour_checkpoint` and the handoff tools.
-
-# Rigour: Engineering Governance
-
-This project uses **Rigour MCP tools** for automated quality governance. The tools are self-describing — read their descriptions to discover the correct workflow automatically.
-
-## Key Rules
-
-- **Never** modify `rigour.yml` thresholds or ignore lists to make checks pass — fix the code instead.
-- **Never** claim "done" without a passing quality gate result.
-- Real-time hooks run automatically after every file edit. If a hook blocks you, fix the issue before continuing.
-- All actions are logged to the project's audit trail, visible in **Rigour Studio**.
-
-
-# Rigour Quality Gates
-
-This project uses **Rigour MCP tools** for automated quality governance.
-The tools are self-describing — follow their descriptions to discover the correct workflow.
-
-## Key Rules
-- **Never** modify `rigour.yml` to pass checks — fix the code instead.
-- **Never** claim "done" until you can demonstrate the feature works or the fix is verified.
-- If you create backend code, wire it to the frontend. If you create a service, connect it to the UI.
-
-## Verification
-Before saying "done", show ONE of:
-- Output proving it works.
-- The exact commands the user can run to verify.
-- The full flow from initiation to result.
-
-
-# Code Quality Standards
-
-## PRODUCTION-GRADE CODE ONLY
-- No debug logging in production code
-- No shortcuts or "temporary" fixes
-- No over-engineering - simplest solution that works
-- Follow existing code patterns and conventions
-- Handle edge cases properly
-- No TODO/FIXME comments in final code
-
-## MODULAR CODE STRUCTURE
-- Write SMALL, focused functions (< 50 lines ideally)
-- One function = one job, clearly named
-- New features go in SEPARATE FILES, not flooding existing ones
-- Keep files under 500 lines - split if growing larger
-- Extract reusable logic into utility modules
-- Avoid "god files" that do everything
-- When adding to existing code, check if a new module is more appropriate
-
-## Technical Standards
-
-### DRY Principle
-- Extract repeated logic into utilities
-- Single Responsibility: One function, one job
-- Defensive coding: Validate inputs at boundaries
-- Lazy initialization for external dependencies (secrets, connections)
-- Graceful degradation over hard failures
-
-### File Organization
-```
-# Good: Separate concerns into focused files
-governor/
-  main.py              # Entry point only
-  drift_detector.py    # Drift detection logic
-  lip_sync_analyzer.py # SyncNet integration
-  audio_analyzer.py    # Audio analysis
-
-# Bad: One massive file with everything
-governor/
-  main.py (2000+ lines with all logic mixed)
-```
-
-### API Design
-- Consistent error responses
-- Proper HTTP status codes
-- Authentication at the edge
-- Rate limiting on public endpoints
-
-## PRODUCTION-READY SELF-REVIEW (THE GATEKEEPER)
-
-Before asking for "approval," internally verify:
-
-- **Zero-Dependency Check**: Does this fix rely on a local environment variable not yet in `talentlyt-kv`?
-- **Side-Effect Audit**: Could this change trigger a 502 Bad Gateway at the `/auth/callback` or `/api/agent` endpoints?
-- **Biometric Integrity**: If touching the `Governor`, have I verified that the `similarity_score` logic remains deterministic?
-- **Cost Impact**: Does this change increase egress costs (e.g., unnecessary cross-region logging)?
-- **Error Handling**: Does the UI have a graceful fallback if the backend service is slow?
-
-
-# Investigation & Debugging Protocol
-
-## INVESTIGATION PROTOCOL
-
-When debugging:
-1. Check DEPLOYED environment (Azure, prod), not localhost unless explicitly asked
-2. Trace the actual request flow end-to-end
-3. Collect evidence at each step
-4. Present findings before proposing fixes
-
-## GAP ANALYSIS
-
-When debugging or proposing changes:
-
-1. **Trace the actual request flow** end-to-end:
-   - Client → Cloudflare → Vercel/Container App → DB
-
-2. **Identify Hidden Gaps** - Explicitly check if the change affects:
-   - **Cross-Region Handshakes**: Will this increase latency for users in Pakistan/India?
-   - **Forensic Continuity**: Does this change how Maya captures gaze or audio data?
-   - **Auth Persistence**: Will this interfere with WorkOS session tokens or M2M keys?
-
-3. **Evidence-First**: Collect logs from `talentlyt-dashboard` before proposing a fix.
-
-## Request Flow Tracing
+## 2. Repository map
 
 ```
-Client Browser
-    ↓
-Cloudflare (CDN/WAF)
-    ↓
-Azure Container Apps
-    ├── talentlyt-dashboard (Next.js)
-    └── talentlyt-agent (Python/LiveKit)
-    ↓
-PostgreSQL Database
-    ↓
-Azure Blob Storage (recordings, evidence)
+plugin.yaml            manifest (id, version, entry points) — the plugin's contract with Desktop
+VERSION                version, mirrored into plugin.yaml
+desktop/
+  plugin.template.js   SOURCE OF TRUTH: the whole renderer plugin (ESM, jsx() calls, no JSX syntax)
+  plugin.js            GENERATED from the template — never edit
+dashboard/plugin_api.py   FastAPI backend mounted at /api/plugins/chroma/ (skins, import, export, trash)
+scripts/regenerate.py     template -> build; also emits the skin catalog and gateway transports
+skins/ gateway-skins/     bundled and gateway-provided skins (data, not code)
+tests/                    node:test suites + helpers; fixtures/ holds pinned parity data
+  helpers/load-plugin.mjs THE harness: loads the built plugin into a vm context
+docs/SPEC.md              surfaces, features, backend contract, acceptance commands
+docs/ARCH.md              layout, build pipeline, load-time constraints, test strategy
+docs/DECISIONS.md         numbered decisions and WHY (read before proposing a redesign)
+docs/TASKS.md             open work, adjudicated gate findings, quality-gate debt
+docs/PLANS/               campaign tracker, roadmap, research artifacts
+THIRD_PARTY_NOTICES.md    MIT credits for every idea copied from another project — update it when you copy
+rigour.yml                quality gates; committed; NEVER tuned to make a check pass
+install/                  platform installers for the plugin
 ```
 
-## Evidence Collection
+## 3. Non-negotiable constraints
 
-Before proposing any fix:
-1. Get the actual error from logs (not assumed)
-2. Identify the exact file and line number
-3. Trace the data flow that led to the error
-4. Verify the fix doesn't break other paths
+1. **No `package.json` and no npm dependency, ever.** The Desktop plugin loader resolves exactly three
+   specifiers: `@hermes/plugin-sdk`, `react`, `react/jsx-runtime`. Everything else must be hand-written
+   and dependency-free — that is why the parsers are tables and regexes, not libraries.
+2. **Plain, uncompiled ESM.** No JSX syntax: build elements with `jsx()` / `jsxs()` calls. No build step
+   other than `regenerate.py`, which only substitutes data.
+3. **Preserve CRLF** in the template and the generated build.
+4. **Only `chroma-*` localStorage keys may be written.** `hermes-desktop-*` keys belong to the Desktop
+   app; writing them corrupts the user's own settings.
+5. **New picker code must not use template literals** — the plugin catalog's security scan reads
+   `${...}` as inline shell. Use string concatenation and `+`.
+6. **Import React hooks explicitly.** A hook that is used but not imported is a dead page, and the test
+   harness cannot catch it if it stubs the hook for you (see §5).
+7. **The backend `_hex` accepts only `#rrggbb` / `#rgb`.** Anything else must be normalised at the edge
+   and the loss made visible, never silently dropped mid-pipeline.
 
+## 4. How to verify anything
 
-# Role & Collaboration
-
-You are a Senior Staff Engineer working alongside a Principal Engineer (the user). 
-You do NOT work autonomously - you work collaboratively with approval at each step.
-
-## 1. NO ASSUMPTIONS
-- Never assume root cause without evidence from logs/code
-- Never assume a fix works without verification
-- Always trace the ACTUAL flow, not the expected flow
-- When debugging, read the DEPLOYED code, not local code
-
-## 2. APPROVAL REQUIRED
-Before making ANY code change, you MUST:
-1. Show the evidence (logs, code trace) proving the issue
-2. Explain the root cause with proof
-3. Propose the fix with rationale
-4. Wait for explicit approval: "approved", "go ahead", "do it"
-
-Exception: Only proceed without approval if user explicitly says "just do it" or "fix it"
-
-## 3. NEVER LOSE TRACK
-- Maintain TODO list for multi-step tasks
-- Complete current task before starting new ones
-- If interrupted, summarize current state before switching
-- Reference previous findings, don't repeat investigations
-
-## Communication
-
-### When Reporting Issues
-```
-**Evidence:** [actual log/error message]
-**Location:** [file:line or endpoint]
-**Root Cause:** [proven, not assumed]
-**Privacy Impact:** [Does this affect biometric/PII data?]
-**Fix:** [proposed solution]
+```bash
+node --test tests/<name>.test.mjs      # one suite; WITHOUT a pipe, so you see the real exit code
+node --test tests/                     # every JS suite
+python -m unittest tests.test_plugin_api   # backend; needs a venv with fastapi + pyyaml
+python -m unittest tests.test_regenerate   # installer/regeneration safety
+hermes plugins validate .              # the plugin admission gate
+rigour check --ci                      # quality gates (exit 1 = FAIL, 2 = no config)
 ```
 
-### When Asking for Approval
-```
-I found: [evidence]
-Root cause: [explanation]
-Proposed fix: [code change summary]
+Environment truths that change the answer:
 
-Approve to proceed?
-```
+- **`unset PYTHONPATH`** before repo Python or rigour. The Hermes shell exports its own site-packages,
+  which shadows other virtualenvs.
+- **Read rigour's LIVE output**, never `.rigour/last-scan.json` — the cached file lags and scores
+  differently. The headline score is a **band, not a monotonic metric**: a HIGH finding has disappeared
+  and the score has fallen. Report the finding LIST, which is diffable.
+- **Name the gate you actually ran.** A recorded "exit 0" against a name that never ran is a fabricated
+  green.
+- The plugin loads from the LOCAL machine's `desktop-plugins/chroma/`. A changed build is invisible in
+  Desktop until it is copied/reinstalled and Desktop restarts.
 
-### When Stuck
-- Say "I need more information" not guess
-- Ask specific questions
-- Propose diagnostic steps
+## 5. Pits we have already fallen into — do not repeat them
 
-## ⚠️ RIGOUR.YML IS SACRED
+- **The test harness derives its stubs from the BUILD'S OWN import statements.** Never hand-stub a hook:
+  a harness that stubbed `useRef` for a build that forgot to import it kept every suite green while the
+  picker died on first render. Anything the build does not import must stay undefined in the harness.
+- **A vm-context array fails `assert.deepEqual`** ("same structure but not reference-equal"). Round-trip
+  it (`JSON.parse(JSON.stringify(value))`) or `Array.from` it before comparing.
+- **A digest that flattens props onto the node lets a prop named `type` rename the element** — an
+  `<input type="text">` digested as an element named `text`. Assign the element name after the props.
+- **Complexity gates name the FIRST over-budget function in source order and truncate at five** — not the
+  worst one. Never scope a refactor to the function the gate names; enumerate them yourself
+  (this repo's checklist: a probe that replicates the gate's own counting rule).
+- **Reducing cyclomatic complexity means MOVING branches, not hiding them.** Extraction to a helper only
+  relocates the count unless the helper lands under budget; data tables and early returns are what
+  actually reduce it. Never replace a `||` with `??` to dodge a counter.
+- **Backend route order is load-bearing**: `POST /skins/rename` must be declared above `/skins/{name}`,
+  or the literal path is captured as a name.
+- **Writes are ordered, never atomic-by-luck**: the skin file lands first, then the provenance index.
+- **Use the SYSTEM git** (`/c/Program Files/Git/cmd/git.exe`). The Hermes-bundled git silently no-ops
+  network operations — it prints nothing, exits 0, and pushes nothing.
+- **Commit message files need an explicit native path** (`-F C:/...`). `$TMPDIR` can be empty, and a
+  failed `-F` leaves earlier staged work to leak into the next commit.
+- **`write_file` refuses to overwrite a file it has not read in this task** (staleness guard). Read
+  first, or write through a script.
+- **Serena:** call `activate_project` with a Windows-native path before any symbol query, and keep
+  `.serena/` gitignored. `find_symbol` takes `name_path_pattern`, not `name_path`.
+- **`npm root -g` lies under the Hermes shell** — it reports the bundled node's directory.
+- **Do not touch `rigour.yml` thresholds to pass a check.** If a finding is a false positive, adjudicate
+  it in `docs/TASKS.md` with the evidence, as the existing entries do.
 
-The `rigour.yml` file represents **team-agreed quality standards**. You are FORBIDDEN from:
+## 6. Parity discipline — how a change to a mapper or a card is proven
 
-1. ❌ Increasing thresholds to pass checks (e.g., raising `complexity: 100`)
-2. ❌ Adding patterns to `ignore:` to skip problematic files
-3. ❌ Removing items from `required_files`
-4. ❌ Disabling gates to avoid failures
+Behaviour-preserving work is proven, never asserted:
 
-**Your job is to FIX THE CODE to meet the standards, NOT weaken the standards to pass the check.**
+1. Pin the current behaviour FIRST (`tests/regenerate-scene-parity.mjs`,
+   `tests/regenerate-theme-card-parity.mjs`). Run a generator ONLY when a change in the output is
+   intended, and say so in the commit.
+2. Change the code.
+3. Re-generate and **diff**. Any difference is a behaviour change — fix the code, never the fixture.
+4. Fault-inject the guard: break one value and confirm the test fails, then restore and confirm it
+   passes. A guard that has never failed is not a guard.
+5. Mind what a digest cannot see: the card digest records handlers as their presence (`[fn]`), not their
+   behaviour, so structural parity does not prove a handler still works.
 
-If thresholds genuinely need adjustment, escalate to the team lead with justification.
+## 7. Delivery contract
 
-## Forbidden Actions
+- **Commits:** Conventional Commits. One concern per commit. Generated artifacts (`rigour-report.json`,
+  `rigour-fix-packet.json`, `.rigour/`, `__pycache__/`) are gitignored — never commit them.
+- **Identify the author per invocation** rather than relying on ambient config, e.g.
+  `git -c user.name="<name>" -c user.email="<address>" commit`.
+- **Report what you RAN**, with raw output, and state plainly what you did NOT verify. "Done" is a claim
+  with a burden of proof: the acceptance step a user would run, run by you.
+- **Research and review lanes are read-only.** Name a scratch path outside the repo for any file they
+  must write; git is read-only for them (no stash/checkout/reset/add/commit); they may run tests but must
+  not regenerate the build or edit the tree under review.
+- **Never report a flow as working from its first green step.** Walk every step of the user's path.
 
-1. ❌ Making code changes without showing evidence first
-2. ❌ Testing on localhost when asked to check production
-3. ❌ Adding debug logs as a "fix"
-4. ❌ Multiple deployment attempts hoping it works
-5. ❌ Over-engineering simple solutions
-6. ❌ Assuming secrets/env vars are available at init time
-7. ❌ Ignoring user corrections
-8. ❌ Losing context between messages
-9. ❌ Modifying rigour.yml to pass quality checks
+## 8. Known limitations, deliberate and documented
 
+- iTerm2 `.itermcolors` import is **refused by name** (a plist parser with no dependencies, plus a
+  perceptual colour matrix, for a format with no Windows relevance) — a v1.1 candidate.
+- VS Code themes that carry their palette through `include` are refused, and the refusal currently
+  **misdiagnoses** them as syntax-only. See `docs/TASKS.md` for the decision this needs.
+- Alpha in colour values is flattened to opaque, because the backend accepts only `#rrggbb`. About a
+  fifth of real VS Code values carry alpha — see `docs/PLANS/VSCODE-MAPPING-RESEARCH.md`.
+- Complexity and file-size debt is tracked, not hidden: `desktop/plugin.template.js` is far past the
+  500-line gate, and the honest fix is splitting it.
+
+## 9. Quality gates
+
+`rigour.yml` is committed and is not to be weakened. The standing gates are complexity 10 per function,
+500 lines per file, no TODO/FIXME, and the required docs files must exist. Rigour's own agent
+workflow (recall -> scope -> check-pattern -> work -> review -> check) is preserved in
+`docs/AGENT_INSTRUCTIONS.md` alongside the MCP tool notes. Current debt and every
+adjudicated false positive (imports the loader provides, a two-argument `.then()` that IS the rejection
+handler, prototype-pollution in pre-existing code) are recorded in `docs/TASKS.md` with the evidence.
