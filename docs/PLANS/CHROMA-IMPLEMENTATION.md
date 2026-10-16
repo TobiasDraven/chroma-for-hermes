@@ -14,7 +14,8 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started · `[!]` blocked ·
 | F3 | Export | backend done, UI open | `73374d6` |
 | F6 | Square-card picker UI | done | `7637536` |
 | F4 | Import from more sources | **NOT STARTED** | — |
-| F5 | Per-profile skins (spike, then decide) | **NOT STARTED** | — |
+| F5 | Per-profile skins (scoped apply) | done | `4d22198` |
+| P0 | Missing react hooks (`useRef`/`useCallback`) | done | `see P0 section` |
 | ✓ | Review | in progress | — |
 
 ---
@@ -297,6 +298,40 @@ zero `config.set`, which a positive-only test could never do.
 
 ---
 
+## P0 — The picker shipped dead (missing react hooks) — FIXED
+
+`ThemeCard` called `useRef(null)` (F6, `7637536`) and `ThemePicker` called
+`useCallback` (F1, `bf36a63`) while the react import still read
+`{ useEffect, useMemo, useState }`. Neither name exists as a global — they can
+only arrive through the import — so **the Chroma page threw
+`ReferenceError: useRef is not defined` on first render.**
+
+**Why every suite stayed green:** both harnesses hand-wrote a `useRef` and
+`useCallback` stub into their VM context. The harness supplied exactly what the
+import forgot, so the tests asserted a world the app does not have.
+
+**Fixed:** import is now `{ useCallback, useEffect, useMemo, useRef, useState }`.
+
+**The class of bug is closed, not the instance** — `tests/render-smoke.test.mjs`
+reads the SHIPPED file's own import statements and injects only those names.
+Any identifier the module uses but does not import is undefined there, exactly
+as in the app. Three assertions:
+
+- every hook the build uses is present in the react import
+- `register()` runs and both render surfaces (`chroma-page`, `chroma-chip`) render
+- `ThemeCard` / `ThemePicker` / `ThemeChip` component bodies execute
+
+**Fault-injected to prove it bites:** removing both hooks from the shipped
+build fails all 3 tests (exit 1); restoring passes 3/3.
+
+**Serena blind spot worth knowing:** `get_diagnostics_for_file` on this file
+returns only "cannot find module" entries — it does NOT report the undefined
+hooks. `.js` without `checkJs` lets TypeScript treat unknown globals as legal,
+so LSP diagnostics cannot catch this family here. The VM harness is the
+instrument that can.
+
+---
+
 ## Review
 
 - [ ] Surfaces guard passes — nothing amputated
@@ -311,9 +346,12 @@ zero `config.set`, which a positive-only test could never do.
 
 ```bash
 python scripts/regenerate.py                                    # ALWAYS after editing the template
+node --test tests/render-smoke.test.mjs                         # the render guard (3) — proves the build resolves its own imports
 node --test tests/surfaces-regression.test.mjs                  # the safety net (9)
-node --test tests/tweakcn-import.test.mjs                       # importer (13)
-node --test tests/theme-persistence.test.mjs                    # apply/paint/gateway (30)
+node --test tests/tweakcn-import.test.mjs                       # importer (16)
+node --test tests/theme-persistence.test.mjs                    # apply/paint/gateway (34)
+/hermes/venv/Scripts/python -m unittest tests.test_plugin_api   # backend (34)
+rigour scan                                                     # zero-config gate (no rigour.yml in this repo; `check` exits 2)
 hermes plugins validate .                                       # catalog admission gate
 ```
 
