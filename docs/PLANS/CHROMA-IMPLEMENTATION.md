@@ -78,19 +78,26 @@ hand-written skin.
 
 ---
 
-## F2 — CLI-capable badges
+## F2 — CLI-capable badges — DONE
 
 A skin is **CLI-capable** iff its YAML sits at the TOP LEVEL of
 `<hermes home>/skins/` — `list_skins()` globs `*.yaml` and is NOT recursive, so
 a skin in a subdirectory is invisible to the CLI. That distinction is the
-architecture, and the picker currently does not teach it.
+architecture, and the picker did not teach it.
 
-- [ ] Catalog entries: gateway-capable iff the scene carries
-      `gatewayLightName`/`gatewayDarkName` — computable in the Desktop plugin,
-      no backend needed
-- [ ] Imported themes: gateway-capable by construction
-- [ ] Badge text: **Gateway** vs **Desktop only**
-- [ ] Verification needs only "Reload desktop plugins"
+- [x] `isGatewayCapable(scene)` — a scene is gateway-wide iff it carries
+      `gatewayLightName`/`gatewayDarkName`. Computed in the Desktop plugin from
+      data already in the build; no backend, no restart
+- [x] `CliBadge` on every card: `CLI` (accent) vs `desktop` (dim), with a title
+      tooltip carrying the real explanation
+- [x] Imported themes are gateway-capable by construction (the backend writes
+      their YAML at the top level)
+- [x] Three tests, including one that asserts the SHIPPED catalog really carries
+      transports (>50), so the badge cannot silently become all-desktop
+
+**Evidence:** `tests/tweakcn-import.test.mjs` 16/16 (was 13). Guard 9/9,
+persistence 30/30. Verification needs only "Reload desktop plugins" — no
+backend, because this is catalog data plus a render.
 
 ---
 

@@ -938,6 +938,35 @@ function applyScene(scene, mode, setActive, api) {
 // Picker UI (shared by the pane and the full page)
 // ---------------------------------------------------------------------------
 
+/**
+ * Does this skin reach the CLI?
+ *
+ * A scene is gateway-wide when the build also emitted a transport skin for it
+ * (gatewayLightName / gatewayDarkName). Those are exactly the scenes the picker
+ * pushes through `config.set`, so the TUI and every connected Desktop follow the
+ * change. A scene without them repaints this Desktop only.
+ *
+ * This is the distinction the whole plugin rests on, and until now nothing in
+ * the UI said which was which.
+ */
+function isGatewayCapable(scene) {
+  return !!(scene && (scene.gatewayLightName || scene.gatewayDarkName))
+}
+
+function CliBadge({ scene }) {
+  const gateway = isGatewayCapable(scene)
+  return jsx('span', {
+    title: gateway
+      ? 'Gateway skin — the CLI and every connected Desktop follow this theme'
+      : 'Desktop only — the CLI cannot use this theme',
+    className: cn(
+      'shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide',
+      gateway ? 'bg-(--ui-accent)/15 text-(--ui-accent)' : 'text-(--ui-text-tertiary)'
+    ),
+    children: gateway ? 'CLI' : 'desktop'
+  })
+}
+
 function ThemeCard({ scene, mode, active, applying, onApply }) {
   const c = (mode === 'dark' ? scene.darkColors : scene.lightColors) || scene.colors || {}
   const isActive = scene.name === active
@@ -977,7 +1006,8 @@ function ThemeCard({ scene, mode, active, applying, onApply }) {
                 className: cn('shrink-0 text-[0.6875rem] leading-none', mode === 'dark' ? 'text-(--ui-accent)' : 'text-(--ui-warn)'),
                 children: scene.modeSupport === 'dynamic' ? '⇄' : scene.modeSupport === 'dark' ? '☾' : '☀'
               }),
-              jsx('span', { className: 'truncate text-[0.6875rem] font-medium', children: scene.label || scene.name.replace(/-/g, ' ') })
+              jsx('span', { className: 'truncate text-[0.6875rem] font-medium', children: scene.label || scene.name.replace(/-/g, ' ') }),
+              jsx(CliBadge, { scene })
             ]
           }),
           isActive

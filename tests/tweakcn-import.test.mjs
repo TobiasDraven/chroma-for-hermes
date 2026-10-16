@@ -39,7 +39,7 @@ function loadPlugin(storage = new Map(), fetchImpl = null) {
       .replace(/import\s+\{[^}]*\}\s+from\s+'react\/jsx-runtime'\n/, '')
       .replace(/import\s+\{[^}]*\}\s+from\s+'react'\n/, '')
       .replace('export default {', 'globalThis.plugin = {')
-      + '\nglobalThis.testHelpers = { cssColorToHex, tweakcnToDesktopTheme, tweakcnUrl, fetchTweakcnTheme, parseCssTheme, sceneToDesktopTheme, catalog: CATALOG }\n'
+      + '\nglobalThis.testHelpers = { cssColorToHex, tweakcnToDesktopTheme, tweakcnUrl, fetchTweakcnTheme, parseCssTheme, sceneToDesktopTheme, isGatewayCapable, catalog: CATALOG }\n'
 
     const context = {
       console,
@@ -335,4 +335,40 @@ test('rejects CSS without a :root block', async () => {
 test('refuses to shadow a built-in desktop theme name', async () => {
   const { __test } = await loadPlugin()
   assert.equal(__test.parseCssTheme(SHADCN_CSS, 'nous'), null)
+})
+
+// --- F2: CLI capability ----------------------------------------------------
+//
+// A scene is gateway-wide when the build emitted a transport skin for it. Those
+// are the scenes pushed through config.set, so the CLI follows them; the rest
+// repaint this Desktop only. The picker marks the difference on every card.
+
+test('a scene carrying gateway transports is CLI-capable', async () => {
+  const { __test } = await loadPlugin()
+  assert.equal(__test.isGatewayCapable({ gatewayLightName: 'x-light', gatewayDarkName: 'x-dark' }), true)
+  assert.equal(__test.isGatewayCapable({ gatewayLightName: 'x-light' }), true, 'light alone still counts')
+  assert.equal(__test.isGatewayCapable({ gatewayDarkName: 'x-dark' }), true, 'dark alone still counts')
+})
+
+test('a scene without gateway transports is Desktop-only', async () => {
+  const { __test } = await loadPlugin()
+  assert.equal(__test.isGatewayCapable({ name: 'handmade', colors: {} }), false)
+  assert.equal(__test.isGatewayCapable({ gatewayLightName: '' }), false, 'an empty name is not a transport')
+  assert.equal(__test.isGatewayCapable({}), false)
+  assert.equal(__test.isGatewayCapable(null), false)
+  assert.equal(__test.isGatewayCapable(undefined), false)
+})
+
+test('the shipped catalog actually carries gateway transports', async () => {
+  const { __test } = await loadPlugin()
+  const capable = __test.catalog.filter(__test.isGatewayCapable)
+  assert.ok(
+    capable.length > 50,
+    `expected the build to emit transport skins for the catalog, got ${capable.length} of ${__test.catalog.length}`
+  )
+  for (const scene of capable) {
+    const name = scene.gatewayLightName || scene.gatewayDarkName
+    assert.equal(typeof name, 'string', `${scene.name} has a non-string transport name`)
+    assert.ok(name.length > 0)
+  }
 })
