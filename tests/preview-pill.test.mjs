@@ -85,7 +85,9 @@ test('the countdown floors at zero and never goes negative', async () => {
   assert.equal(t.previewSecondsLeft(0, now), 0, 'no preview means no countdown')
 })
 
-test('the shipped build arms no hover preview', async () => {
+test('the shipped build arms no hover preview', () => {
+  // Synchronous on purpose: this test only reads the shipped artifact, so it has
+  // no promise to await and must not be declared async (the gate flags that).
   const src = readFileSync(new URL('../desktop/plugin.js', import.meta.url), 'utf8')
   assert.ok(!src.includes('schedulePreview'), 'the hover debounce must be gone: it repainted the app on every pointer move')
   assert.ok(!src.includes('cancelPreview'), 'the hover cancel path must be gone with it')
