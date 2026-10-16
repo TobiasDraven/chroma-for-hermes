@@ -14,8 +14,10 @@ cssColorToHex / tweakcnColors pipeline, so both produce the same palette.
 
 from __future__ import annotations
 
+import json
 import logging
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -62,12 +64,97 @@ def _atomic_write_text(path: Path, text: str) -> None:
     os.replace(tmp, path)
 
 
+# --- provenance -----------------------------------------------------------
+#
+# Nothing in a skin YAML says who wrote it, so "delete the skins we imported"
+# has no honest implementation from the files alone — a filename heuristic would
+# eventually delete a skin the user wrote by hand. A sidecar index records it.
+#
+# It lives in a SUBDIRECTORY, which matters: the skin engine globs top-level
+# *.yaml only (non-recursive), so this file can never appear as a skin in the CLI.
+
+SIDECAR_DIRNAME = ".chroma"
+INDEX_FILENAME = "index.json"
+TRASH_DIRNAME = "_trash"
+
+
+def _skins_dir() -> Path:
+    d = Path(HERMES_HOME) / "skins"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def _index_path() -> Path:
+    d = _skins_dir() / SIDECAR_DIRNAME
+    d.mkdir(parents=True, exist_ok=True)
+    return d / INDEX_FILENAME
+
+
+def _read_index() -> dict[str, Any]:
+    """Return the provenance index, or an empty one if it is missing or corrupt.
+
+    A corrupt index must never take the picker down: an unreadable file means we
+    have lost the record of what we own, and the safe reading of that is "nothing
+    is ours" — F1 then refuses to delete, which is the recoverable direction.
+    """
+    p = _index_path()
+    if not p.is_file():
+        return {}
+    try:
+        parsed = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        logger.warning("chroma index unreadable at %s; treating as empty", p)
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
+def _write_index(index: dict[str, Any]) -> None:
+    _atomic_write_text(_index_path(), json.dumps(index, indent=2, sort_keys=True) + "\n")
+
+
+def _trash_dir() -> Path:
+    d = _skins_dir() / SIDECAR_DIRNAME / TRASH_DIRNAME
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+@router.get("/skins")
+def list_chroma_skins() -> dict[str, Any]:
+    """Every skin Chroma owns, with the two facts the picker cannot infer.
+
+    `cliCapable` -- the engine reads top-level *.yaml only, so a skin is visible
+    to the CLI exactly while its file sits there.
+
+    `missing` -- the index remembers a skin whose file is gone (a manual delete,
+    or a crash between the two writes). Reported rather than hidden, because a
+    silently dropped entry is a skin the user cannot explain the absence of.
+    """
+    skins_dir = _skins_dir()
+    index = _read_index()
+    skins = []
+    for name, meta in sorted(index.items()):
+        record = meta if isinstance(meta, dict) else {}
+        present = (skins_dir / f"{name}.yaml").is_file()
+        skins.append(
+            {
+                "name": name,
+                "label": record.get("label") or name,
+                "source": record.get("source") or "chroma",
+                "ref": record.get("ref") or "",
+                "importedAt": record.get("importedAt") or "",
+                "owned": True,
+                "cliCapable": present,
+                "missing": not present,
+            }
+        )
+    return {"ok": True, "count": len(skins), "skins": skins}
 
 CORE_NAMES = frozenset(
     {
@@ -213,5 +300,18 @@ def import_skin(req: ImportRequest) -> dict[str, Any]:
         data["dark_colors"] = dark_map
 
     _atomic_write_text(target, _dump_skin_yaml(data))
+
+    # Record provenance in the same breath as the write. Order matters: the skin
+    # file is the thing the engine reads, so it lands first; if we die between
+    # the two, the index is merely short an entry (a skin we then refuse to
+    # manage) rather than claiming a skin that is not there.
+    index = _read_index()
+    index[name] = {
+        "source": "chroma",
+        "label": data["description"],
+        "importedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    }
+    _write_index(index)
+
     logger.info("wrote skin %s", target)
     return {"ok": True, "name": name, "path": str(target)}

@@ -54,20 +54,27 @@ removes a surface, that session surfaces it to the Captain.
 
 ---
 
-## N — Provenance index (foundation for F1/F2/F3)
+## N — Provenance index (foundation for F1/F2/F3) — DONE
 
 **The gap.** Nothing currently records that a skin is ours. The importer writes
 `<name>.yaml` and nothing else, so "delete the ones we created" has no honest
 implementation — filename heuristics would eventually delete a user's own
 hand-written skin.
 
-- [ ] Sidecar index at `<hermes home>/skins/.chroma/index.json`:
-      `{ name: { source, ref, label, importedAt } }`
-- [ ] Written atomically (`os.replace`), same discipline as the skin writer
-- [ ] The `.chroma/` subdirectory is invisible to `list_skins()` (top-level
-      `*.yaml` glob, non-recursive) — confirmed, so it cannot leak into the CLI
-- [ ] `GET /api/plugins/chroma/skins` → `[{name, label, cliCapable, owned, active}]`
-- [ ] Pure functions factored out and unit-tested against a temp `HERMES_HOME`
+- [x] Sidecar index at `<hermes home>/skins/.chroma/index.json`:
+      `{ name: { source, label, importedAt } }`
+- [x] Written atomically (`os.replace`), same discipline as the skin writer
+- [x] The `.chroma/` subdirectory is invisible to `list_skins()` (top-level
+      `*.yaml` glob, non-recursive) — **asserted by a test**, not assumed
+- [x] `GET /api/plugins/chroma/skins` → `[{name, label, source, owned, cliCapable, missing}]`
+- [x] Corrupt index reads as empty rather than raising — the safe direction, since
+      "nothing is ours" makes F1 refuse to delete
+- [x] `missing` is reported, not hidden: the index remembers a skin whose file is
+      gone, so a vanished skin is explainable
+- [x] Pure functions unit-tested with a temp `HERMES_HOME` — 13/13 in the Hermes venv
+
+**Evidence:** `tests/test_plugin_api.py`, 13 tests, run with the Hermes venv python
+(the module imports fastapi at load time, so the system python cannot import it).
 
 ---
 
