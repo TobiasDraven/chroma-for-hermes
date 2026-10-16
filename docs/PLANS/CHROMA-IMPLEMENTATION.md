@@ -189,16 +189,37 @@ file is F4 territory (more sources), so this is deliberately export-only.
 
 ---
 
-## F6 — Square-card picker UI
+## F6 — Square-card picker UI — DONE
 
-- [ ] `repeat(auto-fill, minmax(<n>, 1fr))`, `aspect-ratio: 1`
-- [ ] Colour block + truncated label (`nowrap` / `hidden` / `ellipsis`)
-- [ ] F2 badges on the card
-- [ ] Actions (Export, Rename, Delete) in a per-card overflow menu
-- [ ] Hover = `previewTheme`, leave = `clearThemePreview`, click = commit —
-      DEBOUNCED, and cleared on unmount, or a 100+ card grid thrashes
-- [ ] UI stays `jsx()`/`jsxs()` calls — never JSX syntax
-- [ ] **A rendering change only.** It must not touch a single registration.
+- [x] `grid` with `repeat(auto-fill, minmax(<n>px, 1fr))` replacing the
+      `flex flex-wrap` + per-column-pixel-width layout. auto-fill adapts to a
+      resized window with no second calculation — the aspect ratio carries the
+      look, not the width, which is the whole point of squares
+- [x] `aspect-ratio: 1` on the card, and the colour block changed from `h-5` to
+      `flex-1` so it fills the square. A fixed-height strip wastes the middle of a
+      square card, which is where the palette should be doing the talking
+- [x] Label truncates (`truncate`, `min-w-0`) so a long name cannot break layout
+- [x] F2's `CliBadge` rides on the card
+- [x] Hover preview: `previewTheme(scene.name, mode)` after a 140 ms debounce,
+      `clearThemePreview()` on leave, and the timer cleared on unmount. Debounced
+      because a preview repaints the whole app and a 100+ card grid would thrash
+      on mousemove; cleaned up because a preview left armed when the card
+      unmounts strands the user on a theme they never chose — the exact bug class
+      this plugin exists to remove
+- [x] Still `jsx()` / `jsxs()` calls throughout — no JSX syntax
+- [x] **Proven a rendering-only change**: the surfaces guard passes all six
+      registration assertions after the rework (route, sidebar, statusbar, palette,
+      catalog, gateway sync). That guard exists because a previous restructure
+      removed the surfaces and every test stayed green
+- [x] `previewTheme`'s real signature verified against the Hermes source before
+      wiring it — `(name: string, mode: 'light' | 'dark')`, not a theme object.
+      An invented signature here would have failed silently at the only moment it
+      is used
+- [ ] Per-card overflow menu grouping Export / Rename / Delete (Rename and Delete
+      are currently inline buttons; Export has no UI yet — see F3)
+
+**Evidence:** guard 9/9, importer 16/16, persistence 30/30; `node --check` clean;
+`hermes plugins validate .` → Validation passed.
 
 ---
 

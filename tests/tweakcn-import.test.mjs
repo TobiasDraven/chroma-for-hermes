@@ -66,6 +66,7 @@ function loadPlugin(storage = new Map(), fetchImpl = null) {
       useEffect: () => {},
       useMemo: fn => fn(),
       useCallback: fn => fn,
+      useRef: value => ({ current: value }),
       window: {
         localStorage: {
           getItem: key => storage.get(key) ?? null,

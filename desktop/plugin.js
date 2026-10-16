@@ -1000,11 +1000,35 @@ function CliBadge({ scene }) {
   })
 }
 
-function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename }) {
+function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, previewTheme, clearThemePreview }) {
   const [renaming, setRenaming] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [draft, setDraft] = useState('')
+  const previewTimer = useRef(null)
   const c = (mode === 'dark' ? scene.darkColors : scene.lightColors) || scene.colors || {}
+
+  // Hover preview. `previewTheme(name, mode)` repaints the whole app, so it is
+  // debounced hard: firing on every mousemove across a hundred cards would
+  // thrash the app, and a preview left armed when the card unmounts would strand
+  // the user on a theme they never chose — which is the exact class of bug this
+  // plugin exists to stop.
+  const schedulePreview = () => {
+    if (typeof previewTheme !== 'function') return
+    if (previewTimer.current) clearTimeout(previewTimer.current)
+    previewTimer.current = setTimeout(() => {
+      previewTimer.current = null
+      try { previewTheme(scene.name, mode === 'dark' ? 'dark' : 'light') } catch (e) { }
+    }, 140)
+  }
+  const cancelPreview = () => {
+    if (previewTimer.current) { clearTimeout(previewTimer.current); previewTimer.current = null }
+    if (typeof clearThemePreview === 'function') {
+      try { clearThemePreview() } catch (e) { }
+    }
+  }
+  useEffect(() => () => {
+    if (previewTimer.current) clearTimeout(previewTimer.current)
+  }, [])
   const isActive = scene.name === active
   const strip = [
     c.background || c.status_bar_bg,
@@ -1017,6 +1041,11 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   const card = jsxs('button', {
     type: 'button',
     onClick: () => onApply(scene),
+    onMouseEnter: schedulePreview,
+    onMouseLeave: cancelPreview,
+    // Square: the aspect ratio is what makes the grid read as a gallery rather
+    // than a list, and the colour block below takes whatever height is left.
+    style: { aspectRatio: '1' },
     disabled: applying === scene.name,
     title: `${scene.description || scene.name} (${scene.modeSupport === 'dynamic' ? `${mode} variant` : `${scene.modeSupport} only`})`,
     className: cn(
@@ -1027,7 +1056,10 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
     ),
     children: [
       jsx('div', {
-        className: 'flex h-5 w-full overflow-hidden rounded-[4px] ring-1 ring-black/15',
+        // The colour block fills the square. `h-5` was right for a rectangle card
+        // and wastes the middle of a square one, which is where the palette
+        // should be doing the talking.
+        className: 'flex min-h-0 w-full flex-1 overflow-hidden rounded-[4px] ring-1 ring-black/15',
         children: strip.map((color, i) =>
           jsx('span', { key: i, className: 'h-full flex-1', style: { backgroundColor: color } })
         )
@@ -1280,9 +1312,14 @@ function ThemePicker() {
     if (scene) applyScene(scene, next, setActive, desktopTheme)
   }
 
-  const cols = columnsForWidth(viewport.width)
+  // Square cards. The old layout computed an exact per-column width and laid the
+  // cards out with flex-wrap. A grid with auto-fill does the same job and adapts
+  // to a resized window without a second calculation -- the aspect ratio carries
+  // the look, not the width, which is the whole point of squares.
+  const viewportWidth = (viewport && viewport.width) || 900
+  const cols = columnsForWidth(viewportWidth)
   const gap = cols > 2 ? 12 : 8
-  const cardWidth = `calc((100% - ${gap * (cols - 1)}px) / ${cols})`
+  const cardMin = Math.max(76, Math.floor((viewportWidth - gap * (cols - 1)) / cols) - 12)
   const groups = buildThemeGroups(filtered).filter(group => group.scenes.length)
   const activeScene = allSkins.find(scene => scene.name === active)
   const activeColors = activeScene && ((mode === 'dark' ? activeScene.darkColors : activeScene.lightColors) || activeScene.colors)
@@ -1363,26 +1400,25 @@ function ThemePicker() {
                         children: `${group.title} (${group.scenes.length})`
                       }),
                       jsx('div', {
-                        className: 'flex flex-wrap',
-                        style: { gap },
+                        className: 'grid',
+                        style: { gap, gridTemplateColumns: 'repeat(auto-fill, minmax(' + cardMin + 'px, 1fr))' },
                         children: group.scenes.map(scene =>
-                          jsx('div', {
+                          jsx(ThemeCard, {
                             key: scene.name,
-                            style: { width: cardWidth },
-                            children: jsx(ThemeCard, {
-                              scene,
-                              mode: scene.modeSupport === 'dynamic' ? mode : scene.modeSupport,
-                              active,
-                              applying,
-                              onApply,
-                              // Only skins Chroma owns can be managed. The catalog
-                              // scenes ship with the plugin and the backend
-                              // refuses anything without a provenance record.
-                              owned: !!owned[scene.name],
-                              managing: managing === scene.name,
-                              onDelete: removeSkin,
-                              onRename: renameSkin
-                            })
+                            scene,
+                            mode: scene.modeSupport === 'dynamic' ? mode : scene.modeSupport,
+                            active,
+                            applying,
+                            onApply,
+                            // Only skins Chroma owns can be managed. The catalog
+                            // scenes ship with the plugin and the backend
+                            // refuses anything without a provenance record.
+                            owned: !!owned[scene.name],
+                            managing: managing === scene.name,
+                            onDelete: removeSkin,
+                            onRename: renameSkin,
+                            previewTheme: desktopTheme && desktopTheme.previewTheme,
+                            clearThemePreview: desktopTheme && desktopTheme.clearThemePreview
                           })
                         )
                       })
