@@ -1,8 +1,12 @@
 # AGENTS.md — the working contract for this repository
 
-Read this before touching anything. It is binding for any agent working here, human or model, and it
-is the file **every Hermes subagent inherits automatically** when it works in this workspace — so a
-rule that should steer every child belongs HERE, not in a one-off brief.
+Read this before touching anything. It is binding for any agent working here, human or model, and it is
+where a rule that should steer every agent belongs — rather than in a one-off brief.
+
+**Measured caveat, 2026-10-16:** the Hermes documentation says a delegated child inherits the
+workspace's project context files automatically. Two subagents working in this repository reported that
+**nothing was embedded in their prompts** — they had to read this file from disk. So put the rules here
+AND have the brief name this file; ask a child which context files it was given rather than assuming.
 
 **Project:** Chroma for Hermes — a theme-picker plugin for Hermes Desktop. A hard fork of
 `jdtimothy/hermes-theme-picker` (MIT). Plugin id `chroma`; the manifest is `plugin.yaml` and the
@@ -183,7 +187,13 @@ Behaviour-preserving work is proven, never asserted:
 4. Fault-inject the guard: break one value and confirm the test fails, then restore and confirm it
    passes. A guard that has never failed is not a guard.
 5. Mind what a digest cannot see: the card digest records handlers as their presence (`[fn]`), not their
-   behaviour, so structural parity does not prove a handler still works.
+   behaviour, so structural parity does not prove a handler still works. That is why the manage row is
+   asserted by INVOKING it — export, rename (Enter/Save/Escape), delete confirmation, the CLI badge — in
+   `tests/theme-card.test.mjs`, and why those tests were fault-injected before being trusted.
+6. Know what a CASE COUNT is worth: 27 cases in `tests/helpers/card-cases.mjs` yield 24 distinct
+   digests, because the harness stubs `useState` (the rename and delete states are unreachable through
+   the card) and three keys are scene handles other tests read by name. A case that cannot differ proves
+   nothing; the file says which ones those are.
 
 ## 8. Delivery contract
 

@@ -6,6 +6,19 @@
 // the palette looks like (rich, thin, alias-only, or empty). The palette cases
 // matter because the strip is built from a fallback chain, and a refactor of that
 // chain is exactly the kind of change that silently drops a band.
+//
+// Two things this list cannot do, both measured rather than assumed:
+//
+// 1. `managing` and the rename/delete states are invisible to the digest, because
+//    the harness stubs useState and `managing` is only read inside those states.
+//    A card case that sets `managing` therefore pins NOTHING and was removed; the
+//    behaviour is asserted against the pieces in tests/theme-card.test.mjs.
+// 2. Three keys below are SCENE HANDLES rather than distinct cases: they coincide
+//    with an earlier case's digest because other tests read their `scene` by name
+//    ('dynamic dark title', 'single-mode dark title', 'single-mode light title').
+//    They are kept for those tests and add no round of protection of their own.
+//    So this file lists 27 cases and yields 24 distinct digests, and the count in
+//    the parity test is a property of the LIST, not a count of behaviours.
 
 export const RICH_COLORS = {
   background: '#1b1f27', status_bar_bg: '#141821',
@@ -35,10 +48,28 @@ const noPaletteScene = {
   name: 'bare-skin', label: 'Bare', modeSupport: 'dark',
   colors: {}, lightColors: {}, darkColors: {}
 }
+// A gateway skin is the only thing that makes localScope visible: the CLI badge
+// keys off these two names, so on any other scene the axis is inert and a case
+// that sets it proves nothing.
+const gatewayScene = {
+  name: 'gateway-skin', label: 'Gateway', description: 'Pushed by the gateway',
+  modeSupport: 'dynamic', colors: RICH_COLORS, lightColors: RICH_COLORS, darkColors: RICH_COLORS,
+  gatewayLightName: 'gateway-light', gatewayDarkName: 'gateway-dark'
+}
+// No per-mode palettes at all: exercises ThemeCard's `|| scene.colors` fallback.
+const colorsOnlyScene = {
+  name: 'colors-only-skin', label: 'Colors Only', modeSupport: 'dynamic', colors: RICH_COLORS
+}
+// Band 2 with neither of its first two names, and band 5 with only its second.
+const thirdAliasColors = { background: '#202020', banner_title: '#abcdef', banner_border: '#123456' }
+const thirdAliasScene = {
+  name: 'third-alias-skin', label: 'Third Alias', modeSupport: 'dark',
+  colors: thirdAliasColors, lightColors: thirdAliasColors, darkColors: thirdAliasColors
+}
 
 export const BASE_CARD_PROPS = {
   mode: 'dark', active: 'none', applying: null, owned: false, managing: false,
-  previewing: false, previewUntil: 0, shape: 'square', localScope: null
+  previewing: false, previewUntil: 0, shape: 'square', localScope: false
 }
 
 export const CARD_CASES = {
@@ -53,7 +84,6 @@ export const CARD_CASES = {
   'active square': { scene: richScene, active: 'ocean-skin', owned: true },
   'applying square': { scene: richScene, applying: 'ocean-skin', owned: true },
   'active + applying': { scene: richScene, active: 'ocean-skin', applying: 'ocean-skin', owned: true },
-  'managing owned': { scene: richScene, owned: true, managing: true },
   'no label': { scene: bareScene, owned: true },
   'thin palette': { scene: thinScene, owned: true },
   'alias palette': { scene: aliasScene, owned: true },
@@ -61,11 +91,15 @@ export const CARD_CASES = {
   'circle + no palette': { scene: noPaletteScene, shape: 'circle', owned: true },
   'light mode circle active': { scene: richScene, mode: 'light', shape: 'circle', active: 'ocean-skin', owned: true },
   'rectangle previewing unowned': { scene: richScene, shape: 'rectangle', previewing: true, previewUntil: 999 },
-  'owned + localScope': { scene: richScene, owned: true, localScope: 'profile' },
+  'gateway owned, this profile': { scene: gatewayScene, owned: true, localScope: true },
+  'gateway owned, everywhere': { scene: gatewayScene, owned: true, localScope: false },
+  'gateway unowned': { scene: gatewayScene },
+  'colors only, no per-mode palette': { scene: colorsOnlyScene, owned: true },
+  'title and border from their later aliases': { scene: thirdAliasScene, owned: true },
+  'active and previewing at once': { scene: richScene, active: 'ocean-skin', owned: true, previewing: true, previewUntil: 12345 },
   'dynamic dark title': { scene: richScene, owned: true },
   'single-mode dark title': { scene: bareScene, owned: true },
   'single-mode light title': { scene: thinScene, owned: true },
-  'applying other skin': { scene: richScene, owned: true, applying: 'some-other-skin' }
 }
 
 /** Handlers are recorded as present, never called, by the digest. */

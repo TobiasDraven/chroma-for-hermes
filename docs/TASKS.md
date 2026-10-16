@@ -94,3 +94,40 @@ the parser.
   and drop it. Delete nothing until that call is made.
 - `rigour-fix-packet.json` / `rigour-report.json` sit in the repo root as run artifacts. They are
   gitignored, but confirm that before any bulk `git add`.
+
+## What the card guard proves, and what it does not (verified 2026-10-16)
+
+Two independent reviewers went at the ThemeCard refactor. Their verdict: the DOM is unchanged and the
+guard is a real net — but its scope was overstated, and the record needed correcting.
+
+**Corrected figures.** The commit messages say `ThemeCard 32 -> 8` and `vsCodeTheme 23 -> 4`. Measured
+against the gate's own counting rule, they are **9 and 5**. The direction and the "no extracted piece
+reaches 10" claim hold; the exact post-values were never measured before being written down. Measure
+first, then write the number.
+
+**The real hole, and its fix.** `digestElement` records a handler as the string `'[fn]'` - presence, not
+behaviour. Before this pass the entire suite invoked **three** handlers (the preview pill twice, the card
+once), so a silently broken manage row digested identically and shipped green. `tests/theme-card.test.mjs`
+now invokes the rest and watches what leaves the component: the card's apply, the export/rename/delete
+wiring, the rename row's Enter/Save/Escape/onChange, the delete confirmation's Yes/No, and the CLI badge's
+scope claim. Fault-injected: dropping the delete, dropping the rename, dropping the scene name from
+export, and inverting the badge's scope branches each fail a NAMED test (the badge inversion also trips
+the digest). Restoring the template leaves it byte-identical.
+
+**Axes that were inert, now real.** `'owned + localScope'` passed the string `'profile'` on a scene with
+no gateway names, so it exercised nothing - the CLI badge keys off `gatewayLightName`/`gatewayDarkName`
+and production passes a BOOLEAN (`scope === APPLY_SCOPE_LOCAL`). Replaced by gateway cases at both scope
+values. `'managing owned'` and an `applying` case were provably identical to the idle card and were
+removed. A third-alias title band and a second-alias border band were added, plus colours-only (the
+`|| scene.colors` fallback) and active-plus-previewing. All five produce digests distinct from their
+nearest neighbour.
+
+**Benign divergence, recorded not fixed.** The old mode regex is case-insensitive but ASCII-only;
+the new lower-case compare maps U+212A KELVIN SIGN to `k`, so an input like `'dar\u212a k'` now reads as
+dark where it previously fell through to luminance. Unreachable with real theme data; the new behaviour
+is the more permissive one.
+
+**Hygiene.** The working-tree `desktop/plugin.template.js` carries CRLF on most lines while its git blob
+is LF (`text=auto eol=lf`), so `git diff` cannot show it. `scripts/regenerate.py` normalises, so the
+build stays LF and it is harmless - but a reviewer who edits that file through git may be surprised.
+

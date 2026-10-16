@@ -144,3 +144,132 @@ test('the label row shows the state only where the card has room for it', () => 
   assert.ok(textsIn(withState).includes('Ocean Skin'), 'the label the user reads')
   assert.ok(!textsIn(withState).includes('ACTIVE'), 'not active in this case')
 })
+
+// The digest records handlers as PRESENT ('[fn]'), never called, and until now the
+// whole suite invoked three handlers in total. So a handler whose BODY was broken -
+// a dropped call, a forgotten argument - digested identically and shipped green.
+// These tests call the real handlers and watch what leaves the component.
+
+/** Walk a LIVE tree (props.children, not children) to the first button. */
+function firstLiveButton(node) {
+  if (!node || typeof node !== 'object') return null
+  if (Array.isArray(node)) {
+    for (const child of node) { const hit = firstLiveButton(child); if (hit) return hit }
+    return null
+  }
+  if (node.type === 'button') return node
+  return firstLiveButton(node.props && node.props.children)
+}
+
+/** The live element carrying a key, out of a piece's returned array. */
+const liveByKey = (nodes, key) => nodes.find((n) => n.props && n.props.key === key)
+
+test('clicking the card applies that exact scene, once', () => {
+  const scene = CARD_CASES['square owned idle dark'].scene
+  const applied = []
+  const live = helpers.ThemeCard({
+    ...cardSpies(), ...BASE_CARD_PROPS, scene, owned: true,
+    onApply: (s) => applied.push(s)
+  })
+  const card = firstLiveButton(live)
+  assert.ok(card, 'the card is a button')
+  card.props.onClick()
+  assert.equal(applied.length, 1, 'applied exactly once')
+  assert.equal(applied[0], scene, 'the very scene object it was given')
+})
+
+test('the manage row is wired to its handlers, and Rename opens a row instead of renaming', () => {
+  const scene = CARD_CASES['square owned idle dark'].scene
+  const calls = []
+  const row = helpers.ThemeCardManageButtons({
+    scene,
+    onDelete: (n) => calls.push(['delete', n]),
+    onRename: (n) => calls.push(['rename', n]),
+    onExport: (n) => calls.push(['export', n]),
+    onStartRename: (s) => calls.push(['startRename', s.name]),
+    onStartConfirm: () => calls.push(['startConfirm'])
+  })
+  liveByKey(row, 'export').props.onClick()
+  liveByKey(row, 'rename').props.onClick()
+  liveByKey(row, 'delete').props.onClick()
+  assert.deepEqual(plain(calls), [
+    ['export', 'ocean-skin'], ['startRename', 'ocean-skin'], ['startConfirm']
+  ], 'each button calls out with the scene it was given')
+  assert.ok(!calls.some((c) => c[0] === 'rename' || c[0] === 'delete'),
+    'Rename and Delete must not act before the user confirms')
+
+  // Through the real container, where the state actually lives: Delete must open
+  // the confirmation rather than deleting.
+  const viaActions = []
+  const actions = helpers.ThemeCardActions({
+    scene, managing: false,
+    onDelete: (n) => viaActions.push(['delete', n]),
+    onRename: (n, d) => viaActions.push(['rename', n, d]),
+    onExport: (n) => viaActions.push(['export', n])
+  })
+  liveByKey(actions.props.children, 'delete').props.onClick()
+  assert.deepEqual(plain(viaActions), [], 'Delete asks first')
+  liveByKey(actions.props.children, 'export').props.onClick()
+  assert.deepEqual(plain(viaActions), [['export', 'ocean-skin']], 'Export does not ask')
+})
+
+test('the rename row commits the draft on Enter and on Save, and only Escape cancels', () => {
+  const scene = CARD_CASES['square owned idle dark'].scene
+  const calls = []
+  const row = helpers.ThemeCardRename({
+    scene, draft: 'ocean-skin/new',
+    setDraft: (v) => calls.push(['draft', v]),
+    managing: false,
+    onRename: (n, d) => calls.push(['rename', n, d]),
+    onCancel: () => calls.push(['cancel'])
+  })
+  const input = liveByKey(row, 'name')
+  const save = liveByKey(row, 'save')
+
+  input.props.onChange({ target: { value: 'typed' } })
+  assert.deepEqual(plain(calls), [['draft', 'typed']], 'typing only updates the draft')
+
+  calls.length = 0
+  input.props.onKeyDown({ key: 'Escape' })
+  assert.deepEqual(plain(calls), [['cancel']], 'Escape closes WITHOUT renaming')
+
+  calls.length = 0
+  input.props.onKeyDown({ key: 'Enter' })
+  assert.deepEqual(plain(calls), [['rename', 'ocean-skin', 'ocean-skin/new'], ['cancel']],
+    'Enter commits the draft under the scene name, then closes')
+
+  calls.length = 0
+  save.props.onClick()
+  assert.deepEqual(plain(calls), [['rename', 'ocean-skin', 'ocean-skin/new'], ['cancel']], 'Save commits too')
+  assert.notEqual(save.props.disabled, true, 'and is usable when no rename is in flight')
+})
+
+test('the delete confirmation deletes on Yes and only closes on No', () => {
+  const scene = CARD_CASES['square owned idle dark'].scene
+  const calls = []
+  const row = helpers.ThemeCardDeleteConfirm({
+    scene, managing: false,
+    onDelete: (n) => calls.push(['delete', n]), onCancel: () => calls.push(['cancel'])
+  })
+  liveByKey(row, 'no').props.onClick()
+  assert.deepEqual(plain(calls), [['cancel']], 'No never deletes')
+  calls.length = 0
+  liveByKey(row, 'yes').props.onClick()
+  assert.deepEqual(plain(calls), [['delete', 'ocean-skin'], ['cancel']],
+    'Yes deletes the skin it was given, then closes')
+
+  const busy = helpers.ThemeCardDeleteConfirm({ scene, managing: true, onDelete: () => {}, onCancel: () => {} })
+  assert.equal(liveByKey(busy, 'yes').props.disabled, true, 'disabled while the delete is in flight')
+  assert.equal(liveByKey(busy, 'yes').props.children, 'Deleting\u2026')
+})
+
+test('the CLI badge never claims a gateway skin reaches the CLI under a local scope', () => {
+  const gateway = CARD_CASES['gateway owned, everywhere'].scene
+  const title = (localScope) => helpers.CliBadge({ scene: gateway, localScope }).props.title
+  assert.match(title(false), /the CLI and every connected Desktop follow this theme/)
+  assert.match(title(true), /the CLI will NOT follow/)
+  const desktopOnly = helpers.CliBadge({ scene: CARD_CASES['square owned idle dark'].scene, localScope: false })
+  assert.match(desktopOnly.props.title, /Desktop only/)
+  assert.equal(helpers.isGatewayCapable(gateway), true)
+  assert.equal(helpers.isGatewayCapable(CARD_CASES['square owned idle dark'].scene), false)
+})
