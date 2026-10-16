@@ -1539,60 +1539,199 @@ function PreviewCountdown({ until }) {
   return jsx('span', { children: previewSecondsLeft(until, Date.now()) + 's' })
 }
 
-function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, shape, localScope }) {
-  const [renaming, setRenaming] = useState(false)
-  const [confirming, setConfirming] = useState(false)
-  const [draft, setDraft] = useState('')
-  const c = (mode === 'dark' ? scene.darkColors : scene.lightColors) || scene.colors || {}
-  const isActive = scene.name === active
-  const strip = [
-    c.background || c.status_bar_bg,
-    c.ui_accent || c.banner_accent || c.banner_title,
-    c.ui_tool || c.banner_accent || c.banner_title,
-    c.banner_text || c.ui_text,
-    c.ui_border || c.banner_border
-  ].filter(Boolean)
+// The colour strip summarises a skin's palette in five bands. Each band lists the
+// names a skin may use for that role, in priority order: skin palettes name the
+// same idea several ways. A band with no colour is dropped rather than left blank.
+const STRIP_BANDS = [
+  ['background', 'status_bar_bg'],
+  ['ui_accent', 'banner_accent', 'banner_title'],
+  ['ui_tool', 'banner_accent', 'banner_title'],
+  ['banner_text', 'ui_text'],
+  ['ui_border', 'banner_border']
+]
 
-  const modeBits = jsxs('span', {
+function paletteStrip(colors) {
+  const bands = []
+  for (const aliases of STRIP_BANDS) {
+    for (const key of aliases) {
+      if (colors[key]) { bands.push(colors[key]); break }
+    }
+  }
+  return bands
+}
+
+// The card's hover title: what the theme is, and what it can do.
+function cardTitle(scene, mode) {
+  const support = scene.modeSupport === 'dynamic' ? mode + ' variant' : scene.modeSupport + ' only'
+  return (scene.description || scene.name) + ' (' + support + ')'
+}
+
+// The colour block fills the card, and it is the only child of a circle: a
+// rounded-full box does not clip its children, so anything else inside a circle
+// would paint over the page background.
+function ThemeCardPalette({ strip, shape }) {
+  return jsx('div', {
+    // `h-5` was right for a rectangle card and wastes the middle of a square one,
+    // which is where the palette should be doing the talking.
+    className: cn(
+      'flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15',
+      shape === 'circle' ? 'rounded-full' : 'rounded-[4px]'
+    ),
+    children: strip.map((color, i) =>
+      jsx('span', { key: i, className: 'h-full flex-1', style: { backgroundColor: color } })
+    )
+  })
+}
+
+// The label row: the mode glyph, the skin's name and its CLI badge, plus either
+// the ACTIVE badge or the mode the skin supports. It sits INSIDE the card when the
+// card has an edge to sit in, and BENEATH it when it does not (a circle).
+function ThemeCardLabel({ scene, mode, active, localScope, showState, className }) {
+  const isActive = scene.name === active
+  const glyph = scene.modeSupport === 'dynamic' ? '⇄' : (scene.modeSupport === 'dark' ? '☾' : '☀')
+  const modeClass = mode === 'dark' ? 'text-(--ui-accent)' : 'text-(--ui-warn)'
+  const support = scene.modeSupport === 'dynamic' ? mode : scene.modeSupport
+  const bit = isActive
+    ? jsx(Badge, { variant: 'outline', className: 'shrink-0 px-1 text-[0.5625rem] text-(--ui-accent)', children: 'ACTIVE' })
+    : jsx('span', { className: 'shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)', children: support })
+  const bits = jsxs('span', {
     className: 'flex min-w-0 items-center gap-1',
     children: [
-      jsx('span', {
-        className: cn('shrink-0 text-[0.6875rem] leading-none', mode === 'dark' ? 'text-(--ui-accent)' : 'text-(--ui-warn)'),
-        children: scene.modeSupport === 'dynamic' ? '⇄' : scene.modeSupport === 'dark' ? '☾' : '☀'
-      }),
+      jsx('span', { className: cn('shrink-0 text-[0.6875rem] leading-none', modeClass), children: glyph }),
       jsx('span', { className: 'truncate text-[0.6875rem] font-medium', children: scene.label || scene.name.replace(/-/g, ' ') }),
       jsx(CliBadge, { scene, localScope })
     ]
   })
-  const stateBit = isActive
-    ? jsx(Badge, { variant: 'outline', className: 'shrink-0 px-1 text-[0.5625rem] text-(--ui-accent)', children: 'ACTIVE' })
-    : jsx('span', { className: 'shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)', children: scene.modeSupport === 'dynamic' ? mode : scene.modeSupport })
+  return jsxs('div', { className, children: showState ? [bits, bit] : bits })
+}
 
-  // A circle holds only its palette. `rounded-full` does not clip children, so a
-  // label row set at the bottom of a circle's bounding box paints OUTSIDE the
-  // circle - over the page background, which looks broken. Circle mode therefore
-  // moves the label under the card instead of inside it.
-  const cardChildren = [
-    jsx('div', {
-      // The colour block fills the card. `h-5` was right for a rectangle card and
-      // wastes the middle of a square one, which is where the palette should be
-      // doing the talking.
-      className: cn(
-        'flex min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15',
-        shape === 'circle' ? 'rounded-full' : 'rounded-[4px]'
-      ),
-      children: strip.map((color, i) =>
-        jsx('span', { key: i, className: 'h-full flex-1', style: { backgroundColor: color } })
-      )
+// The preview pill sits visually INSIDE the square but is a DOM SIBLING of the
+// card: the card is itself a button, and a button inside a button is invalid HTML.
+// It reveals on hover (a CSS opacity change, not an app repaint) and on keyboard
+// focus, so it is reachable without a pointer.
+// Centred inside the card, not anchored to its bottom edge: a circle's bottom edge
+// lies OUTSIDE the circle, so a bottom-anchored pill would poke out of the shape.
+// Centring also keeps it clear of the label row.
+const PREVIEW_PILL_CLASS = 'absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity'
+const PREVIEW_PILL_LIVE = 'border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100'
+const PREVIEW_PILL_IDLE = 'border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
+
+function ThemeCardPreviewPill({ scene, previewing, previewUntil, onPreview, onStopPreview }) {
+  return jsx('button', {
+    type: 'button',
+    onClick: () => { if (previewing) onStopPreview(); else onPreview(scene) },
+    title: previewing ? 'Stop the preview and go back to your theme' : 'Preview this theme for 10 seconds, then revert',
+    className: cn(PREVIEW_PILL_CLASS, previewing ? PREVIEW_PILL_LIVE : PREVIEW_PILL_IDLE),
+    children: previewing
+      ? jsx(PreviewCountdown, { until: previewUntil })
+      : 'Preview 10s'
+  })
+}
+
+// The manage actions live OUTSIDE the card button, for the same reason the pill
+// does. Only an owned skin has them, and only one mode shows at a time: renaming,
+// confirming a delete, or the three actions themselves.
+const MANAGE_ROW_CLASS = 'mt-1 flex items-center gap-1 text-[0.625rem]'
+const MANAGE_BUTTON_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)'
+
+function ThemeCardRename({ scene, draft, setDraft, managing, onRename, onCancel }) {
+  return [
+    jsx('input', {
+      key: 'name',
+      type: 'text',
+      value: draft,
+      onChange: e => setDraft(e.target.value),
+      onKeyDown: e => {
+        if (e.key === 'Enter') { onRename(scene.name, draft); onCancel() }
+        if (e.key === 'Escape') { onCancel() }
+      },
+      className: 'min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5'
+    }),
+    jsx('button', {
+      key: 'save',
+      type: 'button',
+      disabled: managing,
+      onClick: () => { onRename(scene.name, draft); onCancel() },
+      className: MANAGE_BUTTON_CLASS,
+      children: managing ? 'Saving…' : 'Save'
     })
   ]
-  if (shape !== 'circle') {
-    cardChildren.push(jsxs('div', {
-      className: 'flex w-full items-center justify-between gap-1',
-      children: [modeBits, stateBit]
-    }))
-  }
+}
 
+function ThemeCardDeleteConfirm({ scene, managing, onDelete, onCancel }) {
+  return [
+    jsx('span', { key: 'q', className: 'text-(--ui-text-tertiary)', children: 'Delete? It goes to the trash.' }),
+    jsx('button', {
+      key: 'yes',
+      type: 'button',
+      disabled: managing,
+      onClick: () => { onDelete(scene.name); onCancel() },
+      className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 text-(--ui-error) hover:border-(--ui-stroke-strong)',
+      children: managing ? 'Deleting…' : 'Yes'
+    }),
+    jsx('button', {
+      key: 'no',
+      type: 'button',
+      onClick: onCancel,
+      className: MANAGE_BUTTON_CLASS,
+      children: 'No'
+    })
+  ]
+}
+
+function ThemeCardManageButtons({ scene, onDelete, onRename, onExport, onStartRename, onStartConfirm }) {
+  return [
+    jsx('button', {
+      key: 'export',
+      type: 'button',
+      onClick: () => onExport(scene.name),
+      title: 'Save this skin as hand-editable YAML you can edit and re-import',
+      className: MANAGE_BUTTON_CLASS,
+      children: 'Export'
+    }),
+    jsx('button', {
+      key: 'rename',
+      type: 'button',
+      onClick: () => onStartRename(scene),
+      className: MANAGE_BUTTON_CLASS,
+      children: 'Rename'
+    }),
+    jsx('button', {
+      key: 'delete',
+      type: 'button',
+      onClick: onStartConfirm,
+      className: MANAGE_BUTTON_CLASS,
+      children: 'Delete'
+    })
+  ]
+}
+
+function ThemeCardActions({ scene, managing, onDelete, onRename, onExport }) {
+  const [renaming, setRenaming] = useState(false)
+  const [confirming, setConfirming] = useState(false)
+  const [draft, setDraft] = useState('')
+  const startRename = (target) => { setDraft(target.name); setRenaming(true) }
+  const stopRenaming = () => setRenaming(false)
+  const stopConfirming = () => setConfirming(false)
+  const body = renaming
+    ? jsx(ThemeCardRename, { scene, draft, setDraft, managing, onRename, onCancel: stopRenaming })
+    : (confirming
+      ? jsx(ThemeCardDeleteConfirm, { scene, managing, onDelete, onCancel: stopConfirming })
+      : jsx(ThemeCardManageButtons, { scene, onDelete, onRename, onExport, onStartRename: startRename, onStartConfirm: () => setConfirming(true) }))
+  return jsxs('div', { className: MANAGE_ROW_CLASS, children: body })
+}
+
+function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, shape, localScope }) {
+  const c = (mode === 'dark' ? scene.darkColors : scene.lightColors) || scene.colors || {}
+  const strip = paletteStrip(c)
+  const isActive = scene.name === active
+  const labelClass = shape === 'circle'
+    ? 'mt-1 flex w-full items-center justify-center gap-1'
+    : 'flex w-full items-center justify-between gap-1'
+  const cardChildren = [jsx(ThemeCardPalette, { strip, shape })]
+  if (shape !== 'circle') {
+    cardChildren.push(jsx(ThemeCardLabel, { scene, mode, active, localScope, showState: true, className: labelClass }))
+  }
   const card = jsxs('button', {
     type: 'button',
     onClick: () => onApply(scene),
@@ -1601,7 +1740,7 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
     // the shape the user picked.
     style: { aspectRatio: cardAspect(shape) },
     disabled: applying === scene.name,
-    title: `${scene.description || scene.name} (${scene.modeSupport === 'dynamic' ? `${mode} variant` : `${scene.modeSupport} only`})`,
+    title: cardTitle(scene, mode),
     className: cn(
       'flex w-full flex-col gap-1 border text-left transition-colors',
       cardShapeClasses(shape),
@@ -1611,114 +1750,15 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
     ),
     children: cardChildren
   })
-
-  // The preview pill sits visually INSIDE the square but is a DOM sibling of the
-  // card: the card is itself a button, and a button inside a button is invalid
-  // HTML. It reveals on hover (a CSS opacity change, not an app repaint) and on
-  // keyboard focus, so it is reachable without a pointer.
-  const previewPill = jsx('button', {
-    type: 'button',
-    onClick: () => { if (previewing) onStopPreview(); else onPreview(scene) },
-    title: previewing ? 'Stop the preview and go back to your theme' : 'Preview this theme for 10 seconds, then revert',
-    className: cn(
-      // Centred inside the card, not anchored to its bottom edge: a circle's
-      // bottom edge lies OUTSIDE the circle, so a bottom-anchored pill would
-      // poke out of the shape. Centring also keeps it clear of the label row.
-      'absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity',
-      previewing
-        ? 'border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100'
-        : 'border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
-    ),
-    children: previewing
-      ? jsx(PreviewCountdown, { until: previewUntil })
-      : 'Preview 10s'
-  })
-  const wrapperChildren = [card, previewPill]
+  const wrapperChildren = [card, jsx(ThemeCardPreviewPill, { scene, previewing, previewUntil, onPreview, onStopPreview })]
   if (shape === 'circle') {
-    // Under the circle, where the round edge cannot reach it.
-    wrapperChildren.push(jsx('div', {
-      className: 'mt-1 flex w-full items-center justify-center gap-1',
-      children: modeBits
-    }))
+    wrapperChildren.push(jsx(ThemeCardLabel, { scene, mode, active, localScope, showState: false, className: labelClass }))
   }
   const stacked = jsxs('div', { className: 'group relative w-full', children: wrapperChildren })
-
-  // The manage actions live OUTSIDE the card button. A button inside a button is
-  // invalid HTML, and the card is itself a button because the whole card applies
-  // the theme.
-  const actions = owned
-    ? jsxs('div', {
-        className: 'mt-1 flex items-center gap-1 text-[0.625rem]',
-        children: renaming
-          ? [
-              jsx('input', {
-                key: 'name',
-                type: 'text',
-                value: draft,
-                onChange: e => setDraft(e.target.value),
-                onKeyDown: e => {
-                  if (e.key === 'Enter') { onRename(scene.name, draft); setRenaming(false) }
-                  if (e.key === 'Escape') { setRenaming(false) }
-                },
-                className: 'min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5'
-              }),
-              jsx('button', {
-                key: 'save',
-                type: 'button',
-                disabled: managing,
-                onClick: () => { onRename(scene.name, draft); setRenaming(false) },
-                className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)',
-                children: managing ? 'Saving…' : 'Save'
-              })
-            ]
-          : confirming
-            ? [
-                jsx('span', { key: 'q', className: 'text-(--ui-text-tertiary)', children: 'Delete? It goes to the trash.' }),
-                jsx('button', {
-                  key: 'yes',
-                  type: 'button',
-                  disabled: managing,
-                  onClick: () => { onDelete(scene.name); setConfirming(false) },
-                  className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 text-(--ui-error) hover:border-(--ui-stroke-strong)',
-                  children: managing ? 'Deleting…' : 'Yes'
-                }),
-                jsx('button', {
-                  key: 'no',
-                  type: 'button',
-                  onClick: () => setConfirming(false),
-                  className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)',
-                  children: 'No'
-                })
-              ]
-            : [
-                jsx('button', {
-                  key: 'export',
-                  type: 'button',
-                  onClick: () => onExport(scene.name),
-                  title: 'Save this skin as hand-editable YAML you can edit and re-import',
-                  className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)',
-                  children: 'Export'
-                }),
-                jsx('button', {
-                  key: 'rename',
-                  type: 'button',
-                  onClick: () => { setDraft(scene.name); setRenaming(true) },
-                  className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)',
-                  children: 'Rename'
-                }),
-                jsx('button', {
-                  key: 'delete',
-                  type: 'button',
-                  onClick: () => setConfirming(true),
-                  className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)',
-                  children: 'Delete'
-                })
-              ]
-      })
-    : null
-
+  // Only an owned skin has manage actions, and it keeps its unwrapped shape when it
+  // does not: the extra flex column is what holds the action row.
   if (!owned) return stacked
-  return jsxs('div', { className: 'flex w-full flex-col', children: [stacked, actions] })
+  return jsxs('div', { className: 'flex w-full flex-col', children: [stacked, jsx(ThemeCardActions, { scene, managing, onDelete, onRename, onExport })] })
 }
 
 function ThemePicker() {
