@@ -1,5 +1,7 @@
 # Chroma for Hermes
 
+![Chroma for Hermes — banner art](docs/chroma-banner.png)
+
 **A hard fork of [Hermes Theme Picker](https://github.com/jdtimothy/hermes-theme-picker), originally by Joshua Timothy.** · [See what changed](CHANGELOG.md)
 
 > **Credits and provenance.** Chroma is a fork. The original plugin — its theme
