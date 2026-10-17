@@ -600,3 +600,52 @@ maintainer; the ones that failed verification are marked. Reports:
 **Reset (trivial) ships in E1; full undo/redo moves to E6.** E1 is already the largest single phase once
 §17's overrides land, and undo is not what makes an edit *safe* — a save that can be reset is.
 
+---
+
+## 19. E0/E1 as built, and what the maintainer verified (2026-10-18)
+
+Landed as `d39c1af`. Verified over a **real ASGI transport** against a temp `HERMES_HOME` — not taken
+from the lanes' self-reports, which contradicted each other on the JS suite (the backend lane reported
+two failures that did not exist; it had run the suite while the pane lane was still writing it).
+
+### 19.1 Proven by walking the loop
+
+| Step | Result |
+|:--|:--|
+| `PUT /overrides/{scene}` | `200`; record written; **the gateway transport YAML changes and carries the new colour** — the CLI sees the edit |
+| `DELETE /overrides/{scene}` | `200`; record gone; **both transport files restored byte-for-byte** |
+| unknown scene | `404`, naming the scene it could not find |
+| unknown role | `400`, listing the editable roles |
+| bad hex | `400`, naming the value and the accepted forms |
+| corrupt overrides file | lenient `200` on read (the gallery survives), `500` + **quarantine, never truncation** on write |
+
+Suites: JS **142/142**, backend **90/90** (from 58), regeneration idempotent (`99716976…`), `validate`
+clean.
+
+### 19.2 Three things to fix, found by checking rather than trusting
+
+1. **The pane does not consume `/schema`.** `grep schema desktop/plugin.template.js` is empty, so the
+   route built to be the editor's single source of truth is unused and the pane keeps its own
+   `EDITOR_ROLES` copy. The two vocabularies currently agree, but by coincidence rather than by
+   construction. The backend accepts **ten** keys; the UI exposes the **six** that a card can show, so
+   `banner_accent`, `ui_tool` and `banner_border` are settable through the API and unreachable in the UI.
+   **Resolution:** the six roles are the card's anatomy and stay the presentation contract; the pane
+   should still fetch `/schema` for modes, caps and a **drift alarm** — if a role's primary key is not in
+   `paletteKeys`, that is a bug worth shouting about, not a silent disagreement.
+2. **The `authored` snapshot is necessary but it creates an upgrade trap.** Once an override overwrites
+   the transport file, the authored palette exists nowhere else, so the record must carry it — that is
+   why Reset could restore byte-for-byte. But if a later plugin version ships a *different* authored
+   palette, the stale snapshot means Reset restores **pre-upgrade colours**. Decide at install time:
+   refresh the snapshot from the newly shipped transports, or clear overrides whose snapshot no longer
+   matches and tell the user. Not urgent; it must not be forgotten.
+3. **`PUT /skins/{scene}` on a transport-backed scene answers `404` "not a skin Chroma manages"** rather
+   than a `409` pointing at the override route. The `409` path covers *Desktop built-in theme names*;
+   the transport case falls through to the unknown-name branch. A one-line branch + test makes the error
+   helpful instead of confusing.
+
+### 19.3 Still open in E1
+
+**Owned skins are read-only in the pane.** `PUT /skins/{name}` exists and is tested, but the editor does
+not call it, so editing a *user* skin (the §3 in-place rule) is not yet reachable from the UI. That is
+E1b, and it is the last piece before E2 (`POST /skins/duplicate`) and the packs campaign.
+
