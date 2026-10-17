@@ -2461,9 +2461,9 @@ function ThemePicker() {
 // ---------------------------------------------------------------------------
 
 function ThemeChip() {
-  useDesktopThemeApi()
-  const [active] = useActiveSkin()
-  const { mode, setMode } = useTheme()
+  const desktopTheme = useDesktopThemeApi()
+  const [active, setActive] = useActiveSkin()
+  const { mode } = useTheme()
   const activeSkin = active
     ? (SKINS.find(s => s.name === active) || IMPORTED_SKINS.find(s => s.name === active)) || null
     : null
@@ -2471,7 +2471,11 @@ function ThemeChip() {
   const toggleMode = () => {
     if (!supportsBoth) return
     haptic('tap')
-    setMode(mode === 'light' ? 'dark' : 'light')
+    // A provider-only setMode repaints whatever theme Desktop happens to hold,
+    // which is not necessarily this scene (a gateway broadcast can leave it on
+    // the single-mode transport skin, and an unresolvable name falls back to the
+    // default). Re-apply the scene so our own root paint is the one the user sees.
+    applyScene(activeSkin, mode === 'light' ? 'dark' : 'light', setActive, desktopTheme)
   }
   const activeColors = activeSkin && activeSkin.colors ? activeSkin.colors : null
   const activeLabel = activeSkin?.label || (active ? active.replace(/-/g, ' ') : 'Nous')

@@ -3,6 +3,21 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.4.1] - 2026-10-17
+
+### Fixed
+
+- **The lightbulb now switches every scene.** The chip's mode toggle called the
+  Desktop provider's `setMode` and nothing else, so the surface only changed if
+  the provider happened to resolve the active scene; when it did not, the click
+  repainted a different palette and the button read as dead or stuck. The toggle
+  now re-applies the scene in the new mode, which paints our own root tokens and
+  keeps the provider in step (`applyScene` already calls `setTheme` + `setMode`).
+  Measured: on the previous build the failure set was exactly the 47 scenes that
+  shipped in one mode before 2.4.0; now all 109 repaint. Pinned by
+  `tests/theme-chip-mode.test.mjs` (3 tests, including a sweep over every
+  dynamic scene).
+
 ## [2.4.0] - 2026-10-17
 
 ### Added
