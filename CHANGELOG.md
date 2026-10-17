@@ -3,6 +3,50 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.3.0] - 2026-10-17
+
+### Added
+
+- **Five pastel skins, the first of their kind here.** Each is a real light/dark
+  pair, so it behaves like every other dynamic scene: *Cotton Candy* (blush and
+  lilac), *Mint Sorbet*, *Buttercup*, *Powder Blue*, *Peach Blossom*. The
+  catalog goes from 104 to 109 scenes and 140 to 150 bundled skins.
+- `scripts/make-pastel-skins.py` authors all ten files from one spec per scene,
+  so the pair keeps the same hues in both modes. Run it to change them; do not
+  hand-edit the YAML.
+- Two categories join the theme lens: **Pastels** and **Muted**. Nine in total.
+
+### Changed
+
+- **The classifier measures colour in OKLCH (Oklab), not HSL and not RGB
+  spreads.** Both earlier measures failed in different ways: HSL reports a
+  barely-tinted near-white as fully saturated, and RGB max-minus-min is not
+  perceptual (a deep navy and a pale grey-blue can score the same). Oklab
+  separates lightness from colourfulness the way the eye does, which is the
+  axis "pastel" is actually defined on.
+- **Pastel is now high lightness with real but low chroma** (L ≥ 0.72, C 0.03 to
+  0.14), judged on the accent. The shell test that seemed obvious - a pale,
+  faintly tinted background - was measured and thrown out: nearly every light
+  theme in the catalog has that shell, and it filed 18 scenes as pastels,
+  including `dark-sage`.
+- **The green band moved from 75-170 to 118-178 in OKLCH hue.** Oklab puts
+  yellow near 90 and cream near 80, so the old band filed `dark-vanilla` and
+  `dark-lemon` under Nature.
+- **`KEEP_KEYS` now retains `input_rule` and `response_border`.** Without them a
+  pastel skin's pale accent becomes the rule under the input at 1.4:1 on its own
+  background - invisible. The skins now design a readable rule.
+- Distribution after the change: Cool 16, Warm 13, Nature 6, Pastels 5, Vibrant
+  7, Muted 11, Minimal 4, Light 8, Dark 39.
+
+### Notes
+
+- Measured contrast for the pastel light palettes: body text 9.6-10.6:1, the
+  interface rule 3.2-4.2:1, the pastel accent itself 1.4-2.1:1. The accent is a
+  signature, not a carrier - that split is deliberate and documented in the
+  generator.
+- The pastel accents are pale by definition, so they are used for fills and
+  highlights where contrast does not gate legibility.
+
 ## [2.2.0] - 2026-10-17
 
 ### Added

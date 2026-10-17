@@ -14,6 +14,8 @@ colors:
   ui_warn: '#7b5519'
   ui_error: '#af3a46'
   prompt: '#343b58'
+  input_rule: '#235fb1'
+  response_border: '#235fb1'
   status_bar_bg: '#d8d9de'
   status_bar_text: '#343b58'
   session_border: '#c4c8da'

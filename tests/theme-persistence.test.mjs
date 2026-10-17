@@ -14,7 +14,7 @@ function loadPlugin(storage, exposeTestHelpers = false, requestHandler = null, p
       .replace(/import\s+\{[^}]*\}\s+from\s+'react'\n/, '')
       .replace('export default {', 'globalThis.plugin = {')
     if (exposeTestHelpers) {
-      executable += '\nglobalThis.testHelpers = { buildThemeGroups, buildGroups, buildCategoryGroups, sceneCategory, colourChroma, colourHue, normaliseHex, readGroupMode, writeGroupMode, GROUP_MODES, THEME_CATEGORIES, persistAppearance, sceneNameFor, sceneToDesktopTheme, desktopModeFor, applyScene, readApplyScope, writeApplyScope, APPLY_SCOPE_LOCAL, APPLY_SCOPE_EVERYWHERE, cardMinFor, cardAspect, cardShapeClasses, readCardShape, writeCardShape, CARD_MIN, CARD_SHAPES, scenes: SKINS }\n'
+      executable += '\nglobalThis.testHelpers = { buildThemeGroups, buildGroups, buildCategoryGroups, sceneCategory, oklch, normaliseHex, readGroupMode, writeGroupMode, GROUP_MODES, THEME_CATEGORIES, persistAppearance, sceneNameFor, sceneToDesktopTheme, desktopModeFor, applyScene, readApplyScope, writeApplyScope, APPLY_SCOPE_LOCAL, APPLY_SCOPE_EVERYWHERE, cardMinFor, cardAspect, cardShapeClasses, readCardShape, writeCardShape, CARD_MIN, CARD_SHAPES, scenes: SKINS }\n'
     }
 
     const css = new Map()
@@ -340,25 +340,40 @@ test('the theme lens puts every scene in exactly one category, and no category s
     ['dynamic', 'dark', 'light'])
 })
 
-test('the classifier reads hue and loudness, not brightness', async () => {
+test('the classifier reads perceptual lightness and chroma, and pastel is a colour', async () => {
   const plugin = await loadPlugin(new Map(), true)
-  const { sceneCategory, colourChroma } = plugin.__test
+  const { sceneCategory, oklch } = plugin.__test
   const scene = (accent, modeSupport) => ({ name: 'x', modeSupport: modeSupport || 'dynamic', lightColors: { ui_accent: accent } })
 
-  assert.equal(sceneCategory(scene('#5B7B9A')), 'cool', 'a muted blue')
-  assert.equal(sceneCategory(scene('#7A6A9E')), 'cool', 'a muted violet')
-  assert.equal(sceneCategory(scene('#A65A3C')), 'warm', 'an earthy orange')
-  assert.equal(sceneCategory(scene('#9F1239')), 'warm', 'a crimson')
-  assert.equal(sceneCategory(scene('#2F855A')), 'nature', 'a muted forest green')
-  assert.equal(sceneCategory(scene('#22C55E')), 'vibrant', 'a loud green is synthetic, not natural')
-  assert.equal(sceneCategory(scene('#00E5FF')), 'vibrant', 'neon cyan')
+  // Pastel is high perceptual lightness with real but low chroma - the tint
+  // family. These are the accents of the five pastel skins.
+  assert.equal(sceneCategory(scene('#E795BE')), 'pastels', 'a pale pink')
+  assert.equal(sceneCategory(scene('#9CD3BA')), 'pastels', 'a pale mint')
+  assert.equal(sceneCategory(scene('#EFD292')), 'pastels', 'a pale butter')
+  assert.equal(sceneCategory(scene('#A9C6E6')), 'pastels', 'a pale powder blue')
+
+  // A pastel is not simply "a pink": the same hue, deepened, stops being pastel.
+  assert.equal(sceneCategory(scene('#B91C1C')), 'vibrant', 'a crimson is loud, not pastel')
+  assert.equal(sceneCategory(scene('#2F855A')), 'nature', 'a forest green')
+  assert.equal(sceneCategory(scene('#22C55E')), 'vibrant', 'a neon green is synthetic')
+  assert.equal(sceneCategory(scene('#0053FD')), 'vibrant', 'a saturated blue')
+  assert.equal(sceneCategory(scene('#5B7BB5')), 'cool', 'a muted blue still reads blue')
+  assert.equal(sceneCategory(scene('#C05621')), 'warm', 'an orange')
+  assert.equal(sceneCategory(scene('#1E293B')), 'muted', 'a slate with only a trace of blue')
   assert.equal(sceneCategory(scene('#808080')), 'minimal', 'grey has no hue to file')
-  assert.equal(sceneCategory(scene('#3B82F6', 'dark')), 'dark', 'a dark-only scene files by its mode')
-  assert.equal(sceneCategory(scene('#3B82F6', 'light')), 'light')
+
+  assert.equal(sceneCategory(scene('#E795BE', 'dark')), 'dark', 'a dark-only scene files by its mode')
+  assert.equal(sceneCategory(scene('#E795BE', 'light')), 'light')
   assert.equal(sceneCategory({ name: 'bare', modeSupport: 'dynamic' }), 'minimal', 'a scene with no palette still files somewhere')
-  // The trap that broke the first attempt: HSL calls a near-white tint fully
-  // saturated. Chroma does not, which is why the classifier uses it.
-  assert.ok(colourChroma('#F0F4FF') < 0.12, 'a near-white tint is not a loud colour')
+
+  // The measurement itself, in the space the rule depends on.
+  const white = oklch('#FFFFFF')
+  assert.ok(white.l > 0.99 && white.c < 0.005, 'white is as light as it gets, and colourless')
+  const tint = oklch('#F0F4FF')
+  assert.ok(tint.l > 0.95 && tint.c < 0.03, 'a near-white tint carries almost no chroma')
+  assert.ok(oklch('#0053FD').c > tint.c * 5, 'a saturated blue is far more colourful than a tint')
+  // HSL reported this pair as equally "saturated"; Oklab separates them.
+  assert.ok(oklch('#E795BE').l > 0.7, 'a pastel accent is genuinely light')
 })
 
 test('the grouping lens persists, and defaults to the scene view', async () => {

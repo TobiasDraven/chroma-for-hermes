@@ -1,6 +1,6 @@
 {
  "note": "Digests of every catalog scene palette plus full palettes for a few representative skins. Regenerate with tests/regenerate-scene-parity.mjs ONLY when a palette change is intended: this file exists to prove a refactor moved no value, so an unexpected diff means behaviour changed.",
- "sceneCount": 104,
+ "sceneCount": 109,
  "scenes": {
   "alabaster": "f81828413e1abd59:f81828413e1abd59",
   "amber-terminal": "b4fc7705f997b62e:b4fc7705f997b62e",
@@ -36,6 +36,11 @@
   "dark-nord": "0b04f9a65aa83771:4fb5c91e94f0918f",
   "dark-obsidian": "bbdb4bb0f98d4781:49c5f333ce36b101",
   "dark-one": "3204b834021251e9:24bbe402ec184aa5",
+  "dark-pastel-buttercup": "59509d9c5ad4712b:3e1814fe5784fe5c",
+  "dark-pastel-cotton-candy": "da7fc11e8bf13d42:7d7a984b3a7b9c3e",
+  "dark-pastel-mint-sorbet": "cae1a7767652e895:6c0461be20061a54",
+  "dark-pastel-peach-blossom": "7444836346e33baf:5b07fc58b831b3b6",
+  "dark-pastel-powder-blue": "2237839060259750:3614497a744d7842",
   "dark-plum": "8e76011daac2f346:c9a99833b95e6b3f",
   "dark-rosepine": "6be8e870520b29d1:a966cfb12e0a8d6e",
   "dark-sage": "f3b517ad0dd5c226:2fff754934695c91",

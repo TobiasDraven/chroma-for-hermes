@@ -657,3 +657,68 @@ base size, a grouping switch, and a compact settings row.
 
 **Still owed:** the Captain's G15 walk on 2.2.0 (dropdown switching, the new
 category sections, the circle caption), then the convergence review round.
+
+### Round four (2.3.0): what the research changed
+
+The Captain asked for research on how colour schemes are actually categorised,
+then for the first five pastel skins. Both changed the design.
+
+**What the field does.** Three independent axes recur across colour-theory and
+design-system writing:
+
+1. **Temperature** - warm (reds, oranges, yellows) against cool (blues, greens,
+   purples). Relative, not absolute: every hue has a warm and a cool version.
+2. **Family by character, not by wheel position** - pastels, earthy/muted,
+   neutrals, neon. These are grouped by saturation and brightness.
+3. **Lightness** - light against dark shells.
+
+That is the same three-axis shape the 2.2.0 classifier already used, so the
+taxonomy was sound. What was wrong was the **measurement**.
+
+**Pastel is a defined range, not a vibe.** The definitional sources agree: a
+pastel is a tint - high lightness with low-to-medium saturation, commonly stated
+as lightness above ~75% and saturation below ~40% in HSL terms. Both conditions
+are needed; lightness alone is just "pale". This is the opposite of "muted",
+which is medium lightness with low saturation.
+
+**The measurement space matters.** OKLCH (Oklab, Ottosson 2020) separates
+perceptual lightness from chroma and hue. HSL does not: its lightness lies
+across hues, and its saturation reports ~1.0 for a barely-tinted near-white.
+That single defect produced both earlier wrong answers - the 2.2.0 "no pastels
+exist" finding, and the shell test that then filed 18 scenes as pastel.
+
+**What shipped:**
+
+- The classifier now converts each accent to OKLCH and reads L, C and h.
+- Pastel = `L >= 0.72 && 0.03 <= C <= 0.14` on the accent. Measured, that is 0
+  of the 104 shipped scenes - so the five new pastel skins are the first, and
+  the category is populated by real content rather than by a loosened rule.
+- **Muted** was added because the family axis names it and the catalog is full
+  of it: 11 scenes sit at 0.03-0.09 chroma at medium lightness.
+- The nature band moved to 118-178 OKLCH hue. Oklab puts yellow near 90, so the
+  old 75-170 band had been filing vanilla and lemon as greens.
+
+**Distribution:** Cool 16, Warm 13, Nature 6, Pastels 5, Vibrant 7, Muted 11,
+Minimal 4, Light 8, Dark 39 (109 scenes).
+
+**The five pastel skins.** Pairs, because a dynamic scene in Chroma is a
+light/dark pair: Cotton Candy, Mint Sorbet, Buttercup, Powder Blue, Peach
+Blossom. Authored in `scripts/make-pastel-skins.py` from one spec per scene, so
+both modes keep the same hues.
+
+Measurement forced one design split worth keeping: a true pastel accent scores
+1.4-2.1:1 against its own light shell. That is fine for a swatch and wrong for
+the rule under the input, so interface roles take the darker "strong" tone
+(3.2-4.2:1) while the pastel stays the signature. Text is 9.6-10.6:1.
+`KEEP_KEYS` had to start retaining `input_rule` and `response_border` for that
+to survive into the picker at all.
+
+**Sources consulted.** Wikipedia *Pastel (color)* (tint definition); MDN *CSS
+color_value/oklch* (axis definitions and chroma range); Ottosson, *A perceptual
+color space for image processing* (Oklab); plus design writing on palette
+families and temperature for the practical thresholds. Note: Hermes' own
+`web_search` and `web_extract` both failed this session (the configured
+perplexity and firecrawl providers were not registered), so the research ran
+through the You.com MCP search and its result highlights rather than full-page
+reads. The thresholds were then verified against this catalog's real palettes,
+which is the stronger evidence anyway.

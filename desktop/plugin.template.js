@@ -85,7 +85,9 @@ const THEME_CATEGORIES = [
   { id: 'cool', title: 'Cool' },
   { id: 'warm', title: 'Warm' },
   { id: 'nature', title: 'Nature' },
+  { id: 'pastels', title: 'Pastels' },
   { id: 'vibrant', title: 'Vibrant' },
+  { id: 'muted', title: 'Muted' },
   { id: 'minimal', title: 'Minimal' },
   { id: 'light', title: 'Light' },
   { id: 'dark', title: 'Dark' }
@@ -1364,32 +1366,34 @@ function normaliseHex(hex) {
   return raw.length >= 6 ? '#' + raw.slice(0, 6) : null
 }
 
-/** Absolute colourfulness of a colour: max channel minus min, 0-1.
+/** OKLCH of a colour: perceptual lightness L (0-1), chroma C (0 to roughly 0.37
+ *  for the sRGB gamut) and hue h (0-360). Null when the input is not a colour.
  *
- *  This is deliberately NOT HSL saturation. At high lightness HSL reports
- *  saturation near 1.0 for a barely-tinted near-white - the first version of
- *  this classifier used it and a plain background read as "fully saturated",
- *  which collapsed the whole catalog into one bucket. Chroma does not move with
- *  lightness, so "pale grey-blue" and "electric blue" separate correctly. */
-function colourChroma(hex) {
+ *  Oklab, not HSL and not RGB max-minus-min. Both simpler measures fail the one
+ *  job this needs to do:
+ *   - HSL calls a barely-tinted near-white (s=1.0) "fully saturated", so every
+ *     light shell reads as loud.
+ *   - RGB max-minus-min is not perceptual: a deep navy and a pale grey-blue can
+ *     share a chroma while looking nothing alike, and dark colours saturate it.
+ *  Oklab (Ottosson, 2020) separates lightness from colourfulness the way the eye
+ *  does, which is exactly the axis "pastel" is defined on: high L, low C. */
+function oklch(hex) {
   const rgb = hexToRgb(normaliseHex(hex) || '')
   if (!rgb) return null
-  const channels = rgb.map(v => v / 255)
-  return Math.max(...channels) - Math.min(...channels)
-}
-
-/** Hue in degrees (0-360), or null. Grey has no meaningful hue, so it reads 0. */
-function colourHue(hex) {
-  const rgb = hexToRgb(normaliseHex(hex) || '')
-  if (!rgb) return null
-  const [r, g, b] = rgb.map(v => v / 255)
-  const max = Math.max(r, g, b)
-  const min = Math.min(r, g, b)
-  const d = max - min
-  if (d === 0) return 0
-  let h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4
-  h *= 60
-  return h < 0 ? h + 360 : h
+  const [r, g, b] = rgb.map(v => {
+    const s = v / 255
+    return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4)
+  })
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b)
+  const L = 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s
+  const A = 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s
+  const B = 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s
+  const c = Math.sqrt(A * A + B * B)
+  let h = Math.atan2(B, A) * 180 / Math.PI
+  if (h < 0) h += 360
+  return { l: L, c, h }
 }
 
 /** One broad category per scene - the "by theme" lens.
@@ -1410,18 +1414,31 @@ function sceneCategory(scene) {
   if (scene.modeSupport === 'dark') return 'dark'
   if (scene.modeSupport === 'light') return 'light'
   const colors = scene.lightColors || scene.darkColors || scene.colors || {}
-  const accent = colors.ui_accent || colors.banner_accent || colors.banner_title
-  const chroma = colourChroma(accent)
-  if (chroma === null) return 'minimal'
-  if (chroma < 0.12) return 'minimal'
-  if (chroma >= 0.6) return 'vibrant'
-  const hue = colourHue(accent)
-  if (hue === null) return 'minimal'
-  // Natural greens are muted. A green loud enough to pass the vibrant test is
-  // synthetic - neon, cyberpunk, phosphor terminal - and belongs with the loud
-  // ones, not with the forests.
-  if (hue >= 75 && hue <= 170) return chroma <= 0.45 ? 'nature' : 'vibrant'
-  if (hue >= 330 || hue < 75) return 'warm'
+  const accent = oklch(colors.ui_accent || colors.banner_accent || colors.banner_title)
+  if (!accent) return 'minimal'
+  // Pastel is a property of the COLOUR, not of the shell: a tint is high
+  // lightness with real but low chroma, which is what "paste" in pastello
+  // describes. Judged on the accent, the colour a theme is read by.
+  //
+  // Measured, not assumed: a shell test (pale, faintly tinted background) looks
+  // obvious and is useless here, because nearly every light theme in the catalog
+  // has exactly that shell - it caught 18 scenes and called dark-sage a pastel.
+  // On the accent, no shipped scene qualifies at all. The five pastel skins are
+  // genuinely the first ones.
+  if (accent.l >= 0.72 && accent.c >= 0.03 && accent.c <= 0.14) return 'pastels'
+  if (accent.c < 0.03) return 'minimal'
+  if (accent.c >= 0.16) return 'vibrant'
+  // Hue family before character for greens: "nature" is the one hue with a
+  // natural meaning, so a muted forest green is a forest, not merely "muted".
+  // A green loud enough to clear the vibrant test is synthetic - neon,
+  // cyberpunk, phosphor terminal - and stays with the loud ones.
+  // 118-178 in OKLCH, not 75-170: Oklab puts yellow near 90 and cream near 80,
+  // so the wider band filed "vanilla" and "lemon" under Nature. This band is
+  // yellow-green through teal-green, which is what a person means by green.
+  if (accent.h >= 118 && accent.h <= 178) return 'nature'
+  if (accent.c < 0.09) return 'muted'
+  // Warm is the rest of the warm wheel: reds through yellows, wrapping at 330.
+  if (accent.h >= 330 || accent.h < 118) return 'warm'
   return 'cool'
 }
 

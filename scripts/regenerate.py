@@ -46,6 +46,11 @@ KEEP_KEYS = {
     "ui_accent", "banner_accent", "banner_title", "ui_border", "banner_border",
     "banner_dim", "session_border", "ui_error", "ui_ok", "ui_warn", "ui_tool",
     "completion_menu_bg", "prompt", "shell_dollar",
+    # The two roles that carry the interface rather than decorate it. Without
+    # them a pastel skin's pale accent would be the rule under the input, at
+    # 1.4:1 on its own background: invisible. The skins design a readable rule
+    # and keep the pastel for the signature.
+    "input_rule", "response_border",
 }
 
 # Canonical light/dark matches from CliffWade/hermes-desktop-theme-pack v1.1.0.
@@ -101,6 +106,12 @@ THEME_PAIRS = [
     ("vibrant-synthwave", "light-synthwave"),
     ("void-sunset", "light-sunset"),
     ("warm-ash", "light-oat"),
+    # Pastel set one, authored in scripts/make-pastel-skins.py.
+    ("dark-pastel-cotton-candy", "light-pastel-cotton-candy"),
+    ("dark-pastel-mint-sorbet", "light-pastel-mint-sorbet"),
+    ("dark-pastel-buttercup", "light-pastel-buttercup"),
+    ("dark-pastel-powder-blue", "light-pastel-powder-blue"),
+    ("dark-pastel-peach-blossom", "light-pastel-peach-blossom"),
 ]
 
 HEX_RE = re.compile(r"^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})$")

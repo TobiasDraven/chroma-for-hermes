@@ -31,8 +31,10 @@ device connected to your gateway — including the CLI.
   and preview them in light or dark mode.
 - **Two ways to browse** — group the gallery the way it shipped (Dynamic
   Scenes / Dark Mode Only / Light Mode Only), or switch the dropdown to group
-  by broad theme: Cool, Warm, Nature, Vibrant, Minimal, Light and Dark. The
-  category is derived from each palette, and your choice sticks per profile.
+  by broad theme: Cool, Warm, Nature, Pastels, Vibrant, Muted, Minimal, Light
+  and Dark. The category is derived from each palette in OKLCH, so it follows
+  what the eye sees rather than a raw saturation number, and your choice sticks
+  per profile.
 - **Built for comparison** — change themes without leaving the picker, closing
   your chat, or reloading Hermes.
 - **Works offline** — the catalog is embedded in the plugin, and themes are also

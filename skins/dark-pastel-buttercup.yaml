@@ -1,0 +1,49 @@
+# Hermes skin — dark-pastel-buttercup.
+# Buttercup — warm butter and cream, gentle as morning light
+name: dark-pastel-buttercup
+description: Buttercup — warm butter and cream, gentle as morning light
+
+colors:
+  background: "#201C12"
+  ui_accent: "#F0DCA4"
+  banner_accent: "#F0DCA4"
+  banner_title: "#F7F0DF"
+  banner_text: "#F7F0DF"
+  ui_text: "#F7F0DF"
+  banner_dim: "#ADA286"
+  banner_border: "#453D26"
+  ui_border: "#453D26"
+  ui_ok: "#A9C39C"
+  ui_warn: "#E4BE7C"
+  ui_error: "#DF918B"
+  prompt: "#F7F0DF"
+  input_rule: "#F0DCA4"
+  response_border: "#F0DCA4"
+  status_bar_bg: "#2A2517"
+  status_bar_text: "#F7F0DF"
+  status_bar_good: "#A9C39C"
+  status_bar_warn: "#E4BE7C"
+  status_bar_critical: "#DF918B"
+  session_label: "#F7E9C4"
+  session_border: "#453D26"
+  ui_tool: "#F7E9C4"
+  ui_thinking: "#ADA286"
+  diff_added: "#A9C39C"
+  diff_removed: "#DF918B"
+  diff_added_word: "#A9C39C"
+  diff_removed_word: "#DF918B"
+  syntax_string: "#A9C39C"
+  syntax_number: "#F7E9C4"
+  syntax_keyword: "#F7E9C4"
+  syntax_comment: "#ADA286"
+  completion_menu_bg: "#2A2517"
+  completion_menu_current_bg: "#332D1D"
+  completion_menu_meta_bg: "#332D1D"
+  shell_dollar: "#F7E9C4"
+
+branding:
+  agent_name: Hermes Agent
+  prompt_symbol: ❯
+  help_header: (^_^)? Commands
+
+tool_prefix: "┊"

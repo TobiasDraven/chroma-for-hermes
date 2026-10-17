@@ -1,0 +1,49 @@
+# Hermes skin — dark-pastel-cotton-candy.
+# Cotton candy — blush and lilac, soft as spun sugar
+name: dark-pastel-cotton-candy
+description: Cotton candy — blush and lilac, soft as spun sugar
+
+colors:
+  background: "#231A1F"
+  ui_accent: "#F2ACC9"
+  banner_accent: "#F2ACC9"
+  banner_title: "#F6E6EE"
+  banner_text: "#F6E6EE"
+  ui_text: "#F6E6EE"
+  banner_dim: "#A98EA0"
+  banner_border: "#46323E"
+  ui_border: "#46323E"
+  ui_ok: "#A8C6A6"
+  ui_warn: "#E2B77E"
+  ui_error: "#E39293"
+  prompt: "#F6E6EE"
+  input_rule: "#F2ACC9"
+  response_border: "#F2ACC9"
+  status_bar_bg: "#2C2128"
+  status_bar_text: "#F6E6EE"
+  status_bar_good: "#A8C6A6"
+  status_bar_warn: "#E2B77E"
+  status_bar_critical: "#E39293"
+  session_label: "#F7C6DB"
+  session_border: "#46323E"
+  ui_tool: "#F7C6DB"
+  ui_thinking: "#A98EA0"
+  diff_added: "#A8C6A6"
+  diff_removed: "#E39293"
+  diff_added_word: "#A8C6A6"
+  diff_removed_word: "#E39293"
+  syntax_string: "#A8C6A6"
+  syntax_number: "#F7C6DB"
+  syntax_keyword: "#F7C6DB"
+  syntax_comment: "#A98EA0"
+  completion_menu_bg: "#2C2128"
+  completion_menu_current_bg: "#33262F"
+  completion_menu_meta_bg: "#33262F"
+  shell_dollar: "#F7C6DB"
+
+branding:
+  agent_name: Hermes Agent
+  prompt_symbol: ❯
+  help_header: (^_^)? Commands
+
+tool_prefix: "┊"
