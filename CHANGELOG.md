@@ -3,6 +3,26 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.5.1] - 2026-10-18
+
+### Fixed
+
+- **The theme now sticks.** Three separate defects each produced the same
+  symptom. The shared `desktopThemeApi` slot was nulled by *any* consumer's
+  unmount, so leaving the picker disabled the provider handoff for the still
+  mounted command-bar chip and the next Desktop render reverted the surface; it
+  is now reference-counted and cleared only when the last consumer leaves. The
+  stale pre-2.4.0 cache entry is now detected by **shape** (its two palette
+  halves are identical, or it carries no `darkColors`) instead of by a label
+  comparison that could never match, so the boot cache is repaired. And a single
+  malformed skin can no longer white-screen the picker: the grid is wrapped in a
+  boundary that draws an honest fallback and reports what it could not draw.
+- Seven new tests, all of which fail on the previous build: two for the slot's
+  unmount orderings, three for the card boundary, two for the stale cache shapes.
+  Suite 125/125.
+- No palette moved. The parity fixture, `docs/DERIVED-PALETTES.md` and all 218
+  gateway transports are byte-identical.
+
 ## [2.5.0] - 2026-10-17
 
 ### Changed

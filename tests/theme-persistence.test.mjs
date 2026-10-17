@@ -37,6 +37,7 @@ function loadPlugin(storage, exposeTestHelpers = false, requestHandler = null, p
         createElement: () => ({ dataset: {} })
       },
       haptic: () => {},
+      Component: class {},
       host: {
         notify: value => state.notifications.push(value),
         onEvent: () => () => {},
@@ -110,6 +111,54 @@ test('registration upgrades legacy single-palette picker themes to dynamic scene
   const upgraded = JSON.parse(storage.get(USER_THEMES_KEY))['shadow-thief']
   assert.equal(upgraded.themePickerManaged, true)
   assert.notEqual(upgraded.colors.background, upgraded.darkColors.background)
+})
+
+test('registration repairs a stale pre-2.4.0 cache whose one palette is stored as both halves', async () => {
+  const catalog = await loadPlugin(new Map(), true)
+  const scene = catalog.__test.scenes.find(item => item.name === 'deep-void')
+  assert.ok(scene, 'fixture: deep-void must ship')
+  const shipped = catalog.__test.sceneToDesktopTheme(scene)
+  assert.notEqual(shipped.colors.background, shipped.darkColors.background, 'fixture: the scene now ships a pair')
+
+  // Exactly the pre-2.4.0 signature: one palette as both `colors` and
+  // `darkColors`, so Desktop's paletteFor() returns it for both modes.
+  const stale = {
+    name: 'deep-void',
+    label: 'Deep Void',
+    description: scene.description,
+    colors: shipped.darkColors,
+    darkColors: shipped.darkColors
+  }
+  const storage = new Map([[USER_THEMES_KEY, JSON.stringify({ 'deep-void': stale })]])
+  const plugin = await loadPlugin(storage)
+
+  plugin.register({ register: () => {} })
+
+  const repaired = JSON.parse(storage.get(USER_THEMES_KEY))['deep-void']
+  assert.deepEqual(repaired.colors, JSON.parse(JSON.stringify(shipped.colors)))
+  assert.deepEqual(repaired.darkColors, JSON.parse(JSON.stringify(shipped.darkColors)))
+  assert.notEqual(
+    repaired.colors.background,
+    repaired.darkColors.background,
+    'the repaired entry must carry a real light AND dark pair, or the lightbulb stays a no-op'
+  )
+})
+
+test('registration repairs a stale cache that carries no darkColors at all', async () => {
+  const catalog = await loadPlugin(new Map(), true)
+  const scene = catalog.__test.scenes.find(item => item.name === 'deep-void')
+  const shipped = catalog.__test.sceneToDesktopTheme(scene)
+
+  const stale = { name: 'deep-void', label: 'Deep Void', colors: shipped.darkColors }
+  const storage = new Map([[USER_THEMES_KEY, JSON.stringify({ 'deep-void': stale })]])
+  const plugin = await loadPlugin(storage)
+
+  plugin.register({ register: () => {} })
+
+  const repaired = JSON.parse(storage.get(USER_THEMES_KEY))['deep-void']
+  assert.deepEqual(repaired.colors, JSON.parse(JSON.stringify(shipped.colors)))
+  assert.deepEqual(repaired.darkColors, JSON.parse(JSON.stringify(shipped.darkColors)))
+  assert.notEqual(repaired.colors.background, repaired.darkColors.background)
 })
 
 test('registration preserves dark mode when upgrading a selected canonical dark source theme', async () => {

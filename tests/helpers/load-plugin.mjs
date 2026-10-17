@@ -87,7 +87,7 @@ export async function loadPlugin(overrides = {}) {
     .replace(/import\s+\{[^}]*\}\s+from\s+'react\/jsx-runtime'\n/, '')
     .replace(/import\s+\{[^}]*\}\s+from\s+'react'\n/, '')
     .replace('export default {', 'globalThis.plugin = {')
-    + '\nglobalThis.testHelpers = { ThemeCard, ThemePicker, ThemeChip, exportArtifact, exportOwnedSkins, parseImportedTheme, normHex, windowsTerminalTheme, base16Theme, vsCodeTheme, PREVIEW_MS, previewSecondsLeft, SKINS, CATALOG, sceneToDesktopTheme, skinToDesktopTheme, tweakcnColors, tweakcnToDesktopTheme, cssColorToHex, stripJsonNoise, parseTolerantJson, parseCssTheme, splitCssVars, tweakcnTokens, looksLikeVsCode, looksLikeWindowsTerminal, normalizeLiveSkin, migrateAppearanceAliases, CliBadge, isGatewayCapable, paletteStrip, cardTitle, ThemeCardPalette, ThemeCardLabel, ThemeCardPreviewPill, ThemeCardActions, ThemeCardRename, ThemeCardDeleteConfirm, ThemeCardManageButtons }\n'
+    + '\nglobalThis.testHelpers = { ThemeCard, ThemePicker, ThemeChip, exportArtifact, exportOwnedSkins, parseImportedTheme, normHex, windowsTerminalTheme, base16Theme, vsCodeTheme, PREVIEW_MS, previewSecondsLeft, SKINS, CATALOG, IMPORTED_SKINS, sceneToDesktopTheme, skinToDesktopTheme, tweakcnColors, tweakcnToDesktopTheme, cssColorToHex, stripJsonNoise, parseTolerantJson, parseCssTheme, splitCssVars, tweakcnTokens, looksLikeVsCode, looksLikeWindowsTerminal, normalizeLiveSkin, migrateAppearanceAliases, CliBadge, isGatewayCapable, paletteStrip, cardTitle, ThemeCardPalette, ThemeCardLabel, ThemeCardPreviewPill, ThemeCardActions, ThemeCardRename, ThemeCardDeleteConfirm, ThemeCardManageButtons, useDesktopThemeApi, syncDesktopState, splitUsableSkins: typeof splitUsableSkins !== "undefined" ? splitUsableSkins : undefined, hasUsableSkinName: typeof hasUsableSkinName !== "undefined" ? hasUsableSkinName : undefined, SkinBoundary: typeof SkinBoundary !== "undefined" ? SkinBoundary : undefined }\n'
 
   const context = rendererGlobals()
 
@@ -106,6 +106,15 @@ export async function loadPlugin(overrides = {}) {
     cn: (...parts) => parts.filter(Boolean).join(' '),
     haptic() {},
     oklchToHex: () => '#000000',
+    // The build imports Component for the render error boundary. Provide a real
+    // minimal base so `class SkinBoundary extends Component` and the render
+    // instrumentation below both work.
+    Component: class Component {
+      constructor(props) { this.props = props || {}; this.state = {} }
+      setState(update) {
+        this.state = { ...this.state, ...(typeof update === 'function' ? update(this.state, this.props) : update) }
+      }
+    },
     useTheme: () => ({
       themeName: 'nous', mode: 'dark',
       setTheme() {}, setMode() {},
@@ -122,10 +131,22 @@ export async function loadPlugin(overrides = {}) {
 
   for (const n of names) context[n] = stubFor(n, known)
 
+  // Mark the provided Component as a class component so the render
+  // instrumentation below can tell classes from function components.
+  if (typeof context.Component === 'function') context.Component.prototype.isReactComponent = {}
+
   // Execute function components as the tree is built, so a render runs real
-  // component bodies instead of merely assembling element objects.
-  const render = (type, props) =>
-    typeof type === 'function' ? type(props || {}) : { type, props }
+  // component bodies instead of merely assembling element objects. A class
+  // component is instantiated and its render() called, exactly as React would.
+  const render = (type, props) => {
+    if (typeof type === 'function') {
+      if (type.prototype && type.prototype.isReactComponent) {
+        return new type(props || {}).render()
+      }
+      return type(props || {})
+    }
+    return { type, props }
+  }
   context.jsx = render
   context.jsxs = (type, props) => render(type, props)
 

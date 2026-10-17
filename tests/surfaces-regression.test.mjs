@@ -85,6 +85,7 @@ async function loadForRegistration() {
     useState: value => [typeof value === 'function' ? value() : value, () => {}],
     useEffect: () => {},
     useMemo: fn => fn(),
+    Component: class {},
     useCallback: fn => fn,
     useRef: value => ({ current: value }),
     setTimeout: () => 0,

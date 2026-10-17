@@ -50,7 +50,7 @@ import {
   useValue
 } from '@hermes/plugin-sdk'
 import { jsx, jsxs } from 'react/jsx-runtime'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Component, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 let _rest = null
 
@@ -131,6 +131,11 @@ const latestAppearanceByProfile = new Map()
 // plugin hand the switch to the provider so state, persistence, and the paint
 // all agree. Null until a component mounts (e.g. under the test harness).
 let desktopThemeApi = null
+// How many mounted consumers (the picker page and the statusbar chip) are
+// sharing that one slot. A single consumer's unmount must NOT clear a slot
+// another mounted consumer still needs, so the slot is released only when the
+// count returns to zero.
+let desktopThemeApiConsumers = 0
 
 // ---------------------------------------------------------------------------
 // Embedded skin catalog — generated from ~/.hermes/skins/*.yaml + backend
@@ -1074,28 +1079,57 @@ function syncDesktopState(name, mode, api) {
 /**
  * Capture Desktop's theme API for the module while the host component lives.
  * Desktop's provider memoizes setTheme/setMode, so the deps stay stable.
+ *
+ * The picker page and the command-bar chip both call this hook and share the
+ * one module slot, so a refcount decides when it may be cleared: the FIRST
+ * consumer to mount fills it and every consumer keeps the slot alive until the
+ * LAST one unmounts. Clearing on any single unmount left the still-mounted chip
+ * unable to hand a switch to the provider, and the next Desktop render reverted
+ * the surface — "the theme does not stick".
  */
 function useDesktopThemeApi() {
   const api = useTheme()
   useEffect(() => {
-    if (api && typeof api.setTheme === 'function') {
-      desktopThemeApi = { setTheme: api.setTheme, setMode: api.setMode }
-    }
+    if (!api || typeof api.setTheme !== 'function') return undefined
+    desktopThemeApi = { setTheme: api.setTheme, setMode: api.setMode }
+    desktopThemeApiConsumers += 1
     return () => {
-      if (desktopThemeApi && desktopThemeApi.setTheme === (api && api.setTheme)) desktopThemeApi = null
+      desktopThemeApiConsumers = Math.max(0, desktopThemeApiConsumers - 1)
+      if (desktopThemeApiConsumers === 0) desktopThemeApi = null
     }
   }, [api && api.setTheme, api && api.setMode])
   return api
 }
 
+// Is this cached boot entry the pre-2.4.0 single-mode shape that must be
+// repaired?
+//
+// Before 2.4.0 the single-mode scenes were persisted with ONE palette stored as
+// both `colors` and `darkColors` (or with no `darkColors` at all). Desktop's
+// `paletteFor()` returns `seed.darkColors ?? seed.colors` for dark and, for
+// light, `seed.colors` when there is no `darkColors` — so for that entry the
+// lightbulb switches to the SAME palette and is mathematically a no-op. The
+// cache also WINS over our THEMES_AREA contribution at boot, so an unrepaired
+// entry keeps the toggle dead until it is rewritten.
+//
+// The old detector could never fire: it rebuilt the expected label with
+// `charAt(0).toUpperCase()` ("Deep-void") and compared it to the shipped label
+// ("Deep Void"). Detection is by SHAPE now — the cached halves are identical, or
+// the dark half is absent — with the cached palette required to be one this theme
+// actually ships. A cache carrying some other palette is the user's own import,
+// not our stale entry, and is left untouched (that is what keeps the
+// "never overwrite an unrelated user import" guarantees intact).
 function isLegacyPickerTheme(existing, theme) {
-  const legacyLabel = theme.name.charAt(0).toUpperCase() + theme.name.slice(1)
-  const expectedPalette = theme.darkColors || theme.colors
-  const expected = JSON.stringify(expectedPalette)
-  return Boolean(existing && existing.colors && existing.darkColors &&
-    existing.label === legacyLabel && existing.description === theme.description &&
-    JSON.stringify(existing.colors) === expected &&
-    JSON.stringify(existing.darkColors) === expected)
+  if (!existing || typeof existing !== 'object' || !theme || !theme.darkColors) return false
+  const cachedColors = existing.colors
+  const cachedDark = existing.darkColors
+  const singlePalette = cachedColors !== undefined && cachedDark !== undefined &&
+    JSON.stringify(cachedColors) === JSON.stringify(cachedDark)
+  const missingDark = cachedDark === undefined
+  if (!singlePalette && !missingDark) return false
+  if (cachedColors === undefined) return false
+  const shipped = [theme.colors, theme.darkColors].map(value => JSON.stringify(value))
+  return shipped.includes(JSON.stringify(cachedColors))
 }
 
 function persistThemesForBoot(themes) {
@@ -1110,6 +1144,9 @@ function persistThemesForBoot(themes) {
       // name, matching the desktop's user-theme resolution order.
       const existing = stored[theme.name]
       if (!existing || existing.themePickerManaged || isLegacyPickerTheme(existing, theme)) {
+        // Repairing a stale single-mode entry writes the CURRENT pair here. No
+        // reload is issued: Desktop reads $userThemes once at module init, so the
+        // repair lands on the NEXT boot — the accepted cost of a silent fix.
         stored[theme.name] = theme
         changed = true
       }
@@ -2026,6 +2063,84 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   return jsxs('div', { className: 'flex w-full flex-col', children: [stacked, jsx(ThemeCardActions, { scene, managing, onDelete, onRename, onExport })] })
 }
 
+// ---------------------------------------------------------------------------
+// Untrusted entries and the render boundary
+//
+// A skin arriving from local storage or the backend is UNTRUSTED input. A card
+// dereferences `scene.name.replace(...)` during render, so one entry with a
+// missing or non-string name throws and React tears down the WHOLE picker — the
+// user loses every card, not one. Two layers guard that:
+//   1. splitUsableSkins rejects entries that cannot be drawn, keeping the rest;
+//   2. SkinBoundary catches anything that still throws and offers a way on.
+// ---------------------------------------------------------------------------
+
+/** A name is usable only if it is a string with non-whitespace content. */
+function hasUsableSkinName(value) {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+/**
+ * Split a mixed list into what can be drawn and what cannot. Never drops the
+ * list for one bad entry: the usable skins are returned intact and the rejected
+ * ones are handed back so the caller can say so.
+ */
+function splitUsableSkins(list) {
+  const usable = []
+  const unusable = []
+  for (const item of Array.isArray(list) ? list : []) {
+    if (item && typeof item === 'object' && hasUsableSkinName(item.name)) usable.push(item)
+    else unusable.push(item)
+  }
+  return { usable, unusable }
+}
+
+/**
+ * Last line of defence behind the validation above. If a card still throws
+ * during render, React unmounts the whole tree by default; this keeps the page
+ * alive and replaces only the gallery with an honest message and a way to carry
+ * on. It reports the failure rather than swallowing it silently.
+ */
+class SkinBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { failed: false }
+    this.reset = this.reset.bind(this)
+  }
+
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+
+  componentDidCatch(error) {
+    host.notify({
+      kind: 'warning',
+      message: 'A theme could not be drawn: ' + (error && error.message ? error.message : error)
+    })
+  }
+
+  reset() {
+    this.setState({ failed: false })
+  }
+
+  render() {
+    if (this.state.failed) {
+      return jsxs('div', {
+        className: 'flex flex-col items-center gap-2 p-6 text-center',
+        children: [
+          jsx('div', { className: 'text-[0.8125rem] text-(--ui-text-secondary)', children: 'This theme could not be drawn.' }),
+          jsx('button', {
+            type: 'button',
+            onClick: this.reset,
+            className: 'rounded border border-(--ui-stroke-secondary) px-2 py-0.5 text-[0.6875rem] hover:border-(--ui-stroke-strong)',
+            children: 'Try again'
+          })
+        ]
+      })
+    }
+    return this.props.children
+  }
+}
+
 function ThemePicker() {
   const [active, setActive, live] = useActiveSkin()
   const desktopTheme = useDesktopThemeApi()
@@ -2183,11 +2298,22 @@ function ThemePicker() {
     return () => observer.disconnect()
   }, [profile])
 
-  const allSkins = useMemo(() => {
+  const { usable: allSkins, unusable: unusableSkins } = useMemo(() => {
     const known = new Set(SKINS.map(s => s.name))
     const imported = IMPORTED_SKINS.filter(s => !known.has(s.name))
-    return [...imported, ...SKINS, ...live.filter(s => !known.has(s.name) && !IMPORTED_SKINS.some(x => x.name === s.name))]
+    return splitUsableSkins([...imported, ...SKINS, ...live.filter(s => !known.has(s.name) && !IMPORTED_SKINS.some(x => x.name === s.name))])
   }, [live, importedTick])
+
+  // A stored or backend entry with no usable name cannot be drawn. Say so once
+  // instead of letting one bad entry white-screen the gallery.
+  useEffect(() => {
+    if (unusableSkins.length) {
+      host.notify({
+        kind: 'warning',
+        message: unusableSkins.length + ' theme(s) could not be drawn and were skipped'
+      })
+    }
+  }, [unusableSkins])
 
   const importTweakcn = async () => {
     const ref = importRef.trim()
@@ -2439,52 +2565,54 @@ function ThemePicker() {
       }),
       jsx(ScrollArea, {
         className: 'min-h-0 flex-1 p-2',
-        children:
-          filtered.length === 0
-            ? jsx(EmptyState, { title: 'No scenes found', description: 'Try a different search.' })
-            : jsx('div', {
-                className: 'flex flex-col gap-4',
-                children: groups.map((group, index) =>
-                  jsxs('section', {
-                    key: group.id,
-                    className: index ? 'border-t border-(--ui-stroke-secondary) pt-4' : '',
-                    children: [
-                      jsx('div', {
-                        className: 'mb-2 text-[0.6875rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)',
-                        children: `${group.title} (${group.scenes.length})`
-                      }),
-                      jsx('div', {
-                        className: 'grid',
-                        style: { gap, gridTemplateColumns: 'repeat(auto-fill, minmax(' + cardMin + 'px, 1fr))' },
-                        children: group.scenes.map(scene =>
-                          jsx(ThemeCard, {
-                            key: scene.name,
-                            scene,
-                            mode: scene.modeSupport === 'dynamic' ? mode : scene.modeSupport,
-                            active,
-                            applying,
-                            onApply,
-                            // Only skins Chroma owns can be managed. The catalog
-                            // scenes ship with the plugin and the backend
-                            // refuses anything without a provenance record.
-                            owned: !!owned[scene.name],
-                            managing: managing === scene.name,
-                            onDelete: removeSkin,
-                            onRename: renameSkin,
-                            onExport: exportSkin,
-                            previewing: !!preview && preview.name === scene.name,
-                            previewUntil: preview ? preview.until : 0,
-                            onPreview: startPreview,
-                            onStopPreview: stopPreview,
-                            shape,
-                            localScope: scope === APPLY_SCOPE_LOCAL
-                          })
-                        )
-                      })
-                    ]
-                  })
-                )
-              })
+        children: jsx(SkinBoundary, {
+          children:
+            filtered.length === 0
+              ? jsx(EmptyState, { title: 'No scenes found', description: 'Try a different search.' })
+              : jsx('div', {
+                  className: 'flex flex-col gap-4',
+                  children: groups.map((group, index) =>
+                    jsxs('section', {
+                      key: group.id,
+                      className: index ? 'border-t border-(--ui-stroke-secondary) pt-4' : '',
+                      children: [
+                        jsx('div', {
+                          className: 'mb-2 text-[0.6875rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)',
+                          children: `${group.title} (${group.scenes.length})`
+                        }),
+                        jsx('div', {
+                          className: 'grid',
+                          style: { gap, gridTemplateColumns: 'repeat(auto-fill, minmax(' + cardMin + 'px, 1fr))' },
+                          children: group.scenes.map(scene =>
+                            jsx(ThemeCard, {
+                              key: scene.name,
+                              scene,
+                              mode: scene.modeSupport === 'dynamic' ? mode : scene.modeSupport,
+                              active,
+                              applying,
+                              onApply,
+                              // Only skins Chroma owns can be managed. The catalog
+                              // scenes ship with the plugin and the backend
+                              // refuses anything without a provenance record.
+                              owned: !!owned[scene.name],
+                              managing: managing === scene.name,
+                              onDelete: removeSkin,
+                              onRename: renameSkin,
+                              onExport: exportSkin,
+                              previewing: !!preview && preview.name === scene.name,
+                              previewUntil: preview ? preview.until : 0,
+                              onPreview: startPreview,
+                              onStopPreview: stopPreview,
+                              shape,
+                              localScope: scope === APPLY_SCOPE_LOCAL
+                            })
+                          )
+                        })
+                      ]
+                    })
+                  )
+                })
+        })
       })
     ]
   })

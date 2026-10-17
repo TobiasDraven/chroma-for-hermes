@@ -48,6 +48,7 @@ function loadPlugin(storage = new Map(), fetchImpl = null) {
       fetch: fetchImpl || (() => Promise.reject(new Error('no fetch in test'))),
       oklchToHex: oklchToHexRef,
       haptic: () => {},
+      Component: class {},
       host: { notify: () => {}, navigate: () => {}, onEvent: () => {} },
       APPEARANCE_AREAS: { extra: 'appearance.extra' },
       PALETTE_AREA: 'palette',
