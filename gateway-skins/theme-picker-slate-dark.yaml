@@ -1,0 +1,18 @@
+name: theme-picker-slate-dark
+description: Theme Picker transport for Slate (dark)
+colors:
+  banner_accent: '#8EA8FF'
+  banner_border: '#4169e1'
+  banner_dim: '#545E6B'
+  banner_text: '#c9d1d9'
+  banner_title: '#7eb8f6'
+  completion_menu_bg: '#151C2F'
+  prompt: '#c9d1d9'
+  session_border: '#545E6B'
+  shell_dollar: '#7eb8f6'
+  status_bar_bg: '#151C2F'
+  status_bar_text: '#C9D1D9'
+  ui_accent: '#7eb8f6'
+  ui_error: '#F7A072'
+  ui_ok: '#63D0A6'
+  ui_warn: '#e6a855'

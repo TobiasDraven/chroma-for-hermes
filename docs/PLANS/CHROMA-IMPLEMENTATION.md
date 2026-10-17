@@ -722,3 +722,72 @@ perplexity and firecrawl providers were not registered), so the research ran
 through the You.com MCP search and its result highlights rather than full-page
 reads. The thresholds were then verified against this catalog's real palettes,
 which is the stronger evidence anyway.
+
+### Round five (2.4.0): every skin a pair, and the swatch matrix
+
+The Captain's instruction: no more dark-only or light-only skins, and the swatch
+preview must be a 2 x 6 matrix showing both variants.
+
+**Porting the missing half.** 47 scenes shipped in one mode (39 dark, 8 light).
+Each got its other half by PORT, not by a new hand-authored palette: the hues are
+kept, the lightness moves in Oklab, and every role is then nudged until it clears
+a contrast target against its own shell. That is the same reason Oklab is used
+elsewhere - "keep the colour, change the lightness" is a sentence only a
+perceptual space can honour.
+
+| Role | Target |
+|---|---|
+| body text | 9:1 |
+| accent, tool, structure | 3:1 |
+| ok / warn / error | 4.5:1 |
+
+Worst measured across all 47 ports: **14.3:1** text, **5.3:1** accent. The
+targets rarely bite, because the starting lightness values already clear them -
+they exist so that a future source palette cannot produce an unreadable port.
+
+A real counterpart file always wins over a port, so the day someone authors a
+proper light half for `deep-void`, the derivation retires itself. Every port is
+recorded in `docs/DERIVED-PALETTES.md` with its measured contrast.
+
+**Proof the port was surgical.** The scene-parity fixture is a digest of every
+palette in the catalog. After the change it differs for exactly the 47 derived
+scenes and for no others, so none of the 62 authored palettes moved.
+
+**The 2 x 6 matrix.** Six roles per variant, the light variant above the dark
+one. Six is what a card can carry and still be read at a glance. The roles, in
+reading order:
+
+| # | Role | Palette keys | Why it earns a column |
+|---|---|---|---|
+| 1 | Shell | `background` | the field everything sits on |
+| 2 | Raised surface | `status_bar_bg`, `completion_menu_bg` | shows the depth layering |
+| 3 | Signature | `ui_accent`, `banner_accent` | the colour the theme is read by |
+| 4 | Reading colour | `banner_text`, `ui_text` | the text you will actually read |
+| 5 | Secondary text | `banner_dim` | tells a soft theme from a stark one |
+| 6 | Structure | `ui_border`, `banner_border`, `session_border` | the framing |
+
+Design decisions, and why:
+
+- **Orientation is fixed** - light above, dark below. Not the current mode on
+  top. The eye learns the layout once and reads all 109 cards the same way.
+- **Neither row is dimmed** for the current mode. A preview exists to show the
+  colours as they are; the label already says which mode is live.
+- **One hairline** separates the rows, so the pair reads as a pair rather than as
+  twelve loose swatches. It is the only chrome in the block.
+- **The status signals are not among the six.** Every theme ships a green, an
+  amber and a red, so they distinguish nothing. `banner_dim` varies far more.
+- **A row is always exactly six.** A missing role falls back to the accent, not
+  to a gap, because a short row leaves the matrix ragged.
+
+**The categories lost two shelves.** Light and Dark existed to hold the
+mode-locked skins. With every scene shipping both modes, those shelves can only
+render empty - and a category that always renders nothing is a lie in the UI.
+Seven remain, all describing colour: Cool 25, Warm 28, Nature 10, Pastels 5,
+Vibrant 13, Muted 24, Minimal 4. The classifier keeps `light`/`dark` as a
+fallback for an import that arrives locked.
+
+**Open question for the Captain:** the "By scene" lens grouped scenes into
+Dynamic / Dark-only / Light-only. There is now one group, so that lens shows a
+single section and the "By theme" lens carries the interest. Either accept it, or
+regroup the scene lens by provenance (bundled pack, built-in, imported) - a
+one-line change, but it is the Captain's call, not mine.

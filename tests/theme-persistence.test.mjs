@@ -714,7 +714,17 @@ test('gateway success reasserts every requested dark dynamic palette after Deskt
 
     assert.equal(plugin.__state.root.dataset.hermesTheme, scene.name, scene.name)
     assert.equal(plugin.__state.root.dataset.hermesMode, 'dark', scene.name)
-    assert.equal(plugin.__state.root.style.getPropertyValue('--theme-background-seed'), scene.darkColors.background, scene.name)
+    // The seed is the converter's DARK output, not the raw palette background: a
+    // pure-black surface seed has always read as absent and falls back to the
+    // ramp tone (see skinSeeds), so the raw background is not always what lands
+    // on the root.
+    const desktop = plugin.__test.sceneToDesktopTheme(scene)
+    const seed = plugin.__state.root.style.getPropertyValue('--theme-background-seed')
+    assert.equal(seed, desktop.darkColors.background, scene.name)
+    // And it is the dark half of the pair that was reasserted, never the light.
+    if (desktop.colors.background !== desktop.darkColors.background) {
+      assert.notEqual(seed, desktop.colors.background, `${scene.name} must not reassert the light palette`)
+    }
     assert.equal(storage.get('hermes-desktop-theme-v2'), scene.name, scene.name)
     assert.equal(storage.get('hermes-desktop-mode-v1'), 'dark', scene.name)
   }

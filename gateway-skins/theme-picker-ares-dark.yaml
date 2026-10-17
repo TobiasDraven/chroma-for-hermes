@@ -1,0 +1,18 @@
+name: theme-picker-ares-dark
+description: Theme Picker transport for Ares (dark)
+colors:
+  banner_accent: '#DD4A3A'
+  banner_border: '#A93333'
+  banner_dim: '#905151'
+  banner_text: '#F1E6CF'
+  banner_title: '#C7A96B'
+  completion_menu_bg: '#2A1212'
+  prompt: '#F1E6CF'
+  session_border: '#6E584B'
+  shell_dollar: '#DD4A3A'
+  status_bar_bg: '#2A1212'
+  status_bar_text: '#F1E6CF'
+  ui_accent: '#DD4A3A'
+  ui_error: '#ef5350'
+  ui_ok: '#4caf50'
+  ui_warn: '#ffa726'

@@ -21,6 +21,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 import json
+import math
 import os
 import re
 import sys
@@ -283,6 +284,224 @@ def _mode_support(name: str, is_dark: bool) -> str:
     return "dark" if is_dark else "light"
 
 
+# --- Mode port: one palette, both modes ----------------------------------------
+#
+# Every scene ships a light and a dark palette. When the vendored pack carries
+# only one mode, the other is PORTED: keep the hue, move the lightness. Oklab is
+# the space for that operation - HSL's lightness slides across hues, and RGB
+# arithmetic cannot express "same colour, different lightness" at all.
+#
+# The port is measured, not eyeballed. Every derived role is nudged until it
+# clears a contrast target against its own shell: body text 9:1, interface
+# colours 3:1, status signals 4.5:1. A derived theme nobody can read is not a
+# theme, it is a rectangle.
+
+TEXT_CONTRAST = 9.0
+INTERFACE_CONTRAST = 3.0
+SIGNAL_CONTRAST = 4.5
+
+# (source role, lightness in light mode, lightness in dark mode, min chroma,
+#  max chroma, contrast target against the shell)
+_PORT_ROLES = [
+    ("ui_accent", 0.50, 0.72, 0.06, 0.16, INTERFACE_CONTRAST),
+    ("ui_tool", 0.44, 0.76, 0.05, 0.16, INTERFACE_CONTRAST),
+    ("ui_ok", 0.48, 0.72, 0.06, 0.18, SIGNAL_CONTRAST),
+    ("ui_warn", 0.52, 0.76, 0.06, 0.18, SIGNAL_CONTRAST),
+    ("ui_error", 0.48, 0.70, 0.06, 0.20, SIGNAL_CONTRAST),
+]
+
+# shell lightness, shell chroma, surface, surface chroma, menu, menu chroma,
+# text, dim, border - per target mode.
+_PORT_SHELL = {
+    "light": (0.975, 0.006, 0.945, 0.012, 0.915, 0.014, 0.26, 0.50, 0.86),
+    "dark": (0.170, 0.014, 0.225, 0.020, 0.255, 0.022, 0.94, 0.70, 0.33),
+}
+
+
+def _hex_channels(value: str):
+    h = str(value or "").lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    if len(h) != 6:
+        return None
+    try:
+        return tuple(int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    except ValueError:
+        return None
+
+
+def _rgb_to_hex(rgb) -> str:
+    return "#" + "".join(f"{max(0, min(255, round(c * 255))):02X}" for c in rgb)
+
+
+def _linearise(c: float) -> float:
+    return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
+
+def _delinearise(c: float) -> float:
+    return c * 12.92 if c <= 0.0031308 else 1.055 * (max(c, 0.0) ** (1 / 2.4)) - 0.055
+
+
+def _rgb_to_oklab(rgb):
+    r, g, b = (_linearise(c) for c in rgb)
+    l = (0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b) ** (1 / 3)
+    m = (0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b) ** (1 / 3)
+    s = (0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b) ** (1 / 3)
+    return (0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+            1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+            0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s)
+
+
+def _oklab_to_rgb(lab):
+    L, a, b = lab
+    l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3
+    m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3
+    s = (L - 0.0894841775 * a - 1.2914855480 * b) ** 3
+    return (_delinearise(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s),
+            _delinearise(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s),
+            _delinearise(-0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s))
+
+
+def _oklch(value: str):
+    """(lightness, chroma, hue) of a hex colour, or None when unparseable."""
+    rgb = _hex_channels(value)
+    if rgb is None:
+        return None
+    L, a, b = _rgb_to_oklab(rgb)
+    return L, math.hypot(a, b), math.degrees(math.atan2(b, a)) % 360
+
+
+def _oklch_hex(lightness: float, chroma: float, hue: float) -> str:
+    """OKLCH -> hex, shedding chroma until the colour fits inside sRGB."""
+    rad = math.radians(hue)
+    for _ in range(48):
+        rgb = _oklab_to_rgb((lightness, chroma * math.cos(rad), chroma * math.sin(rad)))
+        if all(-0.0005 <= c <= 1.0005 for c in rgb):
+            return _rgb_to_hex(rgb)
+        chroma *= 0.94
+    return _rgb_to_hex(_oklab_to_rgb((lightness, 0.0, 0.0)))
+
+
+def _wcag_luminance(value: str) -> float:
+    rgb = _hex_channels(value) or (0.0, 0.0, 0.0)
+    r, g, b = (_linearise(c) for c in rgb)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def _contrast(a: str, b: str) -> float:
+    la, lb = _wcag_luminance(a), _wcag_luminance(b)
+    hi, lo = max(la, lb), min(la, lb)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def _nudge_contrast(value: str, background: str, target: float, lighten: bool) -> str:
+    """Walk a colour's lightness until it clears `target` against `background`."""
+    if _contrast(value, background) >= target:
+        return value
+    found = _oklch(value)
+    if found is None:
+        return value
+    L, C, h = found
+    step = 0.008 if lighten else -0.008
+    best = value
+    for _ in range(140):
+        L += step
+        if L <= 0.0 or L >= 1.0:
+            break
+        best = _oklch_hex(L, C, h)
+        if _contrast(best, background) >= target:
+            return best
+    return best
+
+
+def _port_palette(colors: dict, target: str) -> dict:
+    """Port a single-mode palette into `target` mode, keeping every hue."""
+    light = target == "light"
+    bg_src = colors.get("background") or colors.get("status_bar_bg") or "#101014"
+    text_src = (colors.get("ui_text") or colors.get("banner_text")
+                or colors.get("status_bar_text") or "#EDEDED")
+    bg_hue = (_oklch(bg_src) or (0.0, 0.0, 260.0))[2]
+    text_hue = (_oklch(text_src) or (0.0, 0.0, bg_hue))[2]
+    (bg_L, bg_C, surface_L, surface_C, menu_L, menu_C,
+     text_L, dim_L, border_L) = _PORT_SHELL[target]
+
+    background = _oklch_hex(bg_L, bg_C, bg_hue)
+    surface = _oklch_hex(surface_L, surface_C, bg_hue)
+    menu = _oklch_hex(menu_L, menu_C, bg_hue)
+    text = _nudge_contrast(_oklch_hex(text_L, 0.012, text_hue), background, TEXT_CONTRAST, not light)
+    dim = _nudge_contrast(_oklch_hex(dim_L, 0.012, text_hue), background, SIGNAL_CONTRAST, not light)
+    border = _oklch_hex(border_L, 0.014, bg_hue)
+
+    ports = {}
+    for key, L_light, L_dark, c_min, c_max, ratio in _PORT_ROLES:
+        found = _oklch(colors.get(key)) if colors.get(key) else None
+        if found is None:
+            continue
+        _, C, h = found
+        L = L_light if light else L_dark
+        ports[key] = _nudge_contrast(_oklch_hex(L, max(c_min, min(c_max, C)), h),
+                                     background, ratio, not light)
+
+    accent = ports.get("ui_accent") or _nudge_contrast(
+        _oklch_hex(0.50 if light else 0.72, 0.10, bg_hue), background, INTERFACE_CONTRAST, not light)
+    tool = ports.get("ui_tool") or accent
+    ok = ports.get("ui_ok") or _oklch_hex(0.48 if light else 0.72, 0.10, 145.0)
+    warn = ports.get("ui_warn") or _oklch_hex(0.55 if light else 0.78, 0.12, 75.0)
+    error = ports.get("ui_error") or _oklch_hex(0.50 if light else 0.70, 0.16, 25.0)
+
+    return {
+        "background": background,
+        "status_bar_bg": surface,
+        "completion_menu_bg": menu,
+        "completion_menu_current_bg": _oklch_hex(menu_L - 0.02 if light else menu_L + 0.03, menu_C + 0.006, bg_hue),
+        "completion_menu_meta_bg": menu,
+        "ui_text": text,
+        "banner_text": text,
+        "status_bar_text": text,
+        "banner_title": text,
+        "prompt": text,
+        "banner_dim": dim,
+        "ui_accent": accent,
+        "banner_accent": accent,
+        "input_rule": accent,
+        "response_border": accent,
+        "ui_border": border,
+        "banner_border": border,
+        "session_border": border,
+        "ui_tool": tool,
+        "session_label": tool,
+        "shell_dollar": tool,
+        "ui_ok": ok,
+        "status_bar_good": ok,
+        "ui_warn": warn,
+        "status_bar_warn": warn,
+        "ui_error": error,
+        "status_bar_critical": error,
+    }
+
+
+def _make_dynamic(scene: dict) -> dict:
+    """Give a single-mode scene the palette it is missing.
+
+    A real counterpart file always wins: this only fills a gap, and it marks what
+    it filled, so a derived palette is never mistaken for an authored one.
+    """
+    mode = scene.get("modeSupport")
+    if mode not in {"dark", "light"}:
+        return scene
+    other = "dark" if mode == "light" else "light"
+    source = scene.get(f"{mode}Colors") or scene.get("colors") or {}
+    if not source:
+        return scene
+    scene[f"{other}Colors"] = _port_palette(source, other)
+    scene[f"derived{other.title()}"] = True
+    scene["modeSupport"] = "dynamic"
+    scene["colors"] = scene.get("lightColors") or scene.get("darkColors") or source
+    scene["gatewayLightName"] = f"theme-picker-{scene['name']}-light"
+    scene["gatewayDarkName"] = f"theme-picker-{scene['name']}-dark"
+    return scene
+
+
 def _single_scene(skin: dict) -> dict:
     mode = _mode_support(skin["name"], skin.get("isDark", True))
     colors = skin.get("colors", {})
@@ -358,7 +577,49 @@ def _build_catalog(
         if skin["name"] != "default" and skin["name"] not in desktop_names:
             scenes.append(_single_scene(skin))
 
-    return scenes
+    # Every scene ships both modes. A single-mode scene gets its missing palette
+    # ported, so no dead "dark only" shelf survives in the gallery and the mode
+    # toggle works on every card.
+    return [_make_dynamic(scene) for scene in scenes]
+
+
+def _write_derivation_report(catalog: list[dict], path: Path) -> int:
+    """Record every derived palette, so a port is never invisible."""
+    rows = []
+    for scene in catalog:
+        for mode in ("light", "dark"):
+            if not scene.get(f"derived{mode.title()}"):
+                continue
+            colors = scene.get(f"{mode}Colors") or {}
+            bg = colors.get("background", "#FFFFFF")
+            text = colors.get("ui_text", "#000000")
+            accent = colors.get("ui_accent", "#000000")
+            rows.append((scene.get("label") or scene["name"], mode, bg, text, accent,
+                         _contrast(text, bg), _contrast(accent, bg)))
+    lines = [
+        "# Derived palettes",
+        "",
+        "Generated by `scripts/regenerate.py`. Do not edit by hand.",
+        "",
+        "A scene whose skin file carries only one mode gets the other ported: the",
+        "hues are kept, the lightness moves in Oklab, and each role is nudged until",
+        "it clears a contrast target against its own shell. A real counterpart file",
+        "always wins over a port, so adding one retires the row below.",
+        "",
+        f"Derived palettes: {len(rows)}.",
+        "",
+        "| scene | derived | shell | text | accent | text/shell | accent/shell |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for label, mode, bg, text, accent, text_ratio, accent_ratio in rows:
+        lines.append(
+            f"| {label} | {mode} | `{bg}` | `{text}` | `{accent}` | "
+            f"{text_ratio:.1f}:1 | {accent_ratio:.1f}:1 |"
+        )
+    lines.append("")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    return len(rows)
 
 
 def _backend_builtins() -> list[dict]:
@@ -456,6 +717,7 @@ def main() -> int:
         print(f"ERROR: {exc}; refusing to replace {out_path}.", file=sys.stderr)
         return 1
     catalog = _build_catalog(user_skins, builtins)
+    derived_count = _write_derivation_report(catalog, Path(__file__).resolve().parent.parent / "docs" / "DERIVED-PALETTES.md")
     repo_gateway_skins = script_dir.parent / "gateway-skins"
     transport_count = _write_gateway_transport_skins(catalog, repo_gateway_skins)
     # sort_keys=True keeps output byte-stable across runs (matches the shipped
@@ -483,8 +745,8 @@ def main() -> int:
     out_path.write_text(plugin, encoding="utf-8", newline="\n")
 
     print(f"Rebuilt {out_path} with {len(catalog)} scenes from "
-          f"{len(user_skins)} bundled skins + {len(builtins)} backend built-ins "
-          f"and {transport_count} gateway transports.")
+          f"{len(user_skins)} bundled skins + {len(builtins)} backend built-ins, "
+          f"{derived_count} derived palettes and {transport_count} gateway transports.")
     print("Next: this repo root IS the plugin package. Put (or link) it at "
           "<hermes home>/plugins/chroma and restart Hermes Desktop once "
           "(Capabilities -> Plugins -> Rescan after that).")

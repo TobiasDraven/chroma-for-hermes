@@ -58,49 +58,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -202,49 +279,126 @@
        "type": "div",
        "children": [
         {
-         "className": "w-full min-h-4 flex-1",
+         "className": "flex flex-row min-h-0 w-full flex-1",
          "key": 0,
-         "style": {
-          "backgroundColor": "#1b1f27"
-         },
-         "type": "span",
-         "children": null
+         "type": "div",
+         "children": [
+          {
+           "className": "min-w-0 flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#141821"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 5,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
+          }
+         ]
         },
         {
-         "className": "w-full min-h-4 flex-1",
+         "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
          "key": 1,
-         "style": {
-          "backgroundColor": "#5aa9e6"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 2,
-         "style": {
-          "backgroundColor": "#2b3444"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 3,
-         "style": {
-          "backgroundColor": "#e8edf5"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 4,
-         "style": {
-          "backgroundColor": "#39445a"
-         },
-         "type": "span",
-         "children": null
+         "type": "div",
+         "children": [
+          {
+           "className": "min-w-0 flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#141821"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 5,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
+          }
+         ]
         }
        ]
       }
@@ -317,49 +471,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -465,49 +696,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -610,49 +918,126 @@
            "type": "div",
            "children": [
             {
-             "className": "w-full min-h-4 flex-1",
+             "className": "flex flex-row min-h-0 w-full flex-1",
              "key": 0,
-             "style": {
-              "backgroundColor": "#1b1f27"
-             },
-             "type": "span",
-             "children": null
+             "type": "div",
+             "children": [
+              {
+               "className": "min-w-0 flex-1",
+               "key": 0,
+               "style": {
+                "backgroundColor": "#1b1f27"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 1,
+               "style": {
+                "backgroundColor": "#141821"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 2,
+               "style": {
+                "backgroundColor": "#5aa9e6"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 3,
+               "style": {
+                "backgroundColor": "#e8edf5"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 4,
+               "style": {
+                "backgroundColor": "#5aa9e6"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 5,
+               "style": {
+                "backgroundColor": "#39445a"
+               },
+               "type": "span",
+               "children": null
+              }
+             ]
             },
             {
-             "className": "w-full min-h-4 flex-1",
+             "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
              "key": 1,
-             "style": {
-              "backgroundColor": "#5aa9e6"
-             },
-             "type": "span",
-             "children": null
-            },
-            {
-             "className": "w-full min-h-4 flex-1",
-             "key": 2,
-             "style": {
-              "backgroundColor": "#2b3444"
-             },
-             "type": "span",
-             "children": null
-            },
-            {
-             "className": "w-full min-h-4 flex-1",
-             "key": 3,
-             "style": {
-              "backgroundColor": "#e8edf5"
-             },
-             "type": "span",
-             "children": null
-            },
-            {
-             "className": "w-full min-h-4 flex-1",
-             "key": 4,
-             "style": {
-              "backgroundColor": "#39445a"
-             },
-             "type": "span",
-             "children": null
+             "type": "div",
+             "children": [
+              {
+               "className": "min-w-0 flex-1",
+               "key": 0,
+               "style": {
+                "backgroundColor": "#1b1f27"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 1,
+               "style": {
+                "backgroundColor": "#141821"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 2,
+               "style": {
+                "backgroundColor": "#5aa9e6"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 3,
+               "style": {
+                "backgroundColor": "#e8edf5"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 4,
+               "style": {
+                "backgroundColor": "#5aa9e6"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 5,
+               "style": {
+                "backgroundColor": "#39445a"
+               },
+               "type": "span",
+               "children": null
+              }
+             ]
             }
            ]
           }
@@ -753,49 +1138,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -867,49 +1329,126 @@
            "type": "div",
            "children": [
             {
-             "className": "w-full min-h-4 flex-1",
+             "className": "flex flex-row min-h-0 w-full flex-1",
              "key": 0,
-             "style": {
-              "backgroundColor": "#1b1f27"
-             },
-             "type": "span",
-             "children": null
+             "type": "div",
+             "children": [
+              {
+               "className": "min-w-0 flex-1",
+               "key": 0,
+               "style": {
+                "backgroundColor": "#1b1f27"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 1,
+               "style": {
+                "backgroundColor": "#141821"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 2,
+               "style": {
+                "backgroundColor": "#5aa9e6"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 3,
+               "style": {
+                "backgroundColor": "#e8edf5"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 4,
+               "style": {
+                "backgroundColor": "#5aa9e6"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 5,
+               "style": {
+                "backgroundColor": "#39445a"
+               },
+               "type": "span",
+               "children": null
+              }
+             ]
             },
             {
-             "className": "w-full min-h-4 flex-1",
+             "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
              "key": 1,
-             "style": {
-              "backgroundColor": "#5aa9e6"
-             },
-             "type": "span",
-             "children": null
-            },
-            {
-             "className": "w-full min-h-4 flex-1",
-             "key": 2,
-             "style": {
-              "backgroundColor": "#2b3444"
-             },
-             "type": "span",
-             "children": null
-            },
-            {
-             "className": "w-full min-h-4 flex-1",
-             "key": 3,
-             "style": {
-              "backgroundColor": "#e8edf5"
-             },
-             "type": "span",
-             "children": null
-            },
-            {
-             "className": "w-full min-h-4 flex-1",
-             "key": 4,
-             "style": {
-              "backgroundColor": "#39445a"
-             },
-             "type": "span",
-             "children": null
+             "type": "div",
+             "children": [
+              {
+               "className": "min-w-0 flex-1",
+               "key": 0,
+               "style": {
+                "backgroundColor": "#1b1f27"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 1,
+               "style": {
+                "backgroundColor": "#141821"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 2,
+               "style": {
+                "backgroundColor": "#5aa9e6"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 3,
+               "style": {
+                "backgroundColor": "#e8edf5"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 4,
+               "style": {
+                "backgroundColor": "#5aa9e6"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 5,
+               "style": {
+                "backgroundColor": "#39445a"
+               },
+               "type": "span",
+               "children": null
+              }
+             ]
             }
            ]
           }
@@ -1020,49 +1559,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -1167,49 +1783,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -1315,49 +2008,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -1459,49 +2229,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -1607,49 +2454,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -1755,22 +2679,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#101010"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#eeeeee"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#eeeeee"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#eeeeee"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -1876,31 +2904,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#ff9900"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#aa0000"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#ff9900"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#aa0000"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#aa0000"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#aa0000"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#aa0000"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#aa0000"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#00aa00"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#aa0000"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#ff9900"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#aa0000"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#aa0000"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#aa0000"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#aa0000"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -2004,7 +3127,130 @@
         {
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
          "type": "div",
-         "children": []
+         "children": [
+          {
+           "className": "flex flex-row min-h-0 w-full flex-1",
+           "key": 0,
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#888888"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#888888"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#888888"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#888888"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#888888"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#888888"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
+          },
+          {
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "key": 1,
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#888888"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#888888"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#888888"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#888888"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#888888"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#888888"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
+          }
+         ]
         }
        ]
       },
@@ -2103,7 +3349,130 @@
           {
            "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
            "type": "div",
-           "children": []
+           "children": [
+            {
+             "className": "flex flex-row min-h-0 w-full flex-1",
+             "key": 0,
+             "type": "div",
+             "children": [
+              {
+               "className": "min-w-0 flex-1",
+               "key": 0,
+               "style": {
+                "backgroundColor": "#888888"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 1,
+               "style": {
+                "backgroundColor": "#888888"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 2,
+               "style": {
+                "backgroundColor": "#888888"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 3,
+               "style": {
+                "backgroundColor": "#888888"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 4,
+               "style": {
+                "backgroundColor": "#888888"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 5,
+               "style": {
+                "backgroundColor": "#888888"
+               },
+               "type": "span",
+               "children": null
+              }
+             ]
+            },
+            {
+             "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+             "key": 1,
+             "type": "div",
+             "children": [
+              {
+               "className": "min-w-0 flex-1",
+               "key": 0,
+               "style": {
+                "backgroundColor": "#888888"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 1,
+               "style": {
+                "backgroundColor": "#888888"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 2,
+               "style": {
+                "backgroundColor": "#888888"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 3,
+               "style": {
+                "backgroundColor": "#888888"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 4,
+               "style": {
+                "backgroundColor": "#888888"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 5,
+               "style": {
+                "backgroundColor": "#888888"
+               },
+               "type": "span",
+               "children": null
+              }
+             ]
+            }
+           ]
           }
          ]
         },
@@ -2206,49 +3575,126 @@
            "type": "div",
            "children": [
             {
-             "className": "w-full min-h-4 flex-1",
+             "className": "flex flex-row min-h-0 w-full flex-1",
              "key": 0,
-             "style": {
-              "backgroundColor": "#1b1f27"
-             },
-             "type": "span",
-             "children": null
+             "type": "div",
+             "children": [
+              {
+               "className": "min-w-0 flex-1",
+               "key": 0,
+               "style": {
+                "backgroundColor": "#1b1f27"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 1,
+               "style": {
+                "backgroundColor": "#141821"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 2,
+               "style": {
+                "backgroundColor": "#5aa9e6"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 3,
+               "style": {
+                "backgroundColor": "#e8edf5"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 4,
+               "style": {
+                "backgroundColor": "#5aa9e6"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 5,
+               "style": {
+                "backgroundColor": "#39445a"
+               },
+               "type": "span",
+               "children": null
+              }
+             ]
             },
             {
-             "className": "w-full min-h-4 flex-1",
+             "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
              "key": 1,
-             "style": {
-              "backgroundColor": "#5aa9e6"
-             },
-             "type": "span",
-             "children": null
-            },
-            {
-             "className": "w-full min-h-4 flex-1",
-             "key": 2,
-             "style": {
-              "backgroundColor": "#2b3444"
-             },
-             "type": "span",
-             "children": null
-            },
-            {
-             "className": "w-full min-h-4 flex-1",
-             "key": 3,
-             "style": {
-              "backgroundColor": "#e8edf5"
-             },
-             "type": "span",
-             "children": null
-            },
-            {
-             "className": "w-full min-h-4 flex-1",
-             "key": 4,
-             "style": {
-              "backgroundColor": "#39445a"
-             },
-             "type": "span",
-             "children": null
+             "type": "div",
+             "children": [
+              {
+               "className": "min-w-0 flex-1",
+               "key": 0,
+               "style": {
+                "backgroundColor": "#1b1f27"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 1,
+               "style": {
+                "backgroundColor": "#141821"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 2,
+               "style": {
+                "backgroundColor": "#5aa9e6"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 3,
+               "style": {
+                "backgroundColor": "#e8edf5"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 4,
+               "style": {
+                "backgroundColor": "#5aa9e6"
+               },
+               "type": "span",
+               "children": null
+              },
+              {
+               "className": "min-w-0 flex-1",
+               "key": 5,
+               "style": {
+                "backgroundColor": "#39445a"
+               },
+               "type": "span",
+               "children": null
+              }
+             ]
             }
            ]
           }
@@ -2352,49 +3798,126 @@
        "type": "div",
        "children": [
         {
-         "className": "w-full min-h-4 flex-1",
+         "className": "flex flex-row min-h-0 w-full flex-1",
          "key": 0,
-         "style": {
-          "backgroundColor": "#1b1f27"
-         },
-         "type": "span",
-         "children": null
+         "type": "div",
+         "children": [
+          {
+           "className": "min-w-0 flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#141821"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 5,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
+          }
+         ]
         },
         {
-         "className": "w-full min-h-4 flex-1",
+         "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
          "key": 1,
-         "style": {
-          "backgroundColor": "#5aa9e6"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 2,
-         "style": {
-          "backgroundColor": "#2b3444"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 3,
-         "style": {
-          "backgroundColor": "#e8edf5"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 4,
-         "style": {
-          "backgroundColor": "#39445a"
-         },
-         "type": "span",
-         "children": null
+         "type": "div",
+         "children": [
+          {
+           "className": "min-w-0 flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#141821"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 5,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
+          }
+         ]
         }
        ]
       }
@@ -2470,49 +3993,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -2618,49 +4218,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -2762,49 +4439,126 @@
        "type": "div",
        "children": [
         {
-         "className": "w-full min-h-4 flex-1",
+         "className": "flex flex-row min-h-0 w-full flex-1",
          "key": 0,
-         "style": {
-          "backgroundColor": "#1b1f27"
-         },
-         "type": "span",
-         "children": null
+         "type": "div",
+         "children": [
+          {
+           "className": "min-w-0 flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#141821"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 5,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
+          }
+         ]
         },
         {
-         "className": "w-full min-h-4 flex-1",
+         "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
          "key": 1,
-         "style": {
-          "backgroundColor": "#5aa9e6"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 2,
-         "style": {
-          "backgroundColor": "#2b3444"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 3,
-         "style": {
-          "backgroundColor": "#e8edf5"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 4,
-         "style": {
-          "backgroundColor": "#39445a"
-         },
-         "type": "span",
-         "children": null
+         "type": "div",
+         "children": [
+          {
+           "className": "min-w-0 flex-1",
+           "key": 0,
+           "style": {
+            "backgroundColor": "#1b1f27"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 1,
+           "style": {
+            "backgroundColor": "#141821"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 2,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 3,
+           "style": {
+            "backgroundColor": "#e8edf5"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 4,
+           "style": {
+            "backgroundColor": "#5aa9e6"
+           },
+           "type": "span",
+           "children": null
+          },
+          {
+           "className": "min-w-0 flex-1",
+           "key": 5,
+           "style": {
+            "backgroundColor": "#39445a"
+           },
+           "type": "span",
+           "children": null
+          }
+         ]
         }
        ]
       }
@@ -2877,49 +4631,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -3025,40 +4856,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#202020"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#202020"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#abcdef"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#abcdef"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#abcdef"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#abcdef"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#123456"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#abcdef"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#abcdef"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#123456"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#202020"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#abcdef"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#abcdef"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#abcdef"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#abcdef"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#123456"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -3160,49 +5077,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -3311,49 +5305,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -3459,49 +5530,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#141821"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }
@@ -3607,22 +5755,126 @@
          "type": "div",
          "children": [
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
-           "style": {
-            "backgroundColor": "#101010"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#eeeeee"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           },
           {
-           "className": "w-full min-h-4 flex-1",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
            "key": 1,
-           "style": {
-            "backgroundColor": "#eeeeee"
-           },
-           "type": "span",
-           "children": null
+           "type": "div",
+           "children": [
+            {
+             "className": "min-w-0 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#eeeeee"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "min-w-0 flex-1",
+             "key": 5,
+             "style": {
+              "backgroundColor": "#101010"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
           }
          ]
         }

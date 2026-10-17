@@ -27,14 +27,15 @@ device connected to your gateway — including the CLI.
   palettes instead of managing separate skins.
 - **Instant, gateway-wide updates** — the current Desktop repaints immediately,
   then every connected Desktop and CLI receives the same palette.
-- **A visual gallery** — browse real color swatches, search 104 scenes by name,
+- **A visual gallery** — browse real color swatches, search 109 scenes by name,
   and preview them in light or dark mode.
-- **Two ways to browse** — group the gallery the way it shipped (Dynamic
-  Scenes / Dark Mode Only / Light Mode Only), or switch the dropdown to group
-  by broad theme: Cool, Warm, Nature, Pastels, Vibrant, Muted, Minimal, Light
-  and Dark. The category is derived from each palette in OKLCH, so it follows
-  what the eye sees rather than a raw saturation number, and your choice sticks
-  per profile.
+- **Every skin is a pair** — each scene ships a light and a dark palette, and
+  the swatch preview shows both at once as a 2 x 6 matrix: the light variant
+  over the dark one. There are no "dark only" or "light only" skins any more.
+- **Two ways to browse** — group by scene, or switch the dropdown to group by
+  broad theme: Cool, Warm, Nature, Pastels, Vibrant, Muted and Minimal. The
+  category is derived from each palette in OKLCH, so it follows what the eye
+  sees rather than a raw saturation number, and your choice sticks per profile.
 - **Built for comparison** — change themes without leaving the picker, closing
   your chat, or reloading Hermes.
 - **Works offline** — the catalog is embedded in the plugin, and themes are also

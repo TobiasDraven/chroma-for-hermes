@@ -1,0 +1,18 @@
+name: theme-picker-sisyphus-dark
+description: Theme Picker transport for Sisyphus (dark)
+colors:
+  banner_accent: '#E7E7E7'
+  banner_border: '#B7B7B7'
+  banner_dim: '#5C5C5C'
+  banner_text: '#D3D3D3'
+  banner_title: '#F5F5F5'
+  completion_menu_bg: '#202020'
+  prompt: '#F5F5F5'
+  session_border: '#656565'
+  shell_dollar: '#E7E7E7'
+  status_bar_bg: '#202020'
+  status_bar_text: '#D3D3D3'
+  ui_accent: '#E7E7E7'
+  ui_error: '#E7E7E7'
+  ui_ok: '#919191'
+  ui_warn: '#B7B7B7'

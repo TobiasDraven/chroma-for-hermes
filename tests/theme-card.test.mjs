@@ -42,19 +42,23 @@ test('every card case renders exactly the DOM it rendered before the card was sp
   }
 })
 
-test('the palette strip takes the first name a skin actually carries for each band', () => {
+test('the palette strip takes the first name a skin carries for each of the six roles', () => {
   const strip = helpers.paletteStrip
-  // Full palette: five bands, in the documented order.
+  // Full palette: six roles, in the documented reading order - shell, surface,
+  // signature, reading colour, secondary text, structure.
   assert.deepEqual(plain(strip({
-    background: '#bb', status_bar_bg: '#aa',
-    ui_accent: '#cc', ui_tool: '#dd', banner_text: '#ee', ui_border: '#ff'
-  })), ['#bb', '#cc', '#dd', '#ee', '#ff'])
+    background: '#bb', status_bar_bg: '#aa', ui_accent: '#cc',
+    banner_text: '#ee', banner_dim: '#dd', ui_border: '#ff'
+  })), ['#bb', '#aa', '#cc', '#ee', '#dd', '#ff'])
   // The second name is used only when the first is absent.
-  assert.deepEqual(plain(strip({ status_bar_bg: '#aa', banner_accent: '#c1', ui_tool: '#t1', ui_text: '#t2', banner_border: '#b1' })),
-    ['#aa', '#c1', '#t1', '#t2', '#b1'])
-  // A band with no colour is dropped, not left blank.
-  assert.deepEqual(plain(strip({ background: '#bb' })), ['#bb'])
-  assert.deepEqual(plain(strip({})), [])
+  assert.deepEqual(plain(strip({
+    completion_menu_bg: '#a2', banner_accent: '#c2', ui_text: '#e2',
+    banner_dim: '#d2', session_border: '#f2'
+  })), ['#c2', '#a2', '#c2', '#e2', '#d2', '#f2'])
+  // A row is ALWAYS six: a missing role falls back to the accent, because a row
+  // that came up short would leave the 2 x 6 matrix ragged.
+  assert.deepEqual(plain(strip({ background: '#bb' })), ['#bb', '#bb', '#bb', '#bb', '#bb', '#bb'])
+  assert.deepEqual(plain(strip({})), ['#888888', '#888888', '#888888', '#888888', '#888888', '#888888'])
 })
 
 // The harness digests structure and class STRINGS, so it cannot see layout. It
@@ -62,7 +66,7 @@ test('the palette strip takes the first name a skin actually carries for each ba
 // flex-direction: without `display: flex` the container is a block and its inline
 // <span> children collapse to zero size - the swatches render, but paint nothing.
 // That shipped once; this holds the contract for every shape.
-test('the palette container is a flex column and every band carries its colour', () => {
+test('the palette is a 2 x 6 matrix: a flex column of two flex rows of six swatches', () => {
   for (const overrides of [{}, { shape: 'rectangle' }, { shape: 'circle' }]) {
     const tree = render(overrides)
     let palette = null
@@ -72,14 +76,23 @@ test('the palette container is a flex column and every band carries its colour',
     // substring check would pass a build that has lost display:flex entirely.
     const tokens = String(palette.className).split(/\s+/)
     assert.ok(tokens.includes('flex'), 'palette needs display:flex, not flex-direction alone')
-    assert.ok(tokens.includes('flex-col'), 'palette bands stack in a column')
-    const bands = (palette.children || []).filter(child => child && child.type === 'span')
-    assert.ok(bands.length > 0, 'palette must render at least one band')
-    for (const band of bands) {
-      assert.ok(band.style && band.style.backgroundColor, 'every band carries a backgroundColor')
-      const bandTokens = String(band.className).split(/\s+/)
-      assert.ok(bandTokens.includes('w-full'), 'every band fills the width')
-      assert.ok(bandTokens.includes('flex-1'), 'every band shares the height')
+    assert.ok(tokens.includes('flex-col'), 'the two mode rows stack in a column')
+    const rows = (palette.children || []).filter(child => child && child.type === 'div')
+    assert.equal(rows.length, 2, 'one row for the light variant, one for the dark')
+    for (const [r, row] of rows.entries()) {
+      const rowTokens = String(row.className).split(/\s+/)
+      assert.ok(rowTokens.includes('flex'), 'a row lays its swatches out with flex')
+      assert.ok(rowTokens.includes('flex-row'), 'a row runs horizontally')
+      assert.ok(rowTokens.includes('flex-1'), 'each row takes half the block')
+      if (r === 1) assert.ok(rowTokens.includes('border-t'), 'a hairline separates dark from light')
+      const swatches = (row.children || []).filter(child => child && child.type === 'span')
+      assert.equal(swatches.length, 6, 'six roles per variant')
+      for (const swatch of swatches) {
+        assert.ok(swatch.style && swatch.style.backgroundColor, 'every swatch carries a backgroundColor')
+        const swatchTokens = String(swatch.className).split(/\s+/)
+        assert.ok(swatchTokens.includes('flex-1'), 'every swatch shares the width')
+        assert.ok(swatchTokens.includes('min-w-0'), 'a swatch may not overflow its row')
+      }
     }
   }
 })

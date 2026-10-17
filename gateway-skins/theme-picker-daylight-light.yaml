@@ -1,0 +1,18 @@
+name: theme-picker-daylight-light
+description: Theme Picker transport for Daylight (light)
+colors:
+  banner_accent: '#1D4ED8'
+  banner_border: '#2563EB'
+  banner_dim: '#475569'
+  banner_text: '#111827'
+  banner_title: '#0F172A'
+  completion_menu_bg: '#F8FAFC'
+  prompt: '#111827'
+  session_border: '#64748B'
+  shell_dollar: '#2563EB'
+  status_bar_bg: '#E5EDF8'
+  status_bar_text: '#111827'
+  ui_accent: '#2563EB'
+  ui_error: '#B91C1C'
+  ui_ok: '#15803D'
+  ui_warn: '#B45309'

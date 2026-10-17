@@ -82,6 +82,11 @@ const GROUP_MODES = ['scene', 'theme']
 /** The broad style categories, in display order. A scene lands in exactly one:
  *  see sceneCategory() for the rule that decides which. */
 const THEME_CATEGORIES = [
+  // Seven, and all seven describe COLOUR. Light and Dark used to sit here as
+  // shelves for the mode-locked skins; every scene now ships both modes, so a
+  // mode shelf would render empty and a category that always renders nothing is
+  // a lie in the UI. The classifier still returns 'light'/'dark' for a
+  // single-mode scene, as a fallback for an import that arrives locked.
   { id: 'cool', title: 'Cool' },
   { id: 'warm', title: 'Warm' },
   { id: 'nature', title: 'Nature' },
@@ -89,8 +94,6 @@ const THEME_CATEGORIES = [
   { id: 'vibrant', title: 'Vibrant' },
   { id: 'muted', title: 'Muted' },
   { id: 'minimal', title: 'Minimal' },
-  { id: 'light', title: 'Light' },
-  { id: 'dark', title: 'Dark' }
 ]
 const CORE_DESKTOP_THEMES = new Set(['nous', 'midnight', 'ember', 'mono', 'cyberpunk', 'slate'])
 const EMOJI_FALLBACK = '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", emoji'
@@ -1707,25 +1710,31 @@ function PreviewCountdown({ until }) {
   return jsx('span', { children: previewSecondsLeft(until, Date.now()) + 's' })
 }
 
-// The colour strip summarises a skin's palette in five bands. Each band lists the
-// names a skin may use for that role, in priority order: skin palettes name the
-// same idea several ways. A band with no colour is dropped rather than left blank.
+// The anatomy of a theme, six roles in reading order: the shell, the raised
+// surface, the signature, the reading colour, the secondary text, the structure.
+// Six is what a card can carry and still be read at a glance; more turns into
+// confetti. The status signals are deliberately NOT here - every theme ships a
+// green, an amber and a red, so they say nothing about the palette.
 const STRIP_BANDS = [
-  ['background', 'status_bar_bg'],
+  ['background'],
+  ['status_bar_bg', 'completion_menu_bg'],
   ['ui_accent', 'banner_accent', 'banner_title'],
-  ['ui_tool', 'banner_accent', 'banner_title'],
-  ['banner_text', 'ui_text'],
-  ['ui_border', 'banner_border']
+  ['banner_text', 'ui_text', 'status_bar_text'],
+  ['banner_dim'],
+  ['ui_border', 'banner_border', 'session_border']
 ]
 
+// Exactly six colours, always. A row that came up short would leave the matrix
+// ragged, so a missing role falls back to the accent rather than to a gap.
 function paletteStrip(colors) {
-  const bands = []
-  for (const aliases of STRIP_BANDS) {
+  const first = (aliases) => {
     for (const key of aliases) {
-      if (colors[key]) { bands.push(colors[key]); break }
+      if (colors[key]) return colors[key]
     }
+    return null
   }
-  return bands
+  const accent = first(['ui_accent', 'banner_accent', 'banner_title']) || first(['background']) || '#888888'
+  return STRIP_BANDS.map((aliases) => first(aliases) || accent)
 }
 
 // The card's hover title: what the theme is, and what it can do.
@@ -1737,10 +1746,16 @@ function cardTitle(scene, mode) {
 // The colour block fills the card, and it is the only child of a circle: a
 // rounded-full box does not clip its children, so anything else inside a circle
 // would paint over the page background.
-function ThemeCardPalette({ strip, shape }) {
+// The swatch matrix: a 2 x 6 grid, the light variant over the dark one, so a
+// single card shows both halves of the pair it will actually apply. Orientation
+// is FIXED - light above, dark below - so the eye learns the layout once and
+// reads every card in the gallery the same way.
+//
+// Neither row is dimmed for the current mode. A preview exists to show the
+// colours as they are, and the label already says which mode is live.
+function ThemeCardPalette({ lightStrip, darkStrip, shape }) {
+  const rows = [lightStrip, darkStrip]
   return jsx('div', {
-    // `h-5` was right for a rectangle card and wastes the middle of a square one,
-    // which is where the palette should be doing the talking.
     // `flex` IS REQUIRED: `flex-col` alone sets only flex-direction and leaves
     // the div a block, so its inline <span> children collapse to zero size and
     // the swatches paint nothing. The render harness cannot see layout — see
@@ -1749,8 +1764,16 @@ function ThemeCardPalette({ strip, shape }) {
       'flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15',
       shape === 'circle' ? 'rounded-full' : 'rounded-[4px]'
     ),
-    children: strip.map((color, i) =>
-      jsx('span', { key: i, className: 'w-full min-h-4 flex-1', style: { backgroundColor: color } })
+    children: rows.map((row, r) =>
+      jsx('div', {
+        key: r,
+        // The hairline is the only chrome in the block: it separates light from
+        // dark, so the pair reads as a pair and not as twelve loose swatches.
+        className: cn('flex flex-row min-h-0 w-full flex-1', r === 1 && 'border-t border-black/25'),
+        children: row.map((color, i) =>
+          jsx('span', { key: i, className: 'min-w-0 flex-1', style: { backgroundColor: color } })
+        )
+      })
     )
   })
 }
@@ -1894,8 +1917,11 @@ function ThemeCardActions({ scene, managing, onDelete, onRename, onExport }) {
 }
 
 function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, shape, localScope }) {
-  const c = (mode === 'dark' ? scene.darkColors : scene.lightColors) || scene.colors || {}
-  const strip = paletteStrip(c)
+  // Both halves of the pair, always: every scene ships both modes now, and the
+  // card shows them side by side rather than only the mode that happens to be
+  // live.
+  const lightStrip = paletteStrip(scene.lightColors || scene.colors || {})
+  const darkStrip = paletteStrip(scene.darkColors || scene.colors || {})
   const isActive = scene.name === active
   const labelClass = shape === 'circle'
     ? 'mb-1 flex w-full items-center justify-center gap-1'
@@ -1904,7 +1930,7 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   if (shape !== 'circle') {
     cardChildren.push(jsx(ThemeCardLabel, { scene, mode, active, localScope, showState: true, className: labelClass }))
   }
-  cardChildren.push(jsx(ThemeCardPalette, { strip, shape }))
+  cardChildren.push(jsx(ThemeCardPalette, { lightStrip, darkStrip, shape }))
   const card = jsxs('button', {
     type: 'button',
     onClick: () => onApply(scene),

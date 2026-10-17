@@ -1,0 +1,18 @@
+name: theme-picker-warm-lightmode-light
+description: Theme Picker transport for Warm Lightmode (light)
+colors:
+  banner_accent: '#8B4513'
+  banner_border: '#8B6914'
+  banner_dim: '#8B7355'
+  banner_text: '#2C1810'
+  banner_title: '#5C3D11'
+  completion_menu_bg: '#F5EFE0'
+  prompt: '#2C1810'
+  session_border: '#A0845C'
+  shell_dollar: '#8B4513'
+  status_bar_bg: '#F5F0E8'
+  status_bar_text: '#2C1810'
+  ui_accent: '#8B4513'
+  ui_error: '#C62828'
+  ui_ok: '#2E7D32'
+  ui_warn: '#E65100'
