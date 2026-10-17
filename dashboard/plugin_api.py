@@ -17,6 +17,9 @@ from __future__ import annotations
 import json
 import logging
 import re
+import shutil
+import tempfile
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -58,10 +61,26 @@ def _dump_skin_yaml(data: dict[str, Any]) -> str:
 
 def _atomic_write_text(path: Path, text: str) -> None:
     """Write via a sibling temp file then os.replace, so the gateway's skin watcher
-    never observes a half-written YAML (and never a partial palette)."""
-    tmp = path.with_name(path.name + ".tmp")
-    tmp.write_text(text, encoding="utf-8", newline="\n")
-    os.replace(tmp, path)
+    never observes a half-written YAML (and never a partial palette).
+
+    The temp name is **unique per write** (`mkstemp`), not a fixed `<name>.tmp`.
+    A fixed name is a shared resource: two writers — two concurrent imports, or
+    the index rewrite racing a skin write — collide on it and the second gets
+    ``PermissionError`` from ``os.replace`` on Windows. The temp sits in the
+    target's own directory so the replace stays a same-volume atomic rename.
+    """
+    fd, tmp_name = tempfile.mkstemp(dir=str(path.parent), prefix=path.name + ".", suffix=".tmp")
+    tmp = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(text)
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+        raise
 
 
 # --- provenance -----------------------------------------------------------
@@ -77,6 +96,41 @@ SIDECAR_DIRNAME = ".chroma"
 INDEX_FILENAME = "index.json"
 TRASH_DIRNAME = "_trash"
 
+# Concurrency model, established from the host source, not assumed:
+#   * `hermes_cli/web_server_dashboard.py::_mount_one_plugin_api` mounts this
+#     router with `app.include_router(...)` — in-process, on the single
+#     `hermes_cli.web_server.app`.
+#   * `web_server.py` drives one `uvicorn.Server` with no `workers=`, so there is
+#     exactly ONE process; the host itself serialises with `threading.Lock`
+#     (`_plugin_api_mount_lock`).
+#   * every endpoint here is a sync `def`, so Starlette runs it via
+#     `run_in_threadpool` — concurrent requests are THREADS in that one process.
+# A `threading.Lock` is therefore the correct primitive (a file lock or an
+# asyncio lock would be wrong: separate processes / not our event loop).
+# It guards the whole read-modify-write of the index, because the loss happens
+# between the read and the write, not inside either one.
+_INDEX_LOCK = threading.Lock()
+
+
+class IndexUnreadableError(RuntimeError):
+    """The provenance index exists but cannot be read as a JSON object.
+
+    Raised by every path that is about to WRITE the index: an unread index means
+    we cannot know what we own, and persisting that ignorance would delete the
+    user's provenance. `backup` is where a copy of the bad file was put (or None
+    if even the copy failed)."""
+
+    def __init__(self, path: Path, backup: Path | None, reason: object) -> None:
+        self.path = path
+        self.backup = backup
+        self.reason = reason
+        where = f"a copy was kept at {backup}" if backup else "a copy could not be kept"
+        super().__init__(
+            f"the skin provenance index at {path} is unreadable ({reason}); "
+            f"refusing to overwrite it and lose every record it holds — {where}. "
+            f"Repair or remove the file, then retry."
+        )
+
 
 def _skins_dir() -> Path:
     d = Path(HERMES_HOME) / "skins"
@@ -90,12 +144,39 @@ def _index_path() -> Path:
     return d / INDEX_FILENAME
 
 
+def _quarantine_index(path: Path) -> Path | None:
+    """Copy an unreadable index beside itself (timestamped). COPY, not move: the
+    original stays where the user expects it for manual repair, and the response
+    can point at a file that holds the exact bytes we could not parse."""
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-%f")
+    backup = path.with_name(f"{path.name}.unreadable-{stamp}")
+    try:
+        shutil.copy2(path, backup)
+    except OSError:
+        return None
+    return backup
+
+
+def _unlink_quietly(path: Path) -> None:
+    """Best-effort removal for a rollback: the caller is already reporting a
+    failure, and a second exception here would replace the useful one."""
+    try:
+        path.unlink()
+    except OSError:
+        pass
+
+
 def _read_index() -> dict[str, Any]:
-    """Return the provenance index, or an empty one if it is missing or corrupt.
+    """Return the provenance index for READ-ONLY use, or an empty one if it is
+    missing or corrupt.
 
     A corrupt index must never take the picker down: an unreadable file means we
     have lost the record of what we own, and the safe reading of that is "nothing
     is ours" — F1 then refuses to delete, which is the recoverable direction.
+
+    This lenient reading is for *showing*, never for *writing*. Anything that may
+    write the index must go through `_read_index_for_update`, because persisting
+    this `{}` is precisely how a corrupt index becomes data loss.
     """
     p = _index_path()
     if not p.is_file():
@@ -103,13 +184,52 @@ def _read_index() -> dict[str, Any]:
     try:
         parsed = json.loads(p.read_text(encoding="utf-8"))
     except (OSError, ValueError):
-        logger.warning("chroma index unreadable at %s; treating as empty", p)
+        logger.warning("chroma index unreadable at %s; treating as empty for read-only views", p)
         return {}
     return parsed if isinstance(parsed, dict) else {}
 
 
+def _read_index_for_update() -> dict[str, Any]:
+    """Read the index for a path that is about to write it.
+
+    Identical to `_read_index` for a missing or valid file, but a file that is
+    PRESENT and unreadable is fatal rather than `{}`: the caller must not write an
+    index derived from a failed read. The bad file is copied aside first, so the
+    provenance survives even when a truncated write or an interloper left it
+    broken. Callers hold `_INDEX_LOCK`.
+    """
+    p = _index_path()
+    if not p.is_file():
+        return {}
+    try:
+        parsed = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise IndexUnreadableError(p, _quarantine_index(p), exc) from exc
+    if not isinstance(parsed, dict):
+        raise IndexUnreadableError(p, _quarantine_index(p), "the file is not a JSON object")
+    return parsed
+
+
+def _index_error(err: IndexUnreadableError) -> HTTPException:
+    """Turn an unreadable-index failure into an actionable 5xx for the caller."""
+    return HTTPException(500, str(err))
+
+
 def _write_index(index: dict[str, Any]) -> None:
     _atomic_write_text(_index_path(), json.dumps(index, indent=2, sort_keys=True) + "\n")
+
+
+def _write_index_or_500(index: dict[str, Any]) -> None:
+    """Write the index, turning a filesystem failure into an actionable 5xx
+    rather than a bare traceback (B6)."""
+    try:
+        _write_index(index)
+    except OSError as exc:
+        raise HTTPException(
+            500,
+            f"could not update the skin provenance index ({_index_path()}): {exc}. "
+            f"Fix free space or permissions and retry.",
+        ) from exc
 
 
 def _trash_dir() -> Path:
@@ -177,6 +297,20 @@ CORE_NAMES = frozenset(
 # A slug is a single word-like token: safe for a flat filename and for config keys.
 _SLUG_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 
+# Windows reserves these as device names, with or without an extension: a file
+# called `con.yaml` is not a file at all, it is the console device — the write
+# silently goes nowhere and the gateway never sees a skin, or the create fails
+# outright. They are legal by `_SLUG_RE`, so they need an explicit refusal; the
+# allowlist shape is right, this is a hole in it.
+WINDOWS_RESERVED_NAMES = frozenset(
+    {"con", "prn", "aux", "nul"}
+    | {f"com{i}" for i in range(1, 10)}
+    | {f"lpt{i}" for i in range(1, 10)}
+)
+
+# Colour tokens: `#rgb` or `#rrggbb`, case-insensitive. Nothing else is a colour.
+_HEX_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
+
 
 class TweakcnColorMap(BaseModel):
     background: str
@@ -205,6 +339,37 @@ class ImportRequest(BaseModel):
     description: str = ""
 
 
+# A theme is a small map of colour tokens. Anything larger is a mistake or an
+# attempt to make the server allocate megabytes; the picker never sends one.
+MAX_THEME_COLORS = 512
+MAX_THEME_BYTES = 64 * 1024
+
+
+def _theme_too_large(theme: Any) -> str | None:
+    """Return a human reason when ``theme`` exceeds the request budget, else None.
+
+    Two bounds, because either alone is escapable: a count of colour entries
+    catches a wide map of tiny values, and a serialised byte cap catches one
+    enormous value behind a single key.
+    """
+    if not isinstance(theme, dict):
+        return None
+    colors = 0
+    for bucket in ("colors", "darkColors", "lightColors"):
+        value = theme.get(bucket)
+        if isinstance(value, dict):
+            colors += len(value)
+    if colors > MAX_THEME_COLORS:
+        return f"theme declares {colors} colour tokens (limit {MAX_THEME_COLORS})"
+    try:
+        size = len(json.dumps(theme, separators=(",", ":"), default=str))
+    except (TypeError, ValueError):
+        return "theme is not JSON-serialisable"
+    if size > MAX_THEME_BYTES:
+        return f"theme serialises to {size} bytes (limit {MAX_THEME_BYTES})"
+    return None
+
+
 class RenameRequest(BaseModel):
     source: str
     target: str
@@ -215,45 +380,84 @@ class RenameRequest(BaseModel):
 
 
 def _hex(v: Any) -> str | None:
-    """Coerce a candidate colour to '#rrggbb' or None."""
-    if not isinstance(v, str):
+    """Coerce a candidate colour to '#rrggbb'.
+
+    `None` for a value the caller did not supply (a missing token falls back to
+    a default). A value that IS supplied but is not a hex colour is an error, not
+    a fallback: silently substituting a default would hand the gateway a skin
+    whose palette contradicts what the user imported. Raised as ValueError so the
+    endpoint can turn it into a 400 naming the offending token.
+    """
+    if v is None or not isinstance(v, str):
         return None
     s = v.strip()
-    if len(s) == 7 and s.startswith("#"):
-        return s.lower()
-    if len(s) == 4 and s.startswith("#"):
+    if not _HEX_RE.match(s):
+        raise ValueError(f"{v!r} is not a hex colour (#rgb or #rrggbb)")
+    s = s.lower()
+    if len(s) == 4:
         return "#" + "".join(c * 2 for c in s[1:])
-    return None
+    return s
+
+
+def _validate_colors(*maps: Any) -> None:
+    """Refuse any supplied colour that is not `#rgb`/`#rrggbb`.
+
+    A missing token is fine (it falls back); a supplied-but-broken one is a 400
+    naming the token, so the user sees which value was rejected instead of
+    discovering a wrong palette after the skin is live.
+    """
+    for mapping in maps:
+        if not isinstance(mapping, dict):
+            continue
+        for key, value in mapping.items():
+            if value is None or not isinstance(value, str):
+                continue
+            try:
+                _hex(value)
+            except ValueError as exc:
+                raise HTTPException(400, f"invalid colour for '{key}': {exc}") from exc
 
 
 def _is_unsafe_name(name: str) -> bool:
     # Only strict slugs reach the filesystem; anything else is path-traversal
-    # or a weird identifier which we simply refuse.
-    return not bool(_SLUG_RE.match(name))
+    # or a weird identifier which we simply refuse. A reserved device name is a
+    # legal slug that is still not writable on Windows.
+    return not bool(_SLUG_RE.match(name)) or name in WINDOWS_RESERVED_NAMES
 
 
 @router.post("/import")
 def import_skin(req: ImportRequest) -> dict[str, Any]:
     name = (req.name or "").strip().lower()
     if _is_unsafe_name(name):
-        raise HTTPException(400, "skin name must be a slug (lower-case, hyphens)")
+        raise HTTPException(
+            400,
+            "skin name must be a slug (lower-case, hyphens) and must not be a "
+            "Windows reserved device name (con, nul, com1…)",
+        )
     if name in CORE_NAMES:
         raise HTTPException(409, f"'{name}' collides with a built-in skin")
+
+    # Bound the request before it is parsed any further: `theme` is an open dict,
+    # and an unbounded one lets a single request make the server allocate.
+    theme = req.theme or {}
+    oversized = _theme_too_large(theme)
+    if oversized:
+        raise HTTPException(413, f"theme is too large: {oversized}")
 
     skins_dir = Path(HERMES_HOME) / "skins"
     skins_dir.mkdir(parents=True, exist_ok=True)
     target = skins_dir / f"{name}.yaml"
 
-    # Refuse to clobber an existing skin file — the importer is additive.
-    if target.exists():
-        raise HTTPException(409, f"skin '{name}' already exists")
-
     # Build the token map from the incoming theme dict. The UI sends a DesktopTheme
     # whose colours live under 'colors' (+ optional 'darkColors'/'lightColors').
-    theme = req.theme or {}
     colors = theme.get("colors") or {}
     darks = theme.get("darkColors") or {}
     lights = theme.get("lightColors") or colors
+
+    # Every colour the caller supplied must actually be a colour. Rejecting a bad
+    # token here is the boundary: the alternative is a skin whose palette
+    # silently disagrees with what the user imported reaching the gateway.
+    _validate_colors(colors, darks, lights)
 
     def pick(mapping: dict, fallback: str) -> str:
         v = mapping.get(fallback) if isinstance(mapping, dict) else None
@@ -319,19 +523,51 @@ def import_skin(req: ImportRequest) -> dict[str, Any]:
         }
         data["dark_colors"] = dark_map
 
-    _atomic_write_text(target, _dump_skin_yaml(data))
+    # Everything from the index read to the index write happens under one lock:
+    # the entry is lost BETWEEN the read and the write, so locking either half
+    # alone fixes nothing (B1). Two concurrent imports each read the same base and
+    # the second overwrites the first's entry with no error at all.
+    with _INDEX_LOCK:
+        try:
+            index = _read_index_for_update()
+        except IndexUnreadableError as exc:
+            # Refuse before writing anything: a skin whose provenance we cannot
+            # record is a skin the user cannot manage, and the index it would
+            # overwrite holds every other skin we own (B2, B6).
+            raise _index_error(exc) from exc
 
-    # Record provenance in the same breath as the write. Order matters: the skin
-    # file is the thing the engine reads, so it lands first; if we die between
-    # the two, the index is merely short an entry (a skin we then refuse to
-    # manage) rather than claiming a skin that is not there.
-    index = _read_index()
-    index[name] = {
-        "source": "chroma",
-        "label": data["description"],
-        "importedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-    }
-    _write_index(index)
+        # Refuse to clobber an existing skin file — the importer is additive.
+        # Checked inside the lock so two imports of one name cannot both pass.
+        if target.exists():
+            raise HTTPException(409, f"skin '{name}' already exists")
+
+        try:
+            _atomic_write_text(target, _dump_skin_yaml(data))
+        except OSError as exc:
+            raise HTTPException(500, f"could not write the skin file {target}: {exc}") from exc
+
+        # Record provenance in the same breath as the write. Order matters: the
+        # skin file is the thing the engine reads, so it lands first; if we die
+        # between the two, the index is merely short an entry (a skin we then
+        # refuse to manage) rather than claiming a skin that is not there.
+        index[name] = {
+            "source": "chroma",
+            "label": data["description"],
+            "importedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        }
+        try:
+            _write_index(index)
+        except OSError as exc:
+            # The file is on disk but has no provenance, so the picker can never
+            # offer to delete it again. Take it back out rather than leave an
+            # orphan the user cannot manage (B6).
+            _unlink_quietly(target)
+            raise HTTPException(
+                500,
+                f"the skin file was written but the provenance index could not be "
+                f"updated ({exc}); the file was rolled back, so nothing is orphaned. "
+                f"Fix free space or permissions and retry.",
+            ) from exc
 
     logger.info("wrote skin %s", target)
     return {"ok": True, "name": name, "path": str(target)}
@@ -355,14 +591,19 @@ def _guard_name(value: str, *, field: str) -> str:
     return clean
 
 
-def _owned_record(name: str) -> dict[str, Any]:
+def _owned_record(name: str, index: dict[str, Any] | None = None) -> dict[str, Any]:
     """Return the provenance record, or refuse.
 
     An unknown name means we did not write it. That includes a skin the user
     hand-authored, which we must not delete or rename — we cannot know what it
     is for.
+
+    Callers that may WRITE pass the index they already read under the lock, so
+    the record and the base they will write back are the same read.
     """
-    record = _read_index().get(name)
+    if index is None:
+        index = _read_index()
+    record = index.get(name)
     if not isinstance(record, dict):
         raise HTTPException(404, f"'{name}' is not a skin Chroma manages")
     return record
@@ -403,30 +644,39 @@ def delete_skin(name: str, active: str = "") -> dict[str, Any]:
     the button sits one hover away from the card the user meant to apply.
     """
     clean = _guard_name(name, field="skin name")
-    record = _owned_record(clean)
-
-    if (active or "").strip().lower() == clean:
-        raise HTTPException(409, f"'{clean}' is the active skin; switch to another theme first")
 
     skins_dir = _skins_dir()
     target = skins_dir / f"{clean}.yaml"
 
-    if not target.is_file():
-        # The index remembers a skin whose file is gone. Drop the record so the
-        # picker stops offering it, and say so rather than reporting a delete
-        # that removed nothing.
-        index = _read_index()
+    # One lock across the read and the write: the record we pop must come from the
+    # same index we write back, or a concurrent import's entry vanishes (B1).
+    with _INDEX_LOCK:
+        try:
+            index = _read_index_for_update()
+        except IndexUnreadableError as exc:
+            raise _index_error(exc) from exc
+        record = _owned_record(clean, index)
+
+        if (active or "").strip().lower() == clean:
+            raise HTTPException(409, f"'{clean}' is the active skin; switch to another theme first")
+
+        if not target.is_file():
+            # The index remembers a skin whose file is gone. Drop the record so the
+            # picker stops offering it, and say so rather than reporting a delete
+            # that removed nothing.
+            index.pop(clean, None)
+            _write_index_or_500(index)
+            return {"ok": True, "name": clean, "deleted": False, "note": "the file was already gone; the record is removed"}
+
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-%f")
+        trashed = _trash_dir() / f"{clean}-{stamp}.yaml"
+        try:
+            os.replace(target, trashed)
+        except OSError as exc:
+            raise HTTPException(500, f"could not move the skin to the trash ({trashed}): {exc}") from exc
+
         index.pop(clean, None)
-        _write_index(index)
-        return {"ok": True, "name": clean, "deleted": False, "note": "the file was already gone; the record is removed"}
-
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-%f")
-    trashed = _trash_dir() / f"{clean}-{stamp}.yaml"
-    os.replace(target, trashed)
-
-    index = _read_index()
-    index.pop(clean, None)
-    _write_index(index)
+        _write_index_or_500(index)
 
     logger.info("trashed skin %s -> %s", target, trashed)
     return {"ok": True, "name": clean, "deleted": True, "trashed": str(trashed), "label": record.get("label") or clean}
@@ -449,32 +699,65 @@ def rename_skin(req: RenameRequest) -> dict[str, Any]:
     if source == target:
         raise HTTPException(400, "the new name is the same as the current name")
 
-    record = _owned_record(source)
-
     skins_dir = _skins_dir()
     src = skins_dir / f"{source}.yaml"
     dst = skins_dir / f"{target}.yaml"
 
-    if not src.is_file():
-        raise HTTPException(404, f"'{source}' has no skin file")
-    if dst.exists():
-        raise HTTPException(409, f"'{target}' already exists")
+    # Whole read-modify-write under one lock, and a failed index write rolls the
+    # rename back so the skin is never left under a name the index does not know
+    # (B1, B6).
+    with _INDEX_LOCK:
+        try:
+            index = _read_index_for_update()
+        except IndexUnreadableError as exc:
+            raise _index_error(exc) from exc
+        record = _owned_record(source, index)
 
-    # Move first, then the index, then the identity fields: the skin file is what
-    # the engine reads, so it must never point at a file that is not there.
-    os.replace(src, dst)
-    _rewrite_skin_name(dst, source, target)
+        if not src.is_file():
+            raise HTTPException(404, f"'{source}' has no skin file")
+        if dst.exists():
+            raise HTTPException(409, f"'{target}' already exists")
 
-    index = _read_index()
-    index.pop(source, None)
-    updated = dict(record) if isinstance(record, dict) else {}
-    label = updated.get("label") or target
-    # The label carries the import name, so it goes stale exactly as the file's
-    # description does. `or` alone would keep the old truthy string, and then
-    # GET /skins would name a skin that no longer exists.
-    updated["label"] = label.replace(source, target)
-    index[target] = updated
-    _write_index(index)
+        # Move first, then the identity fields, then the index: the skin file is
+        # what the engine reads, so it must never point at a file that is not there.
+        try:
+            os.replace(src, dst)
+        except OSError as exc:
+            raise HTTPException(500, f"could not move the skin file to {dst}: {exc}") from exc
+
+        try:
+            _rewrite_skin_name(dst, source, target)
+        except OSError as exc:
+            # Roll back the move: a half-renamed skin is worse than no rename.
+            try:
+                os.replace(dst, src)
+            except OSError:
+                pass
+            raise HTTPException(500, f"could not rewrite the renamed skin {dst}: {exc}") from exc
+
+        index.pop(source, None)
+        updated = dict(record) if isinstance(record, dict) else {}
+        label = updated.get("label") or target
+        # The label carries the import name, so it goes stale exactly as the file's
+        # description does. `or` alone would keep the old truthy string, and then
+        # GET /skins would name a skin that no longer exists.
+        updated["label"] = label.replace(source, target)
+        index[target] = updated
+        try:
+            _write_index(index)
+        except OSError as exc:
+            # Put the file back under its old name: a rename the index never
+            # learned about is a skin the picker can neither show nor delete.
+            try:
+                os.replace(dst, src)
+            except OSError:
+                pass
+            raise HTTPException(
+                500,
+                f"the skin was moved but the provenance index could not be updated "
+                f"({exc}); the rename was rolled back. Fix free space or permissions "
+                f"and retry.",
+            ) from exc
 
     was_active = (req.active or "").strip().lower() == source
     logger.info("renamed skin %s -> %s (wasActive=%s)", source, target, was_active)

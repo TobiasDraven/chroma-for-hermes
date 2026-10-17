@@ -14,12 +14,21 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import sys
 import tempfile
+import threading
+import time
 import unittest
 from pathlib import Path
 
-API_PATH = Path(__file__).resolve().parents[1] / "dashboard" / "plugin_api.py"
+# CHROMA_API_PATH lets a run point at a different revision of the backend (e.g.
+# `git show <rev>:dashboard/plugin_api.py` written to a temp file) so a new test
+# can be shown FAILING against the unfixed code and passing against the fix.
+API_PATH = Path(
+    os.environ.get("CHROMA_API_PATH")
+    or (Path(__file__).resolve().parents[1] / "dashboard" / "plugin_api.py")
+)
 
 
 def load_api(hermes_home: Path):
@@ -360,6 +369,335 @@ class ExportTests(BackendTestCase):
         deletion = self.api.delete_skin("mistake")
         body = Path(deletion["trashed"]).read_text(encoding="utf-8")
         self.assertEqual(yaml.safe_load(body)["name"], "mistake")
+
+
+class HexTests(BackendTestCase):
+    """B3 — `_hex` had no test at all, and accepted any 7-char '#…' string."""
+
+    VALID = {
+        "#abc": "#aabbcc",
+        "#ABC": "#aabbcc",
+        "#a1b2c3": "#a1b2c3",
+        "#A1B2C3": "#a1b2c3",
+        "#000000": "#000000",
+        "#ffffff": "#ffffff",
+        "  #fff  ": "#ffffff",
+    }
+    INVALID = ("#zzzzzz", "#12 456", "#fffffé", "#12g456", "#12345", "#1234567", "#", "123456", "red", "", "   ")
+
+    def test_valid_forms_normalise_to_rrggbb(self):
+        for raw, expected in self.VALID.items():
+            self.assertEqual(self.api._hex(raw), expected, raw)
+
+    def test_a_missing_value_is_absence_not_an_error(self):
+        """A token the caller did not send falls back to a default; only a token
+        that IS sent and is not a colour is an error."""
+        self.assertIsNone(self.api._hex(None))
+        self.assertIsNone(self.api._hex(0x123456))
+
+    def test_each_invalid_form_is_rejected_and_named(self):
+        for bad in self.INVALID:
+            with self.assertRaises(ValueError, msg=bad) as ctx:
+                self.api._hex(bad)
+            self.assertIn(repr(bad), str(ctx.exception), "the message must name the offending value")
+
+    def test_import_refuses_each_bad_colour_with_a_400_naming_it(self):
+        from fastapi import HTTPException
+
+        for bad in self.INVALID:
+            with self.assertRaises(HTTPException, msg=bad) as ctx:
+                self.api.import_skin(
+                    self.api.ImportRequest(
+                        name="bad-colour",
+                        theme={"colors": {"background": bad, "foreground": "#eeeeee"}},
+                    )
+                )
+            self.assertEqual(ctx.exception.status_code, 400)
+            self.assertIn(repr(bad), str(ctx.exception.detail))
+            self.assertFalse((Path(self.home) / "skins" / "bad-colour.yaml").exists())
+
+    def test_a_bad_colour_never_reaches_the_gateway(self):
+        """The whole point of rejecting at the boundary: no skin file is written."""
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException):
+            self.api.import_skin(
+                self.api.ImportRequest(name="broken", theme={"colors": {"background": "#zzzzzz"}})
+            )
+        self.assertEqual(list((Path(self.home) / "skins").glob("*.yaml")), [])
+        self.assertEqual(self.api._read_index(), {})
+
+
+class RequestSizeTests(BackendTestCase):
+    """B4 — `theme: dict[str, Any]` was unbounded."""
+
+    def _limit(self):
+        return self.api.MAX_THEME_BYTES
+
+    def test_a_theme_over_the_byte_limit_is_refused_with_413(self):
+        from fastapi import HTTPException
+
+        huge = {"colors": {"background": "#101010"}, "junk": "x" * (self._limit() + 1)}
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_skin(self.api.ImportRequest(name="huge", theme=huge))
+        self.assertEqual(ctx.exception.status_code, 413)
+        self.assertFalse((Path(self.home) / "skins" / "huge.yaml").exists())
+
+    def test_too_many_colour_tokens_is_refused_with_413(self):
+        from fastapi import HTTPException
+
+        wide = {"colors": {f"token{i}": "#101010" for i in range(self.api.MAX_THEME_COLORS + 1)}}
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_skin(self.api.ImportRequest(name="wide", theme=wide))
+        self.assertEqual(ctx.exception.status_code, 413)
+        self.assertFalse((Path(self.home) / "skins" / "wide.yaml").exists())
+
+    def test_a_theme_at_the_budget_is_still_accepted(self):
+        theme = {"colors": {f"token{i}": "#101010" for i in range(100)}}
+        self.assertIsNone(self.api._theme_too_large(theme))
+        result = self.api.import_skin(self.api.ImportRequest(name="normal", theme=theme))
+        self.assertTrue(result["ok"])
+
+
+class ReservedNameTests(BackendTestCase):
+    """B5 — Windows device names are legal slugs but are not files."""
+
+    def test_reserved_device_names_are_unsafe(self):
+        for bad in ("con", "prn", "aux", "nul", "com1", "com5", "com9", "lpt1", "lpt9"):
+            self.assertTrue(self.api._is_unsafe_name(bad), bad)
+
+    def test_the_allowlist_shape_is_kept_for_everything_else(self):
+        for good in ("console", "con-artist", "com10", "lpt0", "null", "auxiliary", "prnt"):
+            self.assertFalse(self.api._is_unsafe_name(good), good)
+
+    def test_import_refuses_a_reserved_device_name_with_400(self):
+        from fastapi import HTTPException
+
+        for bad in ("con", "nul", "com1"):
+            with self.assertRaises(HTTPException, msg=bad) as ctx:
+                self.api.import_skin(self.api.ImportRequest(name=bad, theme={}))
+            self.assertEqual(ctx.exception.status_code, 400)
+        self.assertEqual(list((Path(self.home) / "skins").glob("*.yaml")), [])
+
+    def test_delete_and_rename_refuse_a_reserved_name_too(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException):
+            self.api.delete_skin("con")
+        with self.assertRaises(HTTPException):
+            self.api.rename_skin(self.api.RenameRequest(source="con", target="safe"))
+        with self.assertRaises(HTTPException):
+            self.api.rename_skin(self.api.RenameRequest(source="safe", target="nul"))
+
+
+class ConcurrencyTests(BackendTestCase):
+    """B1 — two concurrent imports lost an entry and collided on one temp file.
+
+    The writers are THREADS in one process: the router is mounted with
+    `include_router` on the single `hermes_cli.web_server.app`, served by one
+    uvicorn Server with no `workers=`, and every endpoint is a sync `def` so
+    Starlette runs it via `run_in_threadpool`. `threading.Lock` is therefore the
+    right primitive, and the whole read-modify-write must sit inside it.
+    """
+
+    def _theme(self, background="#101010"):
+        return {"colors": {"background": background, "foreground": "#eeeeee"}}
+
+    def _import_in_thread(self, name, errors, barrier):
+        barrier.wait(timeout=10)
+        try:
+            self.api.import_skin(self.api.ImportRequest(name=name, theme=self._theme()))
+        except BaseException as exc:  # noqa: BLE001 - the test asserts none occur
+            errors.append(repr(exc))
+
+    def test_two_concurrent_imports_keep_both_entries(self):
+        # Widen the read-modify-write window: the loss happens BETWEEN the read
+        # and the write, so slowing the write makes a missing lock fail every run
+        # instead of occasionally.
+        real_write = self.api._write_index
+
+        def slow_write(index):
+            time.sleep(0.15)
+            real_write(index)
+
+        self.api._write_index = slow_write
+        errors: list[str] = []
+        barrier = threading.Barrier(2)
+        threads = [
+            threading.Thread(target=self._import_in_thread, args=("alpha", errors, barrier)),
+            threading.Thread(target=self._import_in_thread, args=("beta", errors, barrier)),
+        ]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=15)
+
+        self.assertEqual(errors, [], "neither import may raise")
+        survivors = self.api._read_index()
+        self.assertEqual(set(survivors), {"alpha", "beta"}, "both provenance entries must survive")
+
+    def test_many_concurrent_imports_all_survive(self):
+        names = [f"skin-{i}" for i in range(12)]
+        errors: list[str] = []
+        barrier = threading.Barrier(len(names))
+        threads = [
+            threading.Thread(target=self._import_in_thread, args=(n, errors, barrier)) for n in names
+        ]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=20)
+
+        self.assertEqual(errors, [])
+        self.assertEqual(set(self.api._read_index()), set(names))
+
+    def test_atomic_write_uses_a_distinct_temp_file_per_write(self):
+        """A fixed `<name>.tmp` is a shared resource: two writers collide on it
+        and the second gets PermissionError from os.replace on Windows."""
+        replaced: list[str] = []
+        real_replace = self.api.os.replace
+
+        def record_replace(src, dst):
+            replaced.append(str(src))
+            return real_replace(src, dst)
+
+        self.api.os.replace = record_replace
+        try:
+            target = Path(self.home) / "sample.txt"
+            self.api._atomic_write_text(target, "one")
+            self.api._atomic_write_text(target, "two")
+        finally:
+            self.api.os.replace = real_replace
+
+        self.assertEqual(len(replaced), 2)
+        self.assertNotEqual(replaced[0], replaced[1], "each write needs its own temp name")
+        for src in replaced:
+            self.assertTrue(src.endswith(".tmp"), src)
+        self.assertEqual(target.read_text(encoding="utf-8"), "two")
+
+
+class IndexCorruptionTests(BackendTestCase):
+    """B2 — a present-but-unreadable index was read as {} and then persisted."""
+
+    def _seed(self):
+        self.api._write_index({"keepme": {"source": "chroma", "label": "Keep Me"}})
+        return self.api._index_path()
+
+    def test_a_missing_index_still_reads_as_empty_for_a_writer(self):
+        self.assertEqual(self.api._read_index_for_update(), {})
+
+    def test_a_truncated_index_is_not_overwritten_by_an_import(self):
+        from fastapi import HTTPException
+
+        path = self._seed()
+        truncated = '{"keepme": {"source": "chroma"'
+        path.write_text(truncated, encoding="utf-8")
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_skin(self.api.ImportRequest(name="newone", theme={}))
+        self.assertEqual(ctx.exception.status_code, 500)
+        self.assertIn("unreadable", str(ctx.exception.detail).lower())
+
+        # The original bytes are untouched, and a timestamped copy sits beside the
+        # file, so the provenance is still recoverable by hand.
+        self.assertEqual(path.read_text(encoding="utf-8"), truncated)
+        backups = [p for p in path.parent.iterdir() if p.name.startswith("index.json.unreadable-")]
+        self.assertEqual(len(backups), 1, f"expected one backup, got {backups}")
+        self.assertEqual(backups[0].read_text(encoding="utf-8"), truncated)
+        # And nothing was written from the failed read.
+        self.assertFalse((Path(self.home) / "skins" / "newone.yaml").exists())
+
+    def test_a_non_object_index_is_refused_the_same_way(self):
+        path = self.api._index_path()
+        path.write_text("[1, 2, 3]", encoding="utf-8")
+        with self.assertRaises(self.api.IndexUnreadableError):
+            self.api._read_index_for_update()
+
+    def test_delete_and_rename_refuse_an_unreadable_index(self):
+        from fastapi import HTTPException
+
+        path = self._seed()
+        path.write_text("not json at all", encoding="utf-8")
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.delete_skin("keepme")
+        self.assertEqual(ctx.exception.status_code, 500)
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.rename_skin(self.api.RenameRequest(source="keepme", target="renamed"))
+        self.assertEqual(ctx.exception.status_code, 500)
+        self.assertEqual(path.read_text(encoding="utf-8"), "not json at all")
+
+    def test_the_read_only_view_still_never_raises(self):
+        """The picker's listing degrades to 'nothing is ours' rather than 500ing;
+        that reading is safe precisely because no write is derived from it."""
+        path = self._seed()
+        path.write_text("{ broken", encoding="utf-8")
+        self.assertEqual(self.api._read_index(), {})
+        self.assertEqual(self.api.list_chroma_skins()["count"], 0)
+
+
+class FailurePathTests(BackendTestCase):
+    """B6 — a failed index write orphaned the skin file and returned a bare 500."""
+
+    def _theme(self):
+        return {"colors": {"background": "#101010", "foreground": "#eeeeee"}}
+
+    def _break_index_write(self, exc=None):
+        exc = exc or OSError(28, "No space left on device")
+
+        def boom(index):
+            raise exc
+
+        self.api._write_index = boom
+
+    def test_a_failed_index_write_removes_the_skin_it_just_wrote(self):
+        from fastapi import HTTPException
+
+        self._break_index_write()
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_skin(
+                self.api.ImportRequest(name="orphan", theme=self._theme(), description="TweakCN orphan")
+            )
+        self.assertEqual(ctx.exception.status_code, 500)
+        self.assertFalse(
+            (Path(self.home) / "skins" / "orphan.yaml").exists(),
+            "an unmanageable skin file must not be left behind",
+        )
+        self.assertEqual(self.api.list_chroma_skins()["count"], 0)
+
+    def test_the_rollback_message_is_actionable(self):
+        from fastapi import HTTPException
+
+        self._break_index_write()
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_skin(self.api.ImportRequest(name="orphan", theme=self._theme()))
+        detail = str(ctx.exception.detail).lower()
+        self.assertIn("provenance index", detail)
+        self.assertIn("rolled back", detail)
+        self.assertIn("no space left on device", detail)
+
+    def test_a_failed_delete_index_write_is_an_actionable_500_not_a_traceback(self):
+        from fastapi import HTTPException
+
+        self.api.import_skin(self.api.ImportRequest(name="victim", theme=self._theme()))
+        self._break_index_write()
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.delete_skin("victim")
+        self.assertEqual(ctx.exception.status_code, 500)
+        self.assertIn("index", str(ctx.exception.detail).lower())
+
+    def test_a_failed_rename_index_write_puts_the_file_back(self):
+        from fastapi import HTTPException
+
+        self.api.import_skin(self.api.ImportRequest(name="before", theme=self._theme()))
+        self._break_index_write()
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.rename_skin(self.api.RenameRequest(source="before", target="after"))
+        self.assertEqual(ctx.exception.status_code, 500)
+
+        skins = Path(self.home) / "skins"
+        self.assertTrue((skins / "before.yaml").is_file(), "the rename must be rolled back")
+        self.assertFalse((skins / "after.yaml").is_file())
+        self.assertIn("before", self.api._read_index())
 
 
 if __name__ == "__main__":
