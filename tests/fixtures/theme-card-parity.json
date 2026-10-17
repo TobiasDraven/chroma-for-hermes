@@ -561,6 +561,179 @@
    "type": "div",
    "children": [
     {
+     "className": "flex w-full flex-col",
+     "type": "div",
+     "children": [
+      {
+       "className": "mb-1 flex w-full items-center justify-center gap-1",
+       "type": "div",
+       "children": {
+        "className": "flex min-w-0 items-center gap-1",
+        "type": "span",
+        "children": [
+         {
+          "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
+          "type": "span",
+          "children": "⇄"
+         },
+         {
+          "className": "truncate text-[0.6875rem] font-medium",
+          "type": "span",
+          "children": "Ocean Skin"
+         },
+         {
+          "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+          "title": "Desktop only — the CLI cannot use this theme",
+          "type": "span",
+          "children": "desktop"
+         }
+        ]
+       }
+      },
+      {
+       "className": "group relative w-full",
+       "type": "div",
+       "children": [
+        {
+         "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+         "disabled": false,
+         "onClick": "[fn]",
+         "style": {
+          "aspectRatio": "1"
+         },
+         "title": "A calm blue (dark variant)",
+         "type": "button",
+         "htmlType": "button",
+         "children": [
+          {
+           "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+           "type": "div",
+           "children": [
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#2b3444"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+         "onClick": "[fn]",
+         "title": "Preview this theme for 10 seconds, then revert",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Preview 10s"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "type": "div",
+     "children": [
+      {
+       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
+       "key": "export",
+       "onClick": "[fn]",
+       "title": "Save this skin as hand-editable YAML you can edit and re-import",
+       "type": "button",
+       "htmlType": "button",
+       "children": "Export"
+      },
+      {
+       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
+       "key": "rename",
+       "onClick": "[fn]",
+       "type": "button",
+       "htmlType": "button",
+       "children": "Rename"
+      },
+      {
+       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
+       "key": "delete",
+       "onClick": "[fn]",
+       "type": "button",
+       "htmlType": "button",
+       "children": "Delete"
+      }
+     ]
+    }
+   ]
+  },
+  "circle unowned": {
+   "className": "flex w-full flex-col",
+   "type": "div",
+   "children": [
+    {
+     "className": "mb-1 flex w-full items-center justify-center gap-1",
+     "type": "div",
+     "children": {
+      "className": "flex min-w-0 items-center gap-1",
+      "type": "span",
+      "children": [
+       {
+        "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
+        "type": "span",
+        "children": "⇄"
+       },
+       {
+        "className": "truncate text-[0.6875rem] font-medium",
+        "type": "span",
+        "children": "Ocean Skin"
+       },
+       {
+        "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+        "title": "Desktop only — the CLI cannot use this theme",
+        "type": "span",
+        "children": "desktop"
+       }
+      ]
+     }
+    },
+    {
      "className": "group relative w-full",
      "type": "div",
      "children": [
@@ -635,169 +808,8 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
-      },
-      {
-       "className": "mt-1 flex w-full items-center justify-center gap-1",
-       "type": "div",
-       "children": {
-        "className": "flex min-w-0 items-center gap-1",
-        "type": "span",
-        "children": [
-         {
-          "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-          "type": "span",
-          "children": "⇄"
-         },
-         {
-          "className": "truncate text-[0.6875rem] font-medium",
-          "type": "span",
-          "children": "Ocean Skin"
-         },
-         {
-          "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
-          "title": "Desktop only — the CLI cannot use this theme",
-          "type": "span",
-          "children": "desktop"
-         }
-        ]
-       }
       }
      ]
-    },
-    {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
-     "type": "div",
-     "children": [
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
-      }
-     ]
-    }
-   ]
-  },
-  "circle unowned": {
-   "className": "group relative w-full",
-   "type": "div",
-   "children": [
-    {
-     "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
-     "disabled": false,
-     "onClick": "[fn]",
-     "style": {
-      "aspectRatio": "1"
-     },
-     "title": "A calm blue (dark variant)",
-     "type": "button",
-     "htmlType": "button",
-     "children": [
-      {
-       "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
-       "type": "div",
-       "children": [
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 0,
-         "style": {
-          "backgroundColor": "#1b1f27"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 1,
-         "style": {
-          "backgroundColor": "#5aa9e6"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 2,
-         "style": {
-          "backgroundColor": "#2b3444"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 3,
-         "style": {
-          "backgroundColor": "#e8edf5"
-         },
-         "type": "span",
-         "children": null
-        },
-        {
-         "className": "w-full min-h-4 flex-1",
-         "key": 4,
-         "style": {
-          "backgroundColor": "#39445a"
-         },
-         "type": "span",
-         "children": null
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
-     "onClick": "[fn]",
-     "title": "Preview this theme for 10 seconds, then revert",
-     "type": "button",
-     "htmlType": "button",
-     "children": "Preview 10s"
-    },
-    {
-     "className": "mt-1 flex w-full items-center justify-center gap-1",
-     "type": "div",
-     "children": {
-      "className": "flex min-w-0 items-center gap-1",
-      "type": "span",
-      "children": [
-       {
-        "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-        "type": "span",
-        "children": "⇄"
-       },
-       {
-        "className": "truncate text-[0.6875rem] font-medium",
-        "type": "span",
-        "children": "Ocean Skin"
-       },
-       {
-        "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
-        "title": "Desktop only — the CLI cannot use this theme",
-        "type": "span",
-        "children": "desktop"
-       }
-      ]
-     }
     }
    ]
   },
@@ -806,86 +818,11 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "flex w-full flex-col",
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
-       "disabled": false,
-       "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
-       "title": "A calm blue (dark variant)",
-       "type": "button",
-       "htmlType": "button",
-       "children": [
-        {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
-         "type": "div",
-         "children": [
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        }
-       ]
-      },
-      {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
-       "onClick": "[fn]",
-       "title": "Stop the preview and go back to your theme",
-       "type": "button",
-       "htmlType": "button",
-       "children": {
-        "type": "span",
-        "children": "0s"
-       }
-      },
-      {
-       "className": "mt-1 flex w-full items-center justify-center gap-1",
+       "className": "mb-1 flex w-full items-center justify-center gap-1",
        "type": "div",
        "children": {
         "className": "flex min-w-0 items-center gap-1",
@@ -909,6 +846,87 @@
          }
         ]
        }
+      },
+      {
+       "className": "group relative w-full",
+       "type": "div",
+       "children": [
+        {
+         "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+         "disabled": false,
+         "onClick": "[fn]",
+         "style": {
+          "aspectRatio": "1"
+         },
+         "title": "A calm blue (dark variant)",
+         "type": "button",
+         "htmlType": "button",
+         "children": [
+          {
+           "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+           "type": "div",
+           "children": [
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#2b3444"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
+         "onClick": "[fn]",
+         "title": "Stop the preview and go back to your theme",
+         "type": "button",
+         "htmlType": "button",
+         "children": {
+          "type": "span",
+          "children": "0s"
+         }
+        }
+       ]
       }
      ]
     },
@@ -2038,37 +2056,11 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "flex w-full flex-col",
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
-       "disabled": false,
-       "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
-       "title": "bare-skin (dark only)",
-       "type": "button",
-       "htmlType": "button",
-       "children": [
-        {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
-         "type": "div",
-         "children": []
-        }
-       ]
-      },
-      {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
-       "onClick": "[fn]",
-       "title": "Preview this theme for 10 seconds, then revert",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Preview 10s"
-      },
-      {
-       "className": "mt-1 flex w-full items-center justify-center gap-1",
+       "className": "mb-1 flex w-full items-center justify-center gap-1",
        "type": "div",
        "children": {
         "className": "flex min-w-0 items-center gap-1",
@@ -2092,6 +2084,38 @@
          }
         ]
        }
+      },
+      {
+       "className": "group relative w-full",
+       "type": "div",
+       "children": [
+        {
+         "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+         "disabled": false,
+         "onClick": "[fn]",
+         "style": {
+          "aspectRatio": "1"
+         },
+         "title": "bare-skin (dark only)",
+         "type": "button",
+         "htmlType": "button",
+         "children": [
+          {
+           "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+           "type": "div",
+           "children": []
+          }
+         ]
+        },
+        {
+         "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+         "onClick": "[fn]",
+         "title": "Preview this theme for 10 seconds, then revert",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Preview 10s"
+        }
+       ]
       }
      ]
     },
@@ -2133,83 +2157,11 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "flex w-full flex-col",
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-accent) bg-(--ui-bg-tertiary)",
-       "disabled": false,
-       "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
-       "title": "A calm blue (light variant)",
-       "type": "button",
-       "htmlType": "button",
-       "children": [
-        {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
-         "type": "div",
-         "children": [
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 0,
-           "style": {
-            "backgroundColor": "#1b1f27"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 1,
-           "style": {
-            "backgroundColor": "#5aa9e6"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 2,
-           "style": {
-            "backgroundColor": "#2b3444"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 3,
-           "style": {
-            "backgroundColor": "#e8edf5"
-           },
-           "type": "span",
-           "children": null
-          },
-          {
-           "className": "w-full min-h-4 flex-1",
-           "key": 4,
-           "style": {
-            "backgroundColor": "#39445a"
-           },
-           "type": "span",
-           "children": null
-          }
-         ]
-        }
-       ]
-      },
-      {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
-       "onClick": "[fn]",
-       "title": "Preview this theme for 10 seconds, then revert",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Preview 10s"
-      },
-      {
-       "className": "mt-1 flex w-full items-center justify-center gap-1",
+       "className": "mb-1 flex w-full items-center justify-center gap-1",
        "type": "div",
        "children": {
         "className": "flex min-w-0 items-center gap-1",
@@ -2233,6 +2185,84 @@
          }
         ]
        }
+      },
+      {
+       "className": "group relative w-full",
+       "type": "div",
+       "children": [
+        {
+         "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-accent) bg-(--ui-bg-tertiary)",
+         "disabled": false,
+         "onClick": "[fn]",
+         "style": {
+          "aspectRatio": "1"
+         },
+         "title": "A calm blue (light variant)",
+         "type": "button",
+         "htmlType": "button",
+         "children": [
+          {
+           "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+           "type": "div",
+           "children": [
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 0,
+             "style": {
+              "backgroundColor": "#1b1f27"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 1,
+             "style": {
+              "backgroundColor": "#5aa9e6"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 2,
+             "style": {
+              "backgroundColor": "#2b3444"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 3,
+             "style": {
+              "backgroundColor": "#e8edf5"
+             },
+             "type": "span",
+             "children": null
+            },
+            {
+             "className": "w-full min-h-4 flex-1",
+             "key": 4,
+             "style": {
+              "backgroundColor": "#39445a"
+             },
+             "type": "span",
+             "children": null
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+         "onClick": "[fn]",
+         "title": "Preview this theme for 10 seconds, then revert",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Preview 10s"
+        }
+       ]
       }
      ]
     },

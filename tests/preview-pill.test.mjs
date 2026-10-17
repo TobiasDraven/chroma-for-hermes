@@ -153,19 +153,21 @@ test('an owned card renders its manage actions plus the pill', async () => {
   assert.equal(buttonsBelow(stacked.props.children[0]).length, 0, 'and the card itself holds no nested button')
 })
 
-test('a circle holds only its palette, and its label moves under the card', async () => {
+test('a circle holds only its palette, and its label sits ABOVE the card', async () => {
   const t = await helpers()
   const stacked = t.ThemeCard(cardProps({ shape: 'circle' }))
-  const [card, pill, caption] = stacked.props.children
+  const [caption, box] = stacked.props.children
 
-  assert.equal(stacked.props.children.length, 3, 'circle mode adds a caption below the card')
+  assert.equal(stacked.props.children.length, 2, 'circle mode stacks a caption above a card box')
+  assert.ok(caption && caption.type === 'div', 'the label renders above the circle')
+  assert.equal(box.props.children.length, 2, 'the box holds the card and the pill')
+  const [card, pill] = box.props.children
   assert.equal(
     card.props.children.length, 1,
     'the card holds only its colour block: rounded-full does not clip children, so a label set inside would paint outside the circle'
   )
-  assert.ok(caption && caption.type === 'div', 'the label renders under the circle instead')
   assert.equal(buttonsBelow(card).length, 0, 'and still no button is nested inside the card')
-  assert.equal(pill.type, 'button', 'the pill stays inside the circle')
+  assert.equal(pill.type, 'button', 'the pill stays with the circle')
 })
 
 test('square and rectangle cards keep their label inside the card', async () => {

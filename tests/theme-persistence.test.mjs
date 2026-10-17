@@ -14,7 +14,7 @@ function loadPlugin(storage, exposeTestHelpers = false, requestHandler = null, p
       .replace(/import\s+\{[^}]*\}\s+from\s+'react'\n/, '')
       .replace('export default {', 'globalThis.plugin = {')
     if (exposeTestHelpers) {
-      executable += '\nglobalThis.testHelpers = { buildThemeGroups, persistAppearance, sceneNameFor, sceneToDesktopTheme, desktopModeFor, applyScene, readApplyScope, writeApplyScope, APPLY_SCOPE_LOCAL, APPLY_SCOPE_EVERYWHERE, cardMinFor, cardAspect, cardShapeClasses, readCardShape, writeCardShape, CARD_MIN, CARD_SHAPES, scenes: SKINS }\n'
+      executable += '\nglobalThis.testHelpers = { buildThemeGroups, buildGroups, buildCategoryGroups, sceneCategory, colourChroma, colourHue, normaliseHex, readGroupMode, writeGroupMode, GROUP_MODES, THEME_CATEGORIES, persistAppearance, sceneNameFor, sceneToDesktopTheme, desktopModeFor, applyScene, readApplyScope, writeApplyScope, APPLY_SCOPE_LOCAL, APPLY_SCOPE_EVERYWHERE, cardMinFor, cardAspect, cardShapeClasses, readCardShape, writeCardShape, CARD_MIN, CARD_SHAPES, scenes: SKINS }\n'
     }
 
     const css = new Map()
@@ -257,7 +257,7 @@ test('the grid target is fixed, so a wide window shows more cards, not bigger on
   const plugin = await loadPlugin(new Map(), true)
   const { cardMinFor, cardAspect, CARD_MIN, CARD_SHAPES } = plugin.__test
 
-  assert.equal(CARD_MIN, 104)
+  assert.equal(CARD_MIN, 132)
   // Array.from: CARD_SHAPES is built inside the VM, so its prototype is the VM's
   // Array and deepStrictEqual would reject it as a different structure.
   assert.deepEqual(Array.from(CARD_SHAPES), ['square', 'rectangle', 'circle'])
@@ -309,6 +309,72 @@ test('themes are grouped as dynamic, dark-only, then light-only', async () => {
     ['Dynamic Scenes', 'Dark Mode Only', 'Light Mode Only']
   )
   assert.deepEqual(Array.from(groups, group => group.scenes[0].name), ['dynamic', 'dark', 'light'])
+})
+
+test('the theme lens puts every scene in exactly one category, and no category ships empty', async () => {
+  const plugin = await loadPlugin(new Map(), true)
+  const { buildCategoryGroups, buildGroups, scenes, THEME_CATEGORIES } = plugin.__test
+  const groups = buildCategoryGroups(scenes)
+
+  const seen = new Set()
+  let total = 0
+  for (const group of groups) {
+    for (const scene of group.scenes) {
+      assert.ok(!seen.has(scene.name), `${scene.name} appears in two categories`)
+      seen.add(scene.name)
+      total += 1
+    }
+  }
+  assert.equal(total, scenes.length, 'every scene lands in exactly one category')
+  assert.equal(seen.size, scenes.length)
+  assert.equal(groups.length, THEME_CATEGORIES.length)
+  // A bucket that no shipped scene can reach is a lie in the UI: the divider would
+  // promise a category and then render nothing.
+  for (const group of groups) {
+    assert.ok(group.scenes.length > 0, `category ${group.id} is empty on the shipped catalog`)
+  }
+  // The two lenses are switchable, and an unknown value falls back to scenes.
+  assert.deepEqual(Array.from(buildGroups(scenes, 'theme'), group => group.id),
+    Array.from(THEME_CATEGORIES, category => category.id))
+  assert.deepEqual(Array.from(buildGroups(scenes, 'nonsense'), group => group.id),
+    ['dynamic', 'dark', 'light'])
+})
+
+test('the classifier reads hue and loudness, not brightness', async () => {
+  const plugin = await loadPlugin(new Map(), true)
+  const { sceneCategory, colourChroma } = plugin.__test
+  const scene = (accent, modeSupport) => ({ name: 'x', modeSupport: modeSupport || 'dynamic', lightColors: { ui_accent: accent } })
+
+  assert.equal(sceneCategory(scene('#5B7B9A')), 'cool', 'a muted blue')
+  assert.equal(sceneCategory(scene('#7A6A9E')), 'cool', 'a muted violet')
+  assert.equal(sceneCategory(scene('#A65A3C')), 'warm', 'an earthy orange')
+  assert.equal(sceneCategory(scene('#9F1239')), 'warm', 'a crimson')
+  assert.equal(sceneCategory(scene('#2F855A')), 'nature', 'a muted forest green')
+  assert.equal(sceneCategory(scene('#22C55E')), 'vibrant', 'a loud green is synthetic, not natural')
+  assert.equal(sceneCategory(scene('#00E5FF')), 'vibrant', 'neon cyan')
+  assert.equal(sceneCategory(scene('#808080')), 'minimal', 'grey has no hue to file')
+  assert.equal(sceneCategory(scene('#3B82F6', 'dark')), 'dark', 'a dark-only scene files by its mode')
+  assert.equal(sceneCategory(scene('#3B82F6', 'light')), 'light')
+  assert.equal(sceneCategory({ name: 'bare', modeSupport: 'dynamic' }), 'minimal', 'a scene with no palette still files somewhere')
+  // The trap that broke the first attempt: HSL calls a near-white tint fully
+  // saturated. Chroma does not, which is why the classifier uses it.
+  assert.ok(colourChroma('#F0F4FF') < 0.12, 'a near-white tint is not a loud colour')
+})
+
+test('the grouping lens persists, and defaults to the scene view', async () => {
+  const storage = new Map()
+  const plugin = await loadPlugin(storage, true)
+  const { readGroupMode, writeGroupMode, GROUP_MODES } = plugin.__test
+
+  assert.deepEqual(Array.from(GROUP_MODES), ['scene', 'theme'])
+  assert.equal(readGroupMode(), 'scene', 'default lens is the scene grouping')
+  assert.equal(writeGroupMode('theme'), true)
+  assert.equal(storage.get('chroma-group-mode-v1'), 'theme')
+  assert.equal(readGroupMode(), 'theme', 'the choice survives a remount')
+  assert.equal(writeGroupMode('nonsense'), false, 'an unknown lens is refused')
+  assert.equal(readGroupMode(), 'theme', 'a refused write leaves the stored value alone')
+  storage.set('chroma-group-mode-v1', 'garbage')
+  assert.equal(readGroupMode(), 'scene', 'a corrupt value falls back to scenes instead of throwing')
 })
 
 test('appearance persistence stores theme and explicit mode for the active profile', async () => {

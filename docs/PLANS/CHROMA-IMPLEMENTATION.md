@@ -625,3 +625,35 @@ build. It matches whole tokens now.
 
 **Lesson to keep:** when a Tailwind class string changes, the digest cannot see
 the visual result. Any class that carries layout must be asserted as a token.
+
+### Round three (2.2.0): the G15 polish batch
+
+The Captain, after 2.1.1 looked right on the G15: circle label position, bigger
+base size, a grouping switch, and a compact settings row.
+
+| Item | What shipped |
+|:--|:--|
+| Circle name | Moves above the circle (a rounded-full box never clipped the label, so "inside" was never possible) |
+| Base size | 104 -> 132; S/M/L multipliers unchanged |
+| Grouping | New "By theme" lens, 7 categories, switched by a dropdown that persists per profile |
+| Settings row | Four stacked controls -> one wrapping line; the mode control keeps glyphs only |
+| Category assignment | Derived from the palette, not hand-listed; distribution Cool 22 / Warm 17 / Nature 5 / Vibrant 8 / Minimal 5 / Light 8 / Dark 39 |
+
+**Decisions worth remembering:**
+
+1. **The classifier measures chroma, not HSL saturation.** HSL reports ~1.0
+   saturation for a barely-tinted near-white, so the first classifier called
+   every plain background "fully saturated" and collapsed the catalog. Absolute
+   chroma (max channel minus min) does not move with lightness. Any future
+   colour-character work in this repo must use chroma for the same reason.
+2. **A shipped category must never be empty.** The test asserts it. "Pastels"
+   was requested and measured out: zero qualifying scenes, since the only
+   pale-accent candidates are three purple dark themes. It was dropped rather
+   than shipped as a divider that renders nothing, and the finding is recorded
+   here so nobody re-adds it by guessing.
+3. **The nature/vibrant boundary is muted-vs-synthetic, not hue alone.** Greens
+   below 0.45 chroma are forests and sages; louder greens are neon and derive
+   to Vibrant, because "cyberpunk" filed under Nature is a visible lie.
+
+**Still owed:** the Captain's G15 walk on 2.2.0 (dropdown switching, the new
+category sections, the circle caption), then the convergence review round.

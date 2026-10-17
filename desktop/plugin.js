@@ -37,6 +37,11 @@ import {
   ROUTES_AREA,
   ScrollArea,
   SearchField,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   SegmentedControl,
   SIDEBAR_NAV_AREA,
   STATUSBAR_AREAS,
@@ -70,6 +75,21 @@ const CARD_SHAPE_KEY = 'chroma-card-shape-v1'
 const CARD_SIZE_KEY = 'chroma-card-size-v1'
 const CARD_SHAPES = ['square', 'rectangle', 'circle']
 const CARD_SIZES = ['sm', 'md', 'lg']
+// Which lens the gallery groups by: the scene grouping that shipped first, or
+// the broad style categories. Plugin-owned and per profile, like the rest.
+const GROUP_MODE_KEY = 'chroma-group-mode-v1'
+const GROUP_MODES = ['scene', 'theme']
+/** The broad style categories, in display order. A scene lands in exactly one:
+ *  see sceneCategory() for the rule that decides which. */
+const THEME_CATEGORIES = [
+  { id: 'cool', title: 'Cool' },
+  { id: 'warm', title: 'Warm' },
+  { id: 'nature', title: 'Nature' },
+  { id: 'vibrant', title: 'Vibrant' },
+  { id: 'minimal', title: 'Minimal' },
+  { id: 'light', title: 'Light' },
+  { id: 'dark', title: 'Dark' }
+]
 const CORE_DESKTOP_THEMES = new Set(['nous', 'midnight', 'ember', 'mono', 'cyberpunk', 'slate'])
 const EMOJI_FALLBACK = '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", emoji'
 const DEFAULT_FONT_SANS = '"Segoe WPC", "Segoe UI", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif, ' + EMOJI_FALLBACK
@@ -1191,6 +1211,24 @@ function writeCardSize(size) {
   }
 }
 
+/** Defaults to the scene grouping -- what shipped first -- on anything
+ *  unrecognised, including a storage failure: the gallery must always render. */
+function readGroupMode() {
+  let stored = null
+  try { stored = window.localStorage.getItem(GROUP_MODE_KEY) } catch (e) { return 'scene' }
+  return GROUP_MODES.indexOf(stored) >= 0 ? stored : 'scene'
+}
+
+function writeGroupMode(mode) {
+  if (GROUP_MODES.indexOf(mode) < 0) return false
+  try {
+    window.localStorage.setItem(GROUP_MODE_KEY, mode)
+    return true
+  } catch {
+    return false
+  }
+}
+
 function desktopModeFor(profile, renderedMode) {
   return renderedMode === 'light' || renderedMode === 'dark'
     ? renderedMode
@@ -1276,10 +1314,11 @@ function migrateAppearanceAliases() {
  *  showing more of them - four ~330px squares on a 1400px window, which is what
  *  "the squares are very big" was.
  *
- *  104px is about a third of what that produced. A card still fits its swatch, a
- *  truncated name and the preview pill; below roughly 90px the pill starts to
- *  dominate the square it sits in. */
-const CARD_MIN = 104
+ *  104px was about a third of what that produced, but on a wide pane it read as
+ *  "rather small" (Captain, 2.1.1), so the base is 132 now. A card still fits its
+ *  swatch, a truncated name and the preview pill, with room to breathe. The size
+ *  toggle scales it from here: sm 0.77x, md 1x, lg 1.35x. */
+const CARD_MIN = 132
 
 /** A rectangle is wider than it is tall, so it needs a wider slot to keep a
  *  usable height. A circle needs a square slot, exactly like a square card.
@@ -1310,6 +1349,95 @@ function buildThemeGroups(scenes) {
     { id: 'dark', title: 'Dark Mode Only', scenes: scenes.filter(scene => scene.modeSupport === 'dark') },
     { id: 'light', title: 'Light Mode Only', scenes: scenes.filter(scene => scene.modeSupport === 'light') }
   ]
+}
+
+/** Six-digit hex ("#rrggbb") from #RGB / #RRGGBB / #RRGGBBAA, or null.
+ *  Not folded into hexToRgb, which requires exactly six digits: 19.8% of the
+ *  real palettes in the wild carry an alpha byte, and a category must not
+ *  depend on opacity. */
+function normaliseHex(hex) {
+  const raw = String(hex || '').trim().replace(/^#/, '')
+  if (!/^[0-9a-f]+$/i.test(raw)) return null
+  if (raw.length === 3 || raw.length === 4) {
+    return '#' + raw.slice(0, 3).split('').map(ch => ch + ch).join('')
+  }
+  return raw.length >= 6 ? '#' + raw.slice(0, 6) : null
+}
+
+/** Absolute colourfulness of a colour: max channel minus min, 0-1.
+ *
+ *  This is deliberately NOT HSL saturation. At high lightness HSL reports
+ *  saturation near 1.0 for a barely-tinted near-white - the first version of
+ *  this classifier used it and a plain background read as "fully saturated",
+ *  which collapsed the whole catalog into one bucket. Chroma does not move with
+ *  lightness, so "pale grey-blue" and "electric blue" separate correctly. */
+function colourChroma(hex) {
+  const rgb = hexToRgb(normaliseHex(hex) || '')
+  if (!rgb) return null
+  const channels = rgb.map(v => v / 255)
+  return Math.max(...channels) - Math.min(...channels)
+}
+
+/** Hue in degrees (0-360), or null. Grey has no meaningful hue, so it reads 0. */
+function colourHue(hex) {
+  const rgb = hexToRgb(normaliseHex(hex) || '')
+  if (!rgb) return null
+  const [r, g, b] = rgb.map(v => v / 255)
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  const d = max - min
+  if (d === 0) return 0
+  let h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4
+  h *= 60
+  return h < 0 ? h + 360 : h
+}
+
+/** One broad category per scene - the "by theme" lens.
+ *
+ *  The rule, in order:
+ *   1. A scene that can serve only one mode goes to Light or Dark. It has no
+ *      second palette to describe, so a hue bin would hide what it is.
+ *   2. A dynamic scene is read from its light palette's accent: near-neutral
+ *      goes to Minimal, then loudly saturated goes to Vibrant, then hue decides
+ *      - Nature for greens, Warm for reds through yellows, Cool for the blues,
+ *      indigos and purples that dominate developer themes.
+ *
+ *  Derived, not hand-listed. The catalog's own `category` field is provenance
+ *  ('Built-in' / 'Dynamic' / 'Other'), not style, so 104 scenes cannot be
+ *  labelled by hand and stay consistent. Deterministic, so the grid is stable
+ *  between renders. */
+function sceneCategory(scene) {
+  if (scene.modeSupport === 'dark') return 'dark'
+  if (scene.modeSupport === 'light') return 'light'
+  const colors = scene.lightColors || scene.darkColors || scene.colors || {}
+  const accent = colors.ui_accent || colors.banner_accent || colors.banner_title
+  const chroma = colourChroma(accent)
+  if (chroma === null) return 'minimal'
+  if (chroma < 0.12) return 'minimal'
+  if (chroma >= 0.6) return 'vibrant'
+  const hue = colourHue(accent)
+  if (hue === null) return 'minimal'
+  // Natural greens are muted. A green loud enough to pass the vibrant test is
+  // synthetic - neon, cyberpunk, phosphor terminal - and belongs with the loud
+  // ones, not with the forests.
+  if (hue >= 75 && hue <= 170) return chroma <= 0.45 ? 'nature' : 'vibrant'
+  if (hue >= 330 || hue < 75) return 'warm'
+  return 'cool'
+}
+
+/** The same scenes, grouped by category. Empty groups are dropped by the caller,
+ *  so a category with nothing in it costs no vertical space. */
+function buildCategoryGroups(scenes) {
+  return THEME_CATEGORIES.map(category => ({
+    id: category.id,
+    title: category.title,
+    scenes: scenes.filter(scene => sceneCategory(scene) === category.id)
+  }))
+}
+
+/** One entry point for both lenses, so the caller never branches on the mode. */
+function buildGroups(scenes, groupMode) {
+  return groupMode === 'theme' ? buildCategoryGroups(scenes) : buildThemeGroups(scenes)
 }
 
 // ---------------------------------------------------------------------------
@@ -1753,7 +1881,7 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   const strip = paletteStrip(c)
   const isActive = scene.name === active
   const labelClass = shape === 'circle'
-    ? 'mt-1 flex w-full items-center justify-center gap-1'
+    ? 'mb-1 flex w-full items-center justify-center gap-1'
     : 'flex w-full items-center justify-between gap-1'
   const cardChildren = []
   if (shape !== 'circle') {
@@ -1778,11 +1906,24 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
     ),
     children: cardChildren
   })
-  const wrapperChildren = [card, jsx(ThemeCardPreviewPill, { scene, previewing, previewUntil, onPreview, onStopPreview })]
-  if (shape === 'circle') {
-    wrapperChildren.push(jsx(ThemeCardLabel, { scene, mode, active, localScope, showState: false, className: labelClass }))
-  }
-  const stacked = jsxs('div', { className: 'group relative w-full', children: wrapperChildren })
+  // The preview pill is a DOM sibling of the card, and the card's own box has to
+  // stay its positioning context, so the two travel together.
+  const cardBox = jsxs('div', {
+    className: 'group relative w-full',
+    children: [card, jsx(ThemeCardPreviewPill, { scene, previewing, previewUntil, onPreview, onStopPreview })]
+  })
+  // A circle cannot hold its label inside: a rounded-full box does not clip its
+  // children, so a name set at the top of the box would fall outside the arc.
+  // It rides ABOVE the circle instead - above, like every other shape, not below.
+  const stacked = shape === 'circle'
+    ? jsxs('div', {
+        className: 'flex w-full flex-col',
+        children: [
+          jsx(ThemeCardLabel, { scene, mode, active, localScope, showState: false, className: labelClass }),
+          cardBox
+        ]
+      })
+    : cardBox
   // Only an owned skin has manage actions, and it keeps its unwrapped shape when it
   // does not: the extra flex column is what holds the action row.
   if (!owned) return stacked
@@ -1819,6 +1960,13 @@ function ThemePicker() {
     if (CARD_SIZES.indexOf(next) < 0) return
     writeCardSize(next)
     setSize(next)
+    haptic('tap')
+  }
+  const [groupMode, setGroupMode] = useState(() => readGroupMode())
+  const changeGroupMode = next => {
+    if (GROUP_MODES.indexOf(next) < 0) return
+    writeGroupMode(next)
+    setGroupMode(next)
     haptic('tap')
   }
   const [importRef, setImportRef] = useState('')
@@ -2059,7 +2207,7 @@ function ThemePicker() {
   // ones.
   const gap = 10
   const cardMin = cardMinFor(shape, size)
-  const groups = buildThemeGroups(filtered).filter(group => group.scenes.length)
+  const groups = buildGroups(filtered, groupMode).filter(group => group.scenes.length)
   const activeScene = allSkins.find(scene => scene.name === active)
   const activeColors = activeScene && ((mode === 'dark' ? activeScene.darkColors : activeScene.lightColors) || activeScene.colors)
 
@@ -2106,48 +2254,76 @@ function ThemePicker() {
             value: q,
             onChange: v => setQ(typeof v === 'string' ? v : '')
           }),
-          jsx(SegmentedControl, {
-            options: [
-              { id: 'dark', label: '☾ Dark mode' },
-              { id: 'light', label: '☀ Light mode' }
-            ],
-            value: mode,
-            onChange: onModeChange
-          }),
+          // One line, not four. The settings stack was eating the pane, so the
+          // lens switch, mode, shape, size and scope share a single row that
+          // wraps only when the window is genuinely too narrow for them.
           jsx('div', {
-            title: 'Card shape: squares, rectangles or circles',
-            children: jsx(SegmentedControl, {
-              options: [
-                { id: 'square', label: '□' },
-                { id: 'rectangle', label: '▭' },
-                { id: 'circle', label: '○' }
-              ],
-              value: shape,
-              onChange: changeShape
-            })
-          }),
-          jsx('div', {
-            title: 'Card size: small, medium or large',
-            children: jsx(SegmentedControl, {
-              options: [
-                { id: 'sm', label: 'S' },
-                { id: 'md', label: 'M' },
-                { id: 'lg', label: 'L' }
-              ],
-              value: size,
-              onChange: changeSize
-            })
-          }),
-          jsx(SegmentedControl, {
-            // The scope is a first-class control, not a setting buried elsewhere:
-            // it decides whether a pick reaches the CLI, and the badges below
-            // change meaning with it.
-            options: [
-              { id: APPLY_SCOPE_LOCAL, label: 'This profile' },
-              { id: APPLY_SCOPE_EVERYWHERE, label: 'Everywhere' }
-            ],
-            value: scope,
-            onChange: changeScope
+            className: 'flex flex-wrap items-center gap-2',
+            children: [
+              jsx(Select, {
+                value: groupMode,
+                onValueChange: changeGroupMode,
+                children: [
+                  jsx(SelectTrigger, {
+                    className: 'h-7 w-[7.5rem] text-[0.6875rem]',
+                    title: 'Group the gallery by scene, or by broad theme category',
+                    children: jsx(SelectValue, {})
+                  }),
+                  jsxs(SelectContent, {
+                    children: [
+                      jsx(SelectItem, { value: 'scene', children: 'By scene' }),
+                      jsx(SelectItem, { value: 'theme', children: 'By theme' })
+                    ]
+                  })
+                ]
+              }),
+              jsx('div', {
+                title: 'Preview in dark or light mode',
+                children: jsx(SegmentedControl, {
+                  options: [
+                    { id: 'dark', label: '☾' },
+                    { id: 'light', label: '☀' }
+                  ],
+                  value: mode,
+                  onChange: onModeChange
+                })
+              }),
+              jsx('div', {
+                title: 'Card shape: squares, rectangles or circles',
+                children: jsx(SegmentedControl, {
+                  options: [
+                    { id: 'square', label: '□' },
+                    { id: 'rectangle', label: '▭' },
+                    { id: 'circle', label: '○' }
+                  ],
+                  value: shape,
+                  onChange: changeShape
+                })
+              }),
+              jsx('div', {
+                title: 'Card size: small, medium or large',
+                children: jsx(SegmentedControl, {
+                  options: [
+                    { id: 'sm', label: 'S' },
+                    { id: 'md', label: 'M' },
+                    { id: 'lg', label: 'L' }
+                  ],
+                  value: size,
+                  onChange: changeSize
+                })
+              }),
+              jsx(SegmentedControl, {
+                // The scope is a first-class control, not a setting buried elsewhere:
+                // it decides whether a pick reaches the CLI, and the badges below
+                // change meaning with it.
+                options: [
+                  { id: APPLY_SCOPE_LOCAL, label: 'This profile' },
+                  { id: APPLY_SCOPE_EVERYWHERE, label: 'Everywhere' }
+                ],
+                value: scope,
+                onChange: changeScope
+              })
+            ]
           }),
           jsx('div', {
             className: 'flex items-center gap-2 min-w-0',

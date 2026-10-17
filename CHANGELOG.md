@@ -3,6 +3,50 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.2.0] - 2026-10-17
+
+### Added
+
+- **A second lens for the gallery: "By theme".** A dropdown at the head of the
+  settings row switches between the scene grouping that shipped first ("By
+  scene": Dynamic Scenes / Dark Mode Only / Light Mode Only) and seven broad
+  style categories. The choice persists per profile (`chroma-group-mode-v1`)
+  and falls back to scenes on anything unrecognised.
+- The categories are **derived from each palette**, not hand-listed. The
+  catalog's own `category` field is provenance (`Built-in` / `Dynamic` /
+  `Other`), not style, so 104 scenes cannot be labelled by hand and stay
+  consistent. The rule: a mode-locked scene files by its mode; a dynamic scene
+  is read from its light palette's accent - near-neutral to Minimal, loudly
+  saturated to Vibrant, otherwise hue decides (Nature for muted greens, Warm
+  for reds through yellows, Cool for the blues, indigos and purples that
+  dominate developer themes).
+- On the shipped catalog that yields: **Cool 22, Warm 17, Nature 5, Vibrant 8,
+  Minimal 5, Light 8, Dark 39** - every category holds at least one scene, and
+  a test enforces that a shipped category is never empty.
+
+### Changed
+
+- **The circle's name moved above it.** A rounded-full box does not clip its
+  children, so a label set inside the circle would paint outside the arc; it
+  sits above the circle now, which is where every other shape puts its name.
+- **Base card size 104px to 132px.** 104 read as small on a wide pane. The S/M/L
+  toggle still scales from the new base.
+- **The settings row is one line.** Lens, mode, shape, size and scope share a
+  single wrapping row instead of four stacked controls, so the gallery gets the
+  vertical space back. Mode keeps its glyphs only (☾ / ☀) with the wording in a
+  tooltip.
+
+### Notes
+
+- **"Pastels" was requested and does not ship.** Measured on the shipped
+  catalog: no scene qualifies. The first attempt used HSL saturation, which
+  reports ~1.0 for a barely-tinted near-white, so every scene matched a soft
+  rule at once; measured on absolute chroma instead, the only pale-accent
+  candidates are three purple dark themes. Rather than invent a bucket that
+  mislabels them, the category is omitted - an empty section would promise a
+  category and render nothing. The rule can be added back in one line for
+  imported pastel palettes if wanted.
+
 ## [2.1.1] - 2026-10-17
 
 ### Fixed

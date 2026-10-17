@@ -94,13 +94,19 @@ test('an unowned card offers only itself and the preview pill; an owned one adds
   assert.equal(textsIn(unowned).includes('Delete'), false, 'an unowned card must not offer delete')
 })
 
-test('a circle holds only its palette, and its label moves under the card', () => {
+test('a circle holds only its palette, and its label sits ABOVE the card', () => {
   const square = render({ shape: 'square', owned: false })
   const circle = render({ shape: 'circle', owned: false })
   assert.equal(firstButton(square).children.length, 2, 'square card: palette + label row inside')
   assert.equal(firstButton(circle).children.length, 1, 'circle card: palette alone inside')
   assert.equal(square.children.length, 2, 'wrapper: card + pill')
-  assert.equal(circle.children.length, 3, 'wrapper: card + pill + caption beneath')
+  // The circle stacks a caption above a box holding [card, pill]. The name moved
+  // from below the circle to above it, to match where every other shape puts it.
+  assert.equal(circle.children.length, 2, 'circle wrapper: caption + card box')
+  const [caption, box] = circle.children
+  assert.equal(box.children.length, 2, 'card box: card + pill')
+  assert.equal(box.children[0], firstButton(circle), 'the card lives inside the box, under the caption')
+  assert.ok(String(caption.className).includes('mb-1'), 'caption owns the gap below itself, because it sits above')
 })
 
 test('the active skin is badged, and the applying skin is disabled', async () => {
