@@ -392,3 +392,77 @@ cheapest correction available and it costs one route and one merge, not a new ph
 gateway watcher's behaviour on a brand-new file (§14.4); whether categories are per-profile or
 global — the contract says a pane is app-level, and this plan never states which it wants. Round 2
 must close that last one before E4 starts.
+
+---
+
+## 16. Decisions taken, and what this campaign inherits (2026-10-18)
+
+### 16.1 The approved pack decisions that bind the editor
+
+The Captain approved all of `CHROMA-PACKS.md` §3 and §12 on 2026-10-18. Four of those bind this plan:
+
+- **One pack per skin.** Core plus five single-word packs: **Earth, Cyberpunk, Zen, Retro, Noir**.
+- **A skin's pack is SHOWN in the editor and NOT editable there in v1.** Pack membership is a
+  catalogue decision, not a user preference.
+- **Disabling a pack is a picker filter, nothing more.** No file I/O, and the applied theme is never
+  disturbed. The editor therefore never needs to know which packs are *enabled* — it edits files, not
+  views. That is the whole of the coupling between the two campaigns.
+- **The packs campaign runs after this one.** E-phases first, P-phases second.
+
+### 16.2 Working decisions on §13's four questions
+
+Taken as the default so this campaign can proceed. Correct any one and it changes:
+
+| # | Question | Working decision |
+|:--|:--|:--|
+| 1 | Fonts | **(a) Desktop-only and labelled.** §8's spike still runs before E5 and can overturn it. |
+| 2 | Editing a built-in | **Copy, never in place** (§3, §10) — the plan's existing rule, kept. This is the one decision that changes what a user *expects* when they click a gear on their favourite theme, so it is called out for the Captain's word rather than buried. |
+| 3 | Packs transport | **A file the user sends.** No gateway-side pack registry in v1. |
+| 4 | Categories in a pack bundle | **Yes** — §7's format already carries them. |
+
+### 16.3 A defect this campaign starts with: §2's line references are stale
+
+The 2.5.2 backend round (`8a06221`) rewrote `plugin_api.py`. The routes §2 cites have moved:
+
+| Route | §2 said | Actually at |
+|:--|:--|:--|
+| `GET /skins` | 128 | **248** |
+| `POST /import` | 235 | **428** |
+| `DELETE /skins/{name}` | 397 | **638** |
+| `POST /skins/rename` | 438 | **688** |
+| `GET /export` | 487 | **770** |
+
+E0 re-reads the file and refreshes every citation before a single route is added. A plan that cites
+the wrong line is a plan nobody can check.
+
+### 16.4 The host already exports the colour maths — verified 2026-10-18
+
+A plugin may import only `@hermes/plugin-sdk`, so what matters is what the SDK **re-exports**, not
+what exists somewhere in the app. Verified by reading the installed source:
+
+| Symbol | Where the SDK gets it | Usable by a plugin? |
+|:--|:--|:--|
+| `contrastRatio` | `sdk/index.ts:2081` ← `@hermes/shared/color` | **Yes** |
+| `hexToOklch`, `maxChroma`, `oklchToHex`, `oklchToSrgb255` | `sdk/index.ts:2036-2043` | **Yes** |
+| `retintTheme`, `themeHue` | `sdk/index.ts:2054` | **Yes** — relevant to F8/F9 (accent interop) |
+
+And the plugin **already hand-rolls the same maths**: `hexToRgb` (`plugin.template.js:160`), `rgbToHex`
+(`:166`), `relativeLuminance` (`:189`), `contrastRatio` (`:197`) and `oklch` (`:1470`).
+
+**The decision this forces, stated so E1 does not stumble into it.** The editor's displayed contrast
+read-out should use the **host's `contrastRatio`**, because that is the number the app itself believes
+and the whole point of a read-out is agreement with the product. The **classifier and the swatch stay on
+the plugin's own maths** — they are shipped, they are what the 2 x 6 matrix and the twelve categories
+were measured with, and re-pointing them at the host implementation is an algebraically-equal rewrite
+that can still move outputs at the last ulp, which would silently re-cut the categories. So: host maths
+for the *read-out*, our maths for the *catalogue*, and never the two swapped. E1's test pins that the
+read-out and the classifier disagreeing about a borderline pair is a display difference, not a data
+change.
+
+### 16.5 The writer must use the strict index path, or it re-opens B2
+
+The same round added `_read_index_for_update()`, `IndexUnreadableError` and a quarantine path, and made
+`_read_index()` deliberately lenient for read-only views. **Every new editor route that writes must go
+through the strict path**, exactly as `import_skin`/delete/rename now do. A new `PUT /skins/{name}`
+that reads the index leniently would silently reintroduce the data-loss defect that `8a06221` closed —
+a corrupted index read as `{}` and persisted. This is the first thing E1's tests must pin.

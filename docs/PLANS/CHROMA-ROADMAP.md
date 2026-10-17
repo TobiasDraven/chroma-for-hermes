@@ -1,7 +1,30 @@
 # Chroma — Hard Fork + Roadmap
 
-**Status:** fork prep DONE · features PLANNED, not started
-**Prepared:** 2026-10-16
+**Status:** **v2.5.2 shipped** — the picker, the twelve measured shelves, per-profile skins and the fix
+rounds are DONE. Two campaigns are approved and not started: the **skin editor** (`CHROMA-EDITOR.md`,
+next) and **theme packs** (`CHROMA-PACKS.md`, after it).
+**Prepared:** 2026-10-16 · **last updated:** 2026-10-18 — see §0.
+
+---
+
+## 0. Where we actually are (2026-10-18)
+
+- **Shipped: v2.5.2** (`e30f56c`). 109 scenes, every one a light/dark pair of six roles; twelve measured
+  category shelves; 150 skin palettes; 218 gateway transports; per-profile skins; a 2 x 6 swatch matrix.
+- **F1–F6 are done** — delete/rename, CLI badges, export, four import sources, per-profile skins, the
+  square picker and its field corrections. **F7 landed differently and better than this file planned:**
+  instead of hue buckets, a **twelve-category OKLCH classifier** (2.5.0), with pastels and muted
+  measurable at last. The "group by hue" idea survives only as those shelves.
+- **The adversarial round closed.** Three independent roasts of 2.4.1 all returned HOLD; every finding
+  but two is now closed, with the dispositions and the exact rigour delta in
+  `docs/REVIEWS/ROAST-TRIAGE-2026-10-17.md`. Still open: **no 2.x release tag**, and **ARIA**.
+- **Next, in order:** the **skin editor** (E0–E6 — approved, prior-art and host-capability scouting in
+  flight), then **theme packs** (P0–P6 — approved, all six decisions and the five single-word names
+  confirmed: **Earth, Cyberpunk, Zen, Retro, Noir**).
+- **Still open from this file:** F5 shipped as option (b), Desktop-side; **F8** (tint/value/brightness)
+  and **F9** (accent-picker interop) are unstarted. Note for whoever starts F8: the SDK already exports
+  `contrastRatio` plus `hexToOklch`/`oklchToHex`/`oklchToSrgb255`/`maxChroma`, so that work is now
+  cheaper than this file assumed — see `CHROMA-EDITOR.md` §16.4.
 
 ---
 
@@ -308,14 +331,11 @@ re-learning.
 
 ## 4. Suggested sequence
 
-| Order | Work | Why first |
+| Order | Work | State |
 |:--|:--|:--|
-| 1 | F2 badges | Cheapest, teaches the gateway/Desktop split |
-| 2 | F1 delete/rename | Closes the "stuck with a bad import" hole |
-| 3 | F3 export/import | Pairs with F1, same backend surface |
-| 4 | F6 squares | Do it once F1–F3 supply the badges and actions |
-| 5 | F4 more sources | Independent; a good follow-on to F3 |
-| 6 | F5 per-profile | Needs a spike and a decision first |
-| 7 | F8 tint/value/brightness | Highest value of the three: "this one, but warmer" is what people actually want to do to a palette |
-| 8 | F7 hue grouping | Cheap once the grid is settled; purely organisational |
-| 9 | F9 accent-picker interop | Settle the precedence question first; F8 may make it unnecessary |
+| — | F1–F7 | **done.** F7 as the twelve measured shelves, not hue buckets. |
+| 1 | **Skin editor**, E0–E6 (`CHROMA-EDITOR.md`) | **next.** Approved; prior-art + host-capability scouting in flight. |
+| 2 | **Theme packs**, P0–P6 (`CHROMA-PACKS.md`) | **approved, waiting.** All six decisions and the five names confirmed. |
+| 3 | Release tag 2.5.x, plus C9 accessibility | The last two things between us and the registry. |
+| 4 | F8 tint/value/brightness | Cheaper now: the SDK exports `contrastRatio` and the OKLCH helpers. |
+| 5 | F9 accent-picker interop | Settle the precedence question first; F8 may subsume it. |

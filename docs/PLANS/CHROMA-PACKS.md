@@ -1,9 +1,10 @@
 # Chroma Theme Packs — plan
 
-**Status:** PLAN ONLY. Not started. Awaiting (a) the two fix subagents currently in flight, and
-(b) the Captain's answers in §12.
+**Status:** **APPROVED for implementation 2026-10-18** — all decisions (§3) and all five pack names
+(§6) confirmed by the Captain. Sequenced **after** the skin editor: the editor campaign ships first,
+this one follows.
 
-**Baseline this plan is written against:** commit `fbd4e5e`, version 2.5.1, 109 scenes, 150 files in
+**Baseline this plan is written against:** commit `e30f56c`, version 2.5.2, 109 scenes, 150 files in
 `skins/`, 218 gateway transports, 12 category shelves.
 
 ---
@@ -37,7 +38,7 @@ container") already refused. Deleting a pack must never delete a skin.
 9. A robust, **design- and colour-science-grounded analysis script** for skin colour schemes.
 10. **Documentation** updated: recent changes and additions (the skin editor), and the roadmap.
 
-## 3. Decisions I recommend
+## 3. Decisions — all six APPROVED by the Captain, 2026-10-18
 
 | # | Decision | Recommendation | Why |
 |:--|:--|:--|:--|
@@ -131,7 +132,8 @@ not a fait accompli.
 
 ## 7. The five packs
 
-Proposed set, mapped to what the catalogue already contains, subject to the Captain's naming:
+**The approved set — single-word names, final 2026-10-18.** Mapped to what the catalogue already
+contains:
 
 | Pack | Idea | Likely home for | Target |
 |:--|:--|:--|:--|
@@ -196,15 +198,14 @@ the measured gaps, in the order the gaps are largest.
 - **Every new skin is generated, not hand-written**: it enters through the same pipeline (scene +
   derived light/dark halves + gateway transports) so it cannot drift from the contract.
 
-## 12. Open questions for the Captain
+## 12. Decisions (resolved 2026-10-18 — the Captain approved all four)
 
-1. **The five pack names** — is Earth / Cyberpunk / Zen / Retro / Noir right, or do you want different
-   names or a different fifth?
-2. **Core 30** — do you want to approve the rule's output list, or name the 30 yourself?
-3. **A skin in two packs** — I recommend exactly one (§3 D1). Confirm, or say that overlapping packs
-   are wanted and I will design the badge for it.
-4. **Disabled packs and the CLI** — I recommend keeping the files on disk (D2). Confirm, or say that a
-   disabled pack should be fully withdrawn from the gateway too.
+| # | Question | Answer |
+|:--|:--|:--|
+| 1 | The five pack names | **Earth, Cyberpunk, Zen, Retro, Noir** — single-word, as ordered. |
+| 2 | Core 30 | The **rule's output** is approved. P2 produces the proposed list with a reason per skin for the record, and the rule is re-runnable. |
+| 3 | A skin in two packs | **Exactly one.** The badge is singular and every skin is accounted for by construction. |
+| 4 | Disabled packs and the CLI | **Files stay on disk** (D2). Disabling hides from the picker and performs no file I/O; the applied theme is never disturbed (D3). |
 
 ## 13. Risks
 
