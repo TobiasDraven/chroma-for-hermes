@@ -384,5 +384,77 @@ class GatewaySkinInstallerTests(unittest.TestCase):
             self.assertEqual(outside.read_text(encoding='utf-8'), 'name: protected\n')
 
 
+class RegeneratePreservesOverridesTests(unittest.TestCase):
+    """§17.3.1 — a user override is USER DATA and must survive regeneration.
+
+    Regeneration rebuilds desktop/plugin.js and the gateway transport skins from
+    the authored catalogue. It must neither read the overrides file into the build
+    (one person's taste shipped to everyone) nor delete it. This runs the real
+    main() over a temp tree holding a populated overrides file and asserts the file
+    is byte-identical afterwards, and that the override never reached the build.
+    """
+
+    def _build_temp_repo(self, root: Path) -> Path:
+        repo = root / 'repo'
+        scripts_dir = repo / 'scripts'
+        scripts_dir.mkdir(parents=True)
+        (scripts_dir / 'backend-builtins.json').write_bytes(
+            (SCRIPT.parent / 'backend-builtins.json').read_bytes()
+        )
+        desktop = repo / 'desktop'
+        desktop.mkdir()
+        # A self-contained template, so this test does not depend on the contents
+        # of the in-repo template (another lane owns that file).
+        (desktop / 'plugin.template.js').write_text(
+            'window.__CHROMA_CATALOG__ = __SKINS_DATA__;\n', encoding='utf-8'
+        )
+        skins = repo / 'skins'
+        skins.mkdir()
+        (skins / 'mine.yaml').write_text(
+            "name: mine\ndescription: Mine\ncolors:\n"
+            "  background: '#101010'\n  ui_text: '#eeeeee'\n  ui_accent: '#ff0000'\n",
+            encoding='utf-8',
+        )
+        (repo / 'gateway-skins').mkdir()
+        (repo / 'docs').mkdir()
+        return repo
+
+    def test_regeneration_leaves_a_populated_overrides_file_byte_identical(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo = self._build_temp_repo(Path(temp_dir))
+            skins = repo / 'skins'
+            overrides = skins / '.chroma' / 'overrides.json'
+            overrides.parent.mkdir(parents=True)
+            payload = json.dumps(
+                {
+                    'nous': {
+                        'light': {'ui_accent': '#abcdef'},
+                        'dark': {},
+                        'at': '2026-10-18T00:00:00+00:00',
+                    }
+                },
+                indent=2,
+                sort_keys=True,
+            ) + '\n'
+            overrides.write_text(payload, encoding='utf-8')
+            before = overrides.read_bytes()
+
+            out = repo / 'desktop' / 'plugin.js'
+            with (
+                patch.object(regenerate, '__file__', str(repo / 'scripts' / 'regenerate.py')),
+                patch.object(sys, 'argv', ['regenerate.py', str(skins), str(out)]),
+            ):
+                result = regenerate.main()
+
+            self.assertEqual(result, 0, 'regeneration must succeed over a valid bundle')
+            self.assertTrue(out.is_file())
+            self.assertEqual(overrides.read_bytes(), before, 'the overrides file must be untouched')
+            self.assertNotIn(
+                '#abcdef',
+                out.read_text(encoding='utf-8'),
+                'a user override must never be read into the shipped build',
+            )
+
+
 if __name__ == '__main__':
     unittest.main()

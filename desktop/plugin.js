@@ -954,6 +954,86 @@ async function exportOwnedSkins(name) {
   return await _rest(path)
 }
 
+// ---------------------------------------------------------------------------
+// Built-in overrides (plan §17.2) — the editor's only write path in E1.
+//
+// The authored catalogue is NEVER rewritten: an edit of a shipped scene is
+// stored beside it as an override record, and the effective palette is
+// override ?? authored. The routes live on the same rest transport as the skin
+// index, so a pane with no backend behaves exactly as it did before.
+// ---------------------------------------------------------------------------
+
+/** Every override the backend holds, keyed by scene name. Tolerant about the
+ *  envelope — a bare map and {overrides: {...}} are both accepted — but strict
+ *  about the type: a backend that answers with something else means "no
+ *  overrides", never a crash in the gallery. */
+async function listOverrides() {
+  if (!_rest) return {}
+  const result = await _rest('overrides')
+  const rows = result && result.overrides ? result.overrides : result
+  return rows && typeof rows === 'object' ? rows : {}
+}
+
+/** Write ONE override: PUT /overrides/{scene} with the role palettes the editor
+ *  built. It is not the skin: the skin files are untouched. */
+async function putOverride(scene, palettes) {
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  return await _rest('overrides/' + encodeURIComponent(scene), {
+    method: 'PUT',
+    body: JSON.stringify({ light: palettes.light || {}, dark: palettes.dark || {} })
+  })
+}
+
+/** Drop an override: DELETE /overrides/{scene} puts the shipped palette back. */
+async function dropOverride(scene) {
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  return await _rest('overrides/' + encodeURIComponent(scene), { method: 'DELETE' })
+}
+
+/** Did the backend answer "no such route"? A new route does not exist until
+ *  Hermes restarts, because a mounted plugin_api.py is never re-imported, so the
+ *  editor has to say that instead of looking broken (plan §14.1, §17.4). */
+function isMissingRoute(error) {
+  if (!error) return false
+  const status = error.status || error.statusCode || (error.response && error.response.status)
+  if (status === 404) return true
+  return /\b404\b|not found/i.test(String(error.message || error))
+}
+
+/** The notice a failed save or reset produces. Pure, so both writes say the same
+ *  thing and the test asserts the words without a DOM.
+ *
+ *  Never a success and never a cleared draft: the caller keeps the user's edit
+ *  because this notice is the only thing that changed. A 404 means the routes
+ *  are not mounted yet — the one instruction that actually helps is "restart". */
+function overrideFailureNotice(error, action) {
+  const what = action === 'reset' ? 'Reset' : 'Save'
+  if (isMissingRoute(error)) {
+    return {
+      kind: 'error',
+      title: what + ' did not run',
+      message: 'Restart Hermes to enable the editor',
+      detail: 'The override routes mount when the Chroma backend is imported, and a running '
+        + 'backend is never re-imported. Restart Hermes, then try again — your edit is still here.'
+    }
+  }
+  const raw = error && error.message ? error.message : String(error || 'unknown error')
+  if (raw === BACKEND_MISSING_MESSAGE) {
+    return {
+      kind: 'error',
+      title: what + ' needs the Chroma backend',
+      message: 'The gateway half is not installed',
+      detail: 'An override is stored by the Python half. Install it, restart Hermes, and try again.'
+    }
+  }
+  return {
+    kind: 'error',
+    title: what + ' failed',
+    message: what + ' failed: ' + raw,
+    detail: 'Nothing was changed, and nothing was thrown away.'
+  }
+}
+
 /** Pure: which file a saved export carries, and its contents. Kept pure so the
  *  test asserts the mapping without needing a DOM or a Blob.
  *  A single skin saves as its own YAML. A bulk export saves the backend's JSON
@@ -1904,10 +1984,11 @@ function ThemeCardPalette({ lightStrip, darkStrip, shape }) {
   })
 }
 
-// The label row: the mode glyph, the skin's name and its CLI badge, plus either
-// the ACTIVE badge or the mode the skin supports. It sits INSIDE the card when the
-// card has an edge to sit in, and BENEATH it when it does not (a circle).
-function ThemeCardLabel({ scene, mode, active, localScope, showState, className }) {
+// The label row: the mode glyph, the skin's name, its CLI badge and, when the
+// scene carries an override, the `edited` marker. Plus either the ACTIVE badge or
+// the mode the skin supports. It sits INSIDE the card when the card has an edge
+// to sit in, and BENEATH it when it does not (a circle).
+function ThemeCardLabel({ scene, mode, active, localScope, showState, className, edited }) {
   const isActive = scene.name === active
   const glyph = scene.modeSupport === 'dynamic' ? '⇄' : (scene.modeSupport === 'dark' ? '☾' : '☀')
   const modeClass = mode === 'dark' ? 'text-(--ui-accent)' : 'text-(--ui-warn)'
@@ -1915,14 +1996,24 @@ function ThemeCardLabel({ scene, mode, active, localScope, showState, className 
   const bit = isActive
     ? jsx(Badge, { variant: 'outline', className: 'shrink-0 px-1 text-[0.5625rem] text-(--ui-accent)', children: 'ACTIVE' })
     : jsx('span', { className: 'shrink-0 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)', children: support })
-  const bits = jsxs('span', {
-    className: 'flex min-w-0 items-center gap-1',
-    children: [
-      jsx('span', { className: cn('shrink-0 text-[0.6875rem] leading-none', modeClass), children: glyph }),
-      jsx('span', { className: 'truncate text-[0.6875rem] font-medium', children: scene.label || scene.name.replace(/-/g, ' ') }),
-      jsx(CliBadge, { scene, localScope })
-    ]
-  })
+  // The bits are built as a LIST rather than a fixed array with a hole in it: an
+  // edited card must add one element, and a card without an override must digest
+  // byte-for-byte as it did before the editor existed.
+  const parts = [
+    jsx('span', { className: cn('shrink-0 text-[0.6875rem] leading-none', modeClass), children: glyph }),
+    jsx('span', { className: 'truncate text-[0.6875rem] font-medium', children: scene.label || scene.name.replace(/-/g, ' ') }),
+    jsx(CliBadge, { scene, localScope })
+  ]
+  if (edited) {
+    // Distinct from the future pack badge: this says what you are looking at is
+    // not what shipped, which a user has to be able to see (§17.3.1).
+    parts.push(jsx('span', {
+      className: 'shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-warn)',
+      title: 'Edited: this card paints your override, not the shipped palette',
+      children: 'edited'
+    }))
+  }
+  const bits = jsxs('span', { className: 'flex min-w-0 items-center gap-1', children: parts })
   return jsxs('div', { className, children: showState ? [bits, bit] : bits })
 }
 
@@ -1946,6 +2037,28 @@ function ThemeCardPreviewPill({ scene, previewing, previewUntil, onPreview, onSt
     children: previewing
       ? jsx(PreviewCountdown, { until: previewUntil })
       : 'Preview 10s'
+  })
+}
+
+// The editor's door. A DOM SIBLING of the card for the same reason the pill is
+// (a button inside a button is invalid HTML), and it rides the card's own
+// positioning context. Hidden until hover, but ALWAYS in the DOM and reachable
+// without a pointer: `focus-visible:` for the keyboard and `pointer-coarse:` for
+// touch — the standing rule this project applies to hover-only affordances.
+//
+// It is anchored to the bottom edge, centred, rather than a corner: the label row
+// owns the top of a square card and the caption owns the top of a circle, while
+// the centre of the card belongs to the preview pill.
+const EDIT_GEAR_CLASS = 'absolute bottom-1 left-1/2 z-10 -translate-x-1/2 rounded border border-white/25 bg-black/45 px-1 text-[0.625rem] leading-4 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100'
+
+function ThemeCardEditGear({ scene, onEdit }) {
+  return jsx('button', {
+    type: 'button',
+    onClick: () => onEdit(scene),
+    title: 'Edit this theme: recolour it and save your own override',
+    'aria-label': 'Edit ' + (scene.label || scene.name),
+    className: EDIT_GEAR_CLASS,
+    children: jsx('span', { className: 'codicon codicon-settings-gear', 'aria-hidden': 'true' })
   })
 }
 
@@ -2042,7 +2155,452 @@ function ThemeCardActions({ scene, managing, onDelete, onRename, onExport }) {
   return jsxs('div', { className: MANAGE_ROW_CLASS, children: body })
 }
 
-function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, shape, localScope }) {
+// ---------------------------------------------------------------------------
+// The editor (§6, §17): the colour input, the six role rows and the modal.
+//
+// The host UI kit has NO free-form colour input — only a fixed ColorSwatches
+// grid — so the control is hand-rolled here: a styled swatch over a hidden
+// native <input type="color">, plus a free-text hex field. No HSV picker in E1.
+//
+// The dialog is an IN-PANE OVERLAY, not the SDK's Radix Dialog. The SDK does
+// export Dialog, but Dialog needs a mounted React tree and a portal of its own,
+// and this pane renders inside the picker's tree; an overlay keeps the editor in
+// that same tree, adds no import the plugin contract has to grow for, and stays
+// visible to the DOM-contract tests — the same reason the preview pill and the
+// strip are plain host elements.
+// ---------------------------------------------------------------------------
+
+/** The three advisory contrast targets the port uses (§6): body text 9:1,
+ *  interface chrome 3:1, status signals 4.5:1. WCAG 2.2, as the host speaks it;
+ *  APCA is deliberately not adopted in E1 (§18.3). */
+const ADVICE_TARGETS = [
+  { id: 'text', label: 'Text', target: 9, hint: 'body text on its shell' },
+  { id: 'interface', label: 'Interface', target: 3, hint: 'chrome, borders and signature surfaces' },
+  { id: 'signals', label: 'Signals', target: 4.5, hint: 'status colours: shipped per scene, not editable in E1' }
+]
+
+/** A role's advisory target, from its kind. Same table as the strip above, so a
+ *  role cannot carry a target the legend does not show. */
+function adviceTarget(role) {
+  for (const item of ADVICE_TARGETS) {
+    if (item.id === role.kind) return item.target
+  }
+  return ADVICE_TARGETS[0].target
+}
+
+/** The six editable roles, in the strip's reading order, each naming the SAME
+ *  alias chain paletteStrip() reads (STRIP_BANDS) so a row and the preview can
+ *  never disagree about which key a role is.
+ *
+ *  `kind` picks the advisory target. `against` names the colour the read-out is
+ *  measured against: every role is read against the shell, and the shell itself
+ *  against its own text — its contrast with itself is 1:1 by definition and
+ *  would say nothing. */
+const EDITOR_ROLES = [
+  { id: 'shell', label: 'Shell', hint: 'the base every other role is read against', keys: ['background'], kind: 'interface', against: 'text' },
+  { id: 'surface', label: 'Surface', hint: 'raised bars, menus, cards', keys: ['status_bar_bg', 'completion_menu_bg'], kind: 'interface', against: 'shell' },
+  { id: 'signature', label: 'Signature', hint: 'accent surfaces and highlights', keys: ['ui_accent', 'banner_accent', 'banner_title'], kind: 'interface', against: 'shell' },
+  { id: 'text', label: 'Text', hint: 'the reading colour', keys: ['banner_text', 'ui_text', 'status_bar_text'], kind: 'text', against: 'shell' },
+  { id: 'dim', label: 'Dim text', hint: 'secondary and muted labels', keys: ['banner_dim'], kind: 'text', against: 'shell' },
+  { id: 'structure', label: 'Structure', hint: 'borders and dividers', keys: ['ui_border', 'banner_border', 'session_border'], kind: 'interface', against: 'shell' }
+]
+
+/** The first present value among `keys`, else ''. A row shows what the palette
+ *  actually holds, so a role a thin skin omits is an empty field with a `—`
+ *  read-out rather than an invented colour. */
+function firstColorIn(colors, keys) {
+  for (const key of keys) {
+    const value = colors ? colors[key] : null
+    if (typeof value === 'string' && value) return value
+  }
+  return ''
+}
+
+/** One mode's authored palette: a scene carries lightColors/darkColors, and a
+ *  single-mode scene carries `colors` instead. Same chain the card uses. */
+function sceneModePalette(scene, modeKey) {
+  if (!scene) return {}
+  if (modeKey === 'dark') return scene.darkColors || scene.colors || {}
+  return scene.lightColors || scene.colors || {}
+}
+
+/** EFFECTIVE palette = override ?? authored (§17.1), per mode, merged role by
+ *  role onto a COPY. The authored scene object is never mutated, and the
+ *  classifier is never handed the result — see groupCards(). */
+function applyOverride(scene, overrides) {
+  const record = scene && overrides ? overrides[scene.name] : null
+  if (!record || typeof record !== 'object') return scene
+  const next = Object.assign({}, scene)
+  const light = record.light && typeof record.light === 'object' ? record.light : null
+  const dark = record.dark && typeof record.dark === 'object' ? record.dark : null
+  if (light) {
+    next.lightColors = Object.assign({}, scene.lightColors || scene.colors || {}, light)
+    next.colors = next.lightColors
+  }
+  if (dark) {
+    next.darkColors = Object.assign({}, scene.darkColors || scene.colors || {}, dark)
+    if (!light) next.colors = next.darkColors
+  }
+  return next
+}
+
+/** The gallery's groups: CLASSIFY the authored catalogue, RENDER the effective
+ *  palette (§17.3.2 — the shelf does not move). buildGroups() measures category
+ *  from the scene it is handed, so a resolved list would re-file a card the
+ *  moment its accent changed. Grouping runs on the authored list; the override
+ *  is layered on afterwards, per card. */
+function groupCards(scenes, overrides, groupMode) {
+  return buildGroups(scenes, groupMode).map(group => Object.assign({}, group, {
+    scenes: group.scenes.map(scene => applyOverride(scene, overrides))
+  }))
+}
+
+/** A draft: one value per role, from the palette's own chain, '' when absent. */
+function draftFromPalette(palette) {
+  const draft = {}
+  for (const role of EDITOR_ROLES) draft[role.id] = firstColorIn(palette, role.keys)
+  return draft
+}
+
+function draftForScene(scene, modeKey) {
+  return draftFromPalette(sceneModePalette(scene, modeKey))
+}
+
+/** Two drafts for the SAME mode are equal when every role normalises to the
+ *  same colour, so a three-digit entry and its six-digit twin are not a change,
+ *  and '' and a missing role are the same absence.
+ *
+ *  One mode at a time, deliberately: the modal keeps a light draft and a dark
+ *  draft as separate state, and a comparator that took the whole nested shape
+ *  would answer "equal" for two flat drafts that disagree (nothing to look up,
+ *  nothing to find). */
+function modeDraftEqual(a, b) {
+  for (const role of EDITOR_ROLES) {
+    const av = a ? a[role.id] : ''
+    const bv = b ? b[role.id] : ''
+    if (normaliseHex(av) !== normaliseHex(bv)) return false
+  }
+  return true
+}
+
+/** A draft painted as a palette: the effective palette with every role's PRIMARY
+ *  key replaced. Never a later alias — a palette that carries only
+ *  `banner_accent` would otherwise keep painting the authored `ui_accent` the
+ *  strip reads first, and the preview would ignore the edit. */
+function draftPalette(scene, modeKey, draftRoles) {
+  const colors = Object.assign({}, sceneModePalette(scene, modeKey))
+  for (const role of EDITOR_ROLES) {
+    const hex = normaliseHex(draftRoles ? draftRoles[role.id] : '')
+    if (hex) colors[role.keys[0]] = hex
+  }
+  return colors
+}
+
+/** The body of a PUT /overrides/{scene}: primary skin key per role, per mode.
+ *  Empty roles are omitted rather than sent as '' — an override records what the
+ *  user set, not what they cleared. */
+function overridePayload(draft) {
+  const out = { light: {}, dark: {} }
+  for (const modeKey of ['light', 'dark']) {
+    for (const role of EDITOR_ROLES) {
+      const hex = normaliseHex(draft && draft[modeKey] ? draft[modeKey][role.id] : '')
+      if (hex) out[modeKey][role.keys[0]] = hex
+    }
+  }
+  return out
+}
+
+/** WCAG 2.2 contrast as a read-out: the plugin's OWN contrastRatio (§16.4 — the
+ *  two are algebraically identical, so a second implementation is a second thing
+ *  to drift), with exactly one host convention adopted: NULL for a colour that
+ *  will not parse. relativeLuminance() answers 0 for unreadable input, which
+ *  would print a confident, meaningless ratio; the read-out must render `—`. */
+function contrastReadout(a, b) {
+  const ha = normaliseHex(a)
+  const hb = normaliseHex(b)
+  if (!ha || !hb) return null
+  return contrastRatio(ha, hb)
+}
+
+/** One colour control: a styled swatch, a hidden native <input type="color"> and
+ *  a free-text hex field. The swatch is the label FOR the native input, so a
+ *  click or a tap opens the platform picker; the text field is the keyboard
+ *  path, and a value normaliseHex cannot read is marked invalid and NOT
+ *  committed, so a half-typed hex never reaches the palette or the save. */
+function ColorField({ id, value, label, onChange }) {
+  const [draft, setDraft] = useState(typeof value === 'string' ? value : '')
+  const hex = normaliseHex(value)
+  const invalid = draft.trim().length > 0 && !normaliseHex(draft)
+  const change = raw => {
+    setDraft(raw)
+    const next = normaliseHex(raw)
+    if (next) onChange(next)
+  }
+  const commit = () => {
+    const next = normaliseHex(draft)
+    if (next) onChange(next)
+  }
+  return jsxs('span', { className: 'flex min-w-0 flex-1 items-center gap-1', children: [
+    jsxs('label', {
+      className: 'relative inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded',
+      title: label,
+      children: [
+        jsx('input', {
+          id: id ? id + '-color' : undefined,
+          type: 'color',
+          value: hex || '#000000',
+          onChange: event => change(event && event.target ? event.target.value : ''),
+          // Visually hidden but NOT display:none and not off-screen: it has to
+          // stay focusable, since it is the keyboard path to the platform picker.
+          className: 'absolute inset-0 h-full w-full cursor-pointer opacity-0',
+          'aria-label': label
+        }),
+        jsx('span', {
+          className: cn('pointer-events-none h-5 w-5 rounded border', invalid ? 'border-(--ui-error)' : 'border-(--ui-stroke-secondary)'),
+          style: hex ? { backgroundColor: hex } : undefined
+        })
+      ]
+    }),
+    jsx('input', {
+      id: id ? id + '-hex' : undefined,
+      type: 'text',
+      value: draft,
+      spellCheck: false,
+      placeholder: '#rrggbb',
+      'aria-label': label + ' hex',
+      'aria-invalid': invalid ? 'true' : 'false',
+      title: invalid ? 'Not a hex colour — try #rrggbb' : label,
+      onChange: event => change(event && event.target ? event.target.value : ''),
+      onBlur: commit,
+      onKeyDown: event => { if (event && event.key === 'Enter') commit() },
+      className: cn(
+        'min-w-0 w-full flex-1 rounded border bg-(--ui-bg-secondary) px-1 py-0.5 font-mono text-[0.625rem]',
+        invalid ? 'border-(--ui-error)' : 'border-(--ui-stroke-secondary)'
+      )
+    })
+  ]})
+}
+
+/** A role's read-out. ADVISORY, never blocking (§6, §18.3): a role below its
+ *  target is marked, not refused — it is the user's skin. */
+function ContrastChip({ ratio, target, label }) {
+  const measured = typeof ratio === 'number' && isFinite(ratio)
+  const text = measured ? ratio.toFixed(2) + ':1' : '—'
+  const below = measured && ratio < target
+  const title = measured
+    ? label + ': ' + text + (below ? ' — below the ' + target + ':1 advisory target' : ' — meets the ' + target + ':1 advisory target')
+    : label + ': not a colour that can be measured'
+  return jsx('span', {
+    title,
+    className: cn('shrink-0 rounded px-1 font-mono text-[0.5625rem] leading-4', below ? 'bg-(--ui-warn)/15 text-(--ui-warn)' : 'text-(--ui-text-tertiary)'),
+    children: text
+  })
+}
+
+const EDITOR_OVERLAY_CLASS = 'fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4'
+const EDITOR_SHEET_CLASS = 'mt-6 flex max-h-[80vh] w-full max-w-2xl flex-col gap-2 overflow-hidden rounded-lg border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) p-3 shadow-xl'
+const EDITOR_PREVIEW_CLASS = 'flex h-14 w-full shrink-0 overflow-hidden rounded-[4px]'
+const EDITOR_ROW_CLASS = 'flex items-start gap-2'
+const EDITOR_ACTION_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-2 py-0.5 text-[0.625rem] hover:border-(--ui-stroke-strong) disabled:opacity-50'
+const EDITOR_SAVE_CLASS = 'shrink-0 rounded border border-(--ui-accent) bg-(--ui-accent)/15 px-2 py-0.5 text-[0.625rem] font-medium text-(--ui-accent) hover:border-(--ui-stroke-strong) disabled:opacity-50'
+// The fork affordance of §18.3 (`Update "<name>"` / separator / `Save as new`) is
+// OMITTED from E1, not rendered disabled: it needs POST /skins/duplicate, which
+// is E2 and is not mounted, and a disabled control for a route that cannot
+// arrive in this build is noise. The reason is carried by the sentence in the
+// actions row instead.
+const OWNED_SAVE_REASON = 'Your own skins are rewritten in place, and the pane wiring for that writer is E2. This editor saves catalogue overrides in E1.'
+
+/** One role across both modes: the label, then a light and a dark cell, each
+ *  with the colour input and its own contrast read-out against that mode's
+ *  shell. */
+function EditorRoleRow({ role, draft, onChange, shells, texts }) {
+  const cell = (modeKey) => {
+    const value = draft[modeKey][role.id]
+    const against = role.against === 'text' ? texts[modeKey] : shells[modeKey]
+    return jsxs('div', {
+      key: modeKey,
+      className: 'flex min-w-0 flex-1 items-center gap-1',
+      children: [
+        jsx('span', {
+          className: 'w-3 shrink-0 text-center text-[0.625rem] text-(--ui-text-tertiary)',
+          'aria-hidden': 'true',
+          children: modeKey === 'light' ? '☀' : '☾'
+        }),
+        jsx(ColorField, {
+          id: 'chroma-edit-' + modeKey + '-' + role.id,
+          label: role.label + ' in ' + modeKey + ' mode',
+          value,
+          onChange: next => onChange(modeKey, role.id, next)
+        }),
+        jsx(ContrastChip, {
+          label: role.label + ' against ' + (role.against === 'text' ? 'its text' : 'the shell') + ' (' + modeKey + ')',
+          target: adviceTarget(role),
+          ratio: contrastReadout(value, against)
+        })
+      ]
+    })
+  }
+  return jsxs('div', {
+    className: EDITOR_ROW_CLASS,
+    'data-role': role.id,
+    children: [
+      jsxs('div', { className: 'w-24 shrink-0 pt-0.5', children: [
+        jsx('div', { className: 'font-medium leading-4', children: role.label }),
+        jsx('div', { className: 'text-[0.5625rem] leading-tight text-(--ui-text-tertiary)', children: role.hint })
+      ]}),
+      cell('light'),
+      cell('dark')
+    ]
+  })
+}
+
+/** The editor. Its five zones, in order: header, the 2 x 6 preview matrix, the
+ *  six role rows, the advisory strip, the actions.
+ *
+ *  The draft is local state and the BASELINE is derived from the overrides it is
+ *  handed, so `dirty` recomputes after a successful save (the picker re-lists
+ *  the overrides) and cannot be cleared by a FAILED one — nothing about the
+ *  draft is touched unless the write actually landed. The picker re-seeds the
+ *  fields after a Reset by remounting this element under a new key. */
+function EditorModal({ scene, overrides, owned, mode, busy, onClose, onSave, onReset }) {
+  const effective = applyOverride(scene, overrides)
+  const overridden = !!(overrides && overrides[scene.name])
+  // One draft per mode, seeded from the effective palette. Kept apart so `dirty`
+  // is a comparison of like with like, and so clearing one mode cannot clear the
+  // other.
+  const seedLight = draftForScene(effective, 'light')
+  const seedDark = draftForScene(effective, 'dark')
+  const [lightDraft, setLightDraft] = useState(() => Object.assign({}, seedLight))
+  const [darkDraft, setDarkDraft] = useState(() => Object.assign({}, seedDark))
+  const dirty = !modeDraftEqual(lightDraft, seedLight) || !modeDraftEqual(darkDraft, seedDark)
+  const changeRole = (modeKey, roleId, value) => {
+    const setter = modeKey === 'light' ? setLightDraft : setDarkDraft
+    setter(prev => {
+      const next = Object.assign({}, prev)
+      next[roleId] = value
+      return next
+    })
+  }
+  const draft = { light: lightDraft, dark: darkDraft }
+  // What the strip paints is the DRAFT on the effective palette, so an edit shows
+  // before it is saved, and the preview cannot disagree with the card.
+  const light = draftPalette(effective, 'light', draft.light)
+  const dark = draftPalette(effective, 'dark', draft.dark)
+  const shells = { light: firstColorIn(light, ['background']), dark: firstColorIn(dark, ['background']) }
+  const texts = {
+    light: firstColorIn(light, ['banner_text', 'ui_text', 'status_bar_text']),
+    dark: firstColorIn(dark, ['banner_text', 'ui_text', 'status_bar_text'])
+  }
+  const name = scene.label || scene.name
+  const subtitle = overridden
+    ? 'Carries your override. Reset puts the shipped palette back.'
+    : (owned
+      ? 'Your own skin: this editor is read-only until E2 ships the in-place writer.'
+      : 'Saving stores an override. The shipped catalogue is never rewritten.')
+  return jsx('div', {
+    className: EDITOR_OVERLAY_CLASS,
+    role: 'dialog',
+    'aria-modal': 'true',
+    'aria-label': 'Edit ' + name,
+    // Click-outside and Escape both close. There is no focus trap in E1 (E6 owns
+    // keyboard reach); the header holds a real Close button so the modal is never
+    // a trap for the mouse-free.
+    onClick: event => { if (event && event.target === event.currentTarget && onClose) onClose() },
+    onKeyDown: event => { if (event && event.key === 'Escape' && onClose) onClose() },
+    children: jsxs('div', {
+      className: EDITOR_SHEET_CLASS,
+      children: [
+        jsxs('div', { key: 'head', className: 'flex items-start justify-between gap-2', children: [
+          jsxs('div', { className: 'min-w-0', children: [
+            jsx('div', { className: 'truncate text-sm font-semibold', children: 'Edit ' + name }),
+            jsx('div', { className: 'text-[0.625rem] text-(--ui-text-tertiary)', children: subtitle })
+          ]}),
+          jsx('button', {
+            key: 'close',
+            type: 'button',
+            onClick: onClose,
+            title: 'Close the editor (Escape)',
+            'aria-label': 'Close the editor',
+            className: EDITOR_ACTION_CLASS,
+            children: '✕'
+          })
+        ]}),
+        jsx('div', {
+          key: 'preview',
+          className: EDITOR_PREVIEW_CLASS,
+          children: jsx(ThemeCardPalette, { lightStrip: paletteStrip(light), darkStrip: paletteStrip(dark), shape: 'square' })
+        }),
+        jsx('div', {
+          key: 'legend',
+          className: 'text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)',
+          children: 'Light over dark — the same 2 × 6 contract the card paints'
+        }),
+        jsxs('div', { key: 'roles', className: 'flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto pr-1', children: [
+          jsxs('div', { key: 'columns', className: 'flex items-center gap-2 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)', children: [
+            jsx('span', { className: 'w-24 shrink-0', children: 'Role' }),
+            jsx('span', { className: 'flex-1', children: '☀ light' }),
+            jsx('span', { className: 'flex-1', children: '☾ dark' })
+          ]})
+        ].concat(EDITOR_ROLES.map(role => jsx(EditorRoleRow, {
+          key: role.id,
+          role,
+          draft,
+          onChange: changeRole,
+          shells,
+          texts
+        })))}),
+        jsxs('div', {
+          key: 'advice',
+          className: 'flex flex-wrap items-center gap-2 rounded border border-(--ui-stroke-secondary) px-2 py-1 text-[0.5625rem] text-(--ui-text-tertiary)',
+          children: [
+            jsx('span', { key: 'label', children: 'Advisory targets:' })
+          ].concat(ADVICE_TARGETS.map(item => jsx('span', {
+            key: item.id,
+            title: item.hint,
+            className: 'rounded bg-(--ui-bg-tertiary) px-1 text-(--ui-text-secondary)',
+            children: item.label + ' ' + item.target + ':1'
+          }))).concat([
+            jsx('span', { key: 'note', children: 'Marked, never refused — it is your skin.' })
+          ])
+        }),
+        jsxs('div', {
+          key: 'actions',
+          className: 'flex items-center justify-between gap-2 border-t border-(--ui-stroke-secondary) pt-2',
+          children: [
+            jsxs('span', { key: 'state', className: 'min-w-0 text-[0.625rem] text-(--ui-text-tertiary)', children: [
+              overridden ? 'An override exists for this scene. ' : 'No override yet. ',
+              dirty ? jsx('span', { className: 'text-(--ui-warn)', children: 'Unsaved changes.' }) : null
+            ]}),
+            jsxs('div', { key: 'buttons', className: 'flex shrink-0 items-center gap-1', children: [
+              overridden
+                ? jsx('button', {
+                    key: 'reset',
+                    type: 'button',
+                    disabled: !!busy,
+                    onClick: () => onReset(scene.name),
+                    title: 'Delete your override and put the shipped palette back',
+                    className: EDITOR_ACTION_CLASS,
+                    children: busy === 'reset' ? 'Resetting…' : 'Reset'
+                  })
+                : null,
+              jsx('button', {
+                key: 'save',
+                type: 'button',
+                disabled: !!busy || !!owned,
+                onClick: () => { if (onSave) onSave(scene.name, overridePayload(draft)) },
+                title: owned ? OWNED_SAVE_REASON : 'Store your edit as an override of the shipped palette',
+                className: EDITOR_SAVE_CLASS,
+                children: busy === 'save' ? 'Saving…' : 'Save'
+              })
+            ]})
+          ]
+        })
+      ]
+    })
+  })
+}
+
+function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, shape, localScope, onEdit, edited }) {
   // Both halves of the pair, always: every scene ships both modes now, and the
   // card shows them side by side rather than only the mode that happens to be
   // live.
@@ -2054,7 +2612,7 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
     : 'flex w-full items-center justify-between gap-1'
   const cardChildren = []
   if (shape !== 'circle') {
-    cardChildren.push(jsx(ThemeCardLabel, { scene, mode, active, localScope, showState: true, className: labelClass }))
+    cardChildren.push(jsx(ThemeCardLabel, { scene, mode, active, localScope, showState: true, className: labelClass, edited }))
   }
   cardChildren.push(jsx(ThemeCardPalette, { lightStrip, darkStrip, shape }))
   const card = jsxs('button', {
@@ -2075,11 +2633,17 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
     ),
     children: cardChildren
   })
-  // The preview pill is a DOM sibling of the card, and the card's own box has to
-  // stay its positioning context, so the two travel together.
+  // The preview pill and the editor's gear are DOM siblings of the card, and the
+  // card's own box has to stay their positioning context, so they travel together.
+  // The gear appears only when the pane hands in an edit handler: a card with no
+  // editor behind it must not offer the affordance.
+  const boxChildren = [card, jsx(ThemeCardPreviewPill, { scene, previewing, previewUntil, onPreview, onStopPreview })]
+  if (typeof onEdit === 'function') {
+    boxChildren.push(jsx(ThemeCardEditGear, { scene, onEdit }))
+  }
   const cardBox = jsxs('div', {
     className: 'group relative w-full',
-    children: [card, jsx(ThemeCardPreviewPill, { scene, previewing, previewUntil, onPreview, onStopPreview })]
+    children: boxChildren
   })
   // A circle cannot hold its label inside: a rounded-full box does not clip its
   // children, so a name set at the top of the box would fall outside the arc.
@@ -2088,7 +2652,7 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
     ? jsxs('div', {
         className: 'flex w-full flex-col',
         children: [
-          jsx(ThemeCardLabel, { scene, mode, active, localScope, showState: false, className: labelClass }),
+          jsx(ThemeCardLabel, { scene, mode, active, localScope, showState: false, className: labelClass, edited }),
           cardBox
         ]
       })
@@ -2226,6 +2790,13 @@ function ThemePicker() {
   // actions cannot work, so the pane states that instead of hiding the buttons.
   const [backendReady, setBackendReady] = useState(hasGatewayBackend())
   const [managing, setManaging] = useState(null)
+  // The editor's own state (§17): the override map (effective = override ??
+  // authored), which scene is open, whether a write is in flight, and an epoch the
+  // modal is keyed by so a Reset re-seeds its fields.
+  const [overrides, setOverrides] = useState({})
+  const [editing, setEditing] = useState(null)
+  const [editorBusy, setEditorBusy] = useState(null)
+  const [editorEpoch, setEditorEpoch] = useState(0)
 
   const refreshOwned = useCallback(async () => {
     setBackendReady(hasGatewayBackend())
@@ -2238,6 +2809,15 @@ function ThemePicker() {
       // the buttons and pretending everything is fine.
       setOwned({})
       setBackendReady(false)
+    }
+    // Overrides are a store of their own beside the skin index. A backend older
+    // than the editor answers /skins and not /overrides, so this failure must be
+    // read as "no overrides here" and must not re-flag the whole pane as
+    // backend-less: the manage actions still work.
+    try {
+      setOverrides(await listOverrides())
+    } catch (e) {
+      setOverrides({})
     }
   }, [])
 
@@ -2472,8 +3052,82 @@ function ThemePicker() {
   const onModeChange = next => {
     if (next !== 'light' && next !== 'dark') return
     setMode(next)
-    const scene = allSkins.find(item => item.name === active)
+    // The effective scene, so switching mode keeps an override in play (§17.1).
+    const scene = applyOverride(allSkins.find(item => item.name === active) || null, overrides)
     if (scene) applyScene(scene, next, setActive, desktopTheme)
+  }
+
+  // --- the editor's write path (§17) -----------------------------------------
+  // Open on the AUTHORED scene: the modal resolves the effective palette itself,
+  // so what it shows and what a save sends come from one place.
+  const openEditor = scene => {
+    if (!scene) return
+    stopPreview()
+    setEditing({ name: scene.name })
+  }
+  const closeEditor = () => setEditing(null)
+
+  const saveEditor = async (name, palettes) => {
+    if (editorBusy) return false
+    setEditorBusy('save')
+    try {
+      await putOverride(name, palettes)
+      // Read the store back rather than echoing the payload: what is now in
+      // force is what the backend holds, not what we sent (it may normalise).
+      try {
+        setOverrides(await listOverrides())
+      } catch (readError) {
+        setOverrides(prev => Object.assign({}, prev, { [name]: { light: palettes.light, dark: palettes.dark } }))
+      }
+      haptic('tap')
+      host.notify({
+        kind: 'success',
+        title: 'Override saved',
+        message: (name.replace(/-/g, ' ')) + ' now uses your colours',
+        detail: 'Reset in the editor puts the shipped palette back. The catalogue itself is untouched.'
+      })
+      return true
+    } catch (e) {
+      // A failed write changes nothing: the draft stays dirty and the notice says
+      // what actually happened (a 404 means "restart Hermes", not "broken").
+      host.notify(overrideFailureNotice(e, 'save'))
+      return false
+    } finally {
+      setEditorBusy(null)
+    }
+  }
+
+  const resetEditor = async (name) => {
+    if (editorBusy) return false
+    setEditorBusy('reset')
+    try {
+      await dropOverride(name)
+      try {
+        setOverrides(await listOverrides())
+      } catch (readError) {
+        setOverrides(prev => {
+          const next = Object.assign({}, prev)
+          delete next[name]
+          return next
+        })
+      }
+      // The fields are seeded from the effective palette, so they have to be
+      // re-seeded: the modal is keyed by this epoch and remounts.
+      setEditorEpoch(n => n + 1)
+      haptic('tap')
+      host.notify({
+        kind: 'info',
+        title: 'Override reset',
+        message: (name.replace(/-/g, ' ')) + ' is back to the palette it shipped with',
+        detail: 'Nothing else about the scene changed.'
+      })
+      return true
+    } catch (e) {
+      host.notify(overrideFailureNotice(e, 'reset'))
+      return false
+    } finally {
+      setEditorBusy(null)
+    }
   }
 
   // Cards. A grid with auto-fill adapts to a resized window without a second
@@ -2482,9 +3136,12 @@ function ThemePicker() {
   // ones.
   const gap = 10
   const cardMin = cardMinFor(shape, size)
-  const groups = buildGroups(filtered, groupMode).filter(group => group.scenes.length)
-  const activeScene = allSkins.find(scene => scene.name === active)
+  // Groups are cut from the AUTHORED list, then each card is handed its effective
+  // palette (§17.3.2): the shelf must not move when a scene is recoloured.
+  const groups = groupCards(filtered, overrides, groupMode).filter(group => group.scenes.length)
+  const activeScene = applyOverride(allSkins.find(scene => scene.name === active) || null, overrides)
   const activeColors = activeScene && ((mode === 'dark' ? activeScene.darkColors : activeScene.lightColors) || activeScene.colors)
+  const editingScene = editing ? (allSkins.find(scene => scene.name === editing.name) || null) : null
 
   return jsxs('div', {
     className: 'flex h-full min-h-0 flex-col',
@@ -2660,6 +3317,10 @@ function ThemePicker() {
                               previewUntil: preview ? preview.until : 0,
                               onPreview: startPreview,
                               onStopPreview: stopPreview,
+                              onEdit: openEditor,
+                              // The marker reads from the override map, and the
+                              // card already carries the resolved palette.
+                              edited: !!overrides[scene.name],
                               shape,
                               localScope: scope === APPLY_SCOPE_LOCAL
                             })
@@ -2670,7 +3331,24 @@ function ThemePicker() {
                   )
                 })
         })
-      })
+      }),
+      // The editor's dialog, inside the pane's own tree as an overlay rather than
+      // through the SDK's Radix Dialog (see the editor section). It is keyed by
+      // the epoch so a Reset re-seeds the fields from the shipped palette.
+      editingScene
+        ? jsx(EditorModal, {
+            key: 'chroma-editor-' + editorEpoch,
+            epoch: editorEpoch,
+            scene: editingScene,
+            overrides,
+            owned: !!owned[editingScene.name],
+            mode,
+            busy: editorBusy,
+            onClose: closeEditor,
+            onSave: saveEditor,
+            onReset: resetEditor
+          })
+        : null
     ]
   })
 }

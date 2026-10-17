@@ -269,6 +269,10 @@ def list_chroma_skins() -> dict[str, Any]:
                 "source": record.get("source") or "chroma",
                 "ref": record.get("ref") or "",
                 "importedAt": record.get("importedAt") or "",
+                # Optional and additive: an entry written before categories
+                # existed simply has none, and reads back as "" rather than
+                # failing to load (E0).
+                "category": record.get("category") or "",
                 "owned": True,
                 "cliCapable": present,
                 "missing": not present,
@@ -553,6 +557,7 @@ def import_skin(req: ImportRequest) -> dict[str, Any]:
         index[name] = {
             "source": "chroma",
             "label": data["description"],
+            "category": "",
             "importedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         }
         try:
@@ -811,3 +816,555 @@ def export_skins(name: str = "") -> dict[str, Any]:
         "index": index,
         "files": files,
     }
+
+
+# --- E0: the editor's shared shape -----------------------------------------
+#
+# The editor must never hardcode what it is allowed to edit; this is its only
+# source of truth. Deliberately DATA, not code: the pane fetches it and renders
+# rows from it, so adding or renaming a role is a backend change the UI cannot
+# silently disagree with.
+
+# The vocabulary of editable skin keys. An override and a user-skin rewrite speak
+# these same nine keys, and both writers accept exactly these — an unknown role is
+# refused BY NAME, never silently dropped (a dropped role is a palette that
+# quietly disagrees with what the user set).
+EDITABLE_SKIN_KEYS: tuple[str, ...] = (
+    "background",
+    "status_bar_bg",
+    "ui_accent",
+    "banner_accent",
+    "ui_tool",
+    "ui_border",
+    "banner_border",
+    "ui_text",
+    "banner_text",
+    "banner_dim",
+)
+
+# (role key, its group, that group's one-line purpose). The six groups are the
+# editor's sections; the keys above are the rows inside them.
+EDITABLE_ROLES: tuple[tuple[str, str, str], ...] = (
+    ("background", "Shell", "the field everything else sits on"),
+    ("status_bar_bg", "Shell", "the raised surface the status bar sits on"),
+    ("ui_accent", "Signature", "the colour the theme is read by"),
+    ("banner_accent", "Signature", "accent on banners and headers"),
+    ("ui_tool", "Tool", "the tool-call accent"),
+    ("ui_border", "Structure", "borders and framing"),
+    ("banner_border", "Structure", "banner framing"),
+    ("ui_text", "Reading", "primary interface text"),
+    ("banner_text", "Reading", "text on banners and headers"),
+    ("banner_dim", "Secondary text", "muted secondary text"),
+)
+
+EDITOR_MODES: tuple[str, ...] = ("light", "dark")
+
+# Everything Chroma mints for a scene is named `theme-picker-<scene>-<mode>.yaml`
+# at the top level of the skins dir — literally the file the CLI reads. That makes
+# it both the proof a scene exists AND the authored palette a Reset restores.
+TRANSPORT_PREFIX = "theme-picker-"
+
+_OVERRIDES_FILENAME = "overrides.json"
+
+# Same discipline as the index. The overrides file is USER DATA, and a write
+# derived from a failed read is the exact data-loss defect 8a06221 closed. Reads
+# that only SHOW it stay lenient (GET /overrides); anything that WRITES goes
+# strict. Whole read-modify-write under one lock, for the same reason as the index.
+_OVERRIDES_LOCK = threading.Lock()
+
+
+def _overrides_path() -> Path:
+    """<skins>/.chroma/overrides.json — beside the index, in the sidecar dir the
+    skin engine never globs, created lazily. NOT a build input: the overrides live
+    here as user intent, never inside the generated catalogue."""
+    d = _skins_dir() / SIDECAR_DIRNAME
+    d.mkdir(parents=True, exist_ok=True)
+    return d / _OVERRIDES_FILENAME
+
+
+def _read_overrides() -> dict[str, Any]:
+    """Every override record, for READ-ONLY use, or {} if the file is missing or
+    unreadable. Lenient by design: decorating the gallery must never take the
+    picker down, and no write is ever derived from this reading."""
+    p = _overrides_path()
+    if not p.is_file():
+        return {}
+    try:
+        parsed = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        logger.warning("chroma overrides unreadable at %s; treating as empty for read-only views", p)
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
+def _read_overrides_for_update() -> dict[str, Any]:
+    """Read the overrides file for a path that is about to WRITE it.
+
+    A present-but-unreadable file is fatal rather than {} for exactly the reason
+    the index is: persisting that {} deletes every override the user made. The bad
+    file is copied aside first so the records survive a manual repair. Callers
+    hold `_OVERRIDES_LOCK`."""
+    p = _overrides_path()
+    if not p.is_file():
+        return {}
+    try:
+        parsed = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise IndexUnreadableError(p, _quarantine_index(p), exc) from exc
+    if not isinstance(parsed, dict):
+        raise IndexUnreadableError(p, _quarantine_index(p), "the file is not a JSON object")
+    return parsed
+
+
+def _write_overrides(overrides: dict[str, Any]) -> None:
+    _atomic_write_text(_overrides_path(), json.dumps(overrides, indent=2, sort_keys=True) + "\n")
+
+
+def _unscalar(value: str) -> str:
+    """Undo `_yaml_scalar`: strip one layer of single quotes, un-double any inside."""
+    if len(value) >= 2 and value[0] == "'" and value[-1] == "'":
+        return value[1:-1].replace("''", "'")
+    return value
+
+
+def _read_skin_file(path: Path) -> dict[str, Any]:
+    """Parse the flat skin shape `_dump_skin_yaml` writes: top-level `key: 'v'`
+    scalars plus nested `key:` blocks of indented `inner: 'v'`.
+
+    A tiny reader rather than a YAML dependency — the module imports nothing
+    private from the Hermes core (rule 9), and this exact shape is all it writes
+    or reads. **Not** a general YAML parser: anything it does not model is left
+    out of the result rather than guessed at."""
+    data: dict[str, Any] = {}
+    current: dict[str, Any] | None = None
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        if not raw.strip() or raw.lstrip().startswith("#"):
+            continue
+        if raw[:1] in (" ", "\t"):
+            if current is not None:
+                key, _, value = raw.strip().partition(":")
+                current[key.strip()] = _unscalar(value.strip())
+            continue
+        key, _, value = raw.partition(":")
+        key = key.strip()
+        value = value.strip()
+        if value == "":
+            current = {}
+            data[key] = current
+        else:
+            current = None
+            data[key] = _unscalar(value)
+    return data
+
+
+def _transport_path(scene: str, mode: str) -> Path:
+    return _skins_dir() / f"{TRANSPORT_PREFIX}{scene}-{mode}.yaml"
+
+
+def _authored_scene(scene: str) -> dict[str, dict[str, str]]:
+    """The authored (as-shipped) palettes for a built-in scene, read from its
+    gateway transport skins — the files the CLI already follows.
+
+    A scene "exists" for the editor exactly when one of those files does: the
+    backend cannot re-mint a palette it cannot see, and this is also the honest
+    refusal for a merely mistyped or unknown slug — a 404 that NAMES the scene."""
+    authored: dict[str, dict[str, str]] = {}
+    for mode in EDITOR_MODES:
+        path = _transport_path(scene, mode)
+        if path.is_file():
+            try:
+                parsed = _read_skin_file(path)
+            except OSError:
+                continue
+            colors = parsed.get("colors")
+            if isinstance(colors, dict):
+                authored[mode] = {str(k): str(v) for k, v in colors.items()}
+    if not authored:
+        raise HTTPException(
+            404,
+            f"'{scene}' is not a built-in scene Chroma can override (no "
+            f"{TRANSPORT_PREFIX}{scene}-light.yaml or -dark.yaml beside the owned skins)",
+        )
+    return authored
+
+
+def _mint_transport(scene: str, mode: str, palette: dict[str, str]) -> None:
+    """Rewrite one gateway transport skin from ``palette``.
+
+    This is the file the CLI and every connected Desktop read, so re-minting it is
+    what makes an edit — or a Reset — visible outside the picker (§17.3.3). It is a
+    DERIVED artefact, rebuilt by `scripts/regenerate.py`; the authored catalogue
+    itself is never touched."""
+    path = _transport_path(scene, mode)
+    data = {
+        "name": path.stem,
+        "description": f"Theme Picker transport for {scene} ({mode})",
+        "colors": palette,
+    }
+    _atomic_write_text(path, _dump_skin_yaml(data))
+
+
+def _normalise_palette(mapping: Any, *, what: str) -> dict[str, str]:
+    """Validate and normalise one `{role: hex}` map.
+
+    Three refusals, each naming the offence: a non-object, an unknown role (never
+    silently dropped), and a value that is not a colour (named, so the user sees
+    which swatch was rejected)."""
+    if mapping is None:
+        return {}
+    if not isinstance(mapping, dict):
+        raise HTTPException(400, f"{what} must be an object of role -> hex colour")
+    unknown = [k for k in mapping if k not in EDITABLE_SKIN_KEYS]
+    if unknown:
+        raise HTTPException(
+            400,
+            f"unknown role {unknown[0]!r} in {what}: editable roles are "
+            f"{', '.join(EDITABLE_SKIN_KEYS)}",
+        )
+    out: dict[str, str] = {}
+    for key, value in mapping.items():
+        try:
+            cleaned = _hex(value)
+        except ValueError as exc:
+            raise HTTPException(400, f"invalid colour for '{key}': {exc}") from exc
+        if cleaned is None:
+            raise HTTPException(400, f"invalid colour for '{key}': {value!r} is not a hex colour")
+        out[key] = cleaned
+    return out
+
+
+def _effective_roles(authored: dict[str, str], change: dict[str, str]) -> dict[str, str]:
+    """override ?? authored, restricted to the editable keys, so the response is
+    the palette the pane should render rather than the whole transport map."""
+    merged: dict[str, str] = {}
+    for key in EDITABLE_SKIN_KEYS:
+        if key in change:
+            merged[key] = change[key]
+        elif key in authored:
+            merged[key] = authored[key]
+    return merged
+
+
+def _editor_name(value: str, *, field: str, builtin_hint: bool) -> str:
+    """Normalise and vet a user-supplied name that becomes a filename.
+
+    When a built-in is the problem, the refusal NAMES the override route: a
+    built-in is never rewritten in place, so `PUT /skins/{name}` is simply the
+    wrong door and the message has to say which one is right."""
+    clean = (value or "").strip().lower()
+    if _is_unsafe_name(clean):
+        raise HTTPException(400, f"{field} must be a slug (lower-case, hyphens)")
+    if clean in CORE_NAMES:
+        if builtin_hint:
+            raise HTTPException(
+                409,
+                f"'{clean}' is a built-in scene; a built-in is never rewritten in "
+                f"place — edit it through PUT /overrides/{clean}, and reset it with "
+                f"DELETE /overrides/{clean}",
+            )
+        raise HTTPException(409, f"'{clean}' is a built-in skin")
+    return clean
+
+
+@router.get("/schema")
+def get_schema() -> dict[str, Any]:
+    """The editor's only source of truth for what it may edit.
+
+    The six role groups, the ten palette keys they cover, the mode pair, and the
+    caps the writer enforces — so the pane renders its rows from the backend's own
+    vocabulary instead of a copy that can drift from it."""
+    groups: list[dict[str, Any]] = []
+    seen: dict[str, int] = {}
+    for key, group, purpose in EDITABLE_ROLES:
+        if group not in seen:
+            seen[group] = len(groups)
+            groups.append({"id": group, "purpose": purpose, "keys": []})
+        groups[seen[group]]["keys"].append(key)
+    return {
+        "ok": True,
+        "modes": list(EDITOR_MODES),
+        "roles": [
+            {"id": key, "label": key.replace("_", " "), "group": group, "purpose": purpose}
+            for key, group, purpose in EDITABLE_ROLES
+        ],
+        "groups": groups,
+        "paletteKeys": list(EDITABLE_SKIN_KEYS),
+        "typography": [],  # reserved: the plan's type fields are not editable yet
+        "caps": {"maxColors": MAX_THEME_COLORS, "maxBytes": MAX_THEME_BYTES},
+    }
+
+
+# --- E1: read a skin, write a user skin, override a built-in, reset ----------
+
+
+class ScenePaletteRequest(BaseModel):
+    """A skin-keyed palette the editor sends: the nine roles per mode, plus the
+    identity fields the same save may update."""
+
+    light: dict[str, str] = {}
+    dark: dict[str, str] = {}
+    label: str = ""
+    description: str = ""
+
+
+class OverrideRequest(BaseModel):
+    """One scene override: the roles that differ from the authored palette, per
+    mode. A mode may be omitted; the untouched roles keep their authored values."""
+
+    light: dict[str, str] = {}
+    dark: dict[str, str] = {}
+
+
+# Declared above the DELETE/PUT `/skins/{name}` pair only for readability — the
+# methods differ, so neither shadows the other. `/skins/rename` (POST) stays
+# where it is, above every path-parameter route.
+@router.get("/skins/{name}")
+def get_skin(name: str) -> dict[str, Any]:
+    """One owned skin's palette, both modes.
+
+    `GET /skins` lists owned skins but not their colours, so without this the pane
+    cannot open one. Only OWNED skins answer: a skin Chroma never wrote is not
+    ours to describe, and a hand-authored file has no provenance to trust."""
+    clean = _editor_name(name, field="skin name", builtin_hint=False)
+    record = _owned_record(clean)
+    path = _skins_dir() / f"{clean}.yaml"
+    if not path.is_file():
+        raise HTTPException(404, f"'{clean}' has no skin file")
+    data = _read_skin_file(path)
+    colors = data.get("colors") if isinstance(data.get("colors"), dict) else {}
+    light = data.get("light_colors") if isinstance(data.get("light_colors"), dict) else colors
+    dark = data.get("dark_colors") if isinstance(data.get("dark_colors"), dict) else colors
+    return {
+        "ok": True,
+        "name": clean,
+        "label": record.get("label") or clean,
+        "category": record.get("category") or "",
+        "description": data.get("description") or "",
+        "light": light,
+        "dark": dark,
+        "colors": colors,
+    }
+
+
+@router.put("/skins/{name}")
+def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
+    """Rewrite a USER skin from a skin-keyed palette.
+
+    A SEPARATE writer from `import_skin`, deliberately. That one maps TweakCN
+    tokens (`foreground`, `primary`, `cardForeground`), so handing it a scene
+    palette would read `ui_accent` as absent and mint `#ffffff` — a silent
+    corruption. This writer speaks the nine skin roles and nothing else.
+
+    The index is read through the STRICT path under the write lock: a corrupt
+    index aborts the write rather than being persisted as {} (the 8a06221 defect).
+    A failed index write rolls the file back to its exact prior bytes."""
+    clean = _editor_name(name, field="skin name", builtin_hint=True)
+
+    oversized = _theme_too_large({"colors": req.light, "darkColors": req.dark})
+    if oversized:
+        raise HTTPException(413, f"palette is too large: {oversized}")
+    light = _normalise_palette(req.light, what="light")
+    dark = _normalise_palette(req.dark, what="dark")
+    if not light and not dark and not req.description and not req.label:
+        raise HTTPException(400, "nothing to write: send at least one role, a label or a description")
+
+    target = _skins_dir() / f"{clean}.yaml"
+
+    with _INDEX_LOCK:
+        try:
+            index = _read_index_for_update()
+        except IndexUnreadableError as exc:
+            raise _index_error(exc) from exc
+        record = _owned_record(clean, index)
+
+        if not target.is_file():
+            raise HTTPException(404, f"'{clean}' has no skin file")
+
+        original_text = target.read_text(encoding="utf-8")
+        existing = _read_skin_file(target)
+        base_light = existing.get("colors") if isinstance(existing.get("colors"), dict) else {}
+        base_dark = existing.get("dark_colors") if isinstance(existing.get("dark_colors"), dict) else {}
+        merged_light = {**base_light, **light}
+        merged_dark = {**base_dark, **dark}
+
+        data: dict[str, Any] = {
+            "name": clean,
+            "description": req.description or existing.get("description") or record.get("label") or clean,
+            "colors": merged_light,
+        }
+        if merged_light:
+            data["light_colors"] = merged_light
+        if merged_dark:
+            data["dark_colors"] = merged_dark
+
+        try:
+            _atomic_write_text(target, _dump_skin_yaml(data))
+        except OSError as exc:
+            raise HTTPException(500, f"could not write the skin file {target}: {exc}") from exc
+
+        updated = dict(record)
+        if req.label:
+            updated["label"] = req.label
+        updated["editedAt"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        index[clean] = updated
+        try:
+            _write_index(index)
+        except OSError as exc:
+            # A rewrite whose provenance we could not record is a palette the pane
+            # cannot explain. Put the file back exactly as it was; the edit is one
+            # click from being redone, the lost provenance is not.
+            try:
+                _atomic_write_text(target, original_text)
+            except OSError:
+                pass
+            raise HTTPException(
+                500,
+                f"the skin file was rewritten but the provenance index could not be "
+                f"updated ({exc}); the file was rolled back. Fix free space or "
+                f"permissions and retry.",
+            ) from exc
+
+    logger.info("rewrote skin %s", clean)
+    return {
+        "ok": True,
+        "name": clean,
+        "label": updated.get("label") or clean,
+        "description": data["description"],
+        "light": merged_light,
+        "dark": merged_dark,
+        "colors": merged_light,
+    }
+
+
+@router.get("/overrides")
+def list_overrides() -> dict[str, Any]:
+    """Every override record, so the pane can mark edited scenes on load.
+
+    The authored catalogue is unchanged by an override; this file is the only
+    place user intent lives, and it is not part of any build."""
+    overrides = _read_overrides()
+    return {"ok": True, "count": len(overrides), "overrides": overrides}
+
+
+@router.put("/overrides/{scene}")
+def put_override(scene: str, req: OverrideRequest) -> dict[str, Any]:
+    """Write one override for a BUILT-IN scene and return the effective palette.
+
+    An override is a RECORD, not a mutation: the authored skin files and the
+    generated catalogue are never rewritten. The scene's gateway transport skins
+    are re-minted from the effective palette, because an edit the CLI cannot see is
+    the bug this product exists to fix. The authored palette is captured in the
+    record so that Reset is self-contained and a reset can never depend on state
+    the CLI has since moved."""
+    clean = (scene or "").strip().lower()
+    if _is_unsafe_name(clean):
+        raise HTTPException(400, "scene name must be a slug (lower-case, hyphens)")
+
+    oversized = _theme_too_large({"colors": req.light, "darkColors": req.dark})
+    if oversized:
+        raise HTTPException(413, f"override is too large: {oversized}")
+    light = _normalise_palette(req.light, what="light")
+    dark = _normalise_palette(req.dark, what="dark")
+    if not light and not dark:
+        raise HTTPException(400, "an override must change at least one role")
+
+    with _OVERRIDES_LOCK:
+        try:
+            overrides = _read_overrides_for_update()
+        except IndexUnreadableError as exc:
+            raise _index_error(exc) from exc
+        prior = dict(overrides)
+
+        authored = _authored_scene(clean)  # 404 by name when the scene is unknown
+
+        full: dict[str, dict[str, str]] = {}
+        effective: dict[str, dict[str, str]] = {}
+        for mode, change in (("light", light), ("dark", dark)):
+            base = authored.get(mode, {})
+            full[mode] = {**base, **change}
+            effective[mode] = _effective_roles(base, change)
+
+        record = {
+            "light": light,
+            "dark": dark,
+            "authored": {mode: authored.get(mode, {}) for mode in EDITOR_MODES},
+            "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        }
+        overrides[clean] = record
+        try:
+            _write_overrides(overrides)
+        except OSError as exc:
+            raise HTTPException(
+                500, f"could not write the overrides file ({_overrides_path()}): {exc}"
+            ) from exc
+
+        try:
+            for mode in EDITOR_MODES:
+                if full[mode]:
+                    _mint_transport(clean, mode, full[mode])
+        except OSError as exc:
+            # The record claims an edit whose CLI skin we could not mint. Undo the
+            # record so the pane and the CLI cannot disagree about what is live;
+            # the previously stored override (if any) is left exactly as it was.
+            try:
+                _write_overrides(prior)
+            except OSError:
+                pass
+            raise HTTPException(
+                500, f"could not re-mint the transport skins for '{clean}' ({exc}); the override was rolled back"
+            ) from exc
+
+    logger.info("wrote override for %s", clean)
+    return {
+        "ok": True,
+        "scene": clean,
+        "light": effective["light"],
+        "dark": effective["dark"],
+        "at": record["at"],
+    }
+
+
+@router.delete("/overrides/{scene}")
+def delete_override(scene: str) -> dict[str, Any]:
+    """Reset one scene: drop its override record and restore its authored
+    transport skins.
+
+    Per-skin by construction — no other scene's record is read or written, so a
+    reset can never disturb a neighbour. Reset is the affordance that makes an
+    edit safe, which is why it ships with the editor rather than after it."""
+    clean = (scene or "").strip().lower()
+    if _is_unsafe_name(clean):
+        raise HTTPException(400, "scene name must be a slug (lower-case, hyphens)")
+
+    with _OVERRIDES_LOCK:
+        try:
+            overrides = _read_overrides_for_update()
+        except IndexUnreadableError as exc:
+            raise _index_error(exc) from exc
+        record = overrides.get(clean)
+        if not isinstance(record, dict):
+            raise HTTPException(404, f"'{clean}' has no override to reset")
+
+        authored = record.get("authored") if isinstance(record.get("authored"), dict) else {}
+        restored: dict[str, dict[str, str]] = {}
+        for mode in EDITOR_MODES:
+            palette = authored.get(mode)
+            if isinstance(palette, dict) and palette:
+                try:
+                    _mint_transport(clean, mode, {str(k): str(v) for k, v in palette.items()})
+                except OSError as exc:
+                    raise HTTPException(
+                        500, f"could not restore the authored transport for '{clean}' ({exc})"
+                    ) from exc
+                restored[mode] = palette
+
+        overrides.pop(clean, None)
+        try:
+            _write_overrides(overrides)
+        except OSError as exc:
+            raise HTTPException(
+                500, f"could not write the overrides file ({_overrides_path()}): {exc}"
+            ) from exc
+
+    logger.info("reset override for %s", clean)
+    return {"ok": True, "scene": clean, "reset": True, "restored": restored}

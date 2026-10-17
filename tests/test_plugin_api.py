@@ -700,5 +700,351 @@ class FailurePathTests(BackendTestCase):
         self.assertIn("before", self.api._read_index())
 
 
+class EditorTestCase(BackendTestCase):
+    """Shared setup for the E0/E1 editor routes."""
+
+    def _import(self, name, description=None, theme=None):
+        self.api.import_skin(
+            self.api.ImportRequest(
+                name=name,
+                theme=theme
+                or {"colors": {"background": "#101010", "foreground": "#eeeeee", "primary": "#ff0000"}},
+                description=description or f"TweakCN {name}",
+            )
+        )
+
+    def _seed_scene(self, scene, light=None, dark=None):
+        """Write the gateway transport skins a built-in scene owns. They are both
+        the proof the scene exists and the authored palette a Reset restores, so a
+        temp tree is enough to exercise the whole override loop with no real
+        <hermes home>/skins involvement."""
+        skins = Path(self.home) / "skins"
+        skins.mkdir(parents=True, exist_ok=True)
+        light = light if light is not None else {"background": "#101010", "ui_accent": "#ff0000", "ui_text": "#eeeeee"}
+        dark = dark if dark is not None else {"background": "#000000", "ui_accent": "#00ff00", "ui_text": "#dddddd"}
+        for mode, palette in (("light", light), ("dark", dark)):
+            (skins / f"theme-picker-{scene}-{mode}.yaml").write_text(
+                self.api._dump_skin_yaml(
+                    {
+                        "name": f"theme-picker-{scene}-{mode}",
+                        "description": f"transport {scene} {mode}",
+                        "colors": palette,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+    def _transport_colors(self, scene, mode):
+        path = Path(self.home) / "skins" / f"theme-picker-{scene}-{mode}.yaml"
+        return self.api._read_skin_file(path)["colors"]
+
+
+class SchemaTests(EditorTestCase):
+    """E0 — the schema is the pane's only source of what it may edit."""
+
+    def test_reports_the_mode_pair(self):
+        self.assertEqual(self.api.get_schema()["modes"], ["light", "dark"])
+
+    def test_reports_exactly_the_writers_vocabulary(self):
+        schema = self.api.get_schema()
+        expected = {
+            "background", "status_bar_bg", "ui_text", "banner_text", "banner_dim",
+            "ui_accent", "ui_border", "ui_tool", "banner_accent", "banner_border",
+        }
+        self.assertEqual(set(schema["paletteKeys"]), expected)
+        self.assertEqual([r["id"] for r in schema["roles"]], list(self.api.EDITABLE_SKIN_KEYS))
+
+    def test_groups_the_six_roles_and_covers_every_key(self):
+        schema = self.api.get_schema()
+        self.assertEqual(len(schema["groups"]), 6, "the six skin roles")
+        covered = [key for group in schema["groups"] for key in group["keys"]]
+        self.assertEqual(sorted(covered), sorted(schema["paletteKeys"]), "every key sits in a group")
+
+    def test_keeps_the_size_caps_the_writer_enforces(self):
+        caps = self.api.get_schema()["caps"]
+        self.assertEqual(caps["maxColors"], self.api.MAX_THEME_COLORS)
+        self.assertEqual(caps["maxBytes"], self.api.MAX_THEME_BYTES)
+
+
+class IndexCategoryTests(EditorTestCase):
+    """E0 — `label`/`category` are additive; old entries must still load."""
+
+    def _write_skin(self, name):
+        skins = Path(self.home) / "skins"
+        skins.mkdir(parents=True, exist_ok=True)
+        (skins / f"{name}.yaml").write_text(
+            f"name: '{name}'\ncolors:\n  background: '#000000'\n", encoding="utf-8"
+        )
+
+    def test_an_entry_written_before_categories_existed_still_loads(self):
+        self.api._write_index({"legacy": {"source": "chroma", "label": "Legacy"}})
+        self._write_skin("legacy")
+        self.assertEqual(self.api.list_chroma_skins()["skins"][0]["category"], "")
+
+    def test_a_category_round_trips_through_the_index(self):
+        self.api._write_index(
+            {"categorised": {"source": "chroma", "label": "C", "category": "cool"}}
+        )
+        self._write_skin("categorised")
+        self.assertEqual(self.api.list_chroma_skins()["skins"][0]["category"], "cool")
+
+    def test_an_import_records_the_category_key(self):
+        self._import("fresh")
+        self.assertIn("category", self.api._read_index()["fresh"])
+
+
+class SkinReadTests(EditorTestCase):
+    """E1 — GET /skins/{name}: one owned skin's palette, both modes."""
+
+    def test_reads_an_owned_skins_palette(self):
+        self._import("mine")
+        result = self.api.get_skin("mine")
+        self.assertEqual(result["name"], "mine")
+        self.assertEqual(result["light"]["background"], "#101010")
+        self.assertIn("dark", result)
+
+    def test_refuses_a_skin_chroma_does_not_own(self):
+        from fastapi import HTTPException
+
+        skins = Path(self.home) / "skins"
+        skins.mkdir(parents=True, exist_ok=True)
+        (skins / "handmade.yaml").write_text("name: 'handmade'\n", encoding="utf-8")
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.get_skin("handmade")
+        self.assertEqual(ctx.exception.status_code, 404)
+
+    def test_refuses_a_builtin(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.get_skin("nord")
+        self.assertEqual(ctx.exception.status_code, 409)
+
+
+class SkinWriteTests(EditorTestCase):
+    """E1 — PUT /skins/{name}: the skin-keyed writer."""
+
+    def test_a_user_skin_round_trips(self):
+        self._import("mine")
+        written = self.api.put_skin(
+            "mine", self.api.ScenePaletteRequest(light={"ui_accent": "#abcdef"})
+        )
+        self.assertTrue(written["ok"])
+        self.assertEqual(written["light"]["ui_accent"], "#abcdef")
+        self.assertEqual(self.api.get_skin("mine")["light"]["ui_accent"], "#abcdef")
+
+    def test_refuses_a_builtin_and_names_the_override_route(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_skin("nord", self.api.ScenePaletteRequest(light={"background": "#000000"}))
+        self.assertEqual(ctx.exception.status_code, 409)
+        self.assertIn("/overrides/nord", str(ctx.exception.detail))
+
+    def test_refuses_an_unknown_role_by_name(self):
+        from fastapi import HTTPException
+
+        self._import("mine")
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_skin("mine", self.api.ScenePaletteRequest(light={"favourite": "#abcdef"}))
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn("'favourite'", str(ctx.exception.detail))
+
+    def test_refuses_a_bad_colour_and_names_the_value(self):
+        from fastapi import HTTPException
+
+        self._import("mine")
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_skin("mine", self.api.ScenePaletteRequest(light={"ui_accent": "not-a-colour"}))
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn(repr("not-a-colour"), str(ctx.exception.detail))
+
+    def test_refuses_an_over_cap_body(self):
+        from fastapi import HTTPException
+
+        self._import("mine")
+        wide = {f"role{i}": "#101010" for i in range(self.api.MAX_THEME_COLORS + 1)}
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_skin("mine", self.api.ScenePaletteRequest(light=wide))
+        self.assertEqual(ctx.exception.status_code, 413)
+
+    def test_never_persists_a_corrupt_index_as_empty(self):
+        """The 8a06221 defect: a lenient read of a corrupt index, written back."""
+        from fastapi import HTTPException
+
+        self._import("keepme")
+        path = self.api._index_path()
+        truncated = '{"keepme": {"source": "chroma"'
+        path.write_text(truncated, encoding="utf-8")
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_skin("keepme", self.api.ScenePaletteRequest(light={"ui_accent": "#abcdef"}))
+        self.assertEqual(ctx.exception.status_code, 500)
+        self.assertEqual(path.read_text(encoding="utf-8"), truncated, "the index must be untouched")
+
+    def test_a_failed_index_write_rolls_the_skin_file_back(self):
+        from fastapi import HTTPException
+
+        self._import("victim")
+        target = Path(self.home) / "skins" / "victim.yaml"
+        before = target.read_text(encoding="utf-8")
+
+        def boom(index):
+            raise OSError(28, "No space left on device")
+
+        self.api._write_index = boom
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_skin("victim", self.api.ScenePaletteRequest(light={"ui_accent": "#abcdef"}))
+        self.assertEqual(ctx.exception.status_code, 500)
+        self.assertEqual(target.read_text(encoding="utf-8"), before, "the rewrite must be rolled back")
+
+
+class OverrideTests(EditorTestCase):
+    """E1 — GET/PUT/DELETE /overrides/{scene}: the built-in override record."""
+
+    def setUp(self):
+        super().setUp()
+        self._seed_scene("nous")
+
+    def test_get_overrides_starts_empty(self):
+        listing = self.api.list_overrides()
+        self.assertEqual(listing["count"], 0)
+        self.assertEqual(listing["overrides"], {})
+
+    def test_an_override_round_trips_and_is_reported(self):
+        result = self.api.put_override("nous", self.api.OverrideRequest(light={"ui_accent": "#123456"}))
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["scene"], "nous")
+
+        listing = self.api.list_overrides()
+        self.assertEqual(listing["count"], 1)
+        self.assertEqual(listing["overrides"]["nous"]["light"], {"ui_accent": "#123456"})
+
+    def test_only_the_named_roles_change(self):
+        result = self.api.put_override("nous", self.api.OverrideRequest(light={"ui_accent": "#123456"}))
+        self.assertEqual(result["light"]["ui_accent"], "#123456", "the override wins")
+        self.assertEqual(result["light"]["background"], "#101010", "everything else stays authored")
+
+    def test_the_transport_skin_is_re_minted_from_the_effective_palette(self):
+        self.api.put_override("nous", self.api.OverrideRequest(light={"ui_accent": "#123456"}))
+        colors = self._transport_colors("nous", "light")
+        self.assertEqual(colors["ui_accent"], "#123456", "the CLI must follow the edit")
+        self.assertEqual(colors["background"], "#101010", "roles not overridden keep their authored value")
+
+    def test_reset_restores_the_authored_transport_and_drops_the_record(self):
+        self.api.put_override("nous", self.api.OverrideRequest(light={"ui_accent": "#123456"}))
+        result = self.api.delete_override("nous")
+        self.assertTrue(result["reset"])
+
+        self.assertEqual(self._transport_colors("nous", "light")["ui_accent"], "#ff0000", "authored is restored")
+        self.assertEqual(self.api.list_overrides()["count"], 0, "the record is gone")
+
+    def test_reset_is_per_skin(self):
+        self._seed_scene("ember")
+        self.api.put_override("nous", self.api.OverrideRequest(light={"ui_accent": "#123456"}))
+        self.api.put_override("ember", self.api.OverrideRequest(light={"ui_accent": "#654321"}))
+        self.api.delete_override("nous")
+
+        listing = self.api.list_overrides()
+        self.assertNotIn("nous", listing["overrides"])
+        self.assertIn("ember", listing["overrides"], "a reset must not touch a neighbour")
+        self.assertEqual(self._transport_colors("ember", "light")["ui_accent"], "#654321")
+
+    def test_refuses_an_unknown_scene_by_name(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_override("no-such-scene", self.api.OverrideRequest(light={"ui_accent": "#123456"}))
+        self.assertEqual(ctx.exception.status_code, 404)
+        self.assertIn("no-such-scene", str(ctx.exception.detail))
+
+    def test_refuses_an_unknown_role_by_name(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_override("nous", self.api.OverrideRequest(light={"favourite": "#123456"}))
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn("'favourite'", str(ctx.exception.detail))
+
+    def test_refuses_a_bad_colour_and_names_the_value(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_override("nous", self.api.OverrideRequest(light={"ui_accent": "chartreuse"}))
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn(repr("chartreuse"), str(ctx.exception.detail))
+
+    def test_refuses_an_override_that_changes_nothing(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_override("nous", self.api.OverrideRequest())
+        self.assertEqual(ctx.exception.status_code, 400)
+
+    def test_refuses_an_over_cap_body(self):
+        from fastapi import HTTPException
+
+        wide = {f"role{i}": "#101010" for i in range(self.api.MAX_THEME_COLORS + 1)}
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_override("nous", self.api.OverrideRequest(light=wide))
+        self.assertEqual(ctx.exception.status_code, 413)
+
+    def test_accepts_the_body_the_pane_actually_sends(self):
+        """The editor sends one primary skin key per role, which includes
+        `status_bar_bg` (the Surface role). Refusing it by name would break the
+        editor, so it is part of the accepted vocabulary."""
+        result = self.api.put_override(
+            "nous",
+            self.api.OverrideRequest(
+                light={
+                    "background": "#010203",
+                    "banner_text": "#111111",
+                    "status_bar_bg": "#040506",
+                    "ui_accent": "#ff00ff",
+                    "ui_border": "#222222",
+                },
+            ),
+        )
+        self.assertEqual(result["light"]["status_bar_bg"], "#040506")
+        self.assertEqual(result["light"]["ui_accent"], "#ff00ff")
+
+    def test_refuses_a_path_traversal_scene(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException):
+            self.api.put_override("../escape", self.api.OverrideRequest(light={"ui_accent": "#123456"}))
+
+    def test_does_not_persist_over_a_corrupt_overrides_file(self):
+        """The overrides file is user data, so it gets the same strict read as the
+        index: a write over a corrupt file must never persist {}."""
+        from fastapi import HTTPException
+
+        path = self.api._overrides_path()
+        truncated = '{"nous": {"light": {'
+        path.write_text(truncated, encoding="utf-8")
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_override("nous", self.api.OverrideRequest(light={"ui_accent": "#123456"}))
+        self.assertEqual(ctx.exception.status_code, 500)
+        self.assertEqual(path.read_text(encoding="utf-8"), truncated, "the file must be untouched")
+
+    def test_a_failed_mint_leaves_the_previous_override_untouched(self):
+        from fastapi import HTTPException
+
+        self.api.put_override("nous", self.api.OverrideRequest(light={"ui_accent": "#123456"}))
+        stored = self.api._overrides_path().read_text(encoding="utf-8")
+
+        def boom(scene, mode, palette):
+            raise OSError(28, "No space left on device")
+
+        self.api._mint_transport = boom
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_override("nous", self.api.OverrideRequest(light={"ui_accent": "#abcdef"}))
+        self.assertEqual(ctx.exception.status_code, 500)
+        self.assertEqual(
+            self.api._overrides_path().read_text(encoding="utf-8"),
+            stored,
+            "a failed PUT must leave the stored override exactly as it was",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
