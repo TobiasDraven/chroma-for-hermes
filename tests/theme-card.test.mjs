@@ -54,11 +54,15 @@ test('the palette strip takes the first name a skin carries for each of the six 
   assert.deepEqual(plain(strip({
     completion_menu_bg: '#a2', banner_accent: '#c2', ui_text: '#e2',
     banner_dim: '#d2', session_border: '#f2'
-  })), ['#c2', '#a2', '#c2', '#e2', '#d2', '#f2'])
-  // A row is ALWAYS six: a missing role falls back to the accent, because a row
-  // that came up short would leave the 2 x 6 matrix ragged.
-  assert.deepEqual(plain(strip({ background: '#bb' })), ['#bb', '#bb', '#bb', '#bb', '#bb', '#bb'])
-  assert.deepEqual(plain(strip({})), ['#888888', '#888888', '#888888', '#888888', '#888888', '#888888'])
+  })), ['#888888', '#a2', '#c2', '#e2', '#d2', '#f2'])
+  // A partial palette still yields six swatches, and every missing role is MIXED
+  // from the shell instead of repeating one colour: four identical swatches down
+  // a column would preview a theme nobody will ever see.
+  const partial = plain(strip({ background: '#bbc' }))
+  assert.equal(partial.length, 6)
+  assert.equal(partial[0], '#bbc', 'the shell leads the row')
+  assert.ok(new Set(partial).size >= 4, `expected a mixed anatomy, got ${partial.join(' ')}`)
+  assert.equal(plain(strip({})).length, 6, 'even a palette with nothing in it fills the row')
 })
 
 // The harness digests structure and class STRINGS, so it cannot see layout. It

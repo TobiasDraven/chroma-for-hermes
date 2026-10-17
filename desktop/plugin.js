@@ -145,8 +145,10 @@ function rgbToHex(rgb) {
 }
 
 function mix(a, b, amount) {
-  const ar = hexToRgb(a)
-  const br = hexToRgb(b)
+  // Normalise first: hexToRgb wants six digits, and a three-digit input used to
+  // fall through to `return a` — a silent no-op instead of a blend.
+  const ar = hexToRgb(normaliseHex(a) || '')
+  const br = hexToRgb(normaliseHex(b) || '')
   return ar && br
     ? rgbToHex([ar[0] + (br[0] - ar[0]) * amount, ar[1] + (br[1] - ar[1]) * amount, ar[2] + (br[2] - ar[2]) * amount])
     : a
@@ -1724,8 +1726,12 @@ const STRIP_BANDS = [
   ['ui_border', 'banner_border', 'session_border']
 ]
 
-// Exactly six colours, always. A row that came up short would leave the matrix
-// ragged, so a missing role falls back to the accent rather than to a gap.
+// Exactly six colours, always, and a missing role is MIXED from the shell rather
+// than repeated. The first version fell back to the accent, which painted four
+// identical cream swatches down the dark row of `nous` - a preview of a theme
+// nobody will ever see. Mixing background toward text is what the desktop theme
+// engine itself does to fill the roles a skin omits (see SKIN_RAMP), so the
+// swatch shows the anatomy the theme will actually have.
 function paletteStrip(colors) {
   const first = (aliases) => {
     for (const key of aliases) {
@@ -1733,8 +1739,21 @@ function paletteStrip(colors) {
     }
     return null
   }
-  const accent = first(['ui_accent', 'banner_accent', 'banner_title']) || first(['background']) || '#888888'
-  return STRIP_BANDS.map((aliases) => first(aliases) || accent)
+  const band = (index, fallback) => first(STRIP_BANDS[index]) || fallback
+  const background = band(0, '#888888')
+  const shell = oklch(background)
+  const text = band(3, shell && shell.l < 0.5 ? '#F2F2F2' : '#161616')
+  const accent = band(2, text)
+  return [
+    background,
+    // Surface, secondary text and structure are the roles a skin most often
+    // omits; each is mixed from the shell at the weight the desktop ramp uses.
+    band(1, mix(background, text, 0.06)),
+    accent,
+    text,
+    band(4, mix(background, text, 0.45)),
+    band(5, mix(background, text, 0.16))
+  ]
 }
 
 // The card's hover title: what the theme is, and what it can do.

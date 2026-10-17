@@ -40,8 +40,13 @@ Notable changes to Chroma are documented here. This project uses
   hairline separates the rows, so the pair reads as a pair rather than as twelve
   loose swatches. The status signals are deliberately not among the six - every
   theme ships a green, an amber and a red, so they say nothing about the palette.
-- A row is always exactly six swatches. A missing role falls back to the accent
-  rather than to a gap, because a short row leaves the matrix ragged.
+- A row is always exactly six swatches. A role the skin does not define is
+  **mixed** from the shell (background toward text, at the weight the desktop
+  ramp uses), not repeated from the accent. The first build repeated the accent,
+  and the render showed the dark row of `nous` as four identical cream swatches -
+  a preview of a theme nobody will ever see. Mixing is what the theme engine
+  itself does to fill the roles a skin omits, so the swatch shows the anatomy the
+  theme will actually have.
 - Audit: the scene-parity fixture changed for exactly the 47 derived scenes and
   no others, proving the 62 authored palettes did not move.
 
