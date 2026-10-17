@@ -3,6 +3,30 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.5.0] - 2026-10-17
+
+### Changed
+
+- **Twelve category shelves, measured.** The picker grouped scenes into 7
+  categories. It now has 12: Minimal, Pastels, Vibrant, Muted, Earth, Retro &
+  Terminal, Nature, Warm, Orange, Gold, Cool, Violet. Five of the twelve are not
+  hue bins at all - minimal, pastels, vibrant and earth/muted cut on chroma, and
+  Retro & Terminal is a named family whose members span six different hues and
+  could not sit together otherwise. Counts over the 109 scenes: 4 / 5 / 13 / 12 /
+  11 / 7 / 8 / 5 / 10 / 10 / 19 / 5.
+
+### Notes
+
+- The name signal is used in one place only: the Retro & Terminal shelf
+  (`retro-terminal`, `retro-amber`, `retro-blue`, `amber-terminal`,
+  `green-screen`, `commodore-64`, `dark-lcars`). Everywhere else the measurement
+  wins, so `vibrant-neon` files under Nature (its accent is green at C 0.114) and
+  `rice-paper` files under Vibrant (its accent is vermilion at C 0.19). Both are
+  honest measurements and both read oddly against the name - a tuning pass on
+  name-based shelves is the next taxonomy step, not a hidden fix.
+- No palette moved. `tests/fixtures/`, `docs/DERIVED-PALETTES.md` and all 218
+  gateway transports are byte-identical after regeneration.
+
 ## [2.4.1] - 2026-10-17
 
 ### Fixed

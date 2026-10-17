@@ -79,21 +79,33 @@ const CARD_SIZES = ['sm', 'md', 'lg']
 // the broad style categories. Plugin-owned and per profile, like the rest.
 const GROUP_MODE_KEY = 'chroma-group-mode-v1'
 const GROUP_MODES = ['scene', 'theme']
-/** The broad style categories, in display order. A scene lands in exactly one:
- *  see sceneCategory() for the rule that decides which. */
+/** The twelve style categories, in display order. A scene lands in exactly one:
+ *  see sceneCategory() for the rule that decides which.
+ *
+ *  Ordered deliberately: the measured CHARACTER buckets first (Minimal, Pastels,
+ *  Vibrant, Muted, Earth - each a statement about lightness and saturation, not
+ *  hue), then the one named family a colour cannot derive (Retro & Terminal),
+ *  then the hue families a person actually names, green through violet. The
+ *  shelf order in the UI follows this array.
+ *
+ *  None of these is a mode shelf. Light and Dark used to sit here for the
+ *  mode-locked skins; every scene now ships both modes, so a mode shelf would
+ *  render empty and a category that always renders nothing is a lie in the UI.
+ *  The classifier still returns 'light'/'dark' for a single-mode scene, as a
+ *  fallback for an import that arrives locked. */
 const THEME_CATEGORIES = [
-  // Seven, and all seven describe COLOUR. Light and Dark used to sit here as
-  // shelves for the mode-locked skins; every scene now ships both modes, so a
-  // mode shelf would render empty and a category that always renders nothing is
-  // a lie in the UI. The classifier still returns 'light'/'dark' for a
-  // single-mode scene, as a fallback for an import that arrives locked.
-  { id: 'cool', title: 'Cool' },
-  { id: 'warm', title: 'Warm' },
-  { id: 'nature', title: 'Nature' },
+  { id: 'minimal', title: 'Minimal' },
   { id: 'pastels', title: 'Pastels' },
   { id: 'vibrant', title: 'Vibrant' },
   { id: 'muted', title: 'Muted' },
-  { id: 'minimal', title: 'Minimal' },
+  { id: 'earth', title: 'Earth' },
+  { id: 'terminal', title: 'Retro & Terminal' },
+  { id: 'nature', title: 'Nature' },
+  { id: 'warm', title: 'Warm' },
+  { id: 'orange', title: 'Orange' },
+  { id: 'gold', title: 'Gold' },
+  { id: 'cool', title: 'Cool' },
+  { id: 'violet', title: 'Violet' },
 ]
 const CORE_DESKTOP_THEMES = new Set(['nous', 'midnight', 'ember', 'mono', 'cyberpunk', 'slate'])
 const EMOJI_FALLBACK = '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", emoji'
@@ -1401,26 +1413,43 @@ function oklch(hex) {
   return { l: L, c, h }
 }
 
+/** Scene NAMES that describe a retro machine or terminal rather than a colour.
+ *  The name is the one signal a measured classifier cannot derive from the
+ *  accent, so this list is explicit and closed: a scene is Terminal only if it
+ *  is named here, and these are every name the rule claims. Eleven of the twelve
+ *  categories are pure OKLCH rules; this is the single exception. */
+const TERMINAL_SCENE_NAMES = new Set([
+  'retro-terminal', 'retro-amber', 'retro-blue', 'amber-terminal',
+  'green-screen', 'commodore-64', 'dark-lcars'
+])
+
 /** One broad category per scene - the "by theme" lens.
  *
  *  The rule, in order:
  *   1. A scene that can serve only one mode goes to Light or Dark. It has no
  *      second palette to describe, so a hue bin would hide what it is.
- *   2. A dynamic scene is read from its light palette's accent: near-neutral
- *      goes to Minimal, then loudly saturated goes to Vibrant, then hue decides
- *      - Nature for greens, Warm for reds through yellows, Cool for the blues,
- *      indigos and purples that dominate developer themes.
+ *   2. A named retro/terminal scene goes to Terminal. The name outranks the
+ *      measured accent, because "Commodore 64" is the point of the theme.
+ *   3. Character before hue. The accent's chroma is read first: near-neutral
+ *      (C < 0.03) is Minimal; a high-lightness, low-chroma tint is Pastels;
+ *      loudly saturated (C >= 0.16) is Vibrant. What is left, faintly coloured,
+ *      splits on warmth - warm low-chroma is Earth, cool low-chroma is Muted.
+ *   4. Hue decides the rest, in the order a person names colours: green is
+ *      Nature, then the warm wheel Warm -> Orange -> Gold, then Cool, then
+ *      Violet.
  *
- *  Derived, not hand-listed. The catalog's own `category` field is provenance
- *  ('Built-in' / 'Dynamic' / 'Other'), not style, so 104 scenes cannot be
- *  labelled by hand and stay consistent. Deterministic, so the grid is stable
- *  between renders. */
+ *  Derived, not hand-listed (except Terminal, whose seven names are the whole
+ *  list). The catalog's own `category` field is provenance ('Built-in' /
+ *  'Dynamic' / 'Other'), not style. Deterministic, so the grid is stable
+ *  between renders. Never throws on a partial palette: an unreadable accent
+ *  falls back to the neutral Minimal rather than `undefined`. */
 function sceneCategory(scene) {
   if (scene.modeSupport === 'dark') return 'dark'
   if (scene.modeSupport === 'light') return 'light'
   const colors = scene.lightColors || scene.darkColors || scene.colors || {}
   const accent = oklch(colors.ui_accent || colors.banner_accent || colors.banner_title)
   if (!accent) return 'minimal'
+  if (TERMINAL_SCENE_NAMES.has(scene.name)) return 'terminal'
   // Pastel is a property of the COLOUR, not of the shell: a tint is high
   // lightness with real but low chroma, which is what "paste" in pastello
   // describes. Judged on the accent, the colour a theme is read by.
@@ -1428,8 +1457,7 @@ function sceneCategory(scene) {
   // Measured, not assumed: a shell test (pale, faintly tinted background) looks
   // obvious and is useless here, because nearly every light theme in the catalog
   // has exactly that shell - it caught 18 scenes and called dark-sage a pastel.
-  // On the accent, no shipped scene qualifies at all. The five pastel skins are
-  // genuinely the first ones.
+  // On the accent it now catches exactly the five shipped pastels.
   if (accent.l >= 0.72 && accent.c >= 0.03 && accent.c <= 0.14) return 'pastels'
   if (accent.c < 0.03) return 'minimal'
   if (accent.c >= 0.16) return 'vibrant'
@@ -1440,11 +1468,17 @@ function sceneCategory(scene) {
   // 118-178 in OKLCH, not 75-170: Oklab puts yellow near 90 and cream near 80,
   // so the wider band filed "vanilla" and "lemon" under Nature. This band is
   // yellow-green through teal-green, which is what a person means by green.
-  if (accent.h >= 118 && accent.h <= 178) return 'nature'
-  if (accent.c < 0.09) return 'muted'
-  // Warm is the rest of the warm wheel: reds through yellows, wrapping at 330.
-  if (accent.h >= 330 || accent.h < 118) return 'warm'
-  return 'cool'
+  if (accent.h >= 118 && accent.h < 178) return 'nature'
+  // Desaturated, but with real colour. Warm low-chroma is Earth (browns, tans,
+  // creams); cool low-chroma is Muted (blue-greys). Both are kept apart from
+  // Pastels by lightness and from Minimal by chroma.
+  if (accent.c < 0.09) return (accent.h < 118 || accent.h >= 330) ? 'earth' : 'muted'
+  // Hue family for the rest, wrapping red through pink at 330.
+  if (accent.h < 30 || accent.h >= 330) return 'warm'
+  if (accent.h < 60) return 'orange'
+  if (accent.h < 118) return 'gold'
+  if (accent.h < 288) return 'cool'
+  return 'violet'
 }
 
 /** The same scenes, grouped by category. Empty groups are dropped by the caller,

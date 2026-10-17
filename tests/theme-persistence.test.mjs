@@ -358,7 +358,7 @@ test('the classifier reads perceptual lightness and chroma, and pastel is a colo
   assert.equal(sceneCategory(scene('#22C55E')), 'vibrant', 'a neon green is synthetic')
   assert.equal(sceneCategory(scene('#0053FD')), 'vibrant', 'a saturated blue')
   assert.equal(sceneCategory(scene('#5B7BB5')), 'cool', 'a muted blue still reads blue')
-  assert.equal(sceneCategory(scene('#C05621')), 'warm', 'an orange')
+  assert.equal(sceneCategory(scene('#C05621')), 'orange', 'an orange now has its own hue shelf')
   assert.equal(sceneCategory(scene('#1E293B')), 'muted', 'a slate with only a trace of blue')
   assert.equal(sceneCategory(scene('#808080')), 'minimal', 'grey has no hue to file')
 
