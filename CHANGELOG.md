@@ -3,6 +3,36 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.1.0] - 2026-10-17
+
+### Features
+
+- Adds a **card size control** — S, M, L — next to the card shape control. The
+  choice persists (`chroma-card-size-v1`), the same way the shape does.
+- Skin names now sit **above the swatch strip**, and swatches render as
+  **horizontal bands** filling the card body. Long names no longer truncate
+  into invisibility at the bottom edge.
+
+### Fixed
+
+- Fixes a **first-open crash** — `readStoredThemes` returned a plain object
+  while the imported-skin loader iterates with `for…of`; the loader now walks
+  `Object.values(readStoredThemes())`. The page failed with
+  "readStoredThemes is not iterable" until a reload cleared it.
+- Fixes **invisible swatches** — the horizontal palette collapsed to zero
+  height in the card's flex column; every band carries `min-h-4` now.
+- Fixes the **truncated import pills** — URL / CSS segmented control is
+  shrink-locked, so the text input can no longer squeeze it to "U…"/"C…".
+
+### Documentation and infrastructure
+
+- Adds an **FAQ** (first-open errors, the lightbulb, import formats, deleting
+  and renaming, "This profile" vs "Everywhere", gateway-less use, authoring).
+- Documents the **statusbar lightbulb** and the **10-second preview**.
+- Adds **GitHub Actions CI** — the Node test suite and the backend unit tests
+  run on every push to `main`. Free for a public repository. First two runs:
+  green.
+
 ## [2.0.0] - 2026-10-16
 
 ### Chroma — hard fork

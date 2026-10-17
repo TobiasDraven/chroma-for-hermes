@@ -2148,11 +2148,11 @@ function ThemePicker() {
           jsx('div', {
             className: 'flex items-center gap-2 min-w-0',
             children: [
-              jsx(SegmentedControl, {
+              jsx('div', { className: 'shrink-0', children: jsx(SegmentedControl, {
                 options: [ { id: 'url', label: 'URL' }, { id: 'css', label: 'CSS' } ],
                 value: importMode,
                 onChange: v => { if (v === 'url' || v === 'css') setImportMode(v) }
-              }),
+              }) }),
               importMode === 'url'
                 ? jsx(Input, { placeholder: 'TweakCN preset name or URL (e.g. catppuccin)', value: importRef, onChange: e => setImportRef(e && e.target ? e.target.value : '') })
                 : jsx('textarea', { className: 'flex-1 rounded-md border border-(--chrome-stroke) bg-(--chrome-surface) px-2 py-1 text-[0.75rem] font-mono text-(--chrome-text)', placeholder: 'Paste shadcn CSS, a Windows Terminal scheme, a Base16/24 scheme, or a VS Code color theme', value: importRef, rows: 3, onChange: e => setImportRef(e && e.target ? e.target.value : '') }),

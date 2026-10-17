@@ -581,3 +581,25 @@ tests, backend 34/34, `hermes plugins validate .` passed, scene parity identical
 components (`ThemeCard`, `ThemePicker`, `ThemeChip`) are the harder half: their
 branching is JSX structure, so the fix is extracting sub-components and `resolve*`
 helpers, and the guard is the render harness rather than a palette digest.
+
+---
+
+## G15 field fixes - round one (shipped 2026-10-16/17)
+
+The Captain installed the build on his G15. First real-Electron consumption of
+the plugin since the fork. Three field findings, all fixed and shipped:
+
+| Finding | Cause | Fix | Commit |
+|:--|:--|:--|:--|
+| Page failed on first open with "readStoredThemes is not iterable"; worked after clicking Reload | `readStoredThemes()` returns a keyed object (the seek-and-write format `persistTheme` needs); `ensureImportedSkinsLoaded` iterated it with `for…of` | Iterate `Object.values(...)`. The finder's return contract is unchanged | `1910920` |
+| No swatches visible on any card | Card body is a flex column; a horizontal strip in a `flex-col` must be given `flex-col` AND the strips need a floor, or the bands collapse to zero height | Bands carry `min-h-4` | `1910920` |
+| URL / CSS import pills truncated to "U…"/"C…" | The control shares a flex row with the (flex-1) text input; the control has no shrink lock | `shrink-0` wrapper around the control; first attempt (`min-w-[6rem]` wrapper) shipped reverted because its JSX close was one brace short — the syntax error surfaced only as a v24 `Unexpected token '==='` in every suite's `loadPlugin` | `46ce117` (size toggle etc.), pill wrapper completed in the release commit |
+
+Also shipped in this round: size toggle (S/M/L, persisted via
+`chroma-card-size-v1`), label-above-swatch layout, palette as horizontal bands,
+FAQ, lightbulb + preview documentation, CI workflow (green on GitHub for both
+pushes). The one-behind-a-commit tracker rule lapsed here — this section is the
+correction, and the version bump (2.1.0) rides with it.
+
+**Still owed to this round:** the Captain's re-verify on the G15 (acceptance
+walk), then the two-reviewer convergence round to close the `✓ Review` row.
