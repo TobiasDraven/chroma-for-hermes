@@ -3,13 +3,12 @@
   "label": "Chroma",
   "description": "Browse, import, and apply Hermes themes — including TweakCN imports that mint real gateway skins.",
   "icon": "Paintbrush",
-  "version": "2.0.0",
+  "version": "2.5.2",
   "tab": {
     "path": "/chroma",
     "position": "end",
     "hidden": true
   },
   "slots": [],
-  "api": "plugin_api.py",
-  "entry": "dist/index.js"
+  "api": "plugin_api.py"
 }

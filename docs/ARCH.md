@@ -22,8 +22,8 @@ desktop/plugin.template.js  ──(scripts/regenerate.py)──▶  desktop/plug
         + skins/ + gateway-skins/ + backend built-ins
 ```
 
-`regenerate.py` reports its own census, e.g. "104 scenes from 140 bundled skins
-+ 9 backend built-ins and 114 gateway transports". It also normalises newlines: an
+`regenerate.py` reports its own census, e.g. "109 scenes from 150 bundled skins
++ 9 backend built-ins and 218 gateway transports". It also normalises newlines: an
 earlier build doubled every CRLF, which is why the template and the build must
 stay the same line count.
 
@@ -69,7 +69,10 @@ Theme state belongs to the app's ThemeProvider. The plugin only calls the SDK �
 
 ## Storage ownership
 
-Plugin-owned `chroma-*` keys only. The app owns `hermes-desktop-*`.
+Plugin-owned `chroma-*` keys, plus the app's own `hermes-desktop-*` /
+`hermes-boot-*` appearance keys the code mirrors for boot-time theme resolution
+(`desktop/plugin.template.js:69-73`). The plugin never invents new app-owned
+keys.
 
 ## Test architecture
 

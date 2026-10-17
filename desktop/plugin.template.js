@@ -54,6 +54,12 @@ import { Component, useCallback, useEffect, useMemo, useRef, useState } from 're
 
 let _rest = null
 
+// The Python half is optional: the Desktop half applies and previews themes
+// with no backend at all. When it is absent every backend call throws this exact
+// message, and the UI recognises it so it can say "this Desktop only" instead of
+// reporting a gateway skin that was never minted.
+const BACKEND_MISSING_MESSAGE = 'plugin backend not ready'
+
 const ID = 'chroma'
 
 const IMPORTED_SKINS = []
@@ -65,8 +71,10 @@ const SKIN_KEY = 'hermes-desktop-theme-v2'
 const MODE_KEY = 'hermes-desktop-mode-v1'
 const PROFILE_SKINS_KEY = 'hermes-desktop-profile-themes-v1'
 const PROFILE_MODES_KEY = 'hermes-desktop-profile-modes-v1'
-// Plugin-owned and per profile. Never an app-owned `hermes-desktop-*` key: the
-// Desktop owns those and would overwrite or misread anything we wrote there.
+// Plugin-owned and per profile, like the `chroma-*` keys below. The
+// `hermes-desktop-*` keys above are the app's own, mirrored so a contributed
+// theme stays resolvable at next startup; these are ours and the app never
+// reads them.
 const APPLY_SCOPE_KEY = 'chroma-apply-scope-v1'
 // Also plugin-owned. The card shape is a view preference, not a per-profile
 // selection, so it is not namespaced by profile the way the apply scope is:
@@ -874,7 +882,7 @@ function persistTheme(theme) {
 }
 
 async function importThemeIntoSkins(name, theme) {
-  if (!_rest) throw new Error('plugin backend not ready')
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
   const r = await _rest('import', { method: 'POST', body: JSON.stringify({ name, theme }) })
   return r
 }
@@ -896,8 +904,36 @@ async function listOwnedSkins() {
   return owned
 }
 
+/** Whether the Python half is mounted. Chroma's Desktop half works without it,
+ *  but only the Python half can mint a real gateway skin or groom one, so the
+ *  picker must be able to tell the user which of the two is actually running. */
+function hasGatewayBackend() {
+  return !!_rest
+}
+
+/** Pure: the honest notice for a finished import.
+ *
+ *  A gateway skin that was not minted is NEVER reported as a plain success. The
+ *  desktop theme still applied locally, so the notice says exactly that much and
+ *  no more: a local-only import names the cause - the missing backend, or the
+ *  backend's own error - instead of telling the user a gateway skin exists. */
+function importOutcomeNotice(label, minted, error) {
+  if (minted) return { kind: 'info', message: 'Imported ' + label }
+  if (error && error.message === BACKEND_MISSING_MESSAGE) {
+    return {
+      kind: 'warning',
+      message: 'Imported ' + label + ' for this Desktop only - the gateway-skin backend is not installed, so it will not sync to other devices.'
+    }
+  }
+  const why = error && error.message ? error.message : String(error)
+  return {
+    kind: 'warning',
+    message: 'Imported ' + label + ' for this Desktop only - the gateway skin was not created (' + why + ').'
+  }
+}
+
 async function deleteOwnedSkin(name, activeName) {
-  if (!_rest) throw new Error('plugin backend not ready')
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
   // The active-skin guard is enforced by the caller first; this query is the
   // second line of defence, so a stale caller cannot delete the live theme.
   const suffix = activeName ? '?active=' + encodeURIComponent(activeName) : ''
@@ -905,7 +941,7 @@ async function deleteOwnedSkin(name, activeName) {
 }
 
 async function renameOwnedSkin(source, target, activeName) {
-  if (!_rest) throw new Error('plugin backend not ready')
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
   return await _rest('skins/rename', {
     method: 'POST',
     body: JSON.stringify({ source, target, active: activeName || '' })
@@ -913,7 +949,7 @@ async function renameOwnedSkin(source, target, activeName) {
 }
 
 async function exportOwnedSkins(name) {
-  if (!_rest) throw new Error('plugin backend not ready')
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
   const path = name ? 'export?name=' + encodeURIComponent(name) : 'export'
   return await _rest(path)
 }
@@ -2185,16 +2221,23 @@ function ThemePicker() {
   const [exporting, setExporting] = useState(false)
   const [importedTick, setImportedTick] = useState(0)
   const [owned, setOwned] = useState({})
+  // Whether the Python half answered. The Desktop half still applies and
+  // previews themes without it, but normalisation, gateway sync and the manage
+  // actions cannot work, so the pane states that instead of hiding the buttons.
+  const [backendReady, setBackendReady] = useState(hasGatewayBackend())
   const [managing, setManaging] = useState(null)
 
   const refreshOwned = useCallback(async () => {
+    setBackendReady(hasGatewayBackend())
     try {
       setOwned(await listOwnedSkins())
     } catch (e) {
-      // A backend that is not mounted yet is not worth shouting about. The
-      // manage actions simply stay hidden until it answers, which is the
-      // truthful state of affairs.
+      // A backend that is not mounted is not worth shouting about, but it IS a
+      // real limitation: the manage actions cannot work and an import cannot
+      // mint a gateway skin. Track it so the pane can say so rather than hiding
+      // the buttons and pretending everything is fine.
       setOwned({})
+      setBackendReady(false)
     }
   }, [])
 
@@ -2339,7 +2382,17 @@ function ThemePicker() {
         themePickerSource: theme.source || 'tweakcn'
       }
       if (!IMPORTED_SKINS.some(s => s.name === scene.name)) IMPORTED_SKINS.push(scene)
-      await importThemeIntoSkins(theme.name, theme).catch(() => null)
+      // Mint the real gateway skin only if the Python half is mounted, and treat
+      // a failure as exactly that: a local-only import, never a success. Swallow
+      // nothing - the notice below is chosen from what actually happened.
+      let minted = false
+      let mintError = null
+      try {
+        await importThemeIntoSkins(theme.name, theme)
+        minted = true
+      } catch (e) {
+        mintError = e
+      }
       haptic('tap')
       // An import is still an apply, so it obeys the scope too.
       if (readApplyScope(profile) === APPLY_SCOPE_EVERYWHERE) {
@@ -2348,7 +2401,7 @@ function ThemePicker() {
       try { applyScene(scene, scene.modeSupport === 'dynamic' ? mode : scene.modeSupport, () => {}, desktopTheme) } catch (e) { }
       setImportedTick(n => n + 1)
       setImportRef('')
-      host.notify({ kind: 'info', message: 'Imported ' + (theme.label || theme.name) })
+      host.notify(importOutcomeNotice(theme.label || theme.name, minted, mintError))
     } catch (e) {
       host.notify({ kind: 'error', message: 'Import failed: ' + (e && e.message ? e.message : e) })
     } finally {
@@ -2560,6 +2613,10 @@ function ThemePicker() {
                 : jsx('textarea', { className: 'flex-1 rounded-md border border-(--chrome-stroke) bg-(--chrome-surface) px-2 py-1 text-[0.75rem] font-mono text-(--chrome-text)', placeholder: 'Paste shadcn CSS, a Windows Terminal scheme, a Base16/24 scheme, or a VS Code color theme', value: importRef, rows: 3, onChange: e => setImportRef(e && e.target ? e.target.value : '') }),
               jsx(Button, { variant: 'secondary', disabled: busy || !importRef.trim(), onClick: importTweakcn, children: busy ? 'Importing…' : 'Import' })
             ]
+          }),
+          !backendReady && jsx('div', {
+            className: 'rounded-md border border-(--ui-stroke-secondary) px-2 py-1 text-[0.6875rem] text-(--ui-text-tertiary)',
+            children: 'Gateway-skin backend not installed. Themes apply and preview on this Desktop, but an import cannot mint a gateway skin and rename, export and delete are unavailable. Install the Python half and restart Hermes to enable them.'
           })
         ]
       }),

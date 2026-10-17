@@ -17,3 +17,8 @@ rigour-fix-packet.json
 # reached 25 MB and polluted a reviewer's file counts)
 .serena/
 
+# Hermes scratch / atomic-write temp artifacts (e.g. .hermes-tmp.Qw7TB7). One was
+# committed by accident on 2026-10-17; these are never source and must not be
+# tracked.
+.hermes-tmp.*
+

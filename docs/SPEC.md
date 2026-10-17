@@ -7,7 +7,7 @@ mint real gateway skins so the CLI and every connected Desktop follow a change.
 A hard fork of "Hermes Theme Picker" by Joshua Timothy (`jdtimothy/hermes-theme-picker`,
 MIT) — see `THIRD_PARTY_NOTICES.md`.
 
-`plugin.yaml`: name `chroma`, version `2.0.0`. The repo root IS the plugin package.
+`plugin.yaml`: name `chroma`, version `2.5.2` (matching `VERSION`). The repo root IS the plugin package.
 
 ## Surfaces it registers
 
@@ -68,8 +68,18 @@ refused BY NAME as iTerm2, rather than failing with a generic parse error.
 
 ## Storage keys
 
-The plugin writes ONLY its own `chroma-*` keys. The app owns `hermes-desktop-*`
-and would overwrite or misread anything written there.
+The plugin writes two classes of localStorage key, and nothing else:
+
+- Its own `chroma-*` keys (apply scope, card shape, card size, group mode).
+- The app's own appearance keys it mirrors so a contributed theme survives a
+  restart: `hermes-desktop-user-themes-v1`, `hermes-desktop-theme-v2`,
+  `hermes-desktop-mode-v1`, `hermes-desktop-profile-themes-v1`,
+  `hermes-desktop-profile-modes-v1`, and the `hermes-boot-background` /
+  `hermes-boot-color-scheme` boot hints (`desktop/plugin.template.js:69-73`).
+  Desktop reads this cache before plugins register, so the write cannot be
+  omitted.
+
+It never invents a new app-owned key — only keys the app itself already uses.
 
 ## Non-goals
 

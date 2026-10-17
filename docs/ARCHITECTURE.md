@@ -109,14 +109,14 @@ installed plugin.
 
 ## Bundled skins and provenance
 
-`skins/` contains 140 unique YAML files:
+`skins/` contains 150 unique YAML files:
 
 - 50 designs from [BChop's Hermes Skins Pack](https://github.com/bchop-studio/hermes-skins-pack);
 - all 100 themes from [CliffWade's Hermes Desktop Theme Pack](https://github.com/CliffWade/hermes-desktop-theme-pack) v1.1.0.
 
-The sources overlap on 10 names. Those files use CliffWade's current v1.1.0
-versions, leaving 140 unique names rather than 150. Both sources are MIT
-licensed; see `THIRD_PARTY_NOTICES.md`.
+The two sources do not overlap: 50 BChop designs plus all 100 CliffWade v1.1.0
+themes make 150 unique names. Both sources are MIT licensed; see
+`THIRD_PARTY_NOTICES.md`.
 
 ## Responsive cards
 
@@ -131,8 +131,8 @@ Desktop build.
 |---|---|
 | `desktop/plugin.js` | Generated deliverable copied into Desktop |
 | `desktop/plugin.template.js` | Source of truth for picker UI and behavior |
-| `skins/` | 140 vendored YAML palettes |
-| `gateway-skins/` | 114 mode-locked light/dark transports for all 57 Dynamic Scenes |
+| `skins/` | 150 vendored YAML palettes |
+| `gateway-skins/` | 218 mode-locked light/dark transports for all 109 two-mode scenes |
 | `scripts/regenerate.py` | Builds scenes and regenerates `plugin.js` |
 | `scripts/backend-builtins.json` | Pinned backend palettes for environment-independent generation |
 | `scripts/cliffwade-v1.1.0-sha256.json` | Pinned byte-identity manifest for the 100 vendored CliffWade v1.1.0 YAML files |

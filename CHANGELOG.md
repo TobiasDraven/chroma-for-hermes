@@ -3,6 +3,49 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.5.2] - 2026-10-18
+
+### Fixed
+
+- **Backend data loss, twice over.** Two concurrent imports lost a provenance
+  entry *and* raised `PermissionError` on the shared `index.json.tmp`; the temp
+  name is now unique per write (`mkstemp`) and the index read-modify-write is
+  serialised by a module-level lock. Separately, a corrupt index was read as
+  empty and the next write persisted that emptiness, wiping provenance: a
+  present-but-unreadable index is now quarantined beside itself and raises,
+  while a missing file still reads empty.
+- **The import path no longer lies.** A failed mint used to be swallowed and the
+  user told "Imported …". The notice is now chosen by a pure
+  `importOutcomeNotice(label, minted, error)`: only a real mint reports a bare
+  success, a missing backend is stated as local-only with the reason, and a
+  backend error surfaces its cause. A `backendReady` notice names exactly what
+  still works without the Python half instead of hiding the manage buttons.
+- `_hex` now refuses a non-hex token with a 400 naming the value (it accepted
+  `#zzzzzz`, `#12 456`, `#fffffe` and wrote a skin), a theme over 64 KiB or
+  declaring over 512 colour tokens is refused with 413, Windows reserved device
+  names (`con`, `nul`, `com1`) no longer pass the slug allowlist, and a failed
+  index write rolls the skin back rather than orphaning it.
+
+### Changed
+
+- **The public claims now describe the shipped build.** The README, ARCH,
+  ARCHITECTURE, THIRD_PARTY_NOTICES and SPEC said "140 palettes, 57 Dynamic
+  themes plus dark-only and light-only scenes" and cited a `requestTheme()` call
+  that appears nowhere; they now state 150 skin palettes, 109 two-mode scenes and
+  the real twelve categories. `dashboard/manifest.json` and `SPEC.md` are
+  unified on the shipped version, the install docs gained the opt-in enable step,
+  and the read/write key rule was corrected to match the code rather than left
+  aspirational.
+- Removed the committed `.hermes-tmp.Qw7TB7` and gitignored the pattern.
+
+### Verified
+
+- Backend 34 → **58 tests**; JS 125 → **130 tests**; both green.
+- Regeneration is idempotent and reproduces the build byte for byte.
+- Driven over a real ASGI client: 400 names the bad value, 413 for both limits,
+  reserved names refused, a valid import lands on disk and deletes into `_trash`
+  without orphaning or wiping the index.
+
 ## [2.5.1] - 2026-10-18
 
 ### Fixed

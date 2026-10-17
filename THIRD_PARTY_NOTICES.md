@@ -10,12 +10,11 @@ under the terms of their MIT licenses, reproduced below.
 
 | Source | Skins included | License |
 |---|---|---|
-| [BChop's Hermes Skins Pack](https://github.com/bchop-studio/hermes-skins-pack) | 50 original designs; 40 exclusive files plus 10 designs updated in CliffWade's pack | MIT |
+| [BChop's Hermes Skins Pack](https://github.com/bchop-studio/hermes-skins-pack) | 50 designs | MIT |
 | [CliffWade's Hermes Desktop Theme Pack](https://github.com/CliffWade/hermes-desktop-theme-pack) | 100 skins from v1.1.0 | MIT |
 
-The two sources overlap on 10 theme names, so the repository contains 140
-unique YAML files rather than 150. For those overlapping names, this project
-ships the current files from CliffWade's v1.1.0 pack.
+The two sources do not overlap, so the repository contains 150 unique YAML
+files: 50 BChop designs plus all 100 of CliffWade's v1.1.0 themes.
 Their byte identity is enforced by `scripts/cliffwade-v1.1.0-sha256.json` and
 the generator test suite.
 

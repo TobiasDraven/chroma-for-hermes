@@ -26,31 +26,38 @@ device connected to your gateway — including the CLI.
 - **Dynamic Themes** — switch one theme between coordinated light and dark
   palettes instead of managing separate skins.
 - **Instant, gateway-wide updates** — the current Desktop repaints immediately,
-  then every connected Desktop and CLI receives the same palette.
+  then every connected Desktop and CLI receives the same palette. Pushing to the
+  gateway needs the Python backend (see below); without it the repaint stays on
+  this Desktop.
 - **A visual gallery** — browse real color swatches, search 109 scenes by name,
   and preview them in light or dark mode.
 - **Every skin is a pair** — each scene ships a light and a dark palette, and
   the swatch preview shows both at once as a 2 x 6 matrix: the light variant
   over the dark one. There are no "dark only" or "light only" skins any more.
 - **Two ways to browse** — group by scene, or switch the dropdown to group by
-  broad theme: Cool, Warm, Nature, Pastels, Vibrant, Muted and Minimal. The
-  category is derived from each palette in OKLCH, so it follows what the eye
-  sees rather than a raw saturation number, and your choice sticks per profile.
+  broad theme category: Minimal, Pastels, Vibrant, Muted, Earth, Retro &
+  Terminal, Nature, Warm, Orange, Gold, Cool and Violet. The category is derived
+  from each palette in OKLCH, so it follows what the eye sees rather than a raw
+  saturation number, and your choice sticks per profile.
 - **Built for comparison** — change themes without leaving the picker, closing
   your chat, or reloading Hermes.
 - **Works offline** — the catalog is embedded in the plugin, and themes are also
   available in **Settings → Appearance** when the gateway is unavailable.
 - **Made to stick** — each profile remembers its theme and mode across restarts.
 - **Bring your own theme** — paste a TweakCN preset, a Windows Terminal scheme,
-  a Base16/Base24 palette, or a VS Code color theme and it becomes a real
-  gateway skin. Rename, export as hand-editable YAML, or delete from the card.
+  a Base16/Base24 palette, or a VS Code color theme and it applies to this
+  Desktop right away. With the Python backend installed it also becomes a real
+  gateway skin that syncs to every device; without it the theme stays local, and
+  the picker says so rather than implying a sync that did not happen. Rename,
+  export as hand-editable YAML, or delete from the card (backend required).
 - **Preview before you commit** — hover any card and click "Preview 10s" to
   apply the theme temporarily. A countdown shows the remaining time, and the
   theme reverts automatically when it reaches zero. Click again to stop early.
 
-The plugin includes **140 skin palettes**, organized into 57 Dynamic Themes plus
-dark-only and light-only scenes. See [Third-Party Notices](THIRD_PARTY_NOTICES.md)
-for palette credits.
+The plugin bundles **150 skin palettes** and publishes them as **109 two-mode
+scenes** — every scene carries a coordinated light and dark palette, and there
+are no single-mode (dark-only or light-only) scenes. See
+[Third-Party Notices](THIRD_PARTY_NOTICES.md) for palette credits.
 
 ## Install
 
@@ -61,6 +68,12 @@ for palette credits.
   current Desktop still applies and saves themes locally.
 - **Python 3.8+** and `PyYAML` only if you want to regenerate the catalog. They
   are not required to use the picker.
+
+The plugin is a package: the Desktop half (the UI) plus a Python half (the
+backend that mints gateway skins). Both land in your Hermes home's
+`plugins/chroma/` directory, and Desktop copies the UI half out to
+`desktop-plugins/chroma/` itself. **The Desktop half is opt-in, so installing
+the files is not enough — you must enable the plugin before it appears.**
 
 The easiest route is to install straight from this repository. In Hermes
 Desktop's plugin page, give it this URL:
@@ -75,9 +88,16 @@ Or from a terminal:
 hermes plugins install TobiasDraven/chroma-for-hermes
 ```
 
-Both routes put the plugin in your Desktop home's `desktop-plugins/chroma/`
-directory. Prefer doing it by hand? Clone or download this repository, then
-follow your platform below.
+Then enable it: open **Capabilities → Plugins**, find **Chroma** and enable it
+(this adds `chroma` to `plugins.enabled` in `config.yaml`), and run **Rescan** if
+the row is not listed. A backend that is enabled but still not mounted needs a
+full Hermes **restart**, not just a plugin reload — the Python half is mounted at
+startup. Until the backend is enabled and Hermes restarted, the picker's themes
+still apply and preview, but an import cannot mint a gateway skin and the rename,
+export and delete actions are unavailable.
+
+Prefer doing it by hand? Clone or download this repository, then follow your
+platform below.
 
 ### Windows
 
@@ -87,10 +107,13 @@ Double-click `install\install-windows.cmd`, or run:
 .\install\install-windows.cmd
 ```
 
-The installer uses `%HERMES_HOME%` when set. Otherwise, it selects an existing
-`%LOCALAPPDATA%\hermes` Desktop home and falls back to
-`%USERPROFILE%\.hermes`. The exact destination is printed when installation
-finishes.
+The installer places the whole package at `<hermes home>\plugins\chroma` (a
+junction to this checkout by default, or a copy with `-Copy`), and Desktop then
+copies the UI half into `desktop-plugins\chroma`. It uses `%HERMES_HOME%` when
+set, otherwise an existing `%LOCALAPPDATA%\hermes` Desktop home, and falls back
+to `%USERPROFILE%\.hermes`. The exact destination is printed when installation
+finishes. **Restart Hermes Desktop once so the Python backend mounts**, then
+enable the plugin if you have not already (see above).
 
 ### macOS
 
@@ -104,9 +127,10 @@ If macOS blocks the downloaded script, right-click it and choose **Open**, or
 run `sh install/install-macos.command`. The installer uses `$HERMES_HOME` when
 set and otherwise installs under `~/.hermes`.
 
-### Linux or manual installation
+### Linux or manual installation (Desktop half only)
 
-Copy `desktop/plugin.js` to the exact destination for your platform:
+This drops only the UI half — no gateway-skin backend. Copy `desktop/plugin.js`
+to the exact destination for your platform:
 
 | Platform | Destination |
 |---|---|
@@ -121,6 +145,9 @@ hermes_home="${HERMES_HOME:-$HOME/.hermes}"
 mkdir -p "$hermes_home/desktop-plugins/chroma"
 cp desktop/plugin.js "$hermes_home/desktop-plugins/chroma/plugin.js"
 ```
+
+Then enable the plugin (see above) and reload desktop plugins. Themes apply and
+preview, but imports will not mint a gateway skin.
 
 ### Enable gateway-wide themes
 
@@ -233,8 +260,9 @@ A: Install it, then reload desktop plugins. Open the Command Palette and run
 
 **Q: The theme reverts after a few seconds.**
 A: An older version wrote CSS variables directly to `:root`, which ThemeProvider
-overwrote on re-render. Update to the latest version. The current plugin uses
-`requestTheme()`, which is the supported code path.
+overwrote on re-render. Update to the latest version. The current plugin applies
+through Desktop's own theme API and keeps Desktop's React state in step, so it
+does not fight the provider.
 
 **Q: The lightbulb icon does not appear in the statusbar.**
 A: The lightbulb only appears when the active theme supports both light and
@@ -243,7 +271,9 @@ dark modes. Single-mode themes (dark-only or light-only) do not show it.
 **Q: I imported a theme but it does not show up.**
 A: Check the import format. Supported formats: TweakCN preset name or URL,
 shadcn CSS, Windows Terminal scheme, Base16/Base24 scheme, or VS Code color
-theme JSON. The import box shows a hint for the expected format.
+theme JSON. The import box shows a hint for the expected format. If it appears
+but did not sync to your gateway, the Python backend is not installed — see
+[Enable gateway-wide themes](#enable-gateway-wide-themes).
 
 **Q: How do I delete a theme I imported?**
 A: Hover the card and click the manage buttons (Export, Rename, Delete). Delete
@@ -254,7 +284,7 @@ A: "This profile" applies the theme only to the current Hermes profile.
 "Everywhere" broadcasts the theme to every connected Desktop and CLI via the
 gateway. Use "Everywhere" when you want all your devices to follow.
 
-**Q: Can I use Chromeskin without a gateway?**
+**Q: Can I use Chroma without a gateway?**
 A: Yes. The local catalog works offline. The current Desktop applies and saves
 themes locally. Gateway sync is optional.
 

@@ -84,10 +84,16 @@ bounding box paints outside the circle, over the page background. Circle mode
 therefore moves the label into a caption UNDER the card, and centres the preview
 pill rather than anchoring it to the bottom edge, for the same reason.
 
-## 11. Plugin-owned storage keys only
+## 11. Storage keys: plugin-owned `chroma-*`, plus the app's own appearance keys
 
-`chroma-*`. The app owns `hermes-desktop-*` and would overwrite or misread
-anything written there.
+The original rule read "`chroma-*` only". That was aspirational and the code
+never followed it. The picker must write the app's own `hermes-desktop-*`
+theme/mode/profile keys and the `hermes-boot-*` boot hints
+(`desktop/plugin.template.js:69-73`) so a contributed theme stays resolvable
+across a restart: Desktop reads that cache before plugins register, so omitting
+the write loses the theme at next startup. The corrected rule: write the
+plugin-owned `chroma-*` keys freely, mirror only the app keys the app already
+uses, and never invent a new app-owned key.
 
 ## 12. Adopted the standard `rigour.yml` unmodified
 

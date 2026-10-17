@@ -59,8 +59,12 @@ install/                  platform installers for the plugin
 2. **Plain, uncompiled ESM.** No JSX syntax: build elements with `jsx()` / `jsxs()` calls. No build step
    other than `regenerate.py`, which only substitutes data.
 3. **Preserve CRLF** in the template and the generated build.
-4. **Only `chroma-*` localStorage keys may be written.** `hermes-desktop-*` keys belong to the Desktop
-   app; writing them corrupts the user's own settings.
+4. **Two classes of localStorage key may be written, and no others.** (a) Chroma's own `chroma-*` keys.
+   (b) The app's own appearance keys the code already reads and writes — the `hermes-desktop-*`
+   theme/mode/profile keys and the `hermes-boot-*` boot hints (`desktop/plugin.template.js:69-73`).
+   The boot cache in particular MUST be written: Desktop reads its theme cache *before* plugins
+   register, so a contributed theme not mirrored there is unresolvable at the next startup. Never invent
+   a *new* app-owned key — if the app does not already use the key, do not write it.
 5. **New picker code must not use template literals** — the plugin catalog's security scan reads
    `${...}` as inline shell. Use string concatenation and `+`.
 6. **Import React hooks explicitly.** A hook that is used but not imported is a dead page, and the test
