@@ -58,9 +58,11 @@ storage layer, the writer and the safety rules already exist. That is why this p
 Locked earlier by the Captain: an import must create a real skin file, not a Desktop-only theme.
 The same rule governs editing.
 
-- **A built-in scene is never mutated in place.** The 109 shipped scenes are generated from
-  `scripts/regenerate.py`; editing one would be erased by the next regeneration. Editing a built-in
-  scene therefore performs **Save as a copy** by default: a new user skin, provenance `user`.
+- **A built-in scene IS editable, through an OVERRIDE — never in place.** *(Changed 2026-10-18 on the
+  Captain's order; supersedes the copy-only rule this bullet used to carry. Full design in §17.)* The
+  authored catalogue stays the source of truth and the regenerator stays honest; the user's edit is a
+  record layered over it at runtime, and a per-skin **Reset** removes it. **Save as a copy** remains
+  available for a genuinely new skin.
 - **A user skin is edited in place** — its YAML is rewritten atomically, its index entry updated.
 - **Every edit is CLI-visible.** The file lands at the top level of `<hermes home>/skins/`, which is
   the only directory `list_skins()` reads (it does not recurse). A skin the CLI cannot see is not a
@@ -449,15 +451,20 @@ what exists somewhere in the app. Verified by reading the installed source:
 And the plugin **already hand-rolls the same maths**: `hexToRgb` (`plugin.template.js:160`), `rgbToHex`
 (`:166`), `relativeLuminance` (`:189`), `contrastRatio` (`:197`) and `oklch` (`:1470`).
 
-**The decision this forces, stated so E1 does not stumble into it.** The editor's displayed contrast
-read-out should use the **host's `contrastRatio`**, because that is the number the app itself believes
-and the whole point of a read-out is agreement with the product. The **classifier and the swatch stay on
-the plugin's own maths** — they are shipped, they are what the 2 x 6 matrix and the twelve categories
-were measured with, and re-pointing them at the host implementation is an algebraically-equal rewrite
-that can still move outputs at the last ulp, which would silently re-cut the categories. So: host maths
-for the *read-out*, our maths for the *catalogue*, and never the two swapped. E1's test pins that the
-read-out and the classifier disagreeing about a borderline pair is a display difference, not a data
-change.
+**The decision this forces, stated so E1 does not stumble into it — and corrected on evidence.** I first
+wrote that the editor's read-out should use the **host's** `contrastRatio`, on the reasoning that the
+read-out should agree with the app. Scout A checked that reasoning and refuted it: the host's
+`channelLuminance` (`apps/shared/src/color.ts:68-88`) uses the same `0.03928` threshold, the same
+coefficients and the same `(hi+0.05)/(lo+0.05)` form as the plugin's `relativeLuminance`/`contrastRatio`
+(`plugin.template.js:189-200`). I verified both by reading them side by side: for valid hex they agree
+exactly, so switching buys **nothing** and costs a second source of truth beside the swatch and the
+classifier. **Keep the plugin's own maths for the read-out.** Do not re-point the classifier either — it
+detects variant pairs with the uncorrected `luminance()`, and churn there can move palette outputs for
+zero gain.
+
+**Adopt exactly one thing from the host: its `null` contract.** The host returns `null` for an
+unparseable colour; our `relativeLuminance` returns `0`, which renders as a confident, meaningless
+ratio. The read-out must render `—`, never a fabricated number.
 
 ### 16.5 The writer must use the strict index path, or it re-opens B2
 
@@ -466,3 +473,130 @@ The same round added `_read_index_for_update()`, `IndexUnreadableError` and a qu
 through the strict path**, exactly as `import_skin`/delete/rename now do. A new `PUT /skins/{name}`
 that reads the index leniently would silently reintroduce the data-loss defect that `8a06221` closed —
 a corrupted index read as `{}` and persisted. This is the first thing E1's tests must pin.
+
+---
+
+## 17. Built-in overrides and per-skin Reset (Captain's order, 2026-10-18)
+
+The Captain's decision, verbatim in intent: **switch to a "user overrides this built-in" concept, with a
+per-skin reset.** This supersedes the copy-only rule in §3 and everything downstream of it. What follows
+is the design, and where it changes an earlier section, that section is superseded.
+
+### 17.1 The shape of the rule
+
+- **The authored catalogue is never rewritten.** A built-in's palette in the generated catalogue stays
+  exactly as generated. An edit produces an **override record**, not a mutation.
+- **Effective palette = override ?? authored**, resolved in the pane. The card swatch, the editor's
+  preview, the applied theme and the CLI all show the *effective* palette.
+- **Reset is per skin.** Deleting one override record returns exactly that scene to its authored
+  palette. No reinstall, no cache clear, and it never touches a neighbouring scene.
+
+### 17.2 Where the override lives
+
+| Store | Location | Holds |
+|:--|:--|:--|
+| overrides | `<skins>/.chroma/overrides.json` | `{ "<scene-slug>": { light: {<role>: "#rrggbb"}, dark: {…}, at: "<iso>" } }` |
+
+Beside the index, not inside it — the index records **provenance** (who owns which file), the overrides
+file records **user intent**. Different lifetimes: the index is rebuilt by imports, the overrides file
+survives them.
+
+### 17.3 The three hard consequences
+
+1. **The regenerator must preserve overrides, and a test must prove it.** `scripts/regenerate.py`
+   rewrites `desktop/plugin.js`; it must neither read the overrides file into the build nor delete it,
+   and the install path must not clobber it. A user override baked into a committed catalogue would be
+   one person's taste shipped to everyone — the exact failure mode this design exists to prevent. *Pin
+   it with a test that runs regeneration over a temp tree holding an overrides file and asserts the
+   file is byte-identical afterwards.*
+2. **The shelf does not move.** A scene's **category** and its **pack** are properties of the *catalogue*
+   palette, measured or curated. An override changes what is rendered, never which shelf the card sits
+   on. Otherwise the gallery re-files itself under the user's cursor while they type, and one user's
+   edit would contradict the curated packs. The pack campaign in `CHROMA-PACKS.md` depends on this rule.
+3. **The CLI follows, so the override must be minted.** The rule "every edit is CLI-visible" (§3) still
+   binds: the Python half re-mints that scene's gateway transport skins from the *effective* palette.
+   Reset re-mints the authored values. Without this, a user edits a built-in, sees their change on the
+   Desktop, and the TUI keeps the old palette — which is the bug this product exists to fix.
+
+### 17.4 Surface changes
+
+- **New routes** (the built-in is not a user skin file, so `PUT /skins/{name}` is the wrong door):
+
+| Method | Path | Purpose |
+|:--|:--|:--|
+| `GET` | `/overrides` | every override, so the pane can decorate the gallery on load |
+| `PUT` | `/overrides/{scene}` | write one override; validate the scene exists and every role is known |
+| `DELETE` | `/overrides/{scene}` | **Reset** — drop the record and restore the authored transport skins |
+
+- **The gear on a built-in now opens the editor with Save ENABLED** (it writes an override). The earlier
+  "Save disabled, with one sentence why" is superseded. `Save as copy` stays, for a new skin.
+- **An edited scene says so.** The card carries an "edited" marker distinct from the pack badge, and the
+  editor offers **Reset** only when an override exists. A user must be able to see that what they are
+  looking at is not what shipped — an unmarked override is a lie about authorship.
+- **Guardrails:** an override may only name a scene that exists and roles that exist; it may never
+  create a scene, never carry a path, never exceed the theme size caps (§5's 64 KiB / 512 tokens apply
+  here too), and a `PUT` that fails leaves the stored override untouched.
+
+### 17.5 Phasing effect
+
+E1 grows by these three routes and the reset affordance; E2 (`POST /skins/duplicate`) is unchanged and
+now means "fork this — including its effective palette — into a new user skin". E0 must land the
+overrides scaffold, because E1's save depends on it.
+
+---
+
+## 18. What the two scouts changed (2026-10-18)
+
+Both scouts ran read-only with an evidence rule. Their load-bearing claims were re-verified by the
+maintainer; the ones that failed verification are marked. Reports:
+`cache/scratch/editor-prior-art.md` and `cache/scratch/editor-host-capability.md`.
+
+### 18.1 Two real build items §5-§6 under-scoped
+
+1. **There is no free-form colour input in the host UI kit.** `components/ui/` offers only
+   `ColorSwatches` (`color-swatches.tsx:14`) — a fixed swatch grid plus a clear row — and the generic
+   `Input`/`Slider`/`Select`/`Switch`. *Verified.* So the ~12 hex fields are **hand-rolled on `Input`**,
+   validated with `normalizeHex`. Budget for it explicitly; it is not a one-line control.
+2. **The pack/export mechanism must be chosen, not assumed.** Three mediated channels exist, none a raw
+   renderer write: `ctx.os.pickSavePath()` (native dialog, returns a **backend** path, so it needs a REST
+   hop), `captureGatewayFileDownload()` (`sdk/index.ts:1961` — verified), and the renderer Blob +
+   `<a download>` that Chroma already uses. **Recommendation: `captureGatewayFileDownload` for pack
+   export**, because it keeps the download native and does not invent a second transport.
+
+### 18.2 Facts that change the design
+
+- **`ctx.storage` is plugin-scoped, NOT profile-scoped.** *Verified*: `hermes.plugin.${pluginId}.${key}`
+  (`contrib/plugin.ts:51, 196-197`). Chroma already scopes its own keys per profile by hand, so any new
+  editor preference must key by the profile itself — do not assume the host namespaces it for us.
+- **A modal IS possible.** Radix `Dialog` (`sdk/index.ts:1836`), `ConfirmDialog` (`:1819`) and `Popover`
+  (`:1865`) are exports — all *verified*. §6's modal holds. Caveat: it needs a **mounted React tree**, so
+  it cannot be portalled from a palette command or a `THEMES_AREA` data card.
+- **The restart story is split.** The **JS** half hot-reloads on save (fs-watched). A **mounted**
+  `plugin_api.py` is never re-imported, so new **routes** need a restart. The editor must say so on a 404
+  rather than looking broken.
+- **`host.settings` is not a general store** — seven allowlisted desktop keys, and an unknown key throws.
+  Do not put editor state there.
+- **No skin surface in the SDK.** *Verified*: `grep -i skin sdk/index.ts` returns nothing. §5's "route
+  everything through the Python half" stands.
+- **The `host.notify` shape is richer than we use**: `kind` is `error|warning|info|success`, plus `title`,
+  `message` (required), `detail`, `action`, `secondaryAction`, `durationMs`, `persistent`, `placement`.
+  The honest-warning work in 2.5.2 can use `detail` and `action` rather than cramming everything into
+  `message`.
+
+### 18.3 Adopted from tweakcn (prior art, verified in its source)
+
+- **Snapshot-stack undo of whole state**, capped (`MAX_HISTORY_COUNT = 30`) with ~500 ms coalescing, and
+  the mode toggle explicitly **excluded** from history — a light/dark flip must not consume an undo slot.
+- **Warn, never block**, on contrast (`MIN_CONTRAST_RATIO = 4.5`, an issue filter, and an explainer) —
+  the same posture §6 already chose.
+- **Copy-then-edit is expressed as a fork**: `Update "<name>"` / separator / `Save as New`, which is
+  exactly the choice §17 now needs beside the override Save.
+- **Do not build an HSV picker for E1.** tweakcn ships a styled swatch, a hidden native
+  `<input type="color">`, and a free-text hex field in one row. Copy that shape.
+- **Do not adopt APCA/Lc for E1.** One contrast scale per modal; the host speaks WCAG 2.2.
+
+### 18.4 Scope pin for E1
+
+**Reset (trivial) ships in E1; full undo/redo moves to E6.** E1 is already the largest single phase once
+§17's overrides land, and undo is not what makes an edit *safe* — a save that can be reset is.
+
