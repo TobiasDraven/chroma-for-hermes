@@ -57,6 +57,33 @@ test('the palette strip takes the first name a skin actually carries for each ba
   assert.deepEqual(plain(strip({})), [])
 })
 
+// The harness digests structure and class STRINGS, so it cannot see layout. It
+// CAN see the class contract that layout depends on. `flex-col` alone sets only
+// flex-direction: without `display: flex` the container is a block and its inline
+// <span> children collapse to zero size - the swatches render, but paint nothing.
+// That shipped once; this holds the contract for every shape.
+test('the palette container is a flex column and every band carries its colour', () => {
+  for (const overrides of [{}, { shape: 'rectangle' }, { shape: 'circle' }]) {
+    const tree = render(overrides)
+    let palette = null
+    walk(tree, (el) => { if (palette === null && String(el.className || '').includes('ring-black/15')) palette = el })
+    assert.ok(palette, `no palette container rendered for ${JSON.stringify(overrides)}`)
+    // Match whole class TOKENS. `'flex-col'.includes('flex')` is true, so a
+    // substring check would pass a build that has lost display:flex entirely.
+    const tokens = String(palette.className).split(/\s+/)
+    assert.ok(tokens.includes('flex'), 'palette needs display:flex, not flex-direction alone')
+    assert.ok(tokens.includes('flex-col'), 'palette bands stack in a column')
+    const bands = (palette.children || []).filter(child => child && child.type === 'span')
+    assert.ok(bands.length > 0, 'palette must render at least one band')
+    for (const band of bands) {
+      assert.ok(band.style && band.style.backgroundColor, 'every band carries a backgroundColor')
+      const bandTokens = String(band.className).split(/\s+/)
+      assert.ok(bandTokens.includes('w-full'), 'every band fills the width')
+      assert.ok(bandTokens.includes('flex-1'), 'every band shares the height')
+    }
+  }
+})
+
 test('an unowned card offers only itself and the preview pill; an owned one adds the three actions', () => {
   const unowned = render({ owned: false })
   assert.equal(countType(unowned, 'button'), 2, 'card + preview pill only')

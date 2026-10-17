@@ -1596,8 +1596,12 @@ function ThemeCardPalette({ strip, shape }) {
   return jsx('div', {
     // `h-5` was right for a rectangle card and wastes the middle of a square one,
     // which is where the palette should be doing the talking.
+    // `flex` IS REQUIRED: `flex-col` alone sets only flex-direction and leaves
+    // the div a block, so its inline <span> children collapse to zero size and
+    // the swatches paint nothing. The render harness cannot see layout — see
+    // the flex-contract assertion in tests/theme-card.test.mjs.
     className: cn(
-      'flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15',
+      'flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15',
       shape === 'circle' ? 'rounded-full' : 'rounded-[4px]'
     ),
     children: strip.map((color, i) =>

@@ -603,3 +603,25 @@ correction, and the version bump (2.1.0) rides with it.
 
 **Still owed to this round:** the Captain's re-verify on the G15 (acceptance
 walk), then the two-reviewer convergence round to close the `✓ Review` row.
+
+### Round two (2.1.1): the blank swatches, root cause
+
+The Captain re-tested 2.1.0 on the G15: swatches still blank. The 2.1.0 fix
+(`min-h-4` on each band) treated a symptom. The real cause was in 2.1.0's own
+layout change: the palette container carried `flex-col` but had **lost
+`display:flex`**. `flex-col` sets only `flex-direction`; without `display:flex`
+the container is a block, the `<span>` bands stay inline, and `width` /
+`min-height` / `flex` do not apply to inline elements — zero size, no paint.
+Restored to `flex flex-col`.
+
+Why the harness missed it: the card parity test digests structure and class
+strings, so a class that no longer produces layout is invisible to it. Options
+were a real browser (not in this harness) or a class-contract assertion. Chose
+the assertion: `tests/theme-card.test.mjs` now finds the palette container and
+requires the whole token `flex` and a `backgroundColor` per band. It was
+fault-injected to prove it fails, and that exposed a bug in the guard itself —
+`'flex-col'.includes('flex')` is true, so the first version passed a broken
+build. It matches whole tokens now.
+
+**Lesson to keep:** when a Tailwind class string changes, the digest cannot see
+the visual result. Any class that carries layout must be asserted as a token.

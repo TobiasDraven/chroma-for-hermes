@@ -3,6 +3,25 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.1.1] - 2026-10-17
+
+### Fixed
+
+- **Blank swatches, for real this time.** The palette container had lost
+  `display: flex` — it carried `flex-col` alone, which sets only the flex
+  direction. Without `display: flex` the container is a plain block and its
+  `<span>` bands stay inline, where `width`, `min-height` and `flex` do not
+  apply: zero size, so the theme colours never painted. The class is
+  `flex flex-col` again. The 2.1.0 attempt (`min-h-4` on each band) treated a
+  symptom — the bands were never the problem.
+- Adds a **class-contract guard** to `tests/theme-card.test.mjs`: it walks the
+  rendered tree, finds the palette container, and requires the whole class
+  token `flex` plus a `backgroundColor` on every band. The digest cannot see
+  layout, but it can hold the classes that layout depends on. The guard was
+  fault-injected (class removed, test fails; restored, test passes) — and it
+  caught its own first version, which used a substring check: `'flex-col'
+  includes 'flex'`, so it passed a broken build. It matches whole tokens now.
+
 ## [2.1.0] - 2026-10-17
 
 ### Features
