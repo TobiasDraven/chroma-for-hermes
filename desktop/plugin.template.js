@@ -2801,7 +2801,7 @@ function ThemeCardDuplicate({ scene, onDuplicate }) {
 // does. Only an owned skin has them, and only one mode shows at a time: renaming,
 // confirming a delete, or the three actions themselves.
 const MANAGE_ROW_CLASS = 'mt-1 flex items-center gap-1 text-[0.625rem]'
-const MANAGE_BUTTON_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)'
+const MANAGE_BUTTON_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100'
 
 function ThemeCardRename({ scene, draft, setDraft, managing, onRename, onCancel }) {
   return [
