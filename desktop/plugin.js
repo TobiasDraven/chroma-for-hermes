@@ -2801,7 +2801,7 @@ function ThemeCardDuplicate({ scene, onDuplicate }) {
 // does. Only an owned skin has them, and only one mode shows at a time: renaming,
 // confirming a delete, or the three actions themselves.
 const MANAGE_ROW_CLASS = 'mt-1 flex items-center gap-1 text-[0.625rem]'
-const MANAGE_BUTTON_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)'
+const MANAGE_BUTTON_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100'
 
 function ThemeCardRename({ scene, draft, setDraft, managing, onRename, onCancel }) {
   return [
@@ -3533,7 +3533,16 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   // Only an owned skin has manage actions, and it keeps its unwrapped shape when it
   // does not: the extra flex column is what holds the action row.
   if (!owned) return stacked
-  return jsxs('div', { className: 'flex w-full flex-col', children: [stacked, jsx(ThemeCardActions, { scene, managing, onDelete, onRename, onExport, categories, onSetCategory })] })
+  // Theme Packs badge (§9): 'core' for core members; pack id otherwise. Text only (not colour-only) per plan.
+  const packId = scene && scene.pack ? scene.pack : (scene && scene.name ? 'core' : 'core')
+  const badgeText = packId === 'core' ? 'core' : (packId || 'core')
+  return jsxs('div', { className: 'flex w-full flex-col', children: [
+    stacked,
+    jsxs('div', { className: 'mt-1 flex items-center gap-1', children: [
+      jsx('span', { className: 'inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium', children: badgeText }),
+      jsx(ThemeCardActions, { scene, managing, onDelete, onRename, onExport, categories, onSetCategory })
+    ]})
+  ]})
 }
 
 // ---------------------------------------------------------------------------
@@ -3828,6 +3837,8 @@ function ThemePicker() {
   const [packGroups, setPackGroups] = useState(null)
   const [packChoices, setPackChoices] = useState({})
   const [packConfirm, setPackConfirm] = useState(null)
+  // Theme Packs (CHROMA-PACKS.md §8): profile-scoped enabled pack ids.
+  const [enabledPacks, setEnabledPacks] = useState([])
   // E2 — the card's Duplicate action, in flight for one scene at a time.
   const [duplicating, setDuplicating] = useState(null)
 
@@ -3917,6 +3928,15 @@ function ThemePicker() {
       setPacks(await listPacks())
     } catch (e) {
       setPacks([])
+    }
+    // Theme Packs persistence: load enabled pack ids from profile-scoped storage.
+    try {
+      const raw = window.localStorage.getItem('chroma-packs-v1')
+      const parsed = raw ? JSON.parse(raw) : null
+      const enabled = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.enabled) ? parsed.enabled : [])
+      setEnabledPacks(enabled)
+    } catch {
+      setEnabledPacks([])
     }
     // Categories follow the same lenient read: an older backend answers /skins
     // and not /categories, so a failure means "no user categories here" and the
@@ -4740,6 +4760,16 @@ function ThemePicker() {
                   title: 'Save the skins matching the current filter as a pack bundle',
                   className: MANAGE_BUTTON_CLASS,
                   children: packBusy ? 'Working…' : 'Save filter as pack'
+                }),
+                jsx('button', {
+                  type: 'button',
+                  onClick: () => {
+                    const next = enabledPacks.length === 0 ? ['earth', 'cyberpunk', 'zen', 'retro', 'noir'] : []
+                    setEnabledPacks(next)
+                  },
+                  title: enabledPacks.length ? 'Show all packs' : 'Enable theme packs',
+                  className: MANAGE_BUTTON_CLASS,
+                  children: enabledPacks.length ? 'All packs' : 'Enable packs'
                 }),
                 jsx('button', {
                   type: 'button',
