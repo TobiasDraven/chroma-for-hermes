@@ -288,6 +288,17 @@ def list_chroma_skins() -> dict[str, Any]:
 # skin engine ships built-ins of its own. Guarding with only one half mints a
 # skin the other half refuses: a file the CLI can see and the Desktop silently
 # ignores.
+# The twelve measured shelves, in the pane's display order.
+#
+# These are THEME_CATEGORIES' ids in desktop/plugin.template.js, copied here so the
+# backend can refuse a user category that would collide with one. The PANE is the
+# source of truth — a test reads its list back out of the template and pins the two
+# together, so this copy cannot drift silently.
+BUILTIN_CATEGORY_IDS: tuple[str, ...] = (
+    "minimal", "pastels", "vibrant", "muted", "earth", "terminal",
+    "nature", "warm", "orange", "gold", "cool", "violet",
+)
+
 CORE_NAMES = frozenset(
     {
         # Desktop theme names the picker must not shadow.
@@ -920,6 +931,108 @@ def _write_overrides(overrides: dict[str, Any]) -> None:
     _atomic_write_text(_overrides_path(), json.dumps(overrides, indent=2, sort_keys=True) + "\n")
 
 
+_CATEGORIES_FILENAME = "categories.json"
+
+# Same discipline as the index and the overrides: this file is USER DATA. A write
+# derived from a failed read is the exact data-loss defect 8a06221 closed. Reads
+# that only SHOW it stay lenient (GET /categories); anything that WRITES goes
+# strict. Whole read-modify-write under one lock, for the same reason.
+_CATEGORIES_LOCK = threading.Lock()
+
+
+def _categories_path() -> Path:
+    """<skins>/.chroma/categories.json — beside the index and the overrides, in the
+    sidecar dir the skin engine never globs. NOT a build input: a user category is
+    user intent, never baked into the generated catalogue."""
+    d = _skins_dir() / SIDECAR_DIRNAME
+    d.mkdir(parents=True, exist_ok=True)
+    return d / _CATEGORIES_FILENAME
+
+
+def _read_categories() -> list[dict[str, Any]]:
+    """The user's categories for READ-ONLY use, or [] if the file is missing or
+    unreadable. Lenient by design: decorating the pane must never take the picker
+    down, and no write is ever derived from this reading."""
+    p = _categories_path()
+    if not p.is_file():
+        return []
+    try:
+        parsed = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        logger.warning("chroma categories unreadable at %s; treating as empty for read-only views", p)
+        return []
+    if not isinstance(parsed, dict):
+        return []
+    cats = parsed.get("categories")
+    if not isinstance(cats, list):
+        return []
+    return [c for c in cats if isinstance(c, dict) and isinstance(c.get("id"), str) and c["id"].strip()]
+
+
+def _read_categories_for_update() -> list[dict[str, Any]]:
+    """Read the categories file for a path that is about to WRITE it.
+
+    A present-but-unreadable file is fatal rather than [] for exactly the reason the
+    index is: persisting that [] deletes every category the user made. The bad file
+    is copied aside first so the records survive a manual repair. Callers hold
+    `_CATEGORIES_LOCK`."""
+    p = _categories_path()
+    if not p.is_file():
+        return []
+    try:
+        parsed = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise IndexUnreadableError(p, _quarantine_index(p), exc) from exc
+    if not isinstance(parsed, dict):
+        raise IndexUnreadableError(p, _quarantine_index(p), "the file is not a JSON object")
+    cats = parsed.get("categories")
+    if cats is None:
+        return []
+    if not isinstance(cats, list):
+        raise IndexUnreadableError(p, _quarantine_index(p), "'categories' is not an array")
+    return [c for c in cats if isinstance(c, dict)]
+
+
+def _write_categories(categories: list[dict[str, Any]]) -> None:
+    _atomic_write_text(
+        _categories_path(),
+        json.dumps({"categories": categories}, indent=2, sort_keys=True) + "\n",
+    )
+
+
+def _write_categories_or_500(categories: list[dict[str, Any]]) -> None:
+    """Write the categories file, turning a filesystem failure into an actionable
+    5xx rather than a bare traceback. The atomic replace means a failure leaves the
+    prior file intact — there is no half-file to repair."""
+    try:
+        _write_categories(categories)
+    except OSError as exc:
+        raise HTTPException(
+            500,
+            f"could not update the category store ({_categories_path()}): {exc}. "
+            f"Fix free space or permissions and retry.",
+        ) from exc
+
+
+def _category_error(exc: IndexUnreadableError) -> HTTPException:
+    """Turn an unreadable-categories failure into an actionable 5xx for the caller."""
+    return HTTPException(500, str(exc))
+
+
+def _sorted_categories(categories: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Deterministic order for display: `(order, id)`, with a stable fallback for a
+    record whose order is missing or not an int (an older hand-written file)."""
+    def key(record: dict[str, Any]) -> tuple[int, str]:
+        order = record.get("order")
+        return (order if isinstance(order, int) else 1_000_000, str(record.get("id") or ""))
+
+    return sorted(categories, key=key)
+
+
+def _known_category_ids(categories: list[dict[str, Any]]) -> set[str]:
+    return {str(c.get("id")) for c in categories if isinstance(c.get("id"), str)}
+
+
 def _unscalar(value: str) -> str:
     """Undo `_yaml_scalar`: strip one layer of single quotes, un-double any inside."""
     if len(value) >= 2 and value[0] == "'" and value[-1] == "'":
@@ -1014,6 +1127,70 @@ def _mint_transport(scene: str, mode: str, palette: dict[str, str]) -> None:
     _atomic_write_text(path, _dump_skin_yaml(data))
 
 
+# --- E5: typography ----------------------------------------------------------
+#
+# A font choice rides the EXISTING overrides store. A typography edit is an override
+# exactly like a colour edit (§17), so there is no new store and no new file. The
+# authored fonts are NOT captured in the record the way authored colours are: the
+# authored stack lives in the pane's SCENE_TYPOGRAPHY, which the pane already holds,
+# so Reset needs nothing from here.
+TYPOGRAPHY_KEYS: tuple[str, ...] = ("fontSans", "fontMono")
+
+# A CSS font stack the pane will paste into a custom property. Generous for a real
+# stack (`"Segoe WPC", "Segoe UI", -apple-system, ... , emoji`), but short enough
+# that nothing pathological fits.
+MAX_FONT_STACK_CHARS = 200
+
+# Characters that would let a stack escape the declaration it is pasted into, plus
+# `url(` — a stack has no business opening a URL. Everything a real stack uses
+# (letters, digits, spaces, commas, quotes, hyphens, underscores, dots, parens) is
+# allowed; this list is the whole refusal set.
+_FONT_STACK_FORBIDDEN = (";", "{", "}", "<", ">", "\n", "\r", "url(")
+
+
+def _validate_font_stack(value: Any, key: str) -> str:
+    """Vet one font stack. Returns the stripped value or raises a named 400.
+
+    Hostile by default: this string becomes a CSS value, so anything that could
+    close the declaration or open a URL is refused rather than escaped — a font name
+    has no legitimate use for those, so a rejection cannot lose real intent."""
+    if not isinstance(value, str):
+        raise HTTPException(400, f"'{key}' must be a string")
+    stack = value.strip()
+    if not stack:
+        raise HTTPException(400, f"'{key}' must not be empty")
+    if len(stack) > MAX_FONT_STACK_CHARS:
+        raise HTTPException(
+            400,
+            f"'{key}' is {len(stack)} characters; a font stack is capped at {MAX_FONT_STACK_CHARS}",
+        )
+    lowered = stack.lower()
+    for token in _FONT_STACK_FORBIDDEN:
+        if token in lowered:
+            shown = token.replace("\n", "\\n").replace("\r", "\\r")
+            raise HTTPException(400, f"'{key}' contains {shown!r}, which a font stack may not contain")
+    return stack
+
+
+def _normalise_typography(mapping: Any) -> dict[str, str]:
+    """Validate a request's `typography` map. An unknown key is a 400 naming it and
+    the valid keys — never a silent drop."""
+    if mapping is None:
+        return {}
+    if not isinstance(mapping, dict):
+        raise HTTPException(400, "'typography' must be an object")
+    out: dict[str, str] = {}
+    for key, value in mapping.items():
+        if key not in TYPOGRAPHY_KEYS:
+            raise HTTPException(
+                400,
+                f"'{key}' is not an editable typography key; valid keys are "
+                f"{', '.join(TYPOGRAPHY_KEYS)}",
+            )
+        out[key] = _validate_font_stack(value, key)
+    return out
+
+
 def _normalise_palette(mapping: Any, *, what: str) -> dict[str, str]:
     """Validate and normalise one `{role: hex}` map.
 
@@ -1099,7 +1276,13 @@ def get_schema() -> dict[str, Any]:
         ],
         "groups": groups,
         "paletteKeys": list(EDITABLE_SKIN_KEYS),
-        "typography": [],  # reserved: the plan's type fields are not editable yet
+        "typography": [
+            {"id": key, "label": "Sans" if key == "fontSans" else "Mono"}
+            for key in TYPOGRAPHY_KEYS
+        ],
+        # The twelve measured shelves, in display order. The pane renders its own copy;
+        # this is here so the two cannot drift without a test noticing.
+        "categories": list(BUILTIN_CATEGORY_IDS),
         "caps": {"maxColors": MAX_THEME_COLORS, "maxBytes": MAX_THEME_BYTES},
     }
 
@@ -1115,14 +1298,22 @@ class ScenePaletteRequest(BaseModel):
     dark: dict[str, str] = {}
     label: str = ""
     description: str = ""
+    # The per-skin category assignment. "" clears it — the skin then falls back to
+    # its measured shelf in the pane. A category lives on the index record, never in
+    # the skin YAML: the CLI does not read one, and a key it ignores is a key that
+    # would be silently dropped on the next regeneration.
+    category: str = ""
 
 
 class OverrideRequest(BaseModel):
     """One scene override: the roles that differ from the authored palette, per
-    mode. A mode may be omitted; the untouched roles keep their authored values."""
+    mode, plus the fonts that differ from the authored stack. A mode may be omitted;
+    the untouched roles keep their authored values. `typography` holds only the keys
+    the user set — an absent key means "keep the authored font"."""
 
     light: dict[str, str] = {}
     dark: dict[str, str] = {}
+    typography: dict[str, str] = {}
 
 
 # Declared above the DELETE/PUT `/skins/{name}` pair only for readability — the
@@ -1175,8 +1366,32 @@ def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
         raise HTTPException(413, f"palette is too large: {oversized}")
     light = _normalise_palette(req.light, what="light")
     dark = _normalise_palette(req.dark, what="dark")
-    if not light and not dark and not req.description and not req.label:
-        raise HTTPException(400, "nothing to write: send at least one role, a label or a description")
+    # A category assignment IS an edit, so it counts as content here. Pydantic's
+    # `model_fields_set` separates "category omitted" from "category explicitly
+    # cleared" -- both are falsy, but only the first means "nothing to write".
+    if (
+        not light
+        and not dark
+        and not req.description
+        and not req.label
+        and "category" not in req.model_fields_set
+    ):
+        raise HTTPException(
+            400,
+            "nothing to write: send at least one role, a label, a description or a category",
+        )
+
+    # A category assignment IS an edit, so it counts as content above. Validate it
+    # before anything is written: a bad value must not leave a half-applied save.
+    category = (req.category or "").strip()
+    if category:
+        known = set(BUILTIN_CATEGORY_IDS) | _known_category_ids(_read_categories())
+        if category not in known:
+            raise HTTPException(
+                400,
+                f"'{category}' is not a category Chroma knows; valid values are "
+                f"{', '.join(sorted(known))}",
+            )
 
     target = _skins_dir() / f"{clean}.yaml"
 
@@ -1229,6 +1444,8 @@ def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
         updated = dict(record)
         if req.label:
             updated["label"] = req.label
+        # "" is a real value here, not an omission: it clears the assignment.
+        updated["category"] = category
         updated["editedAt"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
         index[clean] = updated
         try:
@@ -1257,6 +1474,7 @@ def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
         "light": merged_light,
         "dark": merged_dark,
         "colors": merged_light,
+        "category": updated.get("category") or "",
     }
 
 
@@ -1289,8 +1507,10 @@ def put_override(scene: str, req: OverrideRequest) -> dict[str, Any]:
         raise HTTPException(413, f"override is too large: {oversized}")
     light = _normalise_palette(req.light, what="light")
     dark = _normalise_palette(req.dark, what="dark")
-    if not light and not dark:
-        raise HTTPException(400, "an override must change at least one role")
+    typography = _normalise_typography(req.typography)
+    # An override that sets ONLY a font is a valid edit — the guard widens to admit it.
+    if not light and not dark and not typography:
+        raise HTTPException(400, "an override must change at least one role or font")
 
     with _OVERRIDES_LOCK:
         try:
@@ -1314,6 +1534,11 @@ def put_override(scene: str, req: OverrideRequest) -> dict[str, Any]:
             "authored": {mode: authored.get(mode, {}) for mode in EDITOR_MODES},
             "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         }
+        # Only the keys the user set — the same "record what they set, not what they
+        # cleared" rule the colour half follows. An absent/empty map means "no font
+        # override", and is omitted so an older record keeps its exact old shape.
+        if typography:
+            record["typography"] = typography
         overrides[clean] = record
         try:
             _write_overrides(overrides)
@@ -1323,9 +1548,13 @@ def put_override(scene: str, req: OverrideRequest) -> dict[str, Any]:
             ) from exc
 
         try:
-            for mode in EDITOR_MODES:
-                if full[mode]:
-                    _mint_transport(clean, mode, full[mode])
+            # A typography-only change does NOT mint a transport skin: a skin YAML
+            # carries colours, not fonts, so minting would be a lie about what the
+            # CLI received. Mint only when a colour actually changed.
+            if light or dark:
+                for mode in EDITOR_MODES:
+                    if full[mode]:
+                        _mint_transport(clean, mode, full[mode])
         except OSError as exc:
             # The record claims an edit whose CLI skin we could not mint. Undo the
             # record so the pane and the CLI cannot disagree about what is live;
@@ -1344,6 +1573,7 @@ def put_override(scene: str, req: OverrideRequest) -> dict[str, Any]:
         "scene": clean,
         "light": effective["light"],
         "dark": effective["dark"],
+        "typography": record.get("typography") or {},
         "at": record["at"],
     }
 
@@ -1355,7 +1585,11 @@ def delete_override(scene: str) -> dict[str, Any]:
 
     Per-skin by construction — no other scene's record is read or written, so a
     reset can never disturb a neighbour. Reset is the affordance that makes an
-    edit safe, which is why it ships with the editor rather than after it."""
+    edit safe, which is why it ships with the editor rather than after it.
+
+    Dropping the record drops the typography with it. There is nothing to restore
+    from here: the authored font lives in the pane's `SCENE_TYPOGRAPHY`, which the
+    pane already holds — there is no authored typography snapshot in this file."""
     clean = (scene or "").strip().lower()
     if _is_unsafe_name(clean):
         raise HTTPException(400, "scene name must be a slug (lower-case, hyphens)")
@@ -1402,6 +1636,105 @@ def delete_override(scene: str) -> dict[str, Any]:
 # RESOLVES NOTHING and INVENTS NOTHING. Reading the source scene to "fill in" an
 # absent role would claim the user chose a colour they never saw; an absent role
 # stays absent in the YAML (§6, line 123).
+
+
+# --- E4: categories ----------------------------------------------------------
+#
+# A category is a named container for skins. The twelve BUILTIN_CATEGORY_IDS are the
+# measured shelves the pane renders; this store holds only the user's OWN categories,
+# which sit beside them as a second, additive axis. A skin joins one through the
+# per-skin assignment on the index record (`PUT /skins/{name}`), never by moving a
+# file — so this whole feature is index-and-sidecar only, and no skin file is ever
+# rewritten or removed by it.
+
+
+class CategoryCreateRequest(BaseModel):
+    """A user's new category. `id` is optional: an empty id is slugified from the
+    title, so the pane can offer a one-field form."""
+
+    id: str = ""
+    title: str = ""
+
+
+@router.get("/categories")
+def list_categories() -> dict[str, Any]:
+    """The user's OWN categories — the twelve built-ins are the pane's to render.
+
+    Lenient read: an unreadable store shows as empty rather than taking the picker
+    down. Nothing is ever written from this reading."""
+    categories = _sorted_categories(_read_categories())
+    return {
+        "ok": True,
+        "count": len(categories),
+        "categories": [
+            {"id": c.get("id"), "title": c.get("title") or c.get("id"), "order": c.get("order")}
+            for c in categories
+        ],
+        "builtins": list(BUILTIN_CATEGORY_IDS),
+    }
+
+
+@router.post("/categories")
+def create_category(req: CategoryCreateRequest) -> dict[str, Any]:
+    """Create a user category.
+
+    Refusals are explicit and named: an unsafe id, an empty title, a built-in id and
+    a duplicate id each get their own status and message. A failed write is a 500 —
+    the atomic replace leaves the prior file intact, so there is no half-file."""
+    title = (req.title or "").strip()
+    if not title:
+        raise HTTPException(400, "a category needs a title")
+
+    raw_id = (req.id or "").strip()
+    cat_id = _slugify(raw_id) if raw_id else _slugify(title)
+    if not cat_id or _is_unsafe_name(cat_id):
+        raise HTTPException(
+            400,
+            f"'{raw_id or title}' does not reduce to a usable category id — "
+            f"use letters, digits and hyphens",
+        )
+    if cat_id in BUILTIN_CATEGORY_IDS:
+        raise HTTPException(409, f"'{cat_id}' is a built-in category")
+
+    with _CATEGORIES_LOCK:
+        try:
+            categories = _read_categories_for_update()
+        except IndexUnreadableError as exc:
+            raise _category_error(exc) from exc
+        if cat_id in _known_category_ids(categories):
+            raise HTTPException(409, f"'{cat_id}' already exists")
+        order = len(BUILTIN_CATEGORY_IDS) + len(categories)
+        categories.append({"id": cat_id, "title": title, "order": order})
+        _write_categories_or_500(categories)
+
+    logger.info("created category %s", cat_id)
+    return {"ok": True, "id": cat_id, "title": title, "order": order}
+
+
+@router.delete("/categories/{cat_id}")
+def delete_category(cat_id: str) -> dict[str, Any]:
+    """Remove a user category.
+
+    SAFE BY CONSTRUCTION: it deletes a record in the sidecar store and nothing else.
+    No skin file and no index entry is touched — the skins that pointed at this
+    category keep their colours and simply fall back to their measured shelf in the
+    pane. That is why this route needs no rollback path."""
+    key = _slugify(cat_id)
+    if key in BUILTIN_CATEGORY_IDS:
+        raise HTTPException(409, f"'{key}' is a built-in category and cannot be deleted")
+
+    with _CATEGORIES_LOCK:
+        try:
+            categories = _read_categories_for_update()
+        except IndexUnreadableError as exc:
+            raise _category_error(exc) from exc
+        kept = [c for c in categories if str(c.get("id")) != key]
+        if len(kept) == len(categories):
+            raise HTTPException(404, f"'{key}' is not a category Chroma manages")
+        _write_categories_or_500(kept)
+
+    logger.info("deleted category %s", key)
+    return {"ok": True, "id": key, "removed": True}
 
 
 class DuplicateRequest(BaseModel):
@@ -1767,19 +2100,93 @@ def _validate_bundle_skins(req: PackImportRequest) -> list[dict[str, Any]]:
 
 
 def _validate_bundle_categories(req: PackImportRequest) -> None:
-    """Validate the bundle's `categories` array. E4 owns actually creating them.
+    """Hostile validation of a bundle's `categories` array. Raises, naming the offence.
 
-    v1 does NOT create categories here — this only refuses a malformed array so a
-    broken bundle is caught at the boundary. When E4 lands, it creates them from
-    this exact shape; nothing is half-created now."""
+    Every rule is a refusal — a malformed entry, an id that is not a usable slug, or
+    an id colliding with a built-in. Nothing is dropped silently: a bundle that would
+    shadow a measured shelf is a broken bundle, not one to import partially."""
     cats = req.categories
     if cats is None:
         return
     if not isinstance(cats, list):
         raise HTTPException(400, "'categories' must be an array")
     for entry in cats:
-        if not isinstance(entry, dict) or not isinstance(entry.get("id"), str) or not entry["id"].strip():
+        if not isinstance(entry, dict):
+            raise HTTPException(400, "every category must be an object")
+        raw_id = entry.get("id")
+        if not isinstance(raw_id, str) or not raw_id.strip():
             raise HTTPException(400, "every category needs a non-empty string 'id'")
+        cid = _slugify(raw_id)
+        if not cid or _is_unsafe_name(cid):
+            raise HTTPException(
+                400, f"category id '{raw_id}' is not a usable slug — use letters, digits and hyphens"
+            )
+        if cid in BUILTIN_CATEGORY_IDS:
+            raise HTTPException(
+                400, f"category id '{cid}' collides with a built-in category and cannot be imported"
+            )
+
+
+def _bundle_category_records(req: PackImportRequest) -> list[dict[str, str]]:
+    """The bundle's categories, normalised to `{id, title}` pairs. Assumes the array
+    already passed `_validate_bundle_categories`."""
+    records: list[dict[str, str]] = []
+    for entry in req.categories or []:
+        if not isinstance(entry, dict):
+            continue
+        cid = _slugify(str(entry.get("id") or ""))
+        if not cid:
+            continue
+        title = entry.get("title")
+        title = title.strip() if isinstance(title, str) and title.strip() else cid
+        records.append({"id": cid, "title": title})
+    return records
+
+
+def _import_bundle_categories(bundle_cats: list[dict[str, str]], changes: list[str]) -> None:
+    """Create or retitle the bundle's categories, in ONE locked read-modify-write.
+
+    Called INSIDE the pack-import transaction, before the skins are written, so a
+    later failure unwinds these bytes with `_restore_categories`. Idempotent: an id
+    already present with the same title is a no-op; a different title updates it. An
+    id colliding with a built-in never reaches here — the validator refuses it. The
+    file is not touched when the merged store is unchanged."""
+    if not bundle_cats:
+        return
+    with _CATEGORIES_LOCK:
+        try:
+            categories = _read_categories_for_update()
+        except IndexUnreadableError as exc:
+            raise _category_error(exc) from exc
+        known = _known_category_ids(categories)
+        dirty = False
+        for cat in bundle_cats:
+            cid, ctitle = cat["id"], cat["title"]
+            if cid in known:
+                for record in categories:
+                    if str(record.get("id")) == cid and (record.get("title") or cid) != ctitle:
+                        record["title"] = ctitle
+                        dirty = True
+                        changes.append(cid)
+                continue
+            order = len(BUILTIN_CATEGORY_IDS) + len(categories)
+            categories.append({"id": cid, "title": ctitle, "order": order})
+            known.add(cid)
+            dirty = True
+            changes.append(cid)
+        if dirty:
+            _write_categories_or_500(categories)
+
+
+def _restore_categories(original_text: str | None) -> None:
+    """Best-effort restore of the categories store to its prior bytes (or absence)."""
+    try:
+        if original_text is None:
+            _unlink_quietly(_categories_path())
+        else:
+            _atomic_write_text(_categories_path(), original_text)
+    except OSError:
+        pass
 
 
 def _restore_index(original_text: str | None) -> None:
@@ -1807,7 +2214,8 @@ def import_pack(req: PackImportRequest) -> dict[str, Any]:
         raise HTTPException(413, f"pack is too large: {oversized}")
 
     parsed = _validate_bundle_skins(req)
-    _validate_bundle_categories(req)  # validated, then ignored — E4 owns creation
+    _validate_bundle_categories(req)
+    bundle_cats = _bundle_category_records(req)
 
     name = (req.name or "").strip()
     slug = _slugify(name)
@@ -1827,7 +2235,22 @@ def import_pack(req: PackImportRequest) -> dict[str, Any]:
                 else:
                     status, resolved = "collides", _free_slug(skin["name"], skins_dir)
             entries.append({"name": skin["name"], "status": status, "resolved": resolved})
-        return {"ok": True, "dryRun": True, "pack": pack_slug, "skins": entries}
+        known_cats = set(BUILTIN_CATEGORY_IDS) | _known_category_ids(_read_categories())
+        cat_plan = [
+            {
+                "id": cat["id"],
+                "title": cat["title"],
+                "status": "existing" if cat["id"] in known_cats else "new",
+            }
+            for cat in bundle_cats
+        ]
+        return {
+            "ok": True,
+            "dryRun": True,
+            "pack": pack_slug,
+            "skins": entries,
+            "categories": cat_plan,
+        }
 
     # ---- confirm: one transaction against the index -----------------------
     with _INDEX_LOCK:
@@ -1842,7 +2265,13 @@ def import_pack(req: PackImportRequest) -> dict[str, Any]:
         created: list[Path] = []
         imported: list[str] = []
         skipped: list[str] = []
+        cats_path = _categories_path()
+        original_categories = cats_path.read_text(encoding="utf-8") if cats_path.is_file() else None
+        category_changes: list[str] = []
         try:
+            # Categories are created first so the skins' records reference an id that
+            # already exists. A failure below unwinds this too, in the same rollback.
+            _import_bundle_categories(bundle_cats, category_changes)
             for skin in parsed:
                 target = skins_dir / f"{skin['name']}.yaml"
                 if target.exists():
@@ -1910,11 +2339,13 @@ def import_pack(req: PackImportRequest) -> dict[str, Any]:
             for path in created:
                 _unlink_quietly(path)
             _restore_index(original_index)
+            _restore_categories(original_categories)
             raise
         except OSError as exc:
             for path in created:
                 _unlink_quietly(path)
             _restore_index(original_index)
+            _restore_categories(original_categories)
             raise HTTPException(
                 500,
                 f"the pack import failed part-way ({exc}); everything it wrote was rolled back",
@@ -1923,7 +2354,14 @@ def import_pack(req: PackImportRequest) -> dict[str, Any]:
     logger.info(
         "imported pack %s: %d new, %d skipped", pack_slug or name, len(imported), len(skipped)
     )
-    return {"ok": True, "dryRun": False, "pack": pack_slug, "imported": imported, "skipped": skipped}
+    return {
+        "ok": True,
+        "dryRun": False,
+        "pack": pack_slug,
+        "imported": imported,
+        "skipped": skipped,
+        "categories": category_changes,
+    }
 
 
 @router.delete("/packs/{slug}")

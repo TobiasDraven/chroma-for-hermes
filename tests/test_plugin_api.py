@@ -1409,5 +1409,392 @@ class PackDeleteTests(PackTestCase):
         self.assertEqual(ctx.exception.status_code, 404)
 
 
+class CategoryStoreTests(EditorTestCase):
+    """E4 — the user category store: create, list, delete, and the closed built-in set."""
+
+    def _mkcat(self, cid="", title="My Category"):
+        return self.api.create_category(self.api.CategoryCreateRequest(id=cid, title=title))
+
+    def test_create_list_delete_round_trip(self):
+        created = self._mkcat("cyber-noir", "Cyber Noir")
+        self.assertTrue(created["ok"])
+        self.assertEqual(created["id"], "cyber-noir")
+        self.assertEqual(created["title"], "Cyber Noir")
+
+        listing = self.api.list_categories()
+        self.assertEqual(listing["count"], 1)
+        self.assertEqual(listing["categories"][0]["id"], "cyber-noir")
+        self.assertEqual(listing["categories"][0]["title"], "Cyber Noir")
+
+        removed = self.api.delete_category("cyber-noir")
+        self.assertTrue(removed["removed"])
+        self.assertEqual(self.api.list_categories()["count"], 0)
+
+    def test_order_is_deterministic_and_after_the_builtins(self):
+        for i in range(3):
+            self._mkcat(f"cat-{i}", f"Cat {i}")
+        listing = self.api.list_categories()
+        self.assertEqual([c["id"] for c in listing["categories"]], ["cat-0", "cat-1", "cat-2"])
+        base = len(self.api.BUILTIN_CATEGORY_IDS)
+        self.assertEqual([c["order"] for c in listing["categories"]], [base, base + 1, base + 2])
+
+    def test_order_survives_a_reload(self):
+        self._mkcat("a", "A")
+        self._mkcat("b", "B")
+        # Re-read from disk (a fresh read, not the in-memory append).
+        on_disk = self.api._read_categories()
+        self.assertEqual([c["id"] for c in on_disk], ["a", "b"])
+
+    def test_refuses_a_builtin_id_on_create(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self._mkcat("cool", "Cool")
+        self.assertEqual(ctx.exception.status_code, 409)
+        self.assertIn("cool", str(ctx.exception.detail))
+        self.assertIn("built-in", str(ctx.exception.detail))
+
+    def test_refuses_a_builtin_id_on_delete(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.delete_category("cool")
+        self.assertEqual(ctx.exception.status_code, 409)
+        self.assertIn("cool", str(ctx.exception.detail))
+
+    def test_refuses_a_duplicate_id(self):
+        from fastapi import HTTPException
+
+        self._mkcat("dup", "One")
+        with self.assertRaises(HTTPException) as ctx:
+            self._mkcat("dup", "Two")
+        self.assertEqual(ctx.exception.status_code, 409)
+        self.assertIn("dup", str(ctx.exception.detail))
+        self.assertIn("already exists", str(ctx.exception.detail))
+
+    def test_refuses_an_empty_title(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self._mkcat("", "   ")
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn("title", str(ctx.exception.detail))
+
+    def test_refuses_an_id_that_cannot_reduce_to_a_slug(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self._mkcat("!!!", "Escape")
+        self.assertEqual(ctx.exception.status_code, 400)
+
+    def test_normalises_a_messy_id_to_a_slug(self):
+        """The brief says normalise the id to a slug; only an id that reduces to
+        nothing is refused. `../escape` normalises to `escape`, it is not rejected."""
+        created = self._mkcat("../escape", "Escape")
+        self.assertEqual(created["id"], "escape")
+
+    def test_slugifies_an_id_from_the_title_when_omitted(self):
+        created = self._mkcat("", "Neon Nights")
+        self.assertEqual(created["id"], "neon-nights")
+
+    def test_a_missing_store_lists_as_empty(self):
+        self.assertEqual(self.api.list_categories()["count"], 0)
+
+    def test_a_corrupt_store_fails_a_writer_loudly(self):
+        """The mirror of the index test: a corrupt file must abort a write, not be
+        silently overwritten with a fresh list."""
+        from fastapi import HTTPException
+
+        path = self.api._categories_path()
+        truncated = '{"categories": [{"id": "broken"'
+        path.write_text(truncated, encoding="utf-8")
+        with self.assertRaises(HTTPException) as ctx:
+            self._mkcat("fresh", "Fresh")
+        self.assertEqual(ctx.exception.status_code, 500)
+        self.assertEqual(path.read_text(encoding="utf-8"), truncated, "the file must be untouched")
+
+    def test_a_corrupt_store_does_not_500_the_listing(self):
+        path = self.api._categories_path()
+        path.write_text("{ not json", encoding="utf-8")
+        listing = self.api.list_categories()
+        self.assertEqual(listing["count"], 0)
+        self.assertEqual(listing["categories"], [])
+
+    def test_delete_of_an_absent_category_is_a_404(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.delete_category("ghost")
+        self.assertEqual(ctx.exception.status_code, 404)
+        self.assertIn("ghost", str(ctx.exception.detail))
+
+    def test_deleting_a_category_leaves_every_skin_file_byte_identical(self):
+        self._import("alpha")
+        self._import("beta")
+        self._mkcat("keep", "Keep")
+        self.api.put_skin("alpha", self.api.ScenePaletteRequest(category="keep"))
+
+        skins_dir = Path(self.home) / "skins"
+        before = {p.name: p.read_bytes() for p in skins_dir.glob("*.yaml")}
+
+        self.api.delete_category("keep")
+
+        after = {p.name: p.read_bytes() for p in skins_dir.glob("*.yaml")}
+        self.assertEqual(before, after, "a category delete must not touch a skin file")
+
+    def test_the_builtin_list_matches_the_pane(self):
+        """The drift pin: the backend's copy of the 12 ids must equal the pane's
+        THEME_CATEGORIES. Reads the pane file read-only so the two cannot drift."""
+        import re as _re
+
+        pane = Path(__file__).resolve().parents[1] / "desktop" / "plugin.template.js"
+        if not pane.is_file():
+            self.skipTest("desktop/plugin.template.js is not present to pin against")
+        text = pane.read_text(encoding="utf-8")
+        match = _re.search(r"const THEME_CATEGORIES\s*=\s*\[(.*?)\]", text, _re.S)
+        if not match:
+            self.skipTest("THEME_CATEGORIES was not found in the pane template")
+        pane_ids = _re.findall(r"id:\s*'([a-z0-9-]+)'", match.group(1))
+        self.assertEqual(list(self.api.BUILTIN_CATEGORY_IDS), pane_ids)
+
+
+class CategoryAssignmentTests(EditorTestCase):
+    """E4 — the per-skin category assignment on PUT /skins/{name}."""
+
+    def test_assigns_a_builtin_category_and_persists_it(self):
+        self._import("mine")
+        result = self.api.put_skin("mine", self.api.ScenePaletteRequest(category="cool"))
+        self.assertEqual(result["category"], "cool")
+        self.assertEqual(self.api._read_index()["mine"]["category"], "cool")
+
+    def test_assigns_a_user_category(self):
+        self._import("mine")
+        self.api.create_category(self.api.CategoryCreateRequest(id="neon", title="Neon"))
+        result = self.api.put_skin("mine", self.api.ScenePaletteRequest(category="neon"))
+        self.assertEqual(result["category"], "neon")
+
+    def test_refuses_an_unknown_category_and_names_it(self):
+        from fastapi import HTTPException
+
+        self._import("mine")
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_skin("mine", self.api.ScenePaletteRequest(category="no-such-cat"))
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn("no-such-cat", str(ctx.exception.detail))
+
+    def test_empty_string_clears_a_previously_set_category(self):
+        self._import("mine")
+        self.api.put_skin("mine", self.api.ScenePaletteRequest(category="cool"))
+        result = self.api.put_skin("mine", self.api.ScenePaletteRequest(category=""))
+        self.assertEqual(result["category"], "")
+        self.assertEqual(self.api._read_index()["mine"]["category"], "")
+
+    def test_a_category_only_write_is_a_real_write(self):
+        """A request carrying only a category must not be refused by the
+        "nothing to write" guard."""
+        self._import("mine")
+        result = self.api.put_skin("mine", self.api.ScenePaletteRequest(category="cool"))
+        self.assertTrue(result["ok"])
+
+    def test_a_write_that_changes_nothing_at_all_is_still_refused(self):
+        from fastapi import HTTPException
+
+        self._import("mine")
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_skin("mine", self.api.ScenePaletteRequest())
+        self.assertEqual(ctx.exception.status_code, 400)
+
+    def test_get_skin_reports_the_stored_category(self):
+        self._import("mine")
+        self.api.put_skin("mine", self.api.ScenePaletteRequest(category="cool"))
+        self.assertEqual(self.api.get_skin("mine")["category"], "cool")
+
+    def test_an_unknown_category_does_not_leave_a_half_write(self):
+        from fastapi import HTTPException
+
+        self._import("mine")
+        before = self.api._read_index()["mine"]
+        with self.assertRaises(HTTPException):
+            self.api.put_skin("mine", self.api.ScenePaletteRequest(category="ghost"))
+        self.assertEqual(self.api._read_index()["mine"], before)
+
+
+class CategoryImportTests(PackTestCase):
+    """E4 — pack import creates the bundle's categories in the same transaction."""
+
+    def _bundle_with_cats(self, cats, skins=None):
+        bundle = self._bundle(skins=skins or [self._entry("packskin")])
+        bundle["categories"] = cats
+        return bundle
+
+    def test_import_creates_the_bundles_categories(self):
+        bundle = self._bundle_with_cats([{"id": "noir", "title": "Noir"}])
+        result = self.api.import_pack(self.api.PackImportRequest(**bundle))
+        self.assertIn("noir", result["categories"])
+        listing = self.api.list_categories()
+        self.assertEqual([c["id"] for c in listing["categories"]], ["noir"])
+        self.assertEqual(listing["categories"][0]["title"], "Noir")
+
+    def test_reimport_is_idempotent(self):
+        bundle = self._bundle_with_cats([{"id": "noir", "title": "Noir"}])
+        self.api.import_pack(self.api.PackImportRequest(**bundle))
+        bundle2 = self._bundle_with_cats([{"id": "noir", "title": "Noir"}], skins=[self._entry("second")])
+        self.api.import_pack(self.api.PackImportRequest(**bundle2))
+        listing = self.api.list_categories()
+        self.assertEqual(listing["count"], 1, "a re-import must not duplicate a category")
+
+    def test_a_retitled_category_updates_in_place(self):
+        bundle = self._bundle_with_cats([{"id": "noir", "title": "Noir"}])
+        self.api.import_pack(self.api.PackImportRequest(**bundle))
+        bundle2 = self._bundle_with_cats([{"id": "noir", "title": "Noir Deluxe"}], skins=[self._entry("second")])
+        result = self.api.import_pack(self.api.PackImportRequest(**bundle2))
+        self.assertIn("noir", result["categories"])
+        listing = self.api.list_categories()
+        self.assertEqual(listing["count"], 1)
+        self.assertEqual(listing["categories"][0]["title"], "Noir Deluxe")
+
+    def test_dry_run_does_not_write_categories(self):
+        bundle = self._bundle_with_cats([{"id": "noir", "title": "Noir"}])
+        result = self.api.import_pack(self.api.PackImportRequest(**bundle, dryRun=True))
+        self.assertTrue(result["dryRun"])
+        self.assertEqual(self.api.list_categories()["count"], 0)
+
+    def test_a_builtin_collision_is_refused(self):
+        from fastapi import HTTPException
+
+        bundle = self._bundle_with_cats([{"id": "cool", "title": "Cool"}])
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_pack(self.api.PackImportRequest(**bundle))
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn("cool", str(ctx.exception.detail))
+
+    def test_a_failed_import_leaves_the_store_unchanged(self):
+        """The category is created first, then the colliding skin aborts the import:
+        the rollback must remove the category too."""
+        from fastapi import HTTPException
+
+        self._import("existing")
+        bundle = self._bundle_with_cats(
+            [{"id": "noir", "title": "Noir"}],
+            skins=[self._entry("existing", background="#010203")],
+        )
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_pack(self.api.PackImportRequest(**bundle))
+        self.assertEqual(ctx.exception.status_code, 409)
+        self.assertEqual(self.api.list_categories()["count"], 0, "the category must be rolled back")
+
+    def test_a_malformed_category_entry_is_refused(self):
+        from fastapi import HTTPException
+
+        bundle = self._bundle_with_cats([{"id": "", "title": "Nameless"}])
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_pack(self.api.PackImportRequest(**bundle))
+        self.assertEqual(ctx.exception.status_code, 400)
+
+
+class SchemaCategoryTests(EditorTestCase):
+    """E4 — /schema publishes the built-in category ids and the typography keys."""
+
+    def test_schema_lists_the_builtin_category_ids(self):
+        self.assertEqual(
+            self.api.get_schema()["categories"], list(self.api.BUILTIN_CATEGORY_IDS)
+        )
+
+    def test_schema_typography_keys_are_ordered(self):
+        self.assertEqual(
+            self.api.get_schema()["typography"],
+            [{"id": "fontSans", "label": "Sans"}, {"id": "fontMono", "label": "Mono"}],
+        )
+
+
+class TypographyOverrideTests(EditorTestCase):
+    """E5 — a font choice rides the existing overrides store."""
+
+    def setUp(self):
+        super().setUp()
+        self._seed_scene("nous")
+
+    def test_a_typography_only_override_is_accepted(self):
+        result = self.api.put_override(
+            "nous", self.api.OverrideRequest(typography={"fontSans": "Georgia, serif"})
+        )
+        self.assertEqual(result["typography"], {"fontSans": "Georgia, serif"})
+        self.assertEqual(
+            self.api.list_overrides()["overrides"]["nous"]["typography"],
+            {"fontSans": "Georgia, serif"},
+        )
+
+    def test_an_override_that_changes_neither_a_role_nor_a_font_is_refused(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_override("nous", self.api.OverrideRequest())
+        self.assertEqual(ctx.exception.status_code, 400)
+
+    def test_an_unknown_typography_key_is_refused_by_name(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_override("nous", self.api.OverrideRequest(typography={"fontSerif": "x"}))
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn("fontSerif", str(ctx.exception.detail))
+
+    def test_an_empty_font_stack_is_refused(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_override("nous", self.api.OverrideRequest(typography={"fontSans": "   "}))
+        self.assertEqual(ctx.exception.status_code, 400)
+
+    def test_an_over_long_font_stack_is_refused(self):
+        from fastapi import HTTPException
+
+        long_stack = "x" * (self.api.MAX_FONT_STACK_CHARS + 1)
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_override("nous", self.api.OverrideRequest(typography={"fontSans": long_stack}))
+        self.assertEqual(ctx.exception.status_code, 400)
+
+    def test_each_forbidden_character_is_refused(self):
+        from fastapi import HTTPException
+
+        for token in (";", "{", "}", "<", ">", "url("):
+            with self.subTest(token=token):
+                with self.assertRaises(HTTPException) as ctx:
+                    self.api.put_override(
+                        "nous", self.api.OverrideRequest(typography={"fontSans": f"Arial{token}x"})
+                    )
+                self.assertEqual(ctx.exception.status_code, 400)
+                self.assertIn("fontSans", str(ctx.exception.detail))
+
+    def test_a_typography_only_override_does_not_touch_the_transport_skins(self):
+        """The "no minting" rule: a skin YAML carries colours, not fonts."""
+        skins_dir = Path(self.home) / "skins"
+        before = {p.name: p.read_bytes() for p in skins_dir.glob("theme-picker-nous-*.yaml")}
+        self.api.put_override("nous", self.api.OverrideRequest(typography={"fontMono": "Menlo, monospace"}))
+        after = {p.name: p.read_bytes() for p in skins_dir.glob("theme-picker-nous-*.yaml")}
+        self.assertEqual(before, after, "a font-only edit must not re-mint a transport skin")
+
+    def test_a_colour_and_typography_override_stores_both_and_mints(self):
+        result = self.api.put_override(
+            "nous",
+            self.api.OverrideRequest(
+                light={"ui_accent": "#123456"}, typography={"fontSans": "Georgia, serif"}
+            ),
+        )
+        self.assertEqual(result["light"]["ui_accent"], "#123456")
+        self.assertEqual(result["typography"], {"fontSans": "Georgia, serif"})
+        self.assertEqual(self._transport_colors("nous", "light")["ui_accent"], "#123456")
+
+    def test_delete_removes_the_typography_with_the_record(self):
+        self.api.put_override("nous", self.api.OverrideRequest(typography={"fontSans": "Georgia, serif"}))
+        self.api.delete_override("nous")
+        self.assertEqual(self.api.list_overrides()["count"], 0)
+
+    def test_only_the_keys_the_user_set_are_recorded(self):
+        self.api.put_override("nous", self.api.OverrideRequest(typography={"fontSans": "Georgia, serif"}))
+        record = self.api.list_overrides()["overrides"]["nous"]
+        self.assertEqual(set(record["typography"]), {"fontSans"}, "an unset key is not recorded")
+
+
 if __name__ == "__main__":
     unittest.main()
