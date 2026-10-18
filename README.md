@@ -66,8 +66,8 @@ are no single-mode (dark-only or light-only) scenes. See
 - A recent version of **Hermes Desktop**.
 - A Hermes **gateway** for synchronization across devices. Without one, the
   current Desktop still applies and saves themes locally.
-- **Python 3.8+** and `PyYAML` only if you want to regenerate the catalog. They
-  are not required to use the picker.
+- **Python 3.9+** and `PyYAML` only if you want to regenerate the catalog (the
+  generator calls `str.removeprefix`). They are not required to use the picker.
 
 The plugin is a package: the Desktop half (the UI) plus a Python half (the
 backend that mints gateway skins). Both land in your Hermes home's
