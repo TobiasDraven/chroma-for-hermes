@@ -1068,5 +1068,346 @@ class OverrideTests(EditorTestCase):
         )
 
 
+class DuplicateTests(EditorTestCase):
+    """E2 — POST /skins/duplicate forks a palette; the server resolves nothing."""
+
+    def _dup(self, **kw):
+        return self.api.duplicate_skin(self.api.DuplicateRequest(**kw))
+
+    def test_forks_a_palette_into_a_first_class_skin(self):
+        self._import("source-skin")
+        result = self._dup(
+            to="copy-of-source",
+            label="My Copy",
+            light={"background": "#101010", "ui_accent": "#ff0000"},
+            dark={"background": "#000000"},
+        )
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["name"], "copy-of-source")
+
+        target = Path(result["path"])
+        self.assertTrue(target.is_file())
+        yaml = __import__("yaml")
+        parsed = yaml.safe_load(target.read_text(encoding="utf-8"))
+        self.assertEqual(parsed["name"], "copy-of-source")
+        self.assertEqual(parsed["description"], "My Copy")
+        self.assertEqual(parsed["colors"]["ui_accent"], "#ff0000")
+        self.assertEqual(parsed["dark_colors"]["background"], "#000000")
+
+        index = self.api._read_index()
+        self.assertIn("copy-of-source", index)
+        self.assertEqual(index["copy-of-source"]["source"], "user")
+        self.assertIsNone(index["copy-of-source"]["pack"])
+        self.assertTrue(index["copy-of-source"]["importedAt"])
+
+    def test_the_new_skin_is_readable_through_get_skin(self):
+        self._dup(to="readable", light={"background": "#123456"})
+        self.assertEqual(self.api.get_skin("readable")["light"]["background"], "#123456")
+
+    def test_refuses_collision_with_an_owned_skin(self):
+        from fastapi import HTTPException
+
+        self._import("taken")
+        with self.assertRaises(HTTPException) as ctx:
+            self._dup(to="taken", light={"background": "#000000"})
+        self.assertEqual(ctx.exception.status_code, 409)
+        self.assertIn("taken", str(ctx.exception.detail))
+
+    def test_refuses_collision_with_a_core_name(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self._dup(to="nord", light={"background": "#000000"})
+        self.assertEqual(ctx.exception.status_code, 409)
+
+    def test_refuses_a_bad_slug(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self._dup(to="../escape", light={"background": "#000000"})
+        self.assertEqual(ctx.exception.status_code, 400)
+
+    def test_refuses_an_unknown_role_by_name(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self._dup(to="unknown-role", light={"favourite": "#123456"})
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn("'favourite'", str(ctx.exception.detail))
+
+    def test_refuses_a_bad_hex_and_names_the_value(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self._dup(to="bad-hex", light={"ui_accent": "not-a-colour"})
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn(repr("not-a-colour"), str(ctx.exception.detail))
+
+    def test_resolves_nothing_a_light_only_request_writes_no_dark_keys(self):
+        """The server must not read the source scene to fill in a dark palette."""
+        result = self._dup(to="light-only", light={"background": "#abcdef"})
+        body = Path(result["path"]).read_text(encoding="utf-8")
+        self.assertNotIn("dark_colors", body)
+        parsed = __import__("yaml").safe_load(body)
+        self.assertNotIn("dark_colors", parsed)
+        self.assertEqual(parsed["colors"]["background"], "#abcdef")
+
+    def test_an_absent_role_in_a_supplied_palette_stays_absent(self):
+        result = self._dup(to="sparse", light={"background": "#abcdef"})
+        parsed = __import__("yaml").safe_load(Path(result["path"]).read_text(encoding="utf-8"))
+        self.assertEqual(set(parsed["colors"]), {"background"})
+
+
+class PackTestCase(EditorTestCase):
+    """Shared bundle builders for the E3 pack routes."""
+
+    def _bundle(self, name="Test Pack", skins=None, author="tester"):
+        return {
+            "chroma_pack": 1,
+            "name": name,
+            "author": author,
+            "created": "2026-10-18T00:00:00+00:00",
+            "categories": [],
+            "skins": skins if skins is not None else [],
+        }
+
+    def _entry(self, name, background="#101010", ui_accent="#ff0000"):
+        return {
+            "name": name,
+            "label": f"Label {name}",
+            "light": {"background": background, "ui_accent": ui_accent},
+            "dark": {"background": "#000000", "ui_accent": ui_accent},
+        }
+
+
+class PackExportTests(PackTestCase):
+    def test_export_gathers_current_palettes_into_the_versioned_bundle(self):
+        self._import("one")
+        self._import("two")
+        bundle = self.api.export_pack(
+            self.api.PackExportRequest(name="Test Pack", members=["one", "two"], author="me")
+        )
+        self.assertEqual(
+            set(bundle), {"chroma_pack", "name", "author", "created", "categories", "skins"}
+        )
+        self.assertEqual(bundle["chroma_pack"], 1)
+        self.assertEqual(bundle["name"], "Test Pack")
+        self.assertEqual(bundle["author"], "me")
+        self.assertEqual(bundle["categories"], [])
+        self.assertEqual([s["name"] for s in bundle["skins"]], ["one", "two"])
+
+        editable = set(self.api.EDITABLE_SKIN_KEYS)
+        for skin in bundle["skins"]:
+            self.assertTrue(skin["label"])
+            self.assertIn("background", skin["light"])
+            self.assertIn("background", skin["dark"])
+            self.assertTrue(set(skin["light"]) <= editable)
+            self.assertTrue(set(skin["dark"]) <= editable)
+
+    def test_export_writes_the_pack_record_so_it_appears_in_the_list(self):
+        self._import("one")
+        self.api.export_pack(self.api.PackExportRequest(name="Test Pack", members=["one"]))
+        listing = self.api.list_packs()
+        self.assertEqual(listing["count"], 1)
+        row = listing["packs"][0]
+        self.assertEqual(row["slug"], "test-pack")
+        self.assertEqual(row["count"], 1)
+        self.assertEqual(row["members"], ["one"])
+        self.assertEqual(row["missing"], [])
+
+    def test_export_refuses_a_missing_member_with_400_naming_it(self):
+        from fastapi import HTTPException
+
+        self._import("present")
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.export_pack(self.api.PackExportRequest(name="P", members=["present", "gone"]))
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn("gone", str(ctx.exception.detail))
+
+    def test_export_refuses_a_path_member(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.export_pack(self.api.PackExportRequest(name="P", members=["../escape"]))
+        self.assertEqual(ctx.exception.status_code, 400)
+
+
+class PackListTests(PackTestCase):
+    def test_a_missing_member_is_reported_not_hidden(self):
+        self._import("one")
+        self._import("two")
+        self.api.export_pack(self.api.PackExportRequest(name="Test Pack", members=["one", "two"]))
+        (Path(self.home) / "skins" / "two.yaml").unlink()
+
+        row = self.api.list_packs()["packs"][0]
+        self.assertEqual(row["count"], 2)
+        self.assertEqual(row["missing"], ["two"])
+
+    def test_a_malformed_pack_file_does_not_500_the_list(self):
+        self._import("one")
+        self.api.export_pack(self.api.PackExportRequest(name="Good Pack", members=["one"]))
+        (self.api._packs_dir() / "broken.json").write_text("{ not json", encoding="utf-8")
+
+        listing = self.api.list_packs()
+        self.assertEqual(listing["count"], 2)
+        self.assertEqual({p["slug"] for p in listing["packs"]}, {"good-pack", "broken"})
+        broken = [p for p in listing["packs"] if p["slug"] == "broken"][0]
+        self.assertTrue(broken.get("unreadable"))
+
+
+class PackImportTests(PackTestCase):
+    def test_preview_reports_new_and_writes_nothing(self):
+        result = self.api.import_pack(
+            self.api.PackImportRequest(**self._bundle(skins=[self._entry("brand-new")]), dryRun=True)
+        )
+        self.assertTrue(result["dryRun"])
+        self.assertEqual(result["skins"][0]["status"], "new")
+        self.assertEqual(result["skins"][0]["resolved"], "brand-new")
+        self.assertFalse((Path(self.home) / "skins" / "brand-new.yaml").exists())
+
+    def test_preview_reports_identical_for_matching_palettes(self):
+        self._import("existing")
+        light, dark = self.api._skin_palettes(Path(self.home) / "skins" / "existing.yaml")
+        bundle = self._bundle(skins=[{"name": "existing", "label": "E", "light": light, "dark": dark}])
+        result = self.api.import_pack(self.api.PackImportRequest(**bundle, dryRun=True))
+        self.assertEqual(result["skins"][0]["status"], "identical")
+
+    def test_preview_reports_collides_with_a_resolved_name(self):
+        self._import("existing")
+        bundle = self._bundle(skins=[self._entry("existing", background="#010203")])
+        result = self.api.import_pack(self.api.PackImportRequest(**bundle, dryRun=True))
+        self.assertEqual(result["skins"][0]["status"], "collides")
+        self.assertEqual(result["skins"][0]["resolved"], "existing-2")
+
+    def test_confirm_imports_the_pack_and_records_provenance(self):
+        bundle = self._bundle(
+            name="My Pack", skins=[self._entry("alpha"), self._entry("beta")]
+        )
+        result = self.api.import_pack(self.api.PackImportRequest(**bundle))
+        self.assertEqual(sorted(result["imported"]), ["alpha", "beta"])
+        for name in ("alpha", "beta"):
+            self.assertTrue((Path(self.home) / "skins" / f"{name}.yaml").is_file())
+
+        index = self.api._read_index()
+        self.assertEqual(index["alpha"]["source"], "user")
+        self.assertEqual(index["alpha"]["pack"], "my-pack")
+        self.assertEqual([p["slug"] for p in self.api.list_packs()["packs"]], ["my-pack"])
+
+    def test_identical_skins_are_skipped_not_rewritten(self):
+        self._import("existing")
+        path = Path(self.home) / "skins" / "existing.yaml"
+        before = path.read_text(encoding="utf-8")
+        light, dark = self.api._skin_palettes(path)
+        bundle = self._bundle(skins=[{"name": "existing", "label": "E", "light": light, "dark": dark}])
+        result = self.api.import_pack(self.api.PackImportRequest(**bundle))
+        self.assertEqual(result["skipped"], ["existing"])
+        self.assertEqual(result["imported"], [])
+        self.assertEqual(path.read_text(encoding="utf-8"), before)
+
+    def test_confirm_refuses_an_unresolved_collision_and_writes_nothing(self):
+        from fastapi import HTTPException
+
+        self._import("existing")
+        bundle = self._bundle(
+            skins=[self._entry("fresh"), self._entry("existing", background="#010203")]
+        )
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_pack(self.api.PackImportRequest(**bundle))
+        self.assertEqual(ctx.exception.status_code, 409)
+        # The transaction rolled back the earlier skin in the same bundle.
+        self.assertFalse((Path(self.home) / "skins" / "fresh.yaml").exists())
+
+    def test_refuses_a_wrong_format_version(self):
+        from fastapi import HTTPException
+
+        bundle = self._bundle(skins=[self._entry("x")])
+        bundle["chroma_pack"] = 2
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_pack(self.api.PackImportRequest(**bundle))
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn("chroma_pack", str(ctx.exception.detail))
+
+    def test_refuses_an_unknown_role_by_name(self):
+        from fastapi import HTTPException
+
+        bundle = self._bundle(
+            skins=[{"name": "bad", "label": "B", "light": {"favourite": "#123456"}, "dark": {}}]
+        )
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_pack(self.api.PackImportRequest(**bundle))
+        self.assertEqual(ctx.exception.status_code, 400)
+        self.assertIn("'favourite'", str(ctx.exception.detail))
+        self.assertFalse((Path(self.home) / "skins" / "bad.yaml").exists())
+
+    def test_refuses_a_path_in_a_name(self):
+        from fastapi import HTTPException
+
+        bundle = self._bundle(
+            skins=[{"name": "../escape", "label": "B", "light": {"background": "#101010"}, "dark": {}}]
+        )
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_pack(self.api.PackImportRequest(**bundle))
+        self.assertEqual(ctx.exception.status_code, 400)
+
+    def test_a_failed_index_write_rolls_the_whole_import_back(self):
+        from fastapi import HTTPException
+
+        skins = Path(self.home) / "skins"
+        skins.mkdir(parents=True, exist_ok=True)
+        before_files = sorted(p.name for p in skins.glob("*.yaml"))
+        index_path = self.api._index_path()
+        before_index = index_path.read_text(encoding="utf-8") if index_path.is_file() else None
+
+        bundle = self._bundle(skins=[self._entry("alpha"), self._entry("beta")])
+
+        def boom(index):
+            raise OSError(28, "No space left on device")
+
+        self.api._write_index = boom
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.import_pack(self.api.PackImportRequest(**bundle))
+        self.assertEqual(ctx.exception.status_code, 500)
+
+        self.assertEqual(sorted(p.name for p in skins.glob("*.yaml")), before_files)
+        after_index = index_path.read_text(encoding="utf-8") if index_path.is_file() else None
+        self.assertEqual(after_index, before_index)
+        self.assertEqual(self.api.list_packs()["count"], 0)
+
+
+class PackDeleteTests(PackTestCase):
+    def _export_two(self):
+        self._import("one")
+        self._import("two")
+        self.api.export_pack(self.api.PackExportRequest(name="Test Pack", members=["one", "two"]))
+        return "test-pack"
+
+    def test_record_only_leaves_the_members_untouched(self):
+        slug = self._export_two()
+        result = self.api.delete_pack(slug)
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["removedSkins"], [])
+        self.assertTrue((Path(self.home) / "skins" / "one.yaml").is_file())
+        self.assertTrue((Path(self.home) / "skins" / "two.yaml").is_file())
+        self.assertEqual(self.api.list_packs()["count"], 0)
+
+    def test_with_skins_trashes_every_member(self):
+        slug = self._export_two()
+        result = self.api.delete_pack(slug, withSkins=True)
+        self.assertEqual(sorted(result["removedSkins"]), ["one", "two"])
+        for name in ("one", "two"):
+            self.assertFalse((Path(self.home) / "skins" / f"{name}.yaml").is_file())
+        trash = list((Path(self.home) / "skins" / ".chroma" / "_trash").glob("*.yaml"))
+        self.assertEqual(len(trash), 2, "members must be trashed, never unlinked")
+        self.assertEqual(self.api._read_index(), {})
+        self.assertEqual(self.api.list_packs()["count"], 0)
+
+    def test_unknown_slug_is_a_404(self):
+        from fastapi import HTTPException
+
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.delete_pack("nope")
+        self.assertEqual(ctx.exception.status_code, 404)
+
+
 if __name__ == "__main__":
     unittest.main()

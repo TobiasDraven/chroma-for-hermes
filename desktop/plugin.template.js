@@ -1132,6 +1132,341 @@ function foldSavedSkin(name, saved) {
   }))
 }
 
+// ---------------------------------------------------------------------------
+// E2 — the duplicate action and the fork (plan §5, §18.3).
+//
+// POST /skins/duplicate forks the EFFECTIVE palette into a brand-new OWNED
+// skin. It is the escape hatch §3 requires: a built-in's authored file is
+// NEVER rewritten (§17.1), so the way to edit a shipped theme's copy is to
+// fork it. The pane resolves nothing — it sends both palettes in the SAME
+// skin-keyed vocabulary overridePayload already builds, so the backend invents
+// no colour and the fork cannot disagree with the editor's own preview.
+//
+// Every builder here is PURE and named, so the suite drives them without a DOM
+// (the discipline exportArtifact already keeps).
+// ---------------------------------------------------------------------------
+
+/** A slug the backend accepts: lowercase [a-z0-9-], no leading/trailing dash.
+ *  The pane validates the name BEFORE it posts, so a bad name is a field-level
+ *  complaint rather than a surprise (the backend still refuses it). */
+function isSlug(value) {
+  const s = typeof value === 'string' ? value.trim() : ''
+  return s.length > 0 && slug(s) === s
+}
+
+/** The pre-filled name for a fork: `<name>-copy`, always a valid slug. */
+function duplicateSlug(sourceName) {
+  return (slug(sourceName) || 'skin') + '-copy'
+}
+
+/** The default label for a fork: the source's label plus ' copy'. */
+function duplicateLabel(sourceLabel, sourceName) {
+  const base = (typeof sourceLabel === 'string' && sourceLabel.trim())
+    ? sourceLabel.trim()
+    : ((typeof sourceName === 'string' && sourceName.trim()) ? sourceName.trim() : 'Skin')
+  return base + ' copy'
+}
+
+/** PURE: the POST /skins/duplicate body (§5). Both palettes are the CONCRETE
+ *  skin keys the editor's draft maps to (overridePayload); `label` defaults to
+ *  the source's label + ' copy', never left empty. */
+function duplicateBody(draftRoles, to, label, modes, sourceLabel, sourceName) {
+  const palettes = overridePayload(draftRoles, modes)
+  const given = typeof label === 'string' ? label.trim() : ''
+  return {
+    to: to,
+    label: given || duplicateLabel(sourceLabel, sourceName),
+    light: palettes.light,
+    dark: palettes.dark
+  }
+}
+
+/** PURE: how a duplicate failure is SHOWN. A 409 is a field-level COLLISION on
+ *  the name — the modal stays open and the colours stay put — not a thrown
+ *  crash. A 400 is a bad name/role/colour the backend named; anything else is
+ *  an honest error. */
+function duplicateFailure(error) {
+  const status = (error && (error.status || error.statusCode)) || 0
+  const raw = error && error.message ? error.message : String(error || 'unknown error')
+  if (status === 409) {
+    return {
+      kind: 'collision',
+      field: 'to',
+      status: 409,
+      message: raw,
+      notice: {
+        kind: 'warning',
+        title: 'That name is taken',
+        message: 'A skin or built-in already holds that name',
+        detail: raw + ' — pick another name. Your colours are untouched.'
+      }
+    }
+  }
+  if (status === 400) {
+    return {
+      kind: 'invalid',
+      field: 'to',
+      status: 400,
+      message: raw,
+      notice: {
+        kind: 'error',
+        title: 'Duplicate refused',
+        message: 'The backend refused the fork: ' + raw,
+        detail: 'Fix the name or colour it names and try again — nothing was written.'
+      }
+    }
+  }
+  return {
+    kind: 'error',
+    field: null,
+    status: status,
+    message: raw,
+    notice: {
+      kind: 'error',
+      title: 'Duplicate failed',
+      message: 'Duplicate failed: ' + raw,
+      detail: 'Nothing was changed. Your palettes are still here.'
+    }
+  }
+}
+
+/** POST /skins/duplicate — the one writer E2 adds. */
+async function duplicateSkin(to, label, light, dark) {
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  return await _rest('skins/duplicate', {
+    method: 'POST',
+    body: JSON.stringify({ to: to, label: label, light: light || {}, dark: dark || {} })
+  })
+}
+
+// ---------------------------------------------------------------------------
+// E3 — packs (plan §7, §16.1). Four behaviours, all in this pane: LIST (with
+// member counts and a visible missing-member warning), EXPORT through the SAME
+// saveTextFile channel exportArtifact already uses, IMPORT (always preview
+// before write), and DELETE (record-only vs record + skins).
+// ---------------------------------------------------------------------------
+
+/** GET /packs. Tolerant about the envelope; a backend that answers with
+ *  something else means "no packs", never a crash in the pane. */
+async function listPacks() {
+  if (!_rest) return []
+  const result = await _rest('packs')
+  const rows = result && Array.isArray(result.packs) ? result.packs : (Array.isArray(result) ? result : [])
+  return rows.filter(row => row && typeof row === 'object')
+}
+
+/** POST /packs/export. Returns the bundle document the backend built. */
+async function requestPackExport(name, members, author) {
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  return await _rest('packs/export', {
+    method: 'POST',
+    body: JSON.stringify({ name: name, members: members, author: author || '' })
+  })
+}
+
+/** POST /packs/import. dryRun:true previews; dryRun:false writes. The batch is
+ *  one transaction on the backend, which rolls a failed import back. */
+async function requestPackImport(bundle, dryRun) {
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  const body = Object.assign({}, bundle, { dryRun: dryRun ? true : false })
+  return await _rest('packs/import', { method: 'POST', body: JSON.stringify(body) })
+}
+
+/** DELETE /packs/{slug}?withSkins=… — record only by default. */
+async function dropPack(packSlug, withSkins) {
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  return await _rest('packs/' + encodeURIComponent(packSlug) + '?withSkins=' + (withSkins ? 'true' : 'false'), { method: 'DELETE' })
+}
+
+/** PURE: the POST /packs/export body. */
+function packExportBody(name, members, author) {
+  return {
+    name: typeof name === 'string' ? name.trim() : '',
+    members: (Array.isArray(members) ? members : []).filter(m => typeof m === 'string' && m),
+    author: typeof author === 'string' ? author.trim() : ''
+  }
+}
+
+/** PURE: the export filename — the pack's SLUG + '.json' (brief, §7). */
+function packFilename(nameOrSlug) {
+  return (slug(nameOrSlug) || 'chroma-pack') + '.json'
+}
+
+/** PURE: map a returned bundle to the file the user receives, exactly as
+ *  exportArtifact maps a REST payload. */
+function packArtifact(bundle) {
+  if (!bundle || typeof bundle !== 'object' || !bundle.name) {
+    throw new Error('pack export returned no bundle')
+  }
+  return { filename: packFilename(bundle.name), text: JSON.stringify(bundle, null, 2) }
+}
+
+/** PURE: assemble a bundle document (§7). The backend BUILDS the bundle for
+ *  POST /packs/export; this mirrors the same shape so a document can be
+ *  round-tripped through parsePackBundle and the format can be pinned in a test
+ *  without a live backend. */
+function packBundle(name, skins, options) {
+  const opts = options || {}
+  return {
+    chroma_pack: 1,
+    name: name,
+    author: opts.author || '',
+    created: opts.created || '',
+    categories: Array.isArray(opts.categories) ? opts.categories : [],
+    skins: Array.isArray(skins) ? skins : []
+  }
+}
+
+/** PURE: the count badge beside the section heading. */
+function packCountLabel(packs) {
+  const n = Array.isArray(packs) ? packs.length : 0
+  return n === 1 ? '1 pack' : n + ' packs'
+}
+
+/** PURE: the members of this pack whose files are GONE. Never render a pack
+ *  that quietly lost members as if it were whole. */
+function packMissing(pack) {
+  return pack && Array.isArray(pack.missing) ? pack.missing.filter(m => typeof m === 'string' && m) : []
+}
+
+/** PURE: one line describing a pack's membership, honest about absence. */
+function packMemberSummary(pack) {
+  const count = pack && typeof pack.memberCount === 'number'
+    ? pack.memberCount
+    : (pack && Array.isArray(pack.members) ? pack.members.length : 0)
+  const missing = packMissing(pack)
+  if (!missing.length) return count + (count === 1 ? ' skin' : ' skins')
+  const present = Math.max(0, count - missing.length)
+  return present + ' of ' + count + ' skins present — ' + missing.length + ' missing'
+}
+
+/** PURE: the warning a pack with missing members carries, or null when whole. */
+function packMissingNotice(pack) {
+  const missing = packMissing(pack)
+  if (!missing.length) return null
+  return {
+    kind: 'warning',
+    title: 'Pack ' + ((pack && (pack.name || pack.slug)) || '') + ' is incomplete',
+    message: missing.length + ' member(s) are missing: ' + missing.join(', '),
+    detail: 'The pack record names skins whose files are gone. Re-import it, or export it as it stands.'
+  }
+}
+
+/** PURE: parse an imported bundle defensively (§7, "hostile by default").
+ *  Returns {ok:true, bundle} or {ok:false, error:<readable>} — never a stack
+ *  trace, never a silently-dropped role or a bare-string error. */
+function parsePackBundle(text) {
+  let data
+  try {
+    data = parseTolerantJson(text)
+  } catch (e) {
+    return { ok: false, error: 'This is not valid JSON: ' + (e && e.message ? e.message : e) }
+  }
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return { ok: false, error: 'A pack bundle is a JSON object, not ' + (Array.isArray(data) ? 'an array' : (data === null ? 'null' : typeof data)) }
+  }
+  if (data.chroma_pack !== 1) {
+    return { ok: false, error: 'Not a Chroma pack bundle — chroma_pack must be 1, saw ' + JSON.stringify(data.chroma_pack) }
+  }
+  if (typeof data.name !== 'string' || !data.name.trim()) {
+    return { ok: false, error: 'The bundle has no pack name' }
+  }
+  if (!isSlug(data.name)) {
+    return { ok: false, error: 'The pack name "' + data.name + '" is not a slug (lowercase, dashes and digits only)' }
+  }
+  if (!Array.isArray(data.skins)) {
+    return { ok: false, error: 'The bundle carries no skins array' }
+  }
+  for (const skin of data.skins) {
+    if (!skin || typeof skin !== 'object' || typeof skin.name !== 'string' || !skin.name.trim()) {
+      return { ok: false, error: 'A skin in the bundle has no name' }
+    }
+    if (!isSlug(skin.name)) {
+      return { ok: false, error: 'Skin "' + skin.name + '" is not a slug' }
+    }
+    for (const modeKey of ['light', 'dark']) {
+      const palette = skin[modeKey]
+      if (palette === undefined || palette === null) continue
+      if (typeof palette !== 'object' || Array.isArray(palette)) {
+        return { ok: false, error: 'Skin "' + skin.name + '" has a bad ' + modeKey + ' palette' }
+      }
+      for (const key of Object.keys(palette)) {
+        if (!normaliseHex(palette[key])) {
+          return { ok: false, error: 'Skin "' + skin.name + '" has a ' + modeKey + ' value "' + String(palette[key]) + '" that is not #rrggbb' }
+        }
+      }
+    }
+  }
+  const categories = Array.isArray(data.categories) ? data.categories : []
+  return { ok: true, bundle: Object.assign({}, data, { categories: categories }) }
+}
+
+/** PURE: group the backend's dry-run plan by status (§7): a skin that is new,
+ *  identical (skipped), or collides with an existing different skin. */
+function groupImportPlan(preview) {
+  const plan = preview && Array.isArray(preview.plan) ? preview.plan : []
+  const groups = { new: [], identical: [], collides: [] }
+  for (const row of plan) {
+    if (!row || typeof row !== 'object' || typeof row.name !== 'string') continue
+    const status = (row.status === 'identical' || row.status === 'collides') ? row.status : 'new'
+    groups[status].push({ name: row.name, status: status, to: typeof row.to === 'string' ? row.to : '' })
+  }
+  return groups
+}
+
+/** PURE: the counts the preview header reads before the user confirms. */
+function packImportSummary(groups) {
+  const g = groups || { new: [], identical: [], collides: [] }
+  return { total: g.new.length + g.identical.length + g.collides.length, isNew: g.new.length, identical: g.identical.length, collides: g.collides.length }
+}
+
+/** PURE: apply the user's collision choices to the bundle, so the CONFIRMED
+ *  payload is `{...bundle, dryRun:false}` exactly — the pinned contract adds no
+ *  side channel for choices. A rename rewrites that skin's name; a skip drops
+ *  it and is reported. A skin with no choice is left as it stands. */
+function applyPackChoices(bundle, choices) {
+  const decisions = choices && typeof choices === 'object' ? choices : {}
+  const skins = []
+  const skipped = []
+  for (const skin of (bundle && Array.isArray(bundle.skins) ? bundle.skins : [])) {
+    const name = skin && skin.name
+    const choice = decisions[name]
+    if (choice && choice.action === 'skip') { skipped.push(name); continue }
+    if (choice && choice.action === 'rename' && typeof choice.to === 'string' && choice.to.trim()) {
+      skins.push(Object.assign({}, skin, { name: choice.to.trim() }))
+      continue
+    }
+    skins.push(skin)
+  }
+  return { bundle: Object.assign({}, bundle, { skins: skins }), skipped: skipped }
+}
+
+/** PURE: the notice an applied import reports. */
+function packImportNotice(applied) {
+  const written = applied && Array.isArray(applied.applied) ? applied.applied : []
+  const skipped = applied && Array.isArray(applied.skipped) ? applied.skipped : []
+  return {
+    kind: written.length ? 'success' : 'info',
+    title: 'Pack imported',
+    message: written.length + ' skin(s) written' + (skipped.length ? ', ' + skipped.length + ' skipped' : ''),
+    detail: skipped.length ? 'Skipped: ' + skipped.join(', ') : 'Every skin in the bundle is now owned by you.'
+  }
+}
+
+/** PURE: the words a destructive delete and a record-only delete each carry.
+ *  The destructive choice gets a confirm step in the pane. */
+function packDeleteNotice(pack, withSkins) {
+  const name = (pack && (pack.name || pack.slug)) || 'this pack'
+  return {
+    withSkins: !!withSkins,
+    title: withSkins ? 'Delete the ' + name + ' record AND its skins?' : 'Delete the ' + name + ' record?',
+    message: withSkins
+      ? 'The pack record and every skin it names go to the trash.'
+      : 'The pack record is dropped; the skins themselves stay.',
+    confirm: withSkins ? 'Delete pack + skins' : 'Delete record'
+  }
+}
+
 /** Did the backend answer "no such route"? A new route does not exist until
  *  Hermes restarts, because a mounted plugin_api.py is never re-imported, so the
  *  editor has to say that instead of looking broken (plan §14.1, §17.4). */
@@ -2205,6 +2540,26 @@ function ThemeCardEditGear({ scene, onEdit }) {
   })
 }
 
+// E2's card affordance (§6, task 1): a SECOND action beside the gear, offered
+// for ANY scene — built-in or owned. A built-in's duplicate is the escape hatch
+// §3 requires: it forks the EFFECTIVE palette (override ?? authored) into a new
+// OWNED skin, so a shipped theme's colours can be edited without touching the
+// shipped file (§17.1). It sits at the bottom-RIGHT so it never collides with
+// the centred gear, and it carries the same keyboard/touch reachability rule
+// (`focus-visible:` + `pointer-coarse:`) the gear carries.
+const EDIT_DUPLICATE_CLASS = 'absolute bottom-1 right-1 z-10 rounded border border-white/25 bg-black/45 px-1 text-[0.625rem] leading-4 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100'
+
+function ThemeCardDuplicate({ scene, onDuplicate }) {
+  return jsx('button', {
+    type: 'button',
+    onClick: () => onDuplicate(scene),
+    title: 'Fork this theme into a new skin you own — the source file is untouched',
+    'aria-label': 'Duplicate ' + (scene.label || scene.name),
+    className: EDIT_DUPLICATE_CLASS,
+    children: jsx('span', { className: 'codicon codicon-copy', 'aria-hidden': 'true' })
+  })
+}
+
 // The manage actions live OUTSIDE the card button, for the same reason the pill
 // does. Only an owned skin has them, and only one mode shows at a time: renaming,
 // confirming a delete, or the three actions themselves.
@@ -2611,7 +2966,7 @@ function EditorRoleRow({ role, draft, onChange, shells, texts }) {
  *  the overrides) and cannot be cleared by a FAILED one — nothing about the
  *  draft is touched unless the write actually landed. The picker re-seeds the
  *  fields after a Reset by remounting this element under a new key. */
-function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose, onSave, onReset }) {
+function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose, onSave, onReset, onDuplicate }) {
   const effective = applyOverride(scene, overrides)
   const overridden = !!(overrides && overrides[scene.name])
   // One draft per mode, seeded from the effective palette. Kept apart so `dirty`
@@ -2621,6 +2976,13 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
   const seedDark = draftForScene(effective, 'dark')
   const [lightDraft, setLightDraft] = useState(() => Object.assign({}, seedLight))
   const [darkDraft, setDarkDraft] = useState(() => Object.assign({}, seedDark))
+  // The fork (§18.3): `Update "<name>"` (the Save button) beside a `Save as new`
+  // that opens a name prompt and posts the SAME draft as a brand-new skin. The
+  // prompt stays open on a 409 with the collision ON THE FIELD — the colours are
+  // never lost — and the user, never an auto-suffix, picks the name.
+  const [forking, setForking] = useState(false)
+  const [forkName, setForkName] = useState('')
+  const [forkError, setForkError] = useState('')
   const dirty = !modeDraftEqual(lightDraft, seedLight) || !modeDraftEqual(darkDraft, seedDark)
   const changeRole = (modeKey, roleId, value) => {
     const setter = modeKey === 'light' ? setLightDraft : setDarkDraft
@@ -2641,6 +3003,24 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
     dark: firstColorIn(dark, ['banner_text', 'ui_text', 'status_bar_text'])
   }
   const name = scene.label || scene.name
+  // The fork (§18.3): `Update "<name>"` (the Save button) beside a `Save as new`
+  // which opens a name prompt and posts the SAME draft as a brand-new OWNED
+  // skin. The prompt stays open on a 409 with the collision ON THE FIELD — the
+  // colours are never lost — and the user, never an auto-suffix, picks the name.
+  const startFork = () => { setForkName(duplicateSlug(scene.name)); setForkError(''); setForking(true) }
+  const cancelFork = () => { setForking(false); setForkError('') }
+  const submitFork = () => {
+    if (!onDuplicate || busy) return
+    if (!isSlug(forkName)) { setForkError('Use lowercase letters, digits and dashes'); return }
+    const body = duplicateBody(draft, forkName.trim(), '', modes, scene.label, scene.name)
+    Promise.resolve(onDuplicate(body)).then(res => {
+      if (res && res.ok) { setForking(false); setForkError(''); return }
+      const failure = res && res.failure ? res.failure : null
+      setForkError(failure && failure.message ? failure.message : 'Duplicate failed')
+    }).catch(err => {
+      setForkError(err && err.message ? err.message : 'Duplicate failed')
+    })
+  }
   // The door is chosen by OWNERSHIP, never by the name (§3, §19.3): a user skin
   // is rewritten in place through PUT /skins/{name}; a built-in goes through
   // PUT /overrides/{scene}. `showReset` is therefore an overridden BUILT-IN only —
@@ -2742,6 +3122,40 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
               dirty ? jsx('span', { className: 'text-(--ui-warn)', children: 'Unsaved changes.' }) : null
             ]}),
             jsxs('div', { key: 'buttons', className: 'flex shrink-0 items-center gap-1', children: [
+              forking
+                ? jsxs('span', { key: 'fork', className: 'flex min-w-0 items-center gap-1', children: [
+                    jsx('input', {
+                      type: 'text',
+                      value: forkName,
+                      spellCheck: false,
+                      placeholder: '<name>-copy',
+                      'aria-label': 'Name for the new skin',
+                      'aria-invalid': forkError ? 'true' : 'false',
+                      title: forkError || 'The new skin\u2019s name (a slug)',
+                      onChange: e => { setForkName(e && e.target ? e.target.value : ''); setForkError('') },
+                      onKeyDown: e => { if (e && e.key === 'Enter') submitFork(); if (e && e.key === 'Escape') cancelFork() },
+                      className: 'min-w-0 w-32 rounded border px-1 py-0.5 font-mono text-[0.625rem] '
+                        + (forkError ? 'border-(--ui-error)' : 'border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)')
+                    }),
+                    jsx('button', {
+                      key: 'forkgo',
+                      type: 'button',
+                      disabled: !!busy,
+                      onClick: submitFork,
+                      title: 'Write these colours as a brand-new skin you own',
+                      className: EDITOR_SAVE_CLASS,
+                      children: busy === 'fork' ? 'Saving…' : 'Save copy'
+                    }),
+                    jsx('button', {
+                      key: 'forkcancel',
+                      type: 'button',
+                      disabled: !!busy,
+                      onClick: cancelFork,
+                      className: EDITOR_ACTION_CLASS,
+                      children: 'Cancel'
+                    })
+                  ]})
+                : null,
               showReset
                 ? jsx('button', {
                     key: 'reset',
@@ -2761,7 +3175,21 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
                 title: owned ? OWNED_SAVE_REASON : 'Store your edit as an override of the shipped palette',
                 className: EDITOR_SAVE_CLASS,
                 children: busy === 'save' ? 'Saving…' : 'Save'
-              })
+              }),
+              (!forking && typeof onDuplicate === 'function')
+                ? jsx('span', { key: 'sep', className: 'px-0.5 text-(--ui-text-tertiary)', 'aria-hidden': 'true', children: '|' })
+                : null,
+              (!forking && typeof onDuplicate === 'function')
+                ? jsx('button', {
+                    key: 'forkopen',
+                    type: 'button',
+                    disabled: !!busy,
+                    onClick: startFork,
+                    title: 'Save these colours as a NEW skin you own — the source theme is left untouched',
+                    className: EDITOR_ACTION_CLASS,
+                    children: 'Save as new'
+                  })
+                : null
             ]})
           ]
         })
@@ -2770,7 +3198,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
   })
 }
 
-function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, shape, localScope, onEdit, edited }) {
+function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, shape, localScope, onEdit, onDuplicate, edited }) {
   // Both halves of the pair, always: every scene ships both modes now, and the
   // card shows them side by side rather than only the mode that happens to be
   // live.
@@ -2811,6 +3239,9 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   if (typeof onEdit === 'function') {
     boxChildren.push(jsx(ThemeCardEditGear, { scene, onEdit }))
   }
+  if (typeof onDuplicate === 'function') {
+    boxChildren.push(jsx(ThemeCardDuplicate, { scene, onDuplicate }))
+  }
   const cardBox = jsxs('div', {
     className: 'group relative w-full',
     children: boxChildren
@@ -2831,6 +3262,102 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   // does not: the extra flex column is what holds the action row.
   if (!owned) return stacked
   return jsxs('div', { className: 'flex w-full flex-col', children: [stacked, jsx(ThemeCardActions, { scene, managing, onDelete, onRename, onExport })] })
+}
+
+// ---------------------------------------------------------------------------
+// E3 — the pack surface (plan §7). Kept IN the pane: a list with member counts
+// and an honest missing-member warning, an export that rides saveTextFile, an
+// import that previews before it writes, and a delete with two real choices.
+// ---------------------------------------------------------------------------
+
+const PACK_ROW_CLASS = 'flex items-center justify-between gap-2 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-2 py-1'
+const PACK_SECTION_CLASS = 'flex flex-col gap-1 rounded border border-(--ui-stroke-secondary) p-2'
+
+/** One pack: its name, its membership (honest about absence), and its two
+ *  actions. A pack that lost members says so — it is never rendered as whole. */
+function PackRow({ pack, busy, onExport, onDelete }) {
+  const missing = packMissing(pack)
+  const slugName = pack.slug || slug(pack.name) || 'pack'
+  return jsxs('div', { className: PACK_ROW_CLASS, 'data-pack': slugName, children: [
+    jsxs('div', { key: 'id', className: 'min-w-0', children: [
+      jsx('div', { className: 'truncate text-[0.6875rem] font-medium', children: pack.name || slugName }),
+      jsx('div', { className: 'text-[0.5625rem] text-(--ui-text-tertiary)', children: packMemberSummary(pack) })
+    ]}),
+    missing.length
+      ? jsx('span', {
+          key: 'missing',
+          title: 'The pack record names skins whose files are gone: ' + missing.join(', '),
+          className: 'shrink-0 rounded bg-(--ui-warn)/15 px-1 text-[0.5625rem] text-(--ui-warn)',
+          children: missing.length + ' missing'
+        })
+      : null,
+    jsxs('div', { key: 'actions', className: 'flex shrink-0 items-center gap-1', children: [
+      jsx('button', {
+        key: 'export',
+        type: 'button',
+        disabled: !!busy,
+        onClick: () => onExport(pack),
+        title: 'Save this pack as a self-contained bundle you can send to someone else',
+        className: MANAGE_BUTTON_CLASS,
+        children: 'Export'
+      }),
+      jsx('button', {
+        key: 'delete',
+        type: 'button',
+        disabled: !!busy,
+        onClick: () => onDelete(pack),
+        title: 'Drop the pack record, or the record and the skins it names',
+        className: MANAGE_BUTTON_CLASS,
+        children: 'Delete'
+      })
+    ]})
+  ]})
+}
+
+/** The pack list, with the required empty state. */
+function PackList({ packs, busy, onExport, onDelete }) {
+  if (!packs || !packs.length) {
+    return jsx(EmptyState, { title: 'No packs yet', description: 'Save your filtered skins as a pack, or import one someone sent you.' })
+  }
+  return jsxs('div', { className: 'flex flex-col gap-1', children: packs.map(pack =>
+    jsx(PackRow, { key: pack.slug || slug(pack.name), pack, busy, onExport, onDelete })
+  )})
+}
+
+/** The import preview, grouped by status (§7). `new` will be written, `identical`
+ *  is skipped, `collides` needs a choice — rename or skip — and nothing is
+ *  written until the user confirms. */
+function PackImportPreview({ groups, choices, onChoice }) {
+  const g = groups || { new: [], identical: [], collides: [] }
+  const names = (rows, cls) => rows.map(r =>
+    jsx('div', { key: r.name, className: cls, children: r.name }))
+  const collisions = g.collides.map(r => jsxs('div', {
+    key: r.name,
+    className: 'flex items-center gap-2 text-[0.625rem]',
+    children: [
+      jsx('span', { className: 'min-w-0 truncate text-(--ui-text-secondary)', children: r.name }),
+      jsx('input', {
+        className: 'min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 font-mono text-[0.625rem]',
+        value: (choices && choices[r.name] && choices[r.name].to) || (r.to || (r.name + '-2')),
+        onChange: e => onChoice(r.name, { action: 'rename', to: e && e.target ? e.target.value : '' })
+      }),
+      jsx('button', {
+        type: 'button',
+        onClick: () => onChoice(r.name, { action: 'skip' }),
+        className: MANAGE_BUTTON_CLASS,
+        children: (choices && choices[r.name] && choices[r.name].action === 'skip') ? 'skipped' : 'skip'
+      })
+    ]
+  }))
+  const block = (key, label, items) => jsxs('div', { key: key, className: 'flex flex-col gap-0.5', children: [
+    jsx('div', { className: 'text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)', children: label }),
+    items.length ? items : jsx('div', { className: 'text-[0.625rem] text-(--ui-text-tertiary)', children: '— none —' })
+  ]})
+  return jsxs('div', { className: 'flex flex-col gap-2 rounded border border-(--ui-stroke-secondary) p-2', children: [
+    block('new', 'New (' + g.new.length + ')', names(g.new, 'text-[0.625rem] text-(--ui-text-secondary)')),
+    block('identical', 'Identical — skipped (' + g.identical.length + ')', names(g.identical, 'text-[0.625rem] text-(--ui-text-tertiary)')),
+    block('collides', 'Collides — choose (' + g.collides.length + ')', collisions)
+  ]})
 }
 
 // ---------------------------------------------------------------------------
@@ -2971,6 +3498,21 @@ function ThemePicker() {
   // route was absent — the editor keeps its own defaults and says so quietly.
   const [schema, setSchema] = useState(null)
   const schemaNoted = useRef(false)
+  // E3 — the pack surface. `packs` is the list the section renders; the import
+  // flow is a small state machine: a paste box, a dry-run PREVIEW grouped by
+  // status, per-collision choices, then a confirmed write. Nothing is written
+  // until the user confirms.
+  const [packs, setPacks] = useState([])
+  const [packBusy, setPackBusy] = useState(false)
+  const [packName, setPackName] = useState('')
+  const [importOpen, setImportOpen] = useState(false)
+  const [packText, setPackText] = useState('')
+  const [packBundle, setPackBundle] = useState(null)
+  const [packGroups, setPackGroups] = useState(null)
+  const [packChoices, setPackChoices] = useState({})
+  const [packConfirm, setPackConfirm] = useState(null)
+  // E2 — the card's Duplicate action, in flight for one scene at a time.
+  const [duplicating, setDuplicating] = useState(null)
 
   // Fetch /schema once on mount: modes and caps come from it, and a disagreement
   // between a role's primary key and the backend's palette keys is raised as a
@@ -3023,6 +3565,13 @@ function ThemePicker() {
       setOverrides(await listOverrides())
     } catch (e) {
       setOverrides({})
+    }
+    // Packs are the same story as overrides: an older backend answers /skins and
+    // not /packs, which means "no packs here", never a backend-less pane.
+    try {
+      setPacks(await listPacks())
+    } catch (e) {
+      setPacks([])
     }
   }, [])
 
@@ -3365,6 +3914,195 @@ function ThemePicker() {
     }
   }
 
+  // --- the fork (§18.3, E2) --------------------------------------------------
+  // After a successful duplicate the skin is OWNED, so the pane folds it in the
+  // same way the E1b in-place save does (foldSavedSkin + a re-read): the card
+  // list picks it up, there is no phantom card, and no reload is needed.
+  const foldDuplicate = async (name, light, dark) => {
+    foldSavedSkin(name, { light: light, dark: dark })
+    try { setOwned(await listOwnedSkins()) } catch (e) { }
+    setImportedTick(n => n + 1)
+  }
+
+  const duplicateCard = async (scene) => {
+    if (!scene || duplicating) return
+    // The scene the CARD holds is already the EFFECTIVE palette (groupCards
+    // layered the override), so a built-in's duplicate forks override ?? authored.
+    const draftRoles = { light: draftForScene(scene, 'light'), dark: draftForScene(scene, 'dark') }
+    const body = duplicateBody(draftRoles, duplicateSlug(scene.name), '', modes, scene.label, scene.name)
+    setDuplicating(scene.name)
+    try {
+      const result = await duplicateSkin(body.to, body.label, body.light, body.dark)
+      const made = (result && result.name) ? result.name : body.to
+      await foldDuplicate(made, body.light, body.dark)
+      haptic('tap')
+      host.notify({
+        kind: 'success',
+        title: 'Skin duplicated',
+        message: made + ' is now a skin you own',
+        detail: 'The source palette was not touched. Edit the copy freely.'
+      })
+    } catch (e) {
+      const failure = duplicateFailure(e)
+      host.notify(failure.notice)
+      // A collision never auto-suffixes: open the editor so the user picks the
+      // name there, with the collision on the field.
+      if (failure.kind === 'collision') openEditor(scene)
+    } finally {
+      setDuplicating(null)
+    }
+  }
+
+  /** The editor's fork: the same writer, but the NAME comes from the modal's own
+   *  prompt and the RESULT is handed back, so a 409 lands on the field rather
+   *  than in a thrown crash. */
+  const duplicateFromEditor = async (body) => {
+    if (editorBusy) return { ok: false, failure: duplicateFailure({ message: 'a write is already in flight' }) }
+    setEditorBusy('fork')
+    try {
+      const result = await duplicateSkin(body.to, body.label, body.light, body.dark)
+      const made = (result && result.name) ? result.name : body.to
+      await foldDuplicate(made, body.light, body.dark)
+      haptic('tap')
+      host.notify({
+        kind: 'success',
+        title: 'Saved as a new skin',
+        message: made + ' is yours now',
+        detail: 'The source theme was not touched.'
+      })
+      return { ok: true, name: made }
+    } catch (e) {
+      const failure = duplicateFailure(e)
+      if (failure.kind !== 'collision') host.notify(failure.notice)
+      return { ok: false, failure: failure }
+    } finally {
+      setEditorBusy(null)
+    }
+  }
+
+  // --- packs (E3) ------------------------------------------------------------
+  const exportPackFromFilter = async () => {
+    if (packBusy) return
+    const body = packExportBody(packName || slug(q) || 'chroma-pack', filtered.map(s => s.name), '')
+    if (!isSlug(body.name)) {
+      host.notify({ kind: 'error', message: 'Pack name "' + body.name + '" is not a slug — lowercase letters, digits and dashes' })
+      return
+    }
+    if (!body.members.length) {
+      host.notify({ kind: 'error', message: 'No skins to pack — the current filter is empty' })
+      return
+    }
+    setPackBusy(true)
+    try {
+      const bundle = await requestPackExport(body.name, body.members, body.author)
+      const art = packArtifact(bundle)
+      saveTextFile(art.filename, art.text)
+      haptic('tap')
+      await refreshOwned()
+      host.notify({ kind: 'success', title: 'Pack exported', message: 'Saved ' + art.filename, detail: body.members.length + ' skin(s) travelled with it.' })
+    } catch (e) {
+      host.notify({ kind: 'error', message: 'Export failed: ' + (e && e.message ? e.message : e) })
+    } finally {
+      setPackBusy(false)
+    }
+  }
+
+  const previewPackImport = async () => {
+    if (packBusy) return
+    const parsed = parsePackBundle(packText)
+    if (!parsed.ok) {
+      setPackBundle(null)
+      setPackGroups(null)
+      host.notify({ kind: 'error', title: 'That is not a Chroma pack', message: parsed.error })
+      return
+    }
+    setPackBusy(true)
+    try {
+      const preview = await requestPackImport(parsed.bundle, true)
+      setPackBundle(parsed.bundle)
+      setPackGroups(groupImportPlan(preview))
+      setPackChoices({})
+    } catch (e) {
+      setPackBundle(null)
+      setPackGroups(null)
+      host.notify({ kind: 'error', message: 'Preview failed: ' + (e && e.message ? e.message : e) })
+    } finally {
+      setPackBusy(false)
+    }
+  }
+
+  const chooseCollision = (name, choice) => setPackChoices(prev => Object.assign({}, prev, { [name]: choice }))
+
+  const confirmPackImport = async () => {
+    if (packBusy || !packBundle) return
+    setPackBusy(true)
+    try {
+      const applied = applyPackChoices(packBundle, packChoices)
+      const result = await requestPackImport(applied.bundle, false)
+      haptic('tap')
+      setPackBundle(null)
+      setPackGroups(null)
+      setPackChoices({})
+      setPackText('')
+      setImportOpen(false)
+      await refreshOwned()
+      host.notify(packImportNotice(result))
+    } catch (e) {
+      host.notify({ kind: 'error', message: 'Import failed: ' + (e && e.message ? e.message : e) })
+    } finally {
+      setPackBusy(false)
+    }
+  }
+
+  const exportPack = async (pack) => {
+    if (packBusy || !pack) return
+    const name = pack.name || pack.slug
+    const members = Array.isArray(pack.members) ? pack.members : []
+    if (!members.length) {
+      host.notify({ kind: 'error', message: 'That pack has no members to export' })
+      return
+    }
+    setPackBusy(true)
+    try {
+      const bundle = await requestPackExport(name, members, pack.author || '')
+      const art = packArtifact(bundle)
+      saveTextFile(art.filename, art.text)
+      haptic('tap')
+      host.notify({ kind: 'success', title: 'Pack exported', message: 'Saved ' + art.filename, detail: members.length + ' skin(s) travelled with it.' })
+    } catch (e) {
+      host.notify({ kind: 'error', message: 'Export failed: ' + (e && e.message ? e.message : e) })
+    } finally {
+      setPackBusy(false)
+    }
+  }
+
+  const askDeletePack = pack => setPackConfirm({ pack: pack, withSkins: false })
+  const cancelDeletePack = () => setPackConfirm(null)
+  const confirmDeletePack = async () => {
+    if (packBusy || !packConfirm) return
+    const pack = packConfirm.pack
+    const slugName = pack.slug || slug(pack.name)
+    const withSkins = packConfirm.withSkins
+    setPackBusy(true)
+    try {
+      const result = await dropPack(slugName, withSkins)
+      const removed = result && Array.isArray(result.removedSkins) ? result.removedSkins.length : 0
+      setPackConfirm(null)
+      await refreshOwned()
+      haptic('tap')
+      host.notify({
+        kind: 'info',
+        title: 'Pack deleted',
+        message: withSkins ? ('Removed ' + slugName + ' and ' + removed + ' skin(s)') : ('Removed the ' + slugName + ' record'),
+        detail: withSkins ? 'The skins went to the Chroma trash.' : 'The skins themselves were left untouched.'
+      })
+    } catch (e) {
+      host.notify({ kind: 'error', message: 'Delete failed: ' + (e && e.message ? e.message : e) })
+    } finally {
+      setPackBusy(false)
+    }
+  }
+
   // Cards. A grid with auto-fill adapts to a resized window without a second
   // calculation -- the aspect ratio carries the look, not the width. The target
   // width is fixed, so a wide window shows MORE cards rather than four enormous
@@ -3509,7 +4247,109 @@ function ThemePicker() {
           !backendReady && jsx('div', {
             className: 'rounded-md border border-(--ui-stroke-secondary) px-2 py-1 text-[0.6875rem] text-(--ui-text-tertiary)',
             children: 'Gateway-skin backend not installed. Themes apply and preview on this Desktop, but an import cannot mint a gateway skin and rename, export and delete are unavailable. Install the Python half and restart Hermes to enable them.'
-          })
+          }),
+          // E3 — the pack surface (plan §7). A list with member counts and an
+          // honest missing-member warning, an export that rides saveTextFile, an
+          // import that PREVIEWS before it writes, and a two-choice delete.
+          // Import reads a pasted bundle: the host exposes no file-OPEN dialog
+          // (only a save path), so the paste box is the honest channel here.
+          jsxs('div', { key: 'packs', className: PACK_SECTION_CLASS, children: [
+            jsxs('div', { key: 'head', className: 'flex flex-wrap items-center justify-between gap-2', children: [
+              jsxs('div', { className: 'flex items-center gap-2', children: [
+                jsx('span', { className: 'text-[0.6875rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)', children: 'Packs' }),
+                jsx(Badge, { variant: 'muted', children: packCountLabel(packs) })
+              ]}),
+              jsxs('div', { className: 'flex min-w-0 items-center gap-1', children: [
+                jsx('input', {
+                  type: 'text',
+                  value: packName,
+                  placeholder: 'pack name',
+                  title: 'Name for the pack you save from the current filter (a slug)',
+                  onChange: e => setPackName(e && e.target ? e.target.value : ''),
+                  className: 'h-6 w-28 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 font-mono text-[0.625rem]'
+                }),
+                jsx('button', {
+                  type: 'button',
+                  disabled: packBusy,
+                  onClick: exportPackFromFilter,
+                  title: 'Save the skins matching the current filter as a pack bundle',
+                  className: MANAGE_BUTTON_CLASS,
+                  children: packBusy ? 'Working…' : 'Save filter as pack'
+                }),
+                jsx('button', {
+                  type: 'button',
+                  onClick: () => setImportOpen(v => !v),
+                  className: MANAGE_BUTTON_CLASS,
+                  children: importOpen ? 'Close import' : 'Import pack'
+                })
+              ]})
+            ]}),
+            jsx(PackList, { packs, busy: packBusy, onExport: exportPack, onDelete: askDeletePack }),
+            importOpen
+              ? jsxs('div', { key: 'import', className: 'flex flex-col gap-1', children: [
+                  jsx('textarea', {
+                    className: 'rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-2 py-1 font-mono text-[0.6875rem]',
+                    rows: 4,
+                    placeholder: 'Paste a Chroma pack bundle (JSON) here',
+                    value: packText,
+                    onChange: e => setPackText(e && e.target ? e.target.value : '')
+                  }),
+                  jsxs('div', { className: 'flex flex-wrap items-center gap-1', children: [
+                    jsx('button', {
+                      type: 'button',
+                      disabled: packBusy || !packText.trim(),
+                      onClick: previewPackImport,
+                      title: 'Check what this bundle would do — nothing is written yet',
+                      className: MANAGE_BUTTON_CLASS,
+                      children: packBusy ? 'Checking…' : 'Preview import'
+                    }),
+                    packGroups
+                      ? jsx('button', {
+                          type: 'button',
+                          disabled: packBusy,
+                          onClick: confirmPackImport,
+                          className: EDITOR_SAVE_CLASS,
+                          children: packBusy ? 'Importing…' : 'Confirm import'
+                        })
+                      : null,
+                    packGroups
+                      ? jsx('button', {
+                          type: 'button',
+                          onClick: () => { setPackGroups(null); setPackBundle(null); setPackChoices({}) },
+                          className: MANAGE_BUTTON_CLASS,
+                          children: 'Cancel'
+                        })
+                      : null
+                  ]}),
+                  packGroups ? jsx(PackImportPreview, { groups: packGroups, choices: packChoices, onChoice: chooseCollision }) : null,
+                  packGroups ? jsx('div', { className: 'text-[0.5625rem] text-(--ui-text-tertiary)', children: 'Nothing is written until you confirm. A collision you leave as a rename is written under that new name; a skipped one is left alone.' }) : null
+                ]})
+              : null,
+            packConfirm
+              ? jsxs('div', { key: 'confirm', className: 'flex flex-col gap-1 rounded border border-(--ui-error) p-2', children: [
+                  jsx('div', { className: 'text-[0.625rem] text-(--ui-error)', children: packDeleteNotice(packConfirm.pack, packConfirm.withSkins).title }),
+                  jsx('div', { className: 'text-[0.5625rem] text-(--ui-text-tertiary)', children: packDeleteNotice(packConfirm.pack, packConfirm.withSkins).message }),
+                  jsxs('div', { className: 'flex flex-wrap items-center gap-2', children: [
+                    jsx('label', { className: 'flex items-center gap-1 text-[0.5625rem] text-(--ui-text-secondary)', children: [
+                      jsx('input', {
+                        type: 'checkbox',
+                        checked: !!packConfirm.withSkins,
+                        onChange: e => setPackConfirm(prev => prev ? Object.assign({}, prev, { withSkins: !!(e && e.target && e.target.checked) }) : prev)
+                      }),
+                      'and the skins it names'
+                    ]}),
+                    jsx('button', {
+                      type: 'button',
+                      disabled: packBusy,
+                      onClick: confirmDeletePack,
+                      className: 'shrink-0 rounded border border-(--ui-error) px-1 py-0.5 text-[0.625rem] text-(--ui-error)',
+                      children: packBusy ? 'Deleting…' : packDeleteNotice(packConfirm.pack, packConfirm.withSkins).confirm
+                    }),
+                    jsx('button', { type: 'button', onClick: cancelDeletePack, className: MANAGE_BUTTON_CLASS, children: 'Cancel' })
+                  ]})
+                ]})
+              : null
+          ]})
         ]
       }),
       jsx(ScrollArea, {
@@ -3553,6 +4393,9 @@ function ThemePicker() {
                               onPreview: startPreview,
                               onStopPreview: stopPreview,
                               onEdit: openEditor,
+                              // E2: a second action beside the gear, for ANY
+                              // scene — a built-in forks its effective palette.
+                              onDuplicate: duplicateCard,
                               // The marker reads from the override map, and the
                               // card already carries the resolved palette.
                               edited: !!overrides[scene.name],
@@ -3583,7 +4426,8 @@ function ThemePicker() {
             busy: editorBusy,
             onClose: closeEditor,
             onSave: saveEditor,
-            onReset: resetEditor
+            onReset: resetEditor,
+            onDuplicate: duplicateFromEditor
           })
         : null
     ]

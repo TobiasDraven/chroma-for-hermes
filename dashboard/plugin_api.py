@@ -1392,3 +1392,596 @@ def delete_override(scene: str) -> dict[str, Any]:
 
     logger.info("reset override for %s", clean)
     return {"ok": True, "scene": clean, "reset": True, "restored": restored}
+
+
+# --- E2: duplicate a scene's palette into a new owned skin -----------------
+#
+# The escape hatch the built-in rule needs: a user may not rewrite a built-in in
+# place (§7), so they fork its palette into a skin we own. Both palettes arrive
+# from the pane already resolved to the ten editable skin keys — the server
+# RESOLVES NOTHING and INVENTS NOTHING. Reading the source scene to "fill in" an
+# absent role would claim the user chose a colour they never saw; an absent role
+# stays absent in the YAML (§6, line 123).
+
+
+class DuplicateRequest(BaseModel):
+    """Fork a palette into a brand-new owned skin.
+
+    `light`/`dark` are CONCRETE skin-keyed maps (the same vocabulary
+    `PUT /skins/{name}` accepts), never the pane's logical role ids."""
+
+    to: str
+    label: str | None = None
+    light: dict[str, str] = {}
+    dark: dict[str, str] = {}
+
+
+def _owned_record_template(index: dict[str, Any]) -> dict[str, Any]:
+    """A new record's SHAPE, copied from a record the index already holds.
+
+    The index is the schema: whatever keys an owned record carries, a new one
+    carries too — no field is invented here. Falls back to the key set
+    `import_skin` writes when the index holds no owned record yet."""
+    for meta in index.values():
+        if isinstance(meta, dict) and meta.get("source") in ("user", "chroma"):
+            return {key: None for key in meta}
+    return {key: None for key in ("source", "label", "category", "importedAt")}
+
+
+def _new_owned_record(
+    index: dict[str, Any], *, label: str, pack: str | None, ts: str
+) -> dict[str, Any]:
+    """Build an owned-skin record carrying the keys the index already tolerates.
+
+    `source`, `pack` and `importedAt` are always set (§5, line 96). `label` and
+    `category` are only present when the copied shape has them, so a duplicate
+    never mints a field the schema does not carry."""
+    record = _owned_record_template(index)
+    record["source"] = "user"
+    record["pack"] = pack
+    record["importedAt"] = ts
+    record["label"] = label
+    if "category" in record:
+        record["category"] = ""
+    return record
+
+
+@router.post("/skins/duplicate")
+def duplicate_skin(req: DuplicateRequest) -> dict[str, Any]:
+    """Fork a scene's effective palette into a brand-new owned skin.
+
+    The result is a first-class skin: CLI-visible at the top level, individually
+    deletable, exportable — written through the same `_dump_skin_yaml` path the
+    importer uses."""
+    to = _guard_name(req.to, field="new name")
+
+    oversized = _theme_too_large({"colors": req.light, "darkColors": req.dark})
+    if oversized:
+        raise HTTPException(413, f"palette is too large: {oversized}")
+    # `_normalise_palette` is the skin-keyed validator: unknown roles are refused
+    # BY NAME (never silently dropped) and a non-#rrggbb value is named too.
+    light = _normalise_palette(req.light, what="light")
+    dark = _normalise_palette(req.dark, what="dark")
+    if not light and not dark:
+        raise HTTPException(
+            400, "a duplicate must carry at least one colour in the light or dark palette"
+        )
+
+    label = (req.label or "").strip()
+    target = _skins_dir() / f"{to}.yaml"
+
+    # Only the blocks the pane actually sent: an absent role stays absent, and a
+    # whole absent mode stays absent (no empty `dark_colors:` key).
+    data: dict[str, Any] = {"name": to, "description": label or to}
+    if light:
+        data["colors"] = light
+        data["light_colors"] = light
+    if dark:
+        data["dark_colors"] = dark
+
+    with _INDEX_LOCK:
+        try:
+            index = _read_index_for_update()
+        except IndexUnreadableError as exc:
+            raise _index_error(exc) from exc
+
+        # Checked inside the lock so two duplicates of one name cannot both pass.
+        if target.exists():
+            raise HTTPException(409, f"skin '{to}' already exists; choose another name")
+
+        try:
+            _atomic_write_text(target, _dump_skin_yaml(data))
+        except OSError as exc:
+            raise HTTPException(500, f"could not write the skin file {target}: {exc}") from exc
+
+        index[to] = _new_owned_record(
+            index,
+            label=label or to,
+            pack=None,
+            ts=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        )
+        try:
+            _write_index(index)
+        except OSError as exc:
+            # A file with no provenance is a skin the picker can never manage.
+            _unlink_quietly(target)
+            raise HTTPException(
+                500,
+                f"the skin file was written but the provenance index could not be "
+                f"updated ({exc}); the file was rolled back, so nothing is orphaned. "
+                f"Fix free space or permissions and retry.",
+            ) from exc
+
+    logger.info("duplicated a palette into skin %s", target)
+    return {"ok": True, "name": to, "path": str(target)}
+
+
+# --- E3: packs -------------------------------------------------------------
+#
+# A pack is METADATA, not a container (plan §4, §7): the member skins stay
+# ordinary top-level files, so every one remains CLI-visible and individually
+# deletable. The record lives at `<skins>/.chroma/packs/<slug>.json`.
+
+PACKS_DIRNAME = "packs"
+PACK_FORMAT_VERSION = 1
+MAX_PACK_SKINS = 512
+
+
+def _packs_dir() -> Path:
+    d = _skins_dir() / SIDECAR_DIRNAME / PACKS_DIRNAME
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def _pack_path(slug: str) -> Path:
+    return _packs_dir() / f"{slug}.json"
+
+
+def _slugify(value: str) -> str:
+    """Turn a human pack name into a slug suitable for a filename."""
+    return re.sub(r"[^a-z0-9]+", "-", (value or "").strip().lower()).strip("-")
+
+
+def _skin_palettes(path: Path) -> tuple[dict[str, str], dict[str, str]]:
+    """Read a skin file's (light, dark) palettes, restricted to the editable keys.
+
+    The same fallback `GET /skins/{name}` applies — dark/light fall back to the
+    shared `colors` — then the map is narrowed to the ten skin keys so a bundle
+    carries the writer's vocabulary, not an importer's fourteen tokens."""
+    data = _read_skin_file(path)
+    colors = data.get("colors") if isinstance(data.get("colors"), dict) else {}
+    light = data.get("light_colors") if isinstance(data.get("light_colors"), dict) else colors
+    dark = data.get("dark_colors") if isinstance(data.get("dark_colors"), dict) else colors
+    keep = set(EDITABLE_SKIN_KEYS)
+    return (
+        {str(k): str(v) for k, v in light.items() if k in keep},
+        {str(k): str(v) for k, v in dark.items() if k in keep},
+    )
+
+
+def _free_slug(base: str, skins_dir: Path) -> str:
+    """The first free `<base>-N` name, for a preview's rename-to-suffix."""
+    n = 2
+    while True:
+        candidate = f"{base}-{n}"
+        if not (skins_dir / f"{candidate}.yaml").exists():
+            return candidate
+        n += 1
+
+
+def _pack_record(
+    slug: str, name: str, author: str, members: list[str], *, created: str | None = None
+) -> dict[str, Any]:
+    return {
+        "chroma_pack": PACK_FORMAT_VERSION,
+        "slug": slug,
+        "name": (name or "").strip() or slug,
+        "author": (author or "").strip(),
+        "created": created or datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "members": [str(m) for m in members],
+        "categories": [],  # v1 carried empty; E4 owns real categories
+    }
+
+
+@router.get("/packs")
+def list_packs() -> dict[str, Any]:
+    """Every pack record, with its member count and which members are missing.
+
+    A pack whose skins were individually deleted says so rather than lying: the
+    members it names are checked against the files that should carry them."""
+    skins_dir = _skins_dir()
+    packs: list[dict[str, Any]] = []
+    for path in sorted(_packs_dir().glob("*.json")):
+        slug = path.stem
+        try:
+            record = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            # One malformed pack must not 500 the whole list — report and move on.
+            logger.warning("chroma pack unreadable at %s: %s", path, exc)
+            packs.append(
+                {
+                    "slug": slug,
+                    "name": slug,
+                    "author": "",
+                    "created": "",
+                    "count": 0,
+                    "members": [],
+                    "missing": [],
+                    "unreadable": True,
+                    "error": "pack record could not be read",
+                }
+            )
+            continue
+        if not isinstance(record, dict):
+            packs.append(
+                {
+                    "slug": slug,
+                    "name": slug,
+                    "author": "",
+                    "created": "",
+                    "count": 0,
+                    "members": [],
+                    "missing": [],
+                    "unreadable": True,
+                    "error": "pack record is not a JSON object",
+                }
+            )
+            continue
+        members = record.get("members") if isinstance(record.get("members"), list) else []
+        members = [str(m) for m in members]
+        missing = [m for m in members if not (skins_dir / f"{m}.yaml").is_file()]
+        packs.append(
+            {
+                "slug": record.get("slug") or slug,
+                "name": record.get("name") or slug,
+                "author": record.get("author") or "",
+                "created": record.get("created") or "",
+                "count": len(members),
+                "members": members,
+                "missing": missing,
+            }
+        )
+    return {"ok": True, "count": len(packs), "packs": packs}
+
+
+class PackExportRequest(BaseModel):
+    name: str
+    members: list[str] = []
+    author: str = ""
+
+
+@router.post("/packs/export")
+def export_pack(req: PackExportRequest) -> dict[str, Any]:
+    """Gather member skins' CURRENT palettes into one versioned bundle document.
+
+    Also writes the pack record, so an exported pack appears in `GET /packs`.
+    Returned as JSON rather than a raw download because the plugin's only channel
+    to the pane is a JSON REST call (see `export_skins`); the pane turns the
+    document into a file.
+
+    A member whose file is missing is a 400 that NAMES it — a silently short pack
+    would claim to carry a skin it does not."""
+    name = (req.name or "").strip()
+    slug = _slugify(name)
+    if _is_unsafe_name(slug):
+        raise HTTPException(400, "pack name must produce a slug (letters, digits, hyphens)")
+
+    skins_dir = _skins_dir()
+    index = _read_index()
+    bundle_skins: list[dict[str, Any]] = []
+    for member in req.members:
+        clean = _guard_name(member, field="member name")
+        path = skins_dir / f"{clean}.yaml"
+        if not path.is_file():
+            raise HTTPException(400, f"pack member '{clean}' has no skin file")
+        _owned_record(clean, index)  # 404 when the skin is not one Chroma manages
+        light, dark = _skin_palettes(path)
+        bundle_skins.append(
+            {
+                "name": clean,
+                "label": index.get(clean, {}).get("label") or clean,
+                "light": light,
+                "dark": dark,
+            }
+        )
+
+    created = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    bundle = {
+        "chroma_pack": PACK_FORMAT_VERSION,
+        "name": name,
+        "author": (req.author or "").strip(),
+        "created": created,
+        "categories": [],  # v1 export carries none; E4 owns category creation
+        "skins": bundle_skins,
+    }
+
+    try:
+        _atomic_write_text(
+            _pack_path(slug),
+            json.dumps(
+                _pack_record(
+                    slug, name, req.author, [s["name"] for s in bundle_skins], created=created
+                ),
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+        )
+    except OSError as exc:
+        raise HTTPException(500, f"could not write the pack record ({_pack_path(slug)}): {exc}") from exc
+
+    logger.info("exported pack %s (%d skins)", slug, len(bundle_skins))
+    return bundle
+
+
+class PackImportRequest(BaseModel):
+    """A pack bundle document plus the preview/confirm switch."""
+
+    chroma_pack: int | None = None
+    name: str = ""
+    author: str = ""
+    created: str = ""
+    categories: list[Any] = []
+    skins: list[Any] = []
+    dryRun: bool = False
+
+
+def _validate_bundle_skins(req: PackImportRequest) -> list[dict[str, Any]]:
+    """Hostile validation of a bundle's skins. Raises, naming the offence.
+
+    Every rule is a refusal: a wrong format version, a non-slug (or path) name, an
+    unknown role, a non-#rrggbb colour. Nothing is dropped silently."""
+    if req.chroma_pack != PACK_FORMAT_VERSION:
+        raise HTTPException(
+            400,
+            f"unsupported pack format: expected chroma_pack {PACK_FORMAT_VERSION}, "
+            f"got {req.chroma_pack!r}",
+        )
+    if not isinstance(req.skins, list):
+        raise HTTPException(400, "a pack bundle must carry a 'skins' array")
+    if len(req.skins) > MAX_PACK_SKINS:
+        raise HTTPException(413, f"pack declares {len(req.skins)} skins (limit {MAX_PACK_SKINS})")
+
+    parsed: list[dict[str, Any]] = []
+    for entry in req.skins:
+        if not isinstance(entry, dict):
+            raise HTTPException(400, "every pack skin must be an object")
+        raw_name = entry.get("name")
+        if not isinstance(raw_name, str):
+            raise HTTPException(400, "every pack skin needs a string 'name'")
+        # A name is a slug, never a path fragment: `_editor_name` refuses '../x',
+        # 'a/b', a reserved device name and a built-in.
+        clean = _editor_name(raw_name, field="skin name", builtin_hint=False)
+        light = _normalise_palette(entry.get("light") or {}, what=f"light palette of '{clean}'")
+        dark = _normalise_palette(entry.get("dark") or {}, what=f"dark palette of '{clean}'")
+        label = entry.get("label")
+        parsed.append(
+            {
+                "name": clean,
+                "label": label.strip() if isinstance(label, str) and label.strip() else clean,
+                "light": light,
+                "dark": dark,
+            }
+        )
+    return parsed
+
+
+def _validate_bundle_categories(req: PackImportRequest) -> None:
+    """Validate the bundle's `categories` array. E4 owns actually creating them.
+
+    v1 does NOT create categories here — this only refuses a malformed array so a
+    broken bundle is caught at the boundary. When E4 lands, it creates them from
+    this exact shape; nothing is half-created now."""
+    cats = req.categories
+    if cats is None:
+        return
+    if not isinstance(cats, list):
+        raise HTTPException(400, "'categories' must be an array")
+    for entry in cats:
+        if not isinstance(entry, dict) or not isinstance(entry.get("id"), str) or not entry["id"].strip():
+            raise HTTPException(400, "every category needs a non-empty string 'id'")
+
+
+def _restore_index(original_text: str | None) -> None:
+    """Best-effort restore of the index to its prior bytes (or absence)."""
+    try:
+        if original_text is None:
+            _unlink_quietly(_index_path())
+        else:
+            _atomic_write_text(_index_path(), original_text)
+    except OSError:
+        pass
+
+
+@router.post("/packs/import")
+def import_pack(req: PackImportRequest) -> dict[str, Any]:
+    """Preview a bundle, then import it as ONE transaction against the index.
+
+    `dryRun` writes nothing and returns, per skin, `new` / `identical` / `collides`
+    with the resolved target name. On confirm, the whole import is one
+    transaction: every file and the index; a failure part-way rolls back what it
+    wrote, because a half-imported pack is the failure this rule exists to stop.
+    The lock is held for the whole transaction, not per file."""
+    oversized = _theme_too_large({"skins": req.skins, "categories": req.categories})
+    if oversized:
+        raise HTTPException(413, f"pack is too large: {oversized}")
+
+    parsed = _validate_bundle_skins(req)
+    _validate_bundle_categories(req)  # validated, then ignored — E4 owns creation
+
+    name = (req.name or "").strip()
+    slug = _slugify(name)
+    pack_slug = slug if slug and not _is_unsafe_name(slug) else ""
+    skins_dir = _skins_dir()
+
+    if req.dryRun:
+        entries: list[dict[str, Any]] = []
+        for skin in parsed:
+            target = skins_dir / f"{skin['name']}.yaml"
+            if not target.is_file():
+                status, resolved = "new", skin["name"]
+            else:
+                existing_light, existing_dark = _skin_palettes(target)
+                if existing_light == skin["light"] and existing_dark == skin["dark"]:
+                    status, resolved = "identical", skin["name"]
+                else:
+                    status, resolved = "collides", _free_slug(skin["name"], skins_dir)
+            entries.append({"name": skin["name"], "status": status, "resolved": resolved})
+        return {"ok": True, "dryRun": True, "pack": pack_slug, "skins": entries}
+
+    # ---- confirm: one transaction against the index -----------------------
+    with _INDEX_LOCK:
+        try:
+            index = _read_index_for_update()
+        except IndexUnreadableError as exc:
+            raise _index_error(exc) from exc
+
+        index_path = _index_path()
+        original_index = index_path.read_text(encoding="utf-8") if index_path.is_file() else None
+
+        created: list[Path] = []
+        imported: list[str] = []
+        skipped: list[str] = []
+        try:
+            for skin in parsed:
+                target = skins_dir / f"{skin['name']}.yaml"
+                if target.exists():
+                    existing_light, existing_dark = _skin_palettes(target)
+                    if existing_light == skin["light"] and existing_dark == skin["dark"]:
+                        skipped.append(skin["name"])  # byte-identical: skip, do not rewrite
+                        continue
+                    # A different skin already holds this name. Refuse rather than
+                    # overwrite: the preview resolved it to a new name, and the
+                    # pane must import the renamed bundle.
+                    raise HTTPException(
+                        409,
+                        f"'{skin['name']}' already exists with a different palette; the "
+                        f"preview resolves this to a new name — import the renamed bundle",
+                    )
+
+                data: dict[str, Any] = {"name": skin["name"], "description": skin["label"]}
+                if skin["light"]:
+                    data["colors"] = skin["light"]
+                    data["light_colors"] = skin["light"]
+                if skin["dark"]:
+                    data["dark_colors"] = skin["dark"]
+                _atomic_write_text(target, _dump_skin_yaml(data))
+                created.append(target)
+                index[skin["name"]] = _new_owned_record(
+                    index,
+                    label=skin["label"],
+                    pack=pack_slug or None,
+                    ts=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                )
+                imported.append(skin["name"])
+
+            if imported:
+                _write_index(index)
+
+            if pack_slug and imported:
+                prior: list[str] = []
+                record_path = _pack_path(pack_slug)
+                if record_path.is_file():
+                    try:
+                        existing = json.loads(record_path.read_text(encoding="utf-8"))
+                        if isinstance(existing, dict) and isinstance(existing.get("members"), list):
+                            prior = [str(m) for m in existing["members"]]
+                    except (OSError, ValueError):
+                        prior = []
+                merged = list(dict.fromkeys(prior + imported))
+                existing_created = None
+                if record_path.is_file():
+                    try:
+                        parsed_record = json.loads(record_path.read_text(encoding="utf-8"))
+                        if isinstance(parsed_record, dict):
+                            existing_created = parsed_record.get("created")
+                    except (OSError, ValueError):
+                        existing_created = None
+                _atomic_write_text(
+                    record_path,
+                    json.dumps(
+                        _pack_record(pack_slug, name, req.author, merged, created=existing_created),
+                        indent=2,
+                        sort_keys=True,
+                    )
+                    + "\n",
+                )
+        except HTTPException:
+            for path in created:
+                _unlink_quietly(path)
+            _restore_index(original_index)
+            raise
+        except OSError as exc:
+            for path in created:
+                _unlink_quietly(path)
+            _restore_index(original_index)
+            raise HTTPException(
+                500,
+                f"the pack import failed part-way ({exc}); everything it wrote was rolled back",
+            ) from exc
+
+    logger.info(
+        "imported pack %s: %d new, %d skipped", pack_slug or name, len(imported), len(skipped)
+    )
+    return {"ok": True, "dryRun": False, "pack": pack_slug, "imported": imported, "skipped": skipped}
+
+
+@router.delete("/packs/{slug}")
+def delete_pack(slug: str, withSkins: bool = False) -> dict[str, Any]:
+    """Drop a pack record.
+
+    Default removes the RECORD ONLY — members are untouched. `withSkins=true` also
+    deletes the member skins through the trash path (never an unlink), so a
+    mistaken click is recoverable."""
+    clean = (slug or "").strip().lower()
+    if _is_unsafe_name(clean):
+        raise HTTPException(400, "pack slug must be a slug (lower-case, hyphens)")
+
+    path = _pack_path(clean)
+    if not path.is_file():
+        raise HTTPException(404, f"'{clean}' is not a pack Chroma manages")
+
+    try:
+        record = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise HTTPException(500, f"the pack record at {path} is unreadable ({exc})") from exc
+    members = record.get("members") if isinstance(record, dict) else []
+    if not isinstance(members, list):
+        members = []
+
+    removed: list[str] = []
+    if withSkins:
+        with _INDEX_LOCK:
+            try:
+                index = _read_index_for_update()
+            except IndexUnreadableError as exc:
+                raise _index_error(exc) from exc
+            for member in members:
+                member_name = str(member)
+                if _is_unsafe_name(member_name):
+                    continue
+                target = _skins_dir() / f"{member_name}.yaml"
+                if not target.is_file():
+                    index.pop(member_name, None)  # a vanished member: drop the stale record
+                    continue
+                stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-%f")
+                trashed = _trash_dir() / f"{member_name}-{stamp}.yaml"
+                try:
+                    os.replace(target, trashed)
+                except OSError as exc:
+                    raise HTTPException(
+                        500,
+                        f"could not move the pack member '{member_name}' to the trash "
+                        f"({trashed}): {exc}",
+                    ) from exc
+                index.pop(member_name, None)
+                removed.append(member_name)
+            _write_index_or_500(index)
+
+    try:
+        path.unlink()
+    except OSError as exc:
+        raise HTTPException(500, f"could not remove the pack record {path}: {exc}") from exc
+
+    logger.info("deleted pack %s (withSkins=%s, removed %d)", clean, withSkins, len(removed))
+    return {"ok": True, "slug": clean, "removedSkins": removed}
