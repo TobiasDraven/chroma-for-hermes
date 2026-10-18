@@ -693,3 +693,68 @@ item 2). **Two of these carry an open design question the plan already flagged**
 per-profile-vs-global categories answer, and E5's Desktop-only font claim rests on the §8 spike that has
 not been run. Both are the Captain's calls, not mine.
 
+---
+
+## 21. E2/E3 as built, and the round trip that proves them (2026-10-18)
+
+**Shipped** as `832e5d4`: `POST /skins/duplicate` and the four pack routes (`GET /packs`,
+`POST /packs/export`, `POST /packs/import`, `DELETE /packs/{slug}`), plus the pane's Duplicate action,
+its `Update` / `Save as new` fork, and the pack list / export / import-preview / delete surface.
+Suites: JS **162/162** (from 150), backend **120/120** (from 92), regeneration idempotent.
+
+### 21.1 The two lanes' contract was checked, not assumed
+
+The lanes ran in one worktree and could not see each other's output, so the seams were verified by
+reading both sides rather than trusting two green suites:
+
+- **Route names match exactly** — `skins/duplicate`, `packs`, `packs/export`, `packs/import`,
+  `packs/{slug}?withSkins=` on both sides.
+- **Payload field names match the Pydantic models** — `duplicateBody` emits `{to, label, light, dark}`;
+  `DuplicateRequest` takes `{to, label?, light{}, dark{}}`.
+- **Status strings match** — the pane groups on `'new'` / `'identical'` / `'collides'`, which is exactly
+  what the backend emits. A single character here would have broken the preview silently while both
+  suites stayed green.
+- **The panes's duplicate body sends concrete skin keys**, because it is built on `overridePayload` —
+  the same ten-key vocabulary the backend validates. This is the seam that would have failed had the
+  pane posted its six logical role ids.
+
+### 21.2 The round trip — the property the packs campaign rests on
+
+A bundle produced by `POST /packs/export` must be importable by `POST /packs/import`. Neither lane could
+test that in isolation; it was proven over a real ASGI transport, into a **fresh tree**:
+
+| Step | Result |
+|:--|:--|
+| `POST /skins/duplicate` ×2 | `200`; both files real YAML |
+| light-only fork | **no `dark_colors` key at all** — resolves nothing, as specified |
+| duplicate again on the same name | `409` naming it |
+| duplicate with an unknown role | `400` naming the role **and listing the editable ten** |
+| `POST /packs/export` | `200`; `chroma_pack: 1`, `categories: []`, palettes preserved exactly |
+| import preview into a fresh tree | every skin `new` |
+| import confirm | `200`; **palettes preserved** in the new files |
+| **re-import the same bundle** | every skin `identical`, all `skipped`, **files byte-untouched** |
+| a member deleted individually | `GET /packs` reports it in `missing` — the pack does not lie |
+| `DELETE /packs/{slug}` (record only) | members survive; the list drops the pack |
+| `DELETE /packs/{slug}?withSkins=true` | members **recovered from `_trash`**, never unlinked; index records dropped |
+| unknown slug | `404` |
+
+### 21.3 Two things the pane lane decided, both on the record
+
+1. **Import uses a paste-textarea, not a file dialog** — because the host SDK exposes **no file-open**
+   dialog; `ctx.os.pickSavePath` and `captureGatewayFileDownload` are both write-side (§18.1). If the
+   host ever grows an open dialog, this is the place to change it. **Worth the Captain's eye:** a
+   textarea is a poor way to hand a user a pack file, and "open a .json" is the obvious expectation.
+2. **Collision choices are encoded by rewriting the chosen skin's `name` in the bundle**, so the confirm
+   payload stays exactly `{...bundle, dryRun: false}`. The backend computes the free name during preview,
+   so a rename cannot itself collide; a user-typed name that does collide gets an honest `409` from the
+   confirm and the pane reports it. No side channel was invented, which keeps the contract clean.
+
+### 21.4 Process note, the third of its kind
+
+The pane lane reported `plugin.js` at sha256 `74d4c5e3…`; this session measured md5 `d9fec186…`. **The two
+agree — different algorithms, same file.** Reconciling the *hash function* before crying foul is worth
+doing: the E1 pair's contradiction was real, but this one was not, and a parent who assumes the worst
+burns a lane's worth of time chasing a mismatch that does not exist. The check that actually matters is
+the one already run: `diff -q` against a **fresh regeneration**.
+
+
