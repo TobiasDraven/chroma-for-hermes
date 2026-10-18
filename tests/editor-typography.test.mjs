@@ -178,29 +178,38 @@ test('schemaTypoDriftNotice: null when no drift, warning when drift', async () =
 
 // --- boot survival ---------------------------------------------------------------
 
-test('boot survival: a typography override reaches the registered theme', async () => {
-  const { t, calls } = await withRest(async (path, options) => {
-    calls.push({ path, options: options || {} })
-    if (path === 'overrides') {
-      return { nous: { typography: { fontSans: '"Boot Sans", sans-serif' } } }
-    }
-    return {}
-  })
-  // register() is async and reads overrides before building themes
-  await t.plugin.register({
-    rest: calls.length >= 0 ? async (path, options) => {
-      calls.push({ path, options: options || {} })
-      if (path === 'overrides') {
-        return { nous: { typography: { fontSans: '"Boot Sans", sans-serif' } } }
-      }
-      return {}
-    } : null,
-    register() {},
+test('boot survival: register() is synchronous and an overlay in the mirror reaches the registered theme', async () => {
+  const { context } = await loadPlugin()
+  const t = context.testHelpers
+  // Seed the boot mirror the way an override save does.
+  t.writeOverrideMirror('amber-terminal', { typography: { fontSans: '"Boot Sans", sans-serif' } })
+
+  const registered = []
+  const ctx = {
+    rest: async () => { throw new Error('boot must not read the network') },
+    register(c) { registered.push(c) },
     storage: { get: async () => null, set: async () => {} }
-  })
-  // The overrides call happened
-  const overrideCall = calls.find(c => c.path === 'overrides')
-  assert.ok(overrideCall, 'register() reads overrides at boot')
+  }
+  // No await: the host calls register() synchronously and discards the result.
+  const returned = context.plugin.register(ctx)
+  assert.ok(!(returned && typeof returned.then === 'function'), 'register() must not hand back a promise')
+
+  const theme = registered.find(c => c.id === 'theme:amber-terminal')
+  assert.ok(theme, 'the overlaid scene is registered at boot')
+  assert.equal(
+    theme.data.typography.fontSans,
+    '"Boot Sans", sans-serif',
+    'the mirrored override, not the authored font, is what boots'
+  )
+})
+
+test('boot survival: a reset clears the mirror so the shipped palette boots', async () => {
+  const { context } = await loadPlugin()
+  const t = context.testHelpers
+  t.writeOverrideMirror('amber-terminal', { typography: { fontSans: '"Gone Sans", sans-serif' } })
+  assert.ok(t.readOverrideMirror()['amber-terminal'], 'mirror carries the edit')
+  t.writeOverrideMirror('amber-terminal', null)
+  assert.equal(t.readOverrideMirror()['amber-terminal'], undefined, 'reset removes it from the mirror')
 })
 
 test('boot survival: applyOverride carries typography into sceneToDesktopTheme', async () => {

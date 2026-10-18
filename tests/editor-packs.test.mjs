@@ -58,7 +58,7 @@ const bundle = () => ({
 
 test('the duplicate body carries concrete skin keys and a defaulted label', async () => {
   const t = await ctx()
-  const body = t.duplicateBody(draft(), 'ocean-skin-copy', '', null, 'Ocean Skin', 'ocean-skin')
+  const body = t.duplicateBody(draft(), 'ocean-skin-copy', '', null, { label: 'Ocean Skin', name: 'ocean-skin' })
   assert.deepEqual(plain(body), {
     to: 'ocean-skin-copy',
     label: 'Ocean Skin copy',
@@ -68,7 +68,7 @@ test('the duplicate body carries concrete skin keys and a defaulted label', asyn
   })
 
   // A given label is respected verbatim (trimmed).
-  const named = t.duplicateBody(draft(), 'x-copy', '  My Copy  ', null, 'Ocean Skin', 'ocean-skin')
+  const named = t.duplicateBody(draft(), 'x-copy', '  My Copy  ', null, { label: 'Ocean Skin', name: 'ocean-skin' })
   assert.equal(named.label, 'My Copy')
 
   // The pre-filled fork name is always a slug.
@@ -104,7 +104,7 @@ test('a 409 from duplicate is a field-level collision, not a thrown crash', asyn
 
 test('duplicateSkin posts the exact body through the rest transport', async () => {
   const { t, calls } = await withRest(async (path, options) => { calls.push({ path, options }); return { ok: true, name: 'ocean-skin-copy', path: 'x' } })
-  const body = t.duplicateBody(draft(), 'ocean-skin-copy', '', null, 'Ocean Skin', 'ocean-skin')
+  const body = t.duplicateBody(draft(), 'ocean-skin-copy', '', null, { label: 'Ocean Skin', name: 'ocean-skin' })
   await t.duplicateSkin(body.to, body.label, body.light, body.dark)
   assert.equal(calls[0].path, 'skins/duplicate')
   assert.equal(calls[0].options.method, 'POST')

@@ -194,125 +194,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Ocean Skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Ocean Skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -699,125 +710,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Ocean Skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Ocean Skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -1016,125 +1038,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Ocean Skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Ocean Skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -1332,125 +1365,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Ocean Skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Ocean Skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -1838,125 +1882,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Ocean Skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Ocean Skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -2158,125 +2213,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Ocean Skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Ocean Skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -2471,125 +2537,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Ocean Skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Ocean Skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -2788,125 +2865,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Ocean Skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Ocean Skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -3101,125 +3189,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Ocean Skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Ocean Skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -3418,125 +3517,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for no-label-skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "dark",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for no-label-skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "dark",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -3735,125 +3845,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Thin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "light",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Thin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "light",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -4052,125 +4173,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Alias",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "light",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Alias",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "light",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -4369,125 +4501,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Bare",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "dark",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Bare",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "dark",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -4685,125 +4828,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Bare",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "dark",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Bare",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "dark",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -5001,125 +5155,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Ocean Skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Ocean Skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -5509,125 +5674,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Gateway",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Gateway",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -5826,125 +6002,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Gateway",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Gateway",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -6331,125 +6518,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Colors Only",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Colors Only",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -6648,125 +6846,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Third Alias",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "dark",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Third Alias",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "dark",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -6964,125 +7173,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Ocean Skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Ocean Skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -7281,125 +7501,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Ocean Skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "cool",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Ocean Skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "cool",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -7598,125 +7829,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for no-label-skin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "dark",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for no-label-skin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "dark",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }
@@ -7915,125 +8157,136 @@
      ]
     },
     {
-     "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+     "className": "mt-1 flex items-center gap-1",
      "type": "div",
      "children": [
       {
-       "aria-label": "Category for Thin",
-       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
-       "key": "category",
-       "onChange": "[fn]",
-       "title": "File this skin under a category. Empty resets to its measured shelf.",
-       "value": "light",
-       "type": "select",
+       "className": "inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium",
+       "type": "span",
+       "children": "core"
+      },
+      {
+       "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "type": "div",
        "children": [
         {
-         "key": "measured",
-         "value": "",
-         "type": "option",
-         "children": "Measured shelf"
+         "aria-label": "Category for Thin",
+         "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+         "key": "category",
+         "onChange": "[fn]",
+         "title": "File this skin under a category. Empty resets to its measured shelf.",
+         "value": "light",
+         "type": "select",
+         "children": [
+          {
+           "key": "measured",
+           "value": "",
+           "type": "option",
+           "children": "Measured shelf"
+          },
+          [
+           {
+            "key": "b-minimal",
+            "value": "minimal",
+            "type": "option",
+            "children": "minimal"
+           },
+           {
+            "key": "b-pastels",
+            "value": "pastels",
+            "type": "option",
+            "children": "pastels"
+           },
+           {
+            "key": "b-vibrant",
+            "value": "vibrant",
+            "type": "option",
+            "children": "vibrant"
+           },
+           {
+            "key": "b-muted",
+            "value": "muted",
+            "type": "option",
+            "children": "muted"
+           },
+           {
+            "key": "b-earth",
+            "value": "earth",
+            "type": "option",
+            "children": "earth"
+           },
+           {
+            "key": "b-terminal",
+            "value": "terminal",
+            "type": "option",
+            "children": "terminal"
+           },
+           {
+            "key": "b-nature",
+            "value": "nature",
+            "type": "option",
+            "children": "nature"
+           },
+           {
+            "key": "b-warm",
+            "value": "warm",
+            "type": "option",
+            "children": "warm"
+           },
+           {
+            "key": "b-orange",
+            "value": "orange",
+            "type": "option",
+            "children": "orange"
+           },
+           {
+            "key": "b-gold",
+            "value": "gold",
+            "type": "option",
+            "children": "gold"
+           },
+           {
+            "key": "b-cool",
+            "value": "cool",
+            "type": "option",
+            "children": "cool"
+           },
+           {
+            "key": "b-violet",
+            "value": "violet",
+            "type": "option",
+            "children": "violet"
+           }
+          ],
+          []
+         ]
         },
-        [
-         {
-          "key": "b-minimal",
-          "value": "minimal",
-          "type": "option",
-          "children": "minimal"
-         },
-         {
-          "key": "b-pastels",
-          "value": "pastels",
-          "type": "option",
-          "children": "pastels"
-         },
-         {
-          "key": "b-vibrant",
-          "value": "vibrant",
-          "type": "option",
-          "children": "vibrant"
-         },
-         {
-          "key": "b-muted",
-          "value": "muted",
-          "type": "option",
-          "children": "muted"
-         },
-         {
-          "key": "b-earth",
-          "value": "earth",
-          "type": "option",
-          "children": "earth"
-         },
-         {
-          "key": "b-terminal",
-          "value": "terminal",
-          "type": "option",
-          "children": "terminal"
-         },
-         {
-          "key": "b-nature",
-          "value": "nature",
-          "type": "option",
-          "children": "nature"
-         },
-         {
-          "key": "b-warm",
-          "value": "warm",
-          "type": "option",
-          "children": "warm"
-         },
-         {
-          "key": "b-orange",
-          "value": "orange",
-          "type": "option",
-          "children": "orange"
-         },
-         {
-          "key": "b-gold",
-          "value": "gold",
-          "type": "option",
-          "children": "gold"
-         },
-         {
-          "key": "b-cool",
-          "value": "cool",
-          "type": "option",
-          "children": "cool"
-         },
-         {
-          "key": "b-violet",
-          "value": "violet",
-          "type": "option",
-          "children": "violet"
-         }
-        ],
-        []
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "export",
+         "onClick": "[fn]",
+         "title": "Save this skin as hand-editable YAML you can edit and re-import",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Export"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "rename",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Rename"
+        },
+        {
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "key": "delete",
+         "onClick": "[fn]",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Delete"
+        }
        ]
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "export",
-       "onClick": "[fn]",
-       "title": "Save this skin as hand-editable YAML you can edit and re-import",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Export"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "rename",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Rename"
-      },
-      {
-       "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
-       "key": "delete",
-       "onClick": "[fn]",
-       "type": "button",
-       "htmlType": "button",
-       "children": "Delete"
       }
      ]
     }

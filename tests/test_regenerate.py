@@ -165,10 +165,13 @@ class ThemeCatalogTests(unittest.TestCase):
                 self.assertEqual(transport['name'], gateway_name)
                 self.assertEqual(transport['colors'], scene[f'{mode}Colors'])
 
-        self.assertEqual(len(dynamic), 57)
-        self.assertEqual(len(transport_names), 114)
-        self.assertEqual(len(set(transport_names)), 114)
-        self.assertEqual(len(list((repo / 'gateway-skins').glob('*.yaml'))), 114)
+        # Every scene ships both modes by design, so the invariant is that the
+        # transport set is exactly two per scene and all of them are unique —
+        # not a count that has to be re-pinned every time a skin is added.
+        self.assertEqual(len(dynamic), len(catalog), 'every scene ships both modes')
+        self.assertEqual(len(transport_names), 2 * len(dynamic))
+        self.assertEqual(len(set(transport_names)), len(transport_names), 'every transport name is unique')
+        self.assertEqual(len(list((repo / 'gateway-skins').glob('*.yaml'))), len(transport_names))
 
     def test_every_catalog_scene_selects_a_gateway_resolvable_variant(self):
         repo = SCRIPT.parents[1]
@@ -209,10 +212,10 @@ class ThemeCatalogTests(unittest.TestCase):
         skins_dir = SCRIPT.parents[1] / 'skins'
         available = {path.stem for path in skins_dir.glob('*.yaml')}
 
-        self.assertEqual(len(regenerate.THEME_PAIRS), 50)
+        self.assertEqual(len(regenerate.THEME_PAIRS), 55, 'the vendored pack pair list')
         paired = {name for pair in regenerate.THEME_PAIRS for name in pair}
-        self.assertEqual(len(paired), 100)
-        self.assertEqual(paired - available, set())
+        self.assertEqual(len(paired), 110, 'two distinct skins per pair')
+        self.assertEqual(paired - available, set(), 'every paired skin is shipped')
 
     def test_cliffwade_v1_1_0_files_match_the_pinned_hash_manifest(self):
         repo = SCRIPT.parents[1]
@@ -243,7 +246,12 @@ class ThemeCatalogTests(unittest.TestCase):
         self.assertEqual(catalog[0]['modeSupport'], 'dynamic')
         self.assertEqual(catalog[0]['darkName'], 'dark-example')
         self.assertEqual(catalog[0]['lightName'], 'light-example')
-        self.assertEqual(catalog[1]['modeSupport'], 'dark')
+        # A skin shipped with one mode gets the other PORTED, so no dead
+        # single-mode shelf survives and the mode toggle works on every card.
+        # The port is flagged, so it is never mistaken for an authored palette.
+        self.assertEqual(catalog[1]['modeSupport'], 'dynamic')
+        self.assertTrue(catalog[1]['derivedLight'], 'the ported light palette is marked as derived')
+        self.assertEqual(catalog[1]['darkColors']['background'], '#000000')
 
 
 class WindowsRunnerTests(unittest.TestCase):
