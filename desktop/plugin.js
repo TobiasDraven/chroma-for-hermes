@@ -324,7 +324,7 @@ function sceneToDesktopTheme(scene) {
     description: scene.description || 'Chroma scene',
     colors: light.colors,
     darkColors: dark.colors,
-    typography: SCENE_TYPOGRAPHY[scene.name],
+    typography: Object.assign({}, SCENE_TYPOGRAPHY[scene.name], scene.typography || {}),
     themePickerManaged: true
   }
 }
@@ -1244,6 +1244,50 @@ function schemaDrift(roles, paletteKeys) {
 
 /** The one notice the drift alarm raises, or null when nothing drifted. Names
  *  the first offending role and key, so the message is actionable. */
+const TYPOGRAPHY_KEYS = ['fontSans', 'fontMono']
+const FORBIDDEN_TYPO_CHARS = /[;{}<>\n]/
+
+/** A user-typed font stack is valid when it carries no CSS-breaking character.
+ *  The backend refuses these by name; the pane refuses them locally so the
+ *  user sees the error before a round trip. */
+function validTypoStack(value) {
+  if (typeof value !== 'string' || !value.trim()) return false
+  return !FORBIDDEN_TYPO_CHARS.test(value)
+}
+
+/** The emoji fallback is mandatory: a chosen font silently loses colour-emoji
+ *  glyphs without it, and the bug reads as "the emoji broke". */
+function withEmojiFallback(stack) {
+  if (!stack) return stack
+  return stack.includes(EMOJI_FALLBACK) ? stack : stack + ', ' + EMOJI_FALLBACK
+}
+
+/** PURE: the typography drift check. A font key the pane renders but the
+ *  backend refuses is the drift this catches. */
+function schemaTypoDrift(schemaTypography) {
+  const known = new Set(Array.isArray(schemaTypography)
+    ? schemaTypography.map(item => item && item.id)
+    : [])
+  const drift = []
+  for (const key of TYPOGRAPHY_KEYS) {
+    if (!known.has(key)) drift.push({ key: key, side: 'pane' })
+  }
+  return drift
+}
+
+/** The one notice the typography drift raises, or null when nothing drifted. */
+function schemaTypoDriftNotice(drift) {
+  if (!drift || !drift.length) return null
+  const first = drift[0]
+  const more = drift.length > 1 ? ' (' + drift.length + ' font keys disagree)' : ''
+  return {
+    kind: 'warning',
+    title: 'Chroma typography schema drift',
+    message: 'Font key ' + first.key + ' is rendered by the pane, absent from GET /schema' + more,
+    detail: 'The pane and the backend disagree about a font key. A font save may be refused.'
+  }
+}
+
 function schemaDriftNotice(drift) {
   if (!drift || !drift.length) return null
   const first = drift[0]
@@ -2948,6 +2992,12 @@ function applyOverride(scene, overrides) {
     next.darkColors = Object.assign({}, scene.darkColors || scene.colors || {}, dark)
     if (!light) next.colors = next.darkColors
   }
+  // E5 — typography rides the same override record. A font-only override is
+  // valid: the record may carry `typography` with no `light`/`dark` keys.
+  const typo = record.typography && typeof record.typography === 'object' ? record.typography : null
+  if (typo) {
+    next.typography = Object.assign({}, next.typography || {}, typo)
+  }
   return next
 }
 
@@ -3018,6 +3068,19 @@ function overridePayload(draft, modes) {
     for (const role of EDITOR_ROLES) {
       const hex = normaliseHex(draft && draft[modeKey] ? draft[modeKey][role.id] : '')
       if (hex) out[modeKey][role.keys[0]] = hex
+    }
+  }
+  // E5 — typography keys ride the same payload. Only the keys the user set
+  // are included; a font-only override carries no light/dark.
+  if (draft && draft.typography && typeof draft.typography === 'object') {
+    const t = draft.typography
+    if (typeof t.fontSans === 'string' && t.fontSans) {
+      if (!out.typography) out.typography = {}
+      out.typography.fontSans = t.fontSans
+    }
+    if (typeof t.fontMono === 'string' && t.fontMono) {
+      if (!out.typography) out.typography = {}
+      out.typography.fontMono = t.fontMono
     }
   }
   return out
@@ -3785,7 +3848,13 @@ function ThemePicker() {
       }
       setSchema(next)
       const drift = schemaDrift(EDITOR_ROLES, next.paletteKeys)
+      const typoDrift = schemaTypoDrift(next.typography)
       const catDrift = schemaCategoryDrift(next.categories, THEME_CATEGORIES)
+      if (typoDrift.length) {
+        console.warn('Chroma editor typography schema drift: ' + typoDrift.length
+          + ' font keys absent from GET /schema')
+        host.notify(schemaTypoDriftNotice(typoDrift))
+      }
       if (drift.length) {
         for (const item of drift) {
           console.warn('Chroma editor schema drift: role ' + item.role + ' writes ' + item.key
@@ -4893,17 +4962,31 @@ function ThemeChip() {
 export default {
   id: ID,
   name: 'Chroma',
-  register(ctx) {
+  async register(ctx) {
     _rest = ctx.rest
     // A new registration gets a fresh schema: the cache is per session, not per
     // process, so a reload re-reads it.
     _editorSchemaCache = null
     migrateAppearanceAliases()
+    // E5 — read overrides at boot so a font or colour edit survives a restart.
+    // Without this, register() maps raw SKINS and every override is lost.
+    let overrides = {}
+    try {
+      const result = await _rest('overrides')
+      if (result && typeof result === 'object' && !Array.isArray(result)) {
+        overrides = result
+      }
+    } catch {
+      // No backend or no overrides route — boot with authored values.
+    }
     // Register each scene as one Desktop theme. Matched scenes carry a true
     // light palette plus darkColors, so Desktop's mode switch changes polarity
     // without creating duplicate Appearance entries. Core names stay native.
+    // applyOverride layers the user's edits onto each scene before the theme
+    // is built, so the boot theme carries the override, not the authored value.
     const userThemes = SKINS
       .filter(scene => !CORE_DESKTOP_THEMES.has(scene.name))
+      .map(scene => applyOverride(scene, overrides))
       .map(sceneToDesktopTheme)
       .filter(Boolean)
     persistThemesForBoot(userThemes)
