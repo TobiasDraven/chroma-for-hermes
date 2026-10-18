@@ -67,6 +67,14 @@ const PAGE_PATH = '/chroma'
 // Desktop reads this cache before plugins register, so a selected contributed
 // theme remains resolvable during the next app startup.
 const USER_THEMES_KEY = 'hermes-desktop-user-themes-v1'
+// Boot mirror of the backend override store. The host calls register()
+// SYNCHRONOUSLY and restores its disposer tracker before any await resolves,
+// so register() must not await a network read: a contribution registered after
+// an await loses its disposer and can never be withdrawn. Every successful
+// override write updates this mirror, so the next boot resolves the same
+// palettes with no network at all. The backend remains the source of truth for
+// the editor; this key exists only to make boot synchronous.
+const OVERRIDES_MIRROR_KEY = 'chroma-overrides-v1'
 const SKIN_KEY = 'hermes-desktop-theme-v2'
 const MODE_KEY = 'hermes-desktop-mode-v1'
 const PROFILE_SKINS_KEY = 'hermes-desktop-profile-themes-v1'
@@ -313,6 +321,24 @@ function skinToDesktopTheme(skin) {
   }
 }
 
+// A shallow merge that a hostile key cannot steer. `Object.assign` copies an own
+// `__proto__` through [[Set]], which rewrites the prototype of the fresh target;
+// the override store and a pasted TweakCN palette are both external input here.
+// Own enumerable string keys only, and the three prototype keys are refused.
+const UNSAFE_MERGE_KEYS = new Set(['__proto__', 'constructor', 'prototype'])
+
+function safeMerge(...sources) {
+  const out = {}
+  for (const source of sources) {
+    if (!source || typeof source !== 'object') continue
+    for (const key of Object.keys(source)) {
+      if (UNSAFE_MERGE_KEYS.has(key)) continue
+      out[key] = source[key]
+    }
+  }
+  return out
+}
+
 function sceneToDesktopTheme(scene) {
   const lightColors = scene.lightColors || scene.darkColors || scene.colors || {}
   const darkColors = scene.darkColors || scene.lightColors || scene.colors || {}
@@ -324,7 +350,7 @@ function sceneToDesktopTheme(scene) {
     description: scene.description || 'Chroma scene',
     colors: light.colors,
     darkColors: dark.colors,
-    typography: Object.assign({}, SCENE_TYPOGRAPHY[scene.name], scene.typography || {}),
+    typography: safeMerge(SCENE_TYPOGRAPHY[scene.name], scene.typography || {}),
     themePickerManaged: true
   }
 }
@@ -342,17 +368,21 @@ const slug = value =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 
+// Expand a short hex literal to 6-digit form. Split out of cssColorToHex so the
+// parser keeps one branch per INPUT FORM instead of one per length.
+function expandHex(hex) {
+  const value = hex.toLowerCase()
+  if (value.length === 4) return '#' + [...value.slice(1)].map(c => c + c).join('')
+  if (value.length === 5) return '#' + [...value.slice(1, 4)].map(c => c + c).join('') + value.slice(4)
+  if (value.length === 9) return value.slice(0, 7)
+  return value
+}
+
 function cssColorToHex(value) {
   if (typeof value !== 'string') return undefined
   const input = value.trim()
   const m = input.match(/^#([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i)
-  if (m) {
-    let next = m[0]
-    if (next.length === 4) next = '#' + [...next.slice(1)].map(c => c + c).join('')
-    if (next.length === 5) next = '#' + [...next.slice(1, 4)].map(c => c + c).join('') + next.slice(4)
-    if (next.length === 9) next = next.slice(0, 7)
-    return next.toLowerCase()
-  }
+  if (m) return expandHex(m[0])
   const rgb = input.match(/^rgba?\(\s*([0-9.]+)%?\s*,\s*([0-9.]+)%?\s*,\s*([0-9.]+)%?/i)
   if (rgb) {
     let r = Number(rgb[1]), g = Number(rgb[2]), b = Number(rgb[3])
@@ -437,7 +467,7 @@ function tweakcnColors(group) {
 // group that carries the fonts.
 function tweakcnVars(item) {
   const cssVars = (item && item.cssVars) || {}
-  const theme = Object.assign({}, cssVars.light || {}, cssVars.theme || {})
+  const theme = safeMerge(cssVars.light || {}, cssVars.theme || {})
   const font = key => (typeof theme[key] === 'string' ? theme[key] : null)
   const dark = cssVars.dark && Object.keys(cssVars.dark).length > 0
   return { cssVars, fontSans: font('font-sans'), fontMono: font('font-mono'), hasDark: Boolean(dark) }
@@ -1322,12 +1352,12 @@ function foldSavedSkin(name, saved) {
   const dark = saved ? pick(saved.dark) : null
   if (!light && !dark) return
   const merged = scene => {
-    const next = Object.assign({}, scene)
+    const next = safeMerge(scene)
     if (light) {
-      next.lightColors = Object.assign({}, scene.lightColors || scene.colors || {}, light)
+      next.lightColors = safeMerge(scene.lightColors || scene.colors || {}, light)
       next.colors = next.lightColors
     }
-    if (dark) next.darkColors = Object.assign({}, scene.darkColors || scene.colors || {}, dark)
+    if (dark) next.darkColors = safeMerge(scene.darkColors || scene.colors || {}, dark)
     return next
   }
   const index = IMPORTED_SKINS.findIndex(scene => scene && scene.name === name)
@@ -1386,12 +1416,12 @@ function duplicateLabel(sourceLabel, sourceName) {
 /** PURE: the POST /skins/duplicate body (§5). Both palettes are the CONCRETE
  *  skin keys the editor's draft maps to (overridePayload); `label` defaults to
  *  the source's label + ' copy', never left empty. */
-function duplicateBody(draftRoles, to, label, modes, sourceLabel, sourceName) {
+function duplicateBody(draftRoles, to, label, modes, source) {
   const palettes = overridePayload(draftRoles, modes)
   const given = typeof label === 'string' ? label.trim() : ''
   return {
     to: to,
-    label: given || duplicateLabel(sourceLabel, sourceName),
+    label: given || duplicateLabel(source && source.label, source && source.name),
     light: palettes.light,
     dark: palettes.dark
   }
@@ -1484,7 +1514,7 @@ async function requestPackExport(name, members, author) {
  *  one transaction on the backend, which rolls a failed import back. */
 async function requestPackImport(bundle, dryRun) {
   if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
-  const body = Object.assign({}, bundle, { dryRun: dryRun ? true : false })
+  const body = safeMerge(bundle, { dryRun: dryRun ? true : false })
   return await _rest('packs/import', { method: 'POST', body: JSON.stringify(body) })
 }
 
@@ -1614,7 +1644,7 @@ function parsePackBundle(text) {
     }
   }
   const categories = Array.isArray(data.categories) ? data.categories : []
-  return { ok: true, bundle: Object.assign({}, data, { categories: categories }) }
+  return { ok: true, bundle: safeMerge(data, { categories: categories }) }
 }
 
 /** PURE: group the backend's dry-run plan by status (§7): a skin that is new,
@@ -1649,12 +1679,12 @@ function applyPackChoices(bundle, choices) {
     const choice = decisions[name]
     if (choice && choice.action === 'skip') { skipped.push(name); continue }
     if (choice && choice.action === 'rename' && typeof choice.to === 'string' && choice.to.trim()) {
-      skins.push(Object.assign({}, skin, { name: choice.to.trim() }))
+      skins.push(safeMerge(skin, { name: choice.to.trim() }))
       continue
     }
     skins.push(skin)
   }
-  return { bundle: Object.assign({}, bundle, { skins: skins }), skipped: skipped }
+  return { bundle: safeMerge(bundle, { skins: skins }), skipped: skipped }
 }
 
 /** PURE: the notice an applied import reports. */
@@ -1940,6 +1970,36 @@ function isLegacyPickerTheme(existing, theme) {
   if (cachedColors === undefined) return false
   const shipped = [theme.colors, theme.darkColors].map(value => JSON.stringify(value))
   return shipped.includes(JSON.stringify(cachedColors))
+}
+
+// Synchronous boot read of the override store. Returns {} when there is no
+// mirror or it is unreadable — the authored palettes are the fallback, exactly
+// as when the backend is absent.
+function readOverrideMirror() {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(OVERRIDES_MIRROR_KEY) || '{}')
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+// Mirror one override change for the next boot. Best-effort by design: a failure
+// costs the next boot its override, never the current save, which the backend
+// has already accepted.
+function writeOverrideMirror(scene, override) {
+  try {
+    const mirror = readOverrideMirror()
+    if (override) {
+      mirror[scene] = override
+    } else {
+      delete mirror[scene]
+    }
+    window.localStorage.setItem(OVERRIDES_MIRROR_KEY, JSON.stringify(mirror))
+    return true
+  } catch {
+    return false
+  }
 }
 
 function persistThemesForBoot(themes) {
@@ -2981,22 +3041,22 @@ function sceneModePalette(scene, modeKey) {
 function applyOverride(scene, overrides) {
   const record = scene && overrides ? overrides[scene.name] : null
   if (!record || typeof record !== 'object') return scene
-  const next = Object.assign({}, scene)
+  const next = safeMerge(scene)
   const light = record.light && typeof record.light === 'object' ? record.light : null
   const dark = record.dark && typeof record.dark === 'object' ? record.dark : null
   if (light) {
-    next.lightColors = Object.assign({}, scene.lightColors || scene.colors || {}, light)
+    next.lightColors = safeMerge(scene.lightColors || scene.colors || {}, light)
     next.colors = next.lightColors
   }
   if (dark) {
-    next.darkColors = Object.assign({}, scene.darkColors || scene.colors || {}, dark)
+    next.darkColors = safeMerge(scene.darkColors || scene.colors || {}, dark)
     if (!light) next.colors = next.darkColors
   }
   // E5 — typography rides the same override record. A font-only override is
   // valid: the record may carry `typography` with no `light`/`dark` keys.
   const typo = record.typography && typeof record.typography === 'object' ? record.typography : null
   if (typo) {
-    next.typography = Object.assign({}, next.typography || {}, typo)
+    next.typography = safeMerge(next.typography || {}, typo)
   }
   return next
 }
@@ -3007,7 +3067,7 @@ function applyOverride(scene, overrides) {
  *  moment its accent changed. Grouping runs on the authored list; the override
  *  is layered on afterwards, per card. */
 function groupCards(scenes, overrides, groupMode, userCategories) {
-  return buildGroups(scenes, groupMode, userCategories).map(group => Object.assign({}, group, {
+  return buildGroups(scenes, groupMode, userCategories).map(group => safeMerge(group, {
     scenes: group.scenes.map(scene => applyOverride(scene, overrides))
   }))
 }
@@ -3045,7 +3105,7 @@ function modeDraftEqual(a, b) {
  *  `banner_accent` would otherwise keep painting the authored `ui_accent` the
  *  strip reads first, and the preview would ignore the edit. */
 function draftPalette(scene, modeKey, draftRoles) {
-  const colors = Object.assign({}, sceneModePalette(scene, modeKey))
+  const colors = safeMerge(sceneModePalette(scene, modeKey))
   for (const role of EDITOR_ROLES) {
     const hex = normaliseHex(draftRoles ? draftRoles[role.id] : '')
     if (hex) colors[role.keys[0]] = hex
@@ -3246,8 +3306,8 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
   // other.
   const seedLight = draftForScene(effective, 'light')
   const seedDark = draftForScene(effective, 'dark')
-  const [lightDraft, setLightDraft] = useState(() => Object.assign({}, seedLight))
-  const [darkDraft, setDarkDraft] = useState(() => Object.assign({}, seedDark))
+  const [lightDraft, setLightDraft] = useState(() => safeMerge(seedLight))
+  const [darkDraft, setDarkDraft] = useState(() => safeMerge(seedDark))
   // The fork (§18.3): `Update "<name>"` (the Save button) beside a `Save as new`
   // that opens a name prompt and posts the SAME draft as a brand-new skin. The
   // prompt stays open on a 409 with the collision ON THE FIELD — the colours are
@@ -3259,7 +3319,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
   const changeRole = (modeKey, roleId, value) => {
     const setter = modeKey === 'light' ? setLightDraft : setDarkDraft
     setter(prev => {
-      const next = Object.assign({}, prev)
+      const next = safeMerge(prev)
       next[roleId] = value
       return next
     })
@@ -3284,7 +3344,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
   const submitFork = () => {
     if (!onDuplicate || busy) return
     if (!isSlug(forkName)) { setForkError('Use lowercase letters, digits and dashes'); return }
-    const body = duplicateBody(draft, forkName.trim(), '', modes, scene.label, scene.name)
+    const body = duplicateBody(draft, forkName.trim(), '', modes, scene)
     Promise.resolve(onDuplicate(body)).then(res => {
       if (res && res.ok) { setForking(false); setForkError(''); return }
       const failure = res && res.failure ? res.failure : null
@@ -3895,6 +3955,11 @@ function ThemePicker() {
         host.notify(schemaCategoryDriftNotice(categoryDrift))
       }
     })
+      // fetchEditorSchema is contractually non-throwing (it degrades to null), so
+      // this is the last line of defence rather than error handling: an unhandled
+      // rejection inside a mount effect surfaces only in the console, where a
+      // shipped plugin's user will never look.
+      .catch(() => {})
     return () => { alive = false }
   }, [])
 
@@ -4231,10 +4296,22 @@ function ThemePicker() {
       await putOverride(name, palettes)
       // Read the store back rather than echoing the payload: what is now in
       // force is what the backend holds, not what we sent (it may normalise).
+      let effectiveOverride = { light: palettes.light, dark: palettes.dark, typography: palettes.typography }
       try {
-        setOverrides(await listOverrides())
+        const store = await listOverrides()
+        setOverrides(store)
+        if (store && store[name]) effectiveOverride = store[name]
       } catch (readError) {
-        setOverrides(prev => Object.assign({}, prev, { [name]: { light: palettes.light, dark: palettes.dark } }))
+        setOverrides(prev => safeMerge(prev, { [name]: { light: palettes.light, dark: palettes.dark } }))
+      }
+      // Mirror for the next boot: register() reads this synchronously, and
+      // Desktop's own boot cache gets the resolved theme so the selected skin
+      // already carries the edit before the plugin runs.
+      writeOverrideMirror(name, effectiveOverride)
+      const authoredScene = SKINS.find(scene => scene.name === name)
+      if (authoredScene) {
+        const resolved = sceneToDesktopTheme(applyOverride(authoredScene, { [name]: effectiveOverride }))
+        if (resolved) persistThemesForBoot([resolved])
       }
       haptic('tap')
       host.notify({
@@ -4264,10 +4341,18 @@ function ThemePicker() {
         setOverrides(await listOverrides())
       } catch (readError) {
         setOverrides(prev => {
-          const next = Object.assign({}, prev)
+          const next = safeMerge(prev)
           delete next[name]
           return next
         })
+      }
+      // Clear the boot mirror with the backend, so the next start resolves the
+      // shipped palette rather than the edit just withdrawn.
+      writeOverrideMirror(name, null)
+      const authoredScene = SKINS.find(scene => scene.name === name)
+      if (authoredScene) {
+        const shipped = sceneToDesktopTheme(authoredScene)
+        if (shipped) persistThemesForBoot([shipped])
       }
       // The fields are seeded from the effective palette, so they have to be
       // re-seeded: the modal is keyed by this epoch and remounts.
@@ -4303,7 +4388,7 @@ function ThemePicker() {
     // The scene the CARD holds is already the EFFECTIVE palette (groupCards
     // layered the override), so a built-in's duplicate forks override ?? authored.
     const draftRoles = { light: draftForScene(scene, 'light'), dark: draftForScene(scene, 'dark') }
-    const body = duplicateBody(draftRoles, duplicateSlug(scene.name), '', modes, scene.label, scene.name)
+    const body = duplicateBody(draftRoles, duplicateSlug(scene.name), '', modes, scene)
     setDuplicating(scene.name)
     try {
       const result = await duplicateSkin(body.to, body.label, body.light, body.dark)
@@ -4405,7 +4490,7 @@ function ThemePicker() {
     }
   }
 
-  const chooseCollision = (name, choice) => setPackChoices(prev => Object.assign({}, prev, { [name]: choice }))
+  const chooseCollision = (name, choice) => setPackChoices(prev => safeMerge(prev, { [name]: choice }))
 
   const confirmPackImport = async () => {
     if (packBusy || !packBundle) return
@@ -4565,7 +4650,7 @@ function ThemePicker() {
         const packId = isCore ? 'core' : (s.pack || 'core')
         return isCore || allowedPacks.has(packId)
       })
-      return Object.assign({}, group, { scenes: filteredScenes })
+      return safeMerge(group, { scenes: filteredScenes })
     })
     .filter(group => group.scenes.length)
   const activeScene = applyOverride(allSkins.find(scene => scene.name === active) || null, overrides)
@@ -4844,7 +4929,7 @@ function ThemePicker() {
                       jsx('input', {
                         type: 'checkbox',
                         checked: !!packConfirm.withSkins,
-                        onChange: e => setPackConfirm(prev => prev ? Object.assign({}, prev, { withSkins: !!(e && e.target && e.target.checked) }) : prev)
+                        onChange: e => setPackConfirm(prev => prev ? safeMerge(prev, { withSkins: !!(e && e.target && e.target.checked) }) : prev)
                       }),
                       'and the skins it names'
                     ]}),
@@ -5007,23 +5092,16 @@ function ThemeChip() {
 export default {
   id: ID,
   name: 'Chroma',
-  async register(ctx) {
+  register(ctx) {
     _rest = ctx.rest
     // A new registration gets a fresh schema: the cache is per session, not per
     // process, so a reload re-reads it.
     _editorSchemaCache = null
     migrateAppearanceAliases()
-    // E5 — read overrides at boot so a font or colour edit survives a restart.
-    // Without this, register() maps raw SKINS and every override is lost.
-    let overrides = {}
-    try {
-      const result = await _rest('overrides')
-      if (result && typeof result === 'object' && !Array.isArray(result)) {
-        overrides = result
-      }
-    } catch {
-      // No backend or no overrides route — boot with authored values.
-    }
+    // E5 — an override must survive a restart. register() is synchronous by
+    // host contract (see OVERRIDES_MIRROR_KEY), so the boot read comes from the
+    // local mirror the override write updates, never from the network.
+    const overrides = readOverrideMirror()
     // Register each scene as one Desktop theme. Matched scenes carry a true
     // light palette plus darkColors, so Desktop's mode switch changes polarity
     // without creating duplicate Appearance entries. Core names stay native.
