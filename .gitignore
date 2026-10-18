@@ -22,3 +22,6 @@ rigour-fix-packet.json
 # tracked.
 .hermes-tmp.*
 
+
+# Lane briefs are working notes, not repo content
+.briefs/

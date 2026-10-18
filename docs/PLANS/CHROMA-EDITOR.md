@@ -780,8 +780,8 @@ items §15 carried are answered here.
 
 | # | Decision | Why |
 |:--|:--|:--|
-| C1 | **A category stays measured and read-only in v1.** No hand-editing, no "pin to shelf". | It is derived from OKLCH by `sceneCategory()`. A hand-edit would leak a user's opinion back into the classifier — the one thing §9 forbids. Revisit only if users ask. |
-| C2 | **Not per-profile and not global — computed, so global by construction.** | The category is computed at load from the palette; nothing about it is stored, so there is no category *record* to scope. §13's "per-profile or global" question is **not applicable**. This also kills the cross-profile storage bleed Scout B flagged: no category bytes touch storage. |
+| C1 | **The twelve built-in shelves stay measured and read-only. A user's own category is additive.** The classifier is never edited and no skin can be pinned *into* a built-in shelf; a user may create their own category beside the twelve. | The built-in shelf is derived from OKLCH by `sceneCategory()`. Letting a hand-edit reach that classification would leak a user's opinion back into the classifier — the one thing §9 forbids. A *separate* container does not touch it: it is a second axis, resolved after the measurement (§9's order), so the classifier stays untouched. |
+| C2 | **Global — stored in the same sidecar dir as the overrides.** | A user category is a catalogue-level fact, and the colour overrides it sits beside are already global (`.chroma/overrides.json`, one file). Keying categories per profile would fragment one catalogue into as many as there are profiles, and `ctx.storage` is plugin-scoped rather than profile-scoped, so "per profile" would mean hand-keying a second time. The cross-profile storage bleed Scout B flagged does not apply: a user category is read only by the pane that renders it. |
 | C3 | **A user skin's category is derived on every load, never frozen.** | Measured means recomputed. Edit the colours and the shelf follows. There is no creation-time assignment to get wrong. |
 | C4 | **Shelf and pack badge coexist on different axes.** Category = the 12 shelves (primary grouping). Pack = a card badge plus a pack filter (§16.1). | Two layers that must never feed back into each other. The shelf is a computed fact; the badge is curation. |
 | C5 | **The uniqueness audit gates shipped skins only.** | It is a curation tool for core plus packs. A user skin is never rejected. |
@@ -804,8 +804,9 @@ Both domains now sit under the **override model** (§17), not the copy-only rule
 - Editing a built-in's font or colour writes an **override of that built-in**. **Reset** returns the
   built-in's own typography (its `SCENE_TYPOGRAPHY` default) or its measured shelf.
 - The **regenerator must honour overrides** — a regeneration cannot erase them. §17's test pins this.
-- Categories are the exception to Reset: measured means there is nothing to restore, so Reset is a no-op
-  there. That asymmetry is a property of the design, not an omission.
+- Categories are the exception to Reset: a skin's **built-in** shelf is measured, so there is nothing to
+  restore and Reset is a no-op there. A **user's own** category is a real record and is deleted the way any
+  other user record is (§9's CRUD). That asymmetry is a property of the design, not an omission.
 - **§16.2 rows 1 and 2 are superseded by this section.**
 
 ### 22.4 The spike, recorded so it is not re-run
