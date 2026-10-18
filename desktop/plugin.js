@@ -4640,7 +4640,11 @@ function ThemePicker() {
   const groupsRaw = groupCards(filtered, overrides, groupMode, categories)
   // Theme Packs filter: when enabled packs set, keep scenes whose pack matches; core always visible.
   const coreNames = new Set(['amber-terminal','commodore-64','dark-lcars','green-screen','retro-amber','retro-blue','retro-terminal','earth-brown','earth-green','earth-moss','minimal-white','minimal-black','vibrant-red','vibrant-blue','vibrant-green','vibrant-purple','pastels-pink','pastels-blue','pastels-green','pastels-cream','muted-ink','muted-paper','muted-stone','nature-forest','nature-ocean','warm-amber','warm-coral','orange-flame','orange-ember','gold-harvest','gold-morning'])
-  const allowedPacks = enabledPacks && enabledPacks.length ? new Set(enabledPacks) : null
+  // Pack membership is a build-time property of the catalog: the generator stamps
+  // `pack` on every scene once the pack campaign is complete. Until then no scene
+  // carries one, and a filter would hide every card whose pack is unknown.
+  const packsAvailable = SKINS.some(scene => scene && scene.pack)
+  const allowedPacks = packsAvailable && enabledPacks && enabledPacks.length ? new Set(enabledPacks) : null
   const groups = groupsRaw
     .map(group => {
       if (!allowedPacks) return group
@@ -4861,7 +4865,12 @@ function ThemePicker() {
                   className: MANAGE_BUTTON_CLASS,
                   children: packBusy ? 'Working…' : 'Save filter as pack'
                 }),
-                jsx('button', {
+                // Theme Packs ship only when the catalog actually carries pack
+                // membership. Until the pack campaign fills scripts/packs.json
+                // and the generator emits a `pack` per scene, a filter would
+                // hide every skin whose pack is unknown — so it stays out of the
+                // pane rather than pretending to work.
+                packsAvailable ? jsx('button', {
                   type: 'button',
                   onClick: () => {
                     const next = enabledPacks.length === 0 ? ['earth', 'cyberpunk', 'zen', 'retro', 'noir'] : []
@@ -4870,7 +4879,7 @@ function ThemePicker() {
                   title: enabledPacks.length ? 'Show all packs' : 'Enable theme packs',
                   className: MANAGE_BUTTON_CLASS,
                   children: enabledPacks.length ? 'All packs' : 'Enable packs'
-                }),
+                }) : null,
                 jsx('button', {
                   type: 'button',
                   onClick: () => setImportOpen(v => !v),
