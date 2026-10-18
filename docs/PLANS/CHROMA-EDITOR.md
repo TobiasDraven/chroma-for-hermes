@@ -816,3 +816,56 @@ Both domains now sit under the **override model** (§17), not the copy-only rule
 skin YAML — it travels in the theme object the plugin registers. That is why "typography ships with a
 skin" is true, and why the earlier note ("fonts cannot be part of skin YAML") was right about *YAML* and
 wrong about *skins*. Both statements hold at once; only the second one matters to the editor.
+
+
+---
+
+## 23. E4/E5 backend halves as built (2026-10-18)
+
+**Shipped** as `4aed244`, by direct implementation after the delegation lane was budget-capped
+(HTTP 429 on all three attempts, twice). 843 insertions across two files; the pane halves of E4
+and E5, and all of E6, are still ahead.
+
+### 23.1 Categories — what landed
+`dashboard/plugin_api.py` + `tests/test_plugin_api.py`:
+
+- `.chroma/categories.json`, beside `overrides.json`, mirroring the overrides store exactly:
+  lenient read for display routes, strict read for writers, atomic replace, rollback on failure.
+- `GET /categories` (user categories only, sorted `(order, id)`), `POST /categories`
+  (slugifies the id; 400 on empty title or an id that cannot reduce to a slug; 409 on a builtin
+  or duplicate id), `DELETE /categories/{cat_id}` (404 absent, 409 builtin, never touches a skin
+  file or the index — the pane falls back to the measured shelf).
+- `PUT /skins/{name}` takes `category`; the "nothing to write" guard distinguishes an omitted
+  category from an explicitly-cleared one via pydantic's `model_fields_set`, so a category-only
+  save is a real write while a request that changes nothing is still refused.
+- `import_pack()` creates the bundle's categories in the same transaction and restores the prior
+  store bytes on any later failure. Idempotent; a retitle updates in place; `dryRun` writes nothing.
+- `GET /schema` gains `categories`: the 12 builtin ids, pinned to the pane's `THEME_CATEGORIES`
+  by a drift test that reads the pane file (and skips with a reason if it cannot).
+
+### 23.2 Typography — what landed
+Same two files:
+
+- `OverrideRequest.typography` ({`fontSans`, `fontMono`} only). `_normalise_typography()` refuses
+  an unknown key, an empty stack, an over-long stack (200 chars), and each CSS-breaking character
+  (`;` `{` `}` `<` `>` `\n` `\r`, `url(`) — each a 400 naming the value and the offence.
+- `PUT /overrides/{scene}` widens its guard to admit a **font-only** edit and does **not** mint a
+  transport skin for it: a skin YAML carries no font, so minting would misreport what the CLI
+  received. A colour edit mints exactly as before. A request changing neither role nor font is
+  still refused.
+- The record carries only the keys the user set — the same "record what they set" rule as colours.
+  Absent means "no font override"; an older record keeps its exact old shape.
+- `GET /schema`'s `typography` stub is replaced by the two editable keys, in order.
+- `DELETE /overrides/{scene}` drops the typography with the record; there is no authored snapshot
+  to restore because the authored font lives in the pane's `SCENE_TYPOGRAPHY`.
+
+### 23.3 Gates
+`python -m pytest tests/test_plugin_api.py -q` → **163 passed**.
+`python -m pytest tests/ -q` → 176 passed, 4 skipped, **3 failed** — the three are pre-existing
+`test_regenerate.py` failures, present on clean HEAD with these files stashed. Not a regression.
+
+### 23.4 Open
+- **E4 pane half** — category management UI + `effectiveCategory(scene, userCategories)`.
+- **E5 pane half** — typography editor + the `SCENE_TYPOGRAPHY` override path
+  (`applyOverride` must carry fonts; `sceneToDesktopTheme` must prefer them).
+- **E6** — polish, undo/redo, the `authored`-snapshot upgrade trap.
