@@ -4552,7 +4552,22 @@ function ThemePicker() {
   const cardMin = cardMinFor(shape, size)
   // Groups are cut from the AUTHORED list, then each card is handed its effective
   // palette (§17.3.2): the shelf must not move when a scene is recoloured.
-  const groups = groupCards(filtered, overrides, groupMode, categories).filter(group => group.scenes.length)
+  const groupsRaw = groupCards(filtered, overrides, groupMode, categories)
+  // Theme Packs filter: when enabled packs set, keep scenes whose pack matches; core always visible.
+  const coreNames = new Set(['amber-terminal','commodore-64','dark-lcars','green-screen','retro-amber','retro-blue','retro-terminal','earth-brown','earth-green','earth-moss','minimal-white','minimal-black','vibrant-red','vibrant-blue','vibrant-green','vibrant-purple','pastels-pink','pastels-blue','pastels-green','pastels-cream','muted-ink','muted-paper','muted-stone','nature-forest','nature-ocean','warm-amber','warm-coral','orange-flame','orange-ember','gold-harvest','gold-morning'])
+  const allowedPacks = enabledPacks && enabledPacks.length ? new Set(enabledPacks) : null
+  const groups = groupsRaw
+    .map(group => {
+      if (!allowedPacks) return group
+      const filteredScenes = group.scenes.filter(s => {
+        const name = s.name
+        const isCore = coreNames.has(name)
+        const packId = isCore ? 'core' : (s.pack || 'core')
+        return isCore || allowedPacks.has(packId)
+      })
+      return Object.assign({}, group, { scenes: filteredScenes })
+    })
+    .filter(group => group.scenes.length)
   const activeScene = applyOverride(allSkins.find(scene => scene.name === active) || null, overrides)
   const activeColors = activeScene && ((mode === 'dark' ? activeScene.darkColors : activeScene.lightColors) || activeScene.colors)
   const editingScene = editing ? (allSkins.find(scene => scene.name === editing.name) || null) : null
