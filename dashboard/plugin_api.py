@@ -961,6 +961,16 @@ def _transport_path(scene: str, mode: str) -> Path:
     return _skins_dir() / f"{TRANSPORT_PREFIX}{scene}-{mode}.yaml"
 
 
+def _is_transport_scene(scene: str) -> bool:
+    """True when a scene exists only as a gateway transport file.
+
+    Those files are the proof a built-in scene exists, and the wrong door for
+    ``PUT /skins/{name}``: a built-in is never rewritten in place, so the honest
+    answer is a 409 that names the override route, not an unknown-name 404.
+    """
+    return any(_transport_path(scene, mode).is_file() for mode in EDITOR_MODES)
+
+
 def _authored_scene(scene: str) -> dict[str, dict[str, str]]:
     """The authored (as-shipped) palettes for a built-in scene, read from its
     gateway transport skins — the files the CLI already follows.
@@ -1175,7 +1185,21 @@ def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
             index = _read_index_for_update()
         except IndexUnreadableError as exc:
             raise _index_error(exc) from exc
-        record = _owned_record(clean, index)
+        record = index.get(clean)
+        if not isinstance(record, dict):
+            # Not a skin Chroma owns. If it is a scene the gateway already
+            # follows, the user reached the wrong door: a built-in is never
+            # rewritten in place, and its colours live on the override route.
+            # Say so (409), rather than the bare unknown-name 404 the transport
+            # case used to fall through to (§19.2 item 3).
+            if _is_transport_scene(clean):
+                raise HTTPException(
+                    409,
+                    f"'{clean}' is a built-in scene; a built-in is never rewritten in "
+                    f"place — edit it through PUT /overrides/{clean}, and reset it with "
+                    f"DELETE /overrides/{clean}",
+                )
+            raise HTTPException(404, f"'{clean}' is not a skin Chroma manages")
 
         if not target.is_file():
             raise HTTPException(404, f"'{clean}' has no skin file")

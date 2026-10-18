@@ -841,6 +841,28 @@ class SkinWriteTests(EditorTestCase):
         self.assertEqual(ctx.exception.status_code, 409)
         self.assertIn("/overrides/nord", str(ctx.exception.detail))
 
+    def test_a_transport_scene_is_a_409_naming_the_override_route(self):
+        """A scene that exists only as a gateway transport is not a name
+        Chroma owns, but it is not unknown either: PUT /skins/{name} is the
+        wrong door, and the refusal must name the right one (§19.2 item 3)."""
+        from fastapi import HTTPException
+
+        self._seed_scene("aurora")  # a transport scene, not a CORE name
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_skin("aurora", self.api.ScenePaletteRequest(light={"ui_accent": "#abcdef"}))
+        self.assertEqual(ctx.exception.status_code, 409)
+        self.assertIn("/overrides/aurora", str(ctx.exception.detail))
+        self.assertIn("DELETE /overrides/aurora", str(ctx.exception.detail))
+
+    def test_a_genuinely_unknown_name_is_still_a_404(self):
+        from fastapi import HTTPException
+
+        self._seed_scene("aurora")
+        with self.assertRaises(HTTPException) as ctx:
+            self.api.put_skin("no-such-skin", self.api.ScenePaletteRequest(light={"ui_accent": "#abcdef"}))
+        self.assertEqual(ctx.exception.status_code, 404)
+        self.assertIn("no-such-skin", str(ctx.exception.detail))
+
     def test_refuses_an_unknown_role_by_name(self):
         from fastapi import HTTPException
 

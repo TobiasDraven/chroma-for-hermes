@@ -649,3 +649,47 @@ clean.
 not call it, so editing a *user* skin (the §3 in-place rule) is not yet reachable from the UI. That is
 E1b, and it is the last piece before E2 (`POST /skins/duplicate`) and the packs campaign.
 
+---
+
+## 20. E1b verified (2026-10-18)
+
+All three gaps closed, and the maintainer proved the load-bearing one — the path the lane itself listed
+as UNVERIFIED — over a **real ASGI transport**:
+
+| Step | Result |
+|:--|:--|
+| `POST /import` → an owned skin | `200`; `GET /skins` reports `owned: true` |
+| `PUT /skins/{owned}` | `200`; **the YAML is rewritten in place and carries the new colour**; the skin stays owned |
+| unknown role / bad hex | `400`, naming what it rejects |
+| `PUT /skins/{transport scene}` | **`409` naming `PUT /overrides/{scene}`** — the helpful branch works |
+| `PUT /skins/{unknown}` | `404` |
+| `DELETE /skins/{owned}` | trash, never an unlink |
+
+The new **skin-keyed writer** is the real win: the file came back carrying `background`, `ui_text`,
+`banner_text`, `ui_accent`, `banner_accent`, `ui_tool`, `ui_border`, `banner_border` — the actual
+vocabulary. Routing this through the TweakCN mapper would have written `ui_accent: #ffffff` and nobody
+would have seen it until a theme looked wrong.
+
+Suites: JS **150/150** (from 142), backend **92/92** (from 90), regeneration idempotent.
+
+### 20.1 Two process lessons, both worth keeping
+
+1. **A lane's "regenerated and green" is a claim, and the parent must re-run it.** The lane reported
+   `plugin.js` at `fa38e090…`; regeneration here produced `c2e7a2c4…`. The suite passes against the
+   regenerated artifact (150/150), so the tree is now consistent — but a hash that disagrees with a
+   fresh regeneration means the shipped artifact was behind its source at some point, and only the
+   parent re-running the step can settle it. **Regenerate and re-run the suite after every lane lands.**
+2. **Check that a diff is content-only when a lane reports a line-ending rewrite.** The lane rewrote two
+   files to LF to match `.gitattributes`. That is exactly the shape that hides real changes, so it was
+   measured rather than trusted: `git diff --numstat` gave 264/24 on the template (not ~3,400/~3,400),
+   and `git ls-files --eol` showed `i/lf w/lf` with `eol=lf` — the normalisation agreed with the index,
+   so the diff is content.
+
+### 20.2 What remains in the editor campaign
+
+E2 `POST /skins/duplicate` (the fork), E3 export/import of a skin pack, E4 category management, E5
+typography, E6 polish (undo/redo, keyboard/touch reach, the `authored`-snapshot upgrade trap from §19.2
+item 2). **Two of these carry an open design question the plan already flagged** — E4 needs the
+per-profile-vs-global categories answer, and E5's Desktop-only font claim rests on the §8 spike that has
+not been run. Both are the Captain's calls, not mine.
+

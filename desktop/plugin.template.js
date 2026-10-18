@@ -990,6 +990,148 @@ async function dropOverride(scene) {
   return await _rest('overrides/' + encodeURIComponent(scene), { method: 'DELETE' })
 }
 
+/** Write ONE owned (user) skin IN PLACE: PUT /skins/{name} with the same
+ *  skin-keyed palette the override body carries (§3 — a user skin is rewritten,
+ *  not overridden). Same button as the override door; the picker chooses by
+ *  OWNERSHIP, never by the name: a built-in would be refused here with a 409
+ *  that names the override route, and refusing it is the point (regeneration
+ *  would silently undo an in-place edit). */
+async function putSkin(name, palettes) {
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  return await _rest('skins/' + encodeURIComponent(name), {
+    method: 'PUT',
+    body: JSON.stringify({ light: palettes.light || {}, dark: palettes.dark || {} })
+  })
+}
+
+// ---------------------------------------------------------------------------
+// The editor's SCHEMA (plan §19.2 item 1) — a drift alarm, not a rewrite.
+//
+// The six rows are the card's ANATOMY and stay the presentation contract; this
+// does not rebuild them from the route. What /schema supplies instead is the
+// mode pair and the size caps the writer enforces, and a WATCH for drift: if a
+// role's primary skin key is not in the backend's own palette keys, the two
+// vocabularies have silently disagreed, and that is a bug worth shouting about.
+// Read once and cached for the session; an absent route (404 — not mounted, or
+// an older backend) degrades to the pane's own defaults and never blocks the
+// editor.
+// ---------------------------------------------------------------------------
+
+let _editorSchemaCache = null
+
+/** GET /schema once per session. Null means "no schema here" — never a throw:
+ *  an absent route (404) or any transport error degrades the editor to its own
+ *  defaults rather than blocking it. */
+async function fetchEditorSchema() {
+  if (_editorSchemaCache) return _editorSchemaCache
+  if (!_rest) return null
+  try {
+    const schema = await _rest('schema')
+    if (schema && typeof schema === 'object') {
+      _editorSchemaCache = schema
+      return schema
+    }
+  } catch (e) {
+    return null
+  }
+  return null
+}
+
+/** The mode pair the editor offers: the backend's when /schema answered, the
+ *  long-standing pair when it did not. The two agree today; reading it is what
+ *  keeps them from drifting apart silently. */
+function editorModes(schema) {
+  const modes = schema && Array.isArray(schema.modes)
+    ? schema.modes.filter(mode => mode === 'light' || mode === 'dark')
+    : []
+  return modes.length ? modes : ['light', 'dark']
+}
+
+/** The writer's size caps from /schema, or null when the route did not say.
+ *  The pane DISPLAYS these rather than re-declaring the numbers. */
+function schemaCaps(schema) {
+  const caps = schema && schema.caps && typeof schema.caps === 'object' ? schema.caps : null
+  if (!caps) return null
+  const maxColors = typeof caps.maxColors === 'number' ? caps.maxColors : null
+  const maxBytes = typeof caps.maxBytes === 'number' ? caps.maxBytes : null
+  if (maxColors === null && maxBytes === null) return null
+  return { maxColors: maxColors, maxBytes: maxBytes }
+}
+
+/** Pure drift check: roles whose PRIMARY skin key the backend's palette does
+ *  not list. Empty means the two vocabularies agree. */
+function schemaDrift(roles, paletteKeys) {
+  const known = new Set(Array.isArray(paletteKeys) ? paletteKeys : [])
+  const drift = []
+  for (const role of roles || []) {
+    const key = role && role.keys ? role.keys[0] : null
+    if (key && !known.has(key)) drift.push({ role: role.id, key: key })
+  }
+  return drift
+}
+
+/** The one notice the drift alarm raises, or null when nothing drifted. Names
+ *  the first offending role and key, so the message is actionable. */
+function schemaDriftNotice(drift) {
+  if (!drift || !drift.length) return null
+  const first = drift[0]
+  const more = drift.length > 1 ? ' (' + drift.length + ' roles disagree)' : ''
+  return {
+    kind: 'warning',
+    title: 'Chroma editor schema drift',
+    message: 'Role ' + first.role + ' writes ' + first.key + ', absent from GET /schema' + more,
+    detail: 'The pane and the backend disagree about an editable key. The writer may refuse a save.'
+  }
+}
+
+/** The quiet, once-per-session note when /schema is not mounted. The editor
+ *  keeps working on its own defaults; this says so rather than looking broken. */
+function schemaMissingNotice() {
+  return {
+    kind: 'info',
+    title: 'Chroma editor: no schema',
+    message: 'Running without GET /schema — using the editor own defaults',
+    detail: 'The schema route mounts when the Chroma backend is imported. The editor still works.'
+  }
+}
+
+/** After an in-place save the pane's own copy of the scene is stale — the file
+ *  changed under it. Fold the written palettes back into the scene the gallery
+ *  reads, so the card and a re-seeded editor show what was actually saved
+ *  rather than the colours the skin had when the editor opened. The payload is
+ *  the backend's own read-back (it may normalise), never the local draft. */
+function foldSavedSkin(name, saved) {
+  const pick = value => (value && typeof value === 'object' && Object.keys(value).length ? value : null)
+  const light = saved ? pick(saved.light) : null
+  const dark = saved ? pick(saved.dark) : null
+  if (!light && !dark) return
+  const merged = scene => {
+    const next = Object.assign({}, scene)
+    if (light) {
+      next.lightColors = Object.assign({}, scene.lightColors || scene.colors || {}, light)
+      next.colors = next.lightColors
+    }
+    if (dark) next.darkColors = Object.assign({}, scene.darkColors || scene.colors || {}, dark)
+    return next
+  }
+  const index = IMPORTED_SKINS.findIndex(scene => scene && scene.name === name)
+  if (index >= 0) {
+    IMPORTED_SKINS[index] = merged(IMPORTED_SKINS[index])
+    return
+  }
+  // A skin the pane only knew from live discovery: it is still a real scene, so
+  // record what it now holds rather than leaving the gallery on stale colours.
+  IMPORTED_SKINS.push(merged({
+    name: name,
+    label: name,
+    description: 'Chroma skin',
+    modeSupport: light && dark ? 'dynamic' : (light ? 'light' : 'dark'),
+    colors: light || dark || {},
+    lightColors: light || {},
+    darkColors: dark || undefined
+  }))
+}
+
 /** Did the backend answer "no such route"? A new route does not exist until
  *  Hermes restarts, because a mounted plugin_api.py is never re-imported, so the
  *  editor has to say that instead of looking broken (plan §14.1, §17.4). */
@@ -1006,14 +1148,15 @@ function isMissingRoute(error) {
  *  Never a success and never a cleared draft: the caller keeps the user's edit
  *  because this notice is the only thing that changed. A 404 means the routes
  *  are not mounted yet — the one instruction that actually helps is "restart". */
-function overrideFailureNotice(error, action) {
+function overrideFailureNotice(error, action, door) {
   const what = action === 'reset' ? 'Reset' : 'Save'
+  const where = door === 'skin' ? 'skin' : 'override'
   if (isMissingRoute(error)) {
     return {
       kind: 'error',
       title: what + ' did not run',
       message: 'Restart Hermes to enable the editor',
-      detail: 'The override routes mount when the Chroma backend is imported, and a running '
+      detail: 'The ' + where + ' routes mount when the Chroma backend is imported, and a running '
         + 'backend is never re-imported. Restart Hermes, then try again — your edit is still here.'
     }
   }
@@ -1023,14 +1166,14 @@ function overrideFailureNotice(error, action) {
       kind: 'error',
       title: what + ' needs the Chroma backend',
       message: 'The gateway half is not installed',
-      detail: 'An override is stored by the Python half. Install it, restart Hermes, and try again.'
+      detail: 'An ' + where + ' is stored by the Python half. Install it, restart Hermes, and try again.'
     }
   }
   return {
     kind: 'error',
-    title: what + ' failed',
+    title: door === 'skin' ? 'Skin save failed' : what + ' failed',
     message: what + ' failed: ' + raw,
-    detail: 'Nothing was changed, and nothing was thrown away.'
+    detail: 'Nothing was changed, and nothing was thrown away. The ' + where + ' write did not go through.'
   }
 }
 
@@ -2296,12 +2439,18 @@ function draftPalette(scene, modeKey, draftRoles) {
   return colors
 }
 
-/** The body of a PUT /overrides/{scene}: primary skin key per role, per mode.
- *  Empty roles are omitted rather than sent as '' — an override records what the
- *  user set, not what they cleared. */
-function overridePayload(draft) {
+/** The body of a PUT /overrides/{scene} (and the same skin-keyed palette for
+ *  PUT /skins/{name}): primary skin key per role, per mode. Empty roles are
+ *  omitted rather than sent as '' — an override records what the user set, not
+ *  what they cleared.
+ *
+ *  The mode list comes from /schema when the editor has it (§19.2 item 1), so
+ *  the pane writes the modes the backend actually speaks; the two are the same
+ *  pair today, and reading it is what stops them drifting apart silently. */
+function overridePayload(draft, modes) {
   const out = { light: {}, dark: {} }
-  for (const modeKey of ['light', 'dark']) {
+  const keys = Array.isArray(modes) && modes.length ? modes : ['light', 'dark']
+  for (const modeKey of keys) {
     for (const role of EDITOR_ROLES) {
       const hex = normaliseHex(draft && draft[modeKey] ? draft[modeKey][role.id] : '')
       if (hex) out[modeKey][role.keys[0]] = hex
@@ -2408,7 +2557,7 @@ const EDITOR_SAVE_CLASS = 'shrink-0 rounded border border-(--ui-accent) bg-(--ui
 // is E2 and is not mounted, and a disabled control for a route that cannot
 // arrive in this build is noise. The reason is carried by the sentence in the
 // actions row instead.
-const OWNED_SAVE_REASON = 'Your own skins are rewritten in place, and the pane wiring for that writer is E2. This editor saves catalogue overrides in E1.'
+const OWNED_SAVE_REASON = 'Rewrite your own skin file in place — this is not an override of a shipped palette'
 
 /** One role across both modes: the label, then a light and a dark cell, each
  *  with the colour input and its own contrast read-out against that mode's
@@ -2462,7 +2611,7 @@ function EditorRoleRow({ role, draft, onChange, shells, texts }) {
  *  the overrides) and cannot be cleared by a FAILED one — nothing about the
  *  draft is touched unless the write actually landed. The picker re-seeds the
  *  fields after a Reset by remounting this element under a new key. */
-function EditorModal({ scene, overrides, owned, mode, busy, onClose, onSave, onReset }) {
+function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose, onSave, onReset }) {
   const effective = applyOverride(scene, overrides)
   const overridden = !!(overrides && overrides[scene.name])
   // One draft per mode, seeded from the effective palette. Kept apart so `dirty`
@@ -2492,10 +2641,15 @@ function EditorModal({ scene, overrides, owned, mode, busy, onClose, onSave, onR
     dark: firstColorIn(dark, ['banner_text', 'ui_text', 'status_bar_text'])
   }
   const name = scene.label || scene.name
-  const subtitle = overridden
-    ? 'Carries your override. Reset puts the shipped palette back.'
-    : (owned
-      ? 'Your own skin: this editor is read-only until E2 ships the in-place writer.'
+  // The door is chosen by OWNERSHIP, never by the name (§3, §19.3): a user skin
+  // is rewritten in place through PUT /skins/{name}; a built-in goes through
+  // PUT /overrides/{scene}. `showReset` is therefore an overridden BUILT-IN only —
+  // a user skin has no authored palette to restore, so a Reset would do nothing.
+  const showReset = overridden && !owned
+  const subtitle = owned
+    ? 'Your own skin: Save rewrites its file in place.'
+    : (overridden
+      ? 'Carries your override. Reset puts the shipped palette back.'
       : 'Saving stores an override. The shipped catalogue is never rewritten.')
   return jsx('div', {
     className: EDITOR_OVERLAY_CLASS,
@@ -2532,8 +2686,22 @@ function EditorModal({ scene, overrides, owned, mode, busy, onClose, onSave, onR
         }),
         jsx('div', {
           key: 'legend',
-          className: 'text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)',
-          children: 'Light over dark — the same 2 × 6 contract the card paints'
+          className: 'flex flex-wrap items-center gap-2 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)',
+          children: [
+            jsx('span', { key: 'contract', children: 'Light over dark — the same 2 × 6 contract the card paints' }),
+            caps
+              ? jsx('span', {
+                  key: 'caps',
+                  title: 'The writer enforces these caps; the pane reads them from GET /schema',
+                  className: 'rounded bg-(--ui-bg-tertiary) px-1 normal-case text-(--ui-text-secondary)',
+                  children: 'Caps '
+                    + (caps.maxColors === null ? '—' : caps.maxColors)
+                    + ' colours · '
+                    + (caps.maxBytes === null ? '—' : Math.round(caps.maxBytes / 1024))
+                    + ' KB'
+                })
+              : null
+          ]
         }),
         jsxs('div', { key: 'roles', className: 'flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto pr-1', children: [
           jsxs('div', { key: 'columns', className: 'flex items-center gap-2 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)', children: [
@@ -2568,11 +2736,13 @@ function EditorModal({ scene, overrides, owned, mode, busy, onClose, onSave, onR
           className: 'flex items-center justify-between gap-2 border-t border-(--ui-stroke-secondary) pt-2',
           children: [
             jsxs('span', { key: 'state', className: 'min-w-0 text-[0.625rem] text-(--ui-text-tertiary)', children: [
-              overridden ? 'An override exists for this scene. ' : 'No override yet. ',
+              owned
+                ? 'Your own skin file. '
+                : (overridden ? 'An override exists for this scene. ' : 'No override yet. '),
               dirty ? jsx('span', { className: 'text-(--ui-warn)', children: 'Unsaved changes.' }) : null
             ]}),
             jsxs('div', { key: 'buttons', className: 'flex shrink-0 items-center gap-1', children: [
-              overridden
+              showReset
                 ? jsx('button', {
                     key: 'reset',
                     type: 'button',
@@ -2586,8 +2756,8 @@ function EditorModal({ scene, overrides, owned, mode, busy, onClose, onSave, onR
               jsx('button', {
                 key: 'save',
                 type: 'button',
-                disabled: !!busy || !!owned,
-                onClick: () => { if (onSave) onSave(scene.name, overridePayload(draft)) },
+                disabled: !!busy,
+                onClick: () => { if (onSave) onSave(scene.name, overridePayload(draft, modes)) },
                 title: owned ? OWNED_SAVE_REASON : 'Store your edit as an override of the shipped palette',
                 className: EDITOR_SAVE_CLASS,
                 children: busy === 'save' ? 'Saving…' : 'Save'
@@ -2797,6 +2967,41 @@ function ThemePicker() {
   const [editing, setEditing] = useState(null)
   const [editorBusy, setEditorBusy] = useState(null)
   const [editorEpoch, setEditorEpoch] = useState(0)
+  // The backend schema (§19.2 item 1), read once per session. Null means the
+  // route was absent — the editor keeps its own defaults and says so quietly.
+  const [schema, setSchema] = useState(null)
+  const schemaNoted = useRef(false)
+
+  // Fetch /schema once on mount: modes and caps come from it, and a disagreement
+  // between a role's primary key and the backend's palette keys is raised as a
+  // drift alarm rather than swallowed. A missing route degrades gracefully — the
+  // editor must never block on it.
+  useEffect(() => {
+    let alive = true
+    fetchEditorSchema().then(next => {
+      if (!alive) return
+      if (!next) {
+        if (!schemaNoted.current && hasGatewayBackend()) {
+          schemaNoted.current = true
+          host.notify(schemaMissingNotice())
+        }
+        return
+      }
+      setSchema(next)
+      const drift = schemaDrift(EDITOR_ROLES, next.paletteKeys)
+      if (drift.length) {
+        for (const item of drift) {
+          console.warn('Chroma editor schema drift: role ' + item.role + ' writes ' + item.key
+            + ', which GET /schema does not list')
+        }
+        host.notify(schemaDriftNotice(drift))
+      }
+    })
+    return () => { alive = false }
+  }, [])
+
+  const modes = editorModes(schema)
+  const caps = schemaCaps(schema)
 
   const refreshOwned = useCallback(async () => {
     setBackendReady(hasGatewayBackend())
@@ -3070,7 +3275,36 @@ function ThemePicker() {
   const saveEditor = async (name, palettes) => {
     if (editorBusy) return false
     setEditorBusy('save')
+    // One button, two doors, chosen by OWNERSHIP (§3, §19.3): an owned skin is
+    // rewritten in place through PUT /skins/{name}; a built-in goes through
+    // PUT /overrides/{scene}. The name never decides the door.
+    const isOwned = !!owned[name]
     try {
+      if (isOwned) {
+        const saved = await putSkin(name, palettes)
+        // Read the list back rather than trusting the local draft — the same
+        // discipline the override save uses. The file may have been normalised.
+        try {
+          setOwned(await listOwnedSkins())
+        } catch (readError) {
+          // Keep the prior list; the write itself succeeded.
+        }
+        // Fold the backend's own read-back into the pane's scene and re-seed the
+        // editor, so a successful save clears the dirty state against what was
+        // actually written rather than leaving the draft disagreeing with a
+        // stale scene.
+        foldSavedSkin(name, saved)
+        setImportedTick(n => n + 1)
+        setEditorEpoch(n => n + 1)
+        haptic('tap')
+        host.notify({
+          kind: 'success',
+          title: 'Skin saved',
+          message: (name.replace(/-/g, ' ')) + ' was rewritten in place',
+          detail: 'Your own skin file was updated. There is no shipped palette to reset.'
+        })
+        return true
+      }
       await putOverride(name, palettes)
       // Read the store back rather than echoing the payload: what is now in
       // force is what the backend holds, not what we sent (it may normalise).
@@ -3089,8 +3323,9 @@ function ThemePicker() {
       return true
     } catch (e) {
       // A failed write changes nothing: the draft stays dirty and the notice says
-      // what actually happened (a 404 means "restart Hermes", not "broken").
-      host.notify(overrideFailureNotice(e, 'save'))
+      // what actually happened and WHICH door failed (a 404 means "restart
+      // Hermes", not "broken").
+      host.notify(overrideFailureNotice(e, 'save', isOwned ? 'skin' : 'override'))
       return false
     } finally {
       setEditorBusy(null)
@@ -3343,6 +3578,8 @@ function ThemePicker() {
             overrides,
             owned: !!owned[editingScene.name],
             mode,
+            modes,
+            caps,
             busy: editorBusy,
             onClose: closeEditor,
             onSave: saveEditor,
@@ -3416,6 +3653,9 @@ export default {
   name: 'Chroma',
   register(ctx) {
     _rest = ctx.rest
+    // A new registration gets a fresh schema: the cache is per session, not per
+    // process, so a reload re-reads it.
+    _editorSchemaCache = null
     migrateAppearanceAliases()
     // Register each scene as one Desktop theme. Matched scenes carry a true
     // light palette plus darkColors, so Desktop's mode switch changes polarity

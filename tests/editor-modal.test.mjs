@@ -252,12 +252,23 @@ test('an override reaches the fields, offers Reset, and a read-only card says wh
   assert.ok(texts.some(text => text.includes('Carries your override')), 'and the header says so')
   assert.match(at(buttonsWith(modal, 'Reset')[0], 'title'), /shipped palette back/)
 
-  // An owned skin is read-only until E2: Save says why instead of writing nothing.
-  const owned = t.EditorModal(modalProps({ owned: true }))
+  // An owned skin is edited IN PLACE (§3, §19.3): Save is ENABLED and says so.
+  // There is no authored palette to restore, so no Reset is offered — not even
+  // when a stray override record happens to share the name.
+  const owned = t.EditorModal(modalProps({ owned: true, overrides: { 'ocean-skin': override } }))
   const ownedSave = buttonsWith(owned, 'Save')[0]
-  assert.equal(at(ownedSave, 'disabled'), true)
-  assert.match(at(ownedSave, 'title'), /E2/)
-  assert.ok(textsOf(owned).some(text => text.includes('read-only until E2')))
+  assert.notEqual(at(ownedSave, 'disabled'), true, 'an owned skin is editable in place')
+  assert.match(at(ownedSave, 'title'), /in place/, 'Save names the in-place door')
+  assert.ok(textsOf(owned).some(text => text.includes('rewrites its file in place')), 'and the header says so')
+  assert.ok(!textsOf(owned).includes('Reset'), 'an owned skin has no authored palette to reset')
+  assert.ok(textsOf(owned).some(text => text.includes('Your own skin file.')), 'the state line names the owned file')
+
+  // The mode pair and the writer's caps come from GET /schema when the editor
+  // has it (§19.2 item 1); the caps are displayed, never re-declared.
+  const withSchema = t.EditorModal(modalProps({ modes: ['light', 'dark'], caps: { maxColors: 512, maxBytes: 65536 } }))
+  assert.ok(textsOf(withSchema).includes('Caps 512 colours · 64 KB'), 'the caps are shown from the schema')
+  const withoutCaps = t.EditorModal(modalProps())
+  assert.ok(!textsOf(withoutCaps).some(text => text.startsWith('Caps ')), 'no schema, no caps line')
 })
 
 test('a busy write labels itself, and a palette with nothing in it renders dashes', async () => {
