@@ -1,8 +1,8 @@
 # Chroma — Hard Fork + Roadmap
 
 **Status:** **v2.5.2 shipped** — the picker, the twelve measured shelves, per-profile skins and the fix
-rounds are DONE. Two campaigns are approved and not started: the **skin editor** (`CHROMA-EDITOR.md`,
-next) and **theme packs** (`CHROMA-PACKS.md`, after it).
+rounds are DONE. The **skin editor** is approved and half-built (E0–E3 done; E4–E6 remain) — see
+`CHROMA-EDITOR.md`. **Theme packs** (`CHROMA-PACKS.md`) are approved and run after the editor.
 **Prepared:** 2026-10-16 · **last updated:** 2026-10-18 — see §0.
 
 ---
@@ -18,9 +18,14 @@ next) and **theme packs** (`CHROMA-PACKS.md`, after it).
 - **The adversarial round closed.** Three independent roasts of 2.4.1 all returned HOLD; every finding
   but two is now closed, with the dispositions and the exact rigour delta in
   `docs/REVIEWS/ROAST-TRIAGE-2026-10-17.md`. Still open: **no 2.x release tag**, and **ARIA**.
-- **Next, in order:** the **skin editor** (E0–E6 — approved, prior-art and host-capability scouting in
-  flight), then **theme packs** (P0–P6 — approved, all six decisions and the five single-word names
-  confirmed: **Earth, Cyberpunk, Zen, Retro, Noir**).
+- **The skin editor is half-built.** **E0, E1, E1b, E2 and E3 are built and verified** (`d39c1af`,
+  `e450eb0`, `832e5d4`) — the schema, the overrides store, owned-skin in-place edits, the editor modal,
+  duplicate, and packs export/import. Suites: JS **162/162**, backend **120/120**. **Remaining: E4
+  (category management), E5 (typography), E6 (polish).** Both design questions those phases carried are
+  now closed — categories are measured and read-only (§22.1), fonts ship through the theme object
+  (§8/§22.2) — so neither waits on the Captain.
+- **Next, in order:** finish the **skin editor** (E4–E6), then **theme packs** (P0–P6 — approved, all six
+  decisions and the five single-word names confirmed: **Earth, Cyberpunk, Zen, Retro, Noir**).
 - **Still open from this file:** F5 shipped as option (b), Desktop-side; **F8** (tint/value/brightness)
   and **F9** (accent-picker interop) are unstarted. Note for whoever starts F8: the SDK already exports
   `contrastRatio` plus `hexToOklch`/`oklchToHex`/`oklchToSrgb255`/`maxChroma`, so that work is now

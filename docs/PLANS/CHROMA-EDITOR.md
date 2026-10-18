@@ -187,24 +187,24 @@ accept a path.
 
 ---
 
-## 8. Fonts — the constrained part
+## 8. Fonts — resolved 2026-10-18: typography ships with a skin
 
-Skin YAML carries **colours only** (see `_dump_skin_yaml`; the schema is top-level scalars plus
-string→string maps). Typography in this product is a **Desktop theme** field (`SCENE_TYPOGRAPHY` in
-the template), not a skin field. So:
+The Captain confirmed on the desktop that the **Cyberpunk theme changes the font**, and the code agrees.
+The earlier reading — "fonts cannot be part of skin YAML" — was right about *YAML* and wrong about *skins*.
+A skin's typography reaches the desktop through the **theme object** the plugin registers, not through the
+skin YAML `skin_engine.py` parses. Both are true at once:
 
-- Editing a font cannot produce a real skin. It produces a Desktop-only overlay.
-- Two honest options, and this is the Captain's call:
-  - **(a) Desktop-only typography**: the editor writes typography into the plugin's own theme data
-    for that scene. Works on this Desktop; invisible to the CLI and to other machines. Must be
-    labelled as such in the UI — an unlabelled Desktop-only setting is a lie about portability.
-  - **(b) No font editing in v1**: ship colours, duplicate, packs and categories first, and treat
-    fonts as their own campaign once the skin schema question is settled.
-- **Recommendation: (a), labelled.** It satisfies the request without pretending the CLI can render a
-  font it will never receive.
+- Skin **YAML** carries colours only (`_dump_skin_yaml`; top-level scalars plus string→string maps).
+- The **desktop theme** carries `typography`, and it is keyed by scene: `SCENE_TYPOGRAPHY`
+  (`desktop/plugin.template.js:122-130`) — `nous`, `midnight`, `ember`, `cyberpunk`; cyberpunk sets both
+  `fontSans` and `fontMono`. It is attached to the theme at `:327` and merged over the defaults at `:1591`.
+- So "typography ships with a skin" is **true**, and the **Desktop-only label is dropped** — the honest
+  label now is "applies on the Desktop; the CLI renders colours only".
 
-**Spike required before E5**: confirm against `hermes_cli/skin_engine.py` that no font key is read
-from a skin. One read, not a guess.
+**Spike run, not guessed** (`hermes_cli/skin_engine.py`): it reads `colors`, `branding`, `spinner`,
+`tool_prefix`, `tool_emojis`, `banner_logo`, `banner_hero`, `customCSS`, `description` — and **no font key**.
+The engine is not where a font would travel; the theme object is. E5 therefore edits the theme object,
+through an **override** (§17), not a new skin field. Full decision record: §22.2.
 
 ---
 
@@ -220,10 +220,11 @@ The picker's categories are currently **derived** (OKLCH measurement of the acce
 A built-in category cannot be deleted; a user one can. Deleting a user category does not move its
 skins to a black hole — they fall back to their measured category, which is why step 3 exists.
 
-The **12** built-in categories are the taxonomy work landing separately; this plan only needs the
-container to hold them plus the user's own. Note that the shipped picker carries **7**
-(`THEME_CATEGORIES`), so "12" is a target, not a fact on disk — do not write the number into the
-backend until the classifier ships it.
+The **12** built-in categories have **landed** — `c10ca22` ("twelve measured shelves instead of
+seven"). `THEME_CATEGORIES` now carries 12 and `sceneCategory()` measures against them. The earlier note
+that the picker carried 7 is stale; **12 is a fact on disk**, so E4 can rely on it. §22.1 records the five
+category decisions, including that a category stays **measured and read-only** — which is why the
+resolution order above collapses to steps 1 and 3 in v1.
 
 **The rule grammar, specified (the review's finding: §4 and §9 named "a rule" and never defined
 it).** A user category carries one of exactly two rule kinds, never both under one name:
@@ -281,8 +282,8 @@ definition of a skin, and a save the picker cannot show has failed the user's.
 | **E1** | `PUT /skins/{name}` + the editor modal, colours only | the smallest end-to-end that delivers the ask |
 | **E2** | `POST /skins/duplicate` + the gear's second action | the escape hatch the built-in rule requires |
 | **E3** | packs: export → import with preview → management | largest surface; needs E0's schema to validate |
-| **E4** | categories CRUD + resolution order | depends on the 12-category taxonomy landing |
-| **E5** | typography (spike first), labelled Desktop-only | isolated, and the only Desktop-only piece |
+| **E4** | categories CRUD + resolution order | the 12-shelf taxonomy has landed (`c10ca22`); decisions in §22.1 |
+| **E5** | typography — an override on the theme object (§22.2) | the font question is settled (§8); ships in v1 |
 | **E6** | polish: keyboard/touch reach, empty states, export naming | last, so it reflects what actually shipped |
 
 Each phase: one commit, gates green, and a real render check of the modal (the render → vision step
@@ -411,14 +412,16 @@ The Captain approved all of `CHROMA-PACKS.md` §3 and §12 on 2026-10-18. Four o
   views. That is the whole of the coupling between the two campaigns.
 - **The packs campaign runs after this one.** E-phases first, P-phases second.
 
-### 16.2 Working decisions on §13's four questions
+### 16.2 Decisions on §13's questions — closed 2026-10-18
 
-Taken as the default so this campaign can proceed. Correct any one and it changes:
+All four are decided. The Captain delegated the two that needed judgement and confirmed the typography
+behaviour on the desktop; the rest follow from the override model in §17. §22 carries the full record,
+including the category decisions this table had no row for.
 
-| # | Question | Working decision |
+| # | Question | Decision |
 |:--|:--|:--|
-| 1 | Fonts | **(a) Desktop-only and labelled.** §8's spike still runs before E5 and can overturn it. |
-| 2 | Editing a built-in | **Copy, never in place** (§3, §10) — the plan's existing rule, kept. This is the one decision that changes what a user *expects* when they click a gear on their favourite theme, so it is called out for the Captain's word rather than buried. |
+| 1 | Fonts | **A skin ships its own typography — confirmed on the desktop and by the code.** `SCENE_TYPOGRAPHY` (`desktop/plugin.template.js:122-130`) is keyed by scene name; `cyberpunk` sets both `fontSans` and `fontMono`; `:327` attaches `typography` to the theme and `:1591-1594` merges it over the defaults. §8's spike is **run**: `skin_engine.py` reads no font key at all. So a font reaches the desktop through the *theme object*, never through skin YAML. |
+| 2 | Editing a built-in | **Overridden, never copied — with a per-skin Reset.** Supersedes the copy-only rule (§3, §10) on the Captain's order of 2026-10-18; the design is §17. "Save as a copy" stays available as a separate action for a genuinely new skin. |
 | 3 | Packs transport | **A file the user sends.** No gateway-side pack registry in v1. |
 | 4 | Categories in a pack bundle | **Yes** — §7's format already carries them. |
 
@@ -687,11 +690,19 @@ Suites: JS **150/150** (from 142), backend **92/92** (from 90), regeneration ide
 
 ### 20.2 What remains in the editor campaign
 
-E2 `POST /skins/duplicate` (the fork), E3 export/import of a skin pack, E4 category management, E5
-typography, E6 polish (undo/redo, keyboard/touch reach, the `authored`-snapshot upgrade trap from §19.2
-item 2). **Two of these carry an open design question the plan already flagged** — E4 needs the
-per-profile-vs-global categories answer, and E5's Desktop-only font claim rests on the §8 spike that has
-not been run. Both are the Captain's calls, not mine.
+E2 and E3 have since **shipped** (`832e5d4`, §21). What remains:
+
+- **E4 — category management.** CRUD plus resolution order. The 12-shelf taxonomy has landed
+  (`c10ca22`), so the dependency is satisfied. Decisions are in §22.1: a category stays measured and
+  read-only in v1, so "CRUD" reduces to a user's *override* of a skin's shelf plus the container for a
+  user's own category — the resolution order in §9 collapses to steps 1 and 3.
+- **E5 — typography.** The font question is settled (§8): a skin's typography ships through the theme
+  object, and a user's edit is an **override** (§17). The `skin_engine.py` spike has been run — no font
+  key is read — so E5 is not blocked. Decisions are in §22.2.
+- **E6 — polish.** Undo/redo, keyboard/touch reach, and the `authored`-snapshot upgrade trap (§19.2
+  item 2). Last, so it reflects what actually shipped.
+
+Both of §20.2's "open design questions" are closed by §22 — neither is the Captain's call any longer.
 
 ---
 
@@ -757,4 +768,50 @@ doing: the E1 pair's contradiction was real, but this one was not, and a parent 
 burns a lane's worth of time chasing a mismatch that does not exist. The check that actually matters is
 the one already run: `diff -q` against a **fresh regeneration**.
 
+---
 
+## 22. Categories and typography — the decisions (2026-10-18)
+
+The Captain delegated both, with one confirmation: **the Cyberpunk theme changes the font on the desktop.**
+That matches the code, and it closes §13's font question. §22.1 closes the category question too, so both
+items §15 carried are answered here.
+
+### 22.1 Categories — five decisions
+
+| # | Decision | Why |
+|:--|:--|:--|
+| C1 | **A category stays measured and read-only in v1.** No hand-editing, no "pin to shelf". | It is derived from OKLCH by `sceneCategory()`. A hand-edit would leak a user's opinion back into the classifier — the one thing §9 forbids. Revisit only if users ask. |
+| C2 | **Not per-profile and not global — computed, so global by construction.** | The category is computed at load from the palette; nothing about it is stored, so there is no category *record* to scope. §13's "per-profile or global" question is **not applicable**. This also kills the cross-profile storage bleed Scout B flagged: no category bytes touch storage. |
+| C3 | **A user skin's category is derived on every load, never frozen.** | Measured means recomputed. Edit the colours and the shelf follows. There is no creation-time assignment to get wrong. |
+| C4 | **Shelf and pack badge coexist on different axes.** Category = the 12 shelves (primary grouping). Pack = a card badge plus a pack filter (§16.1). | Two layers that must never feed back into each other. The shelf is a computed fact; the badge is curation. |
+| C5 | **The uniqueness audit gates shipped skins only.** | It is a curation tool for core plus packs. A user skin is never rejected. |
+
+### 22.2 Typography — six decisions
+
+| # | Decision | Why |
+|:--|:--|:--|
+| T1 | **Exactly two roles: `fontSans` and `fontMono`.** | The host models no more. `SCENE_TYPOGRAPHY` uses only these two and `applyDesktopTheme` merges only these two. A third role would promise what the engine cannot render. |
+| T2 | **A curated allowlist plus a free-text entry.** | The allowlist is the families already proven in the catalog (`Courier Prime`, `JetBrains Mono`, `IBM Plex Mono`, `Courier New`) plus the system stack. Free-text covers the rest without a parser the plugin cannot have (no `package.json`). |
+| T3 | **A user's font edit is an override, stored beside the colours and applied the same way at runtime.** The authored default stays in the theme object; `regenerate.py` is not the channel for a user edit. | The colour override already works this way (`applyOverride`, `:2728`); a font must not invent a second channel. **The lane's first job is to verify the boot path** — §18 warns that every boot re-registers contributed themes, so the override must land *after* registration or the edit dies at the next start. The `authored`-snapshot upgrade trap (§19.2) applies to typography exactly as it does to colours. |
+| T4 | **The fallback chain is mandatory.** | Every stack must end in `DEFAULT_FONT_SANS`/`DEFAULT_FONT_MONO` (`:120-121`). A user who sets a bare family otherwise loses emoji rendering silently. The editor shows the final resolved stack. |
+| T5 | **A preview row ships in v1.** | The editor applies the chosen families to its own text through the same CSS variables the desktop uses. No host primitive needed, so Scout B's "no keyboard-capture" limit does not block it. |
+| T6 | **Global scope; ships in editor v1.** | Same storage and scope as colours. The Captain confirmed the desktop honours a skin's font, so it is in scope for v1. |
+
+### 22.3 What this re-bases
+
+Both domains now sit under the **override model** (§17), not the copy-only rule:
+
+- Editing a built-in's font or colour writes an **override of that built-in**. **Reset** returns the
+  built-in's own typography (its `SCENE_TYPOGRAPHY` default) or its measured shelf.
+- The **regenerator must honour overrides** — a regeneration cannot erase them. §17's test pins this.
+- Categories are the exception to Reset: measured means there is nothing to restore, so Reset is a no-op
+  there. That asymmetry is a property of the design, not an omission.
+- **§16.2 rows 1 and 2 are superseded by this section.**
+
+### 22.4 The spike, recorded so it is not re-run
+
+`skin_engine.py` reads `colors`, `branding`, `spinner`, `tool_prefix`, `tool_emojis`, `banner_logo`,
+`banner_hero`, `customCSS` and `description`. It reads **no font key**. A font therefore never travels in
+skin YAML — it travels in the theme object the plugin registers. That is why "typography ships with a
+skin" is true, and why the earlier note ("fonts cannot be part of skin YAML") was right about *YAML* and
+wrong about *skins*. Both statements hold at once; only the second one matters to the editor.
