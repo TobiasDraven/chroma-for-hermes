@@ -1005,6 +1005,178 @@ async function putSkin(name, palettes) {
 }
 
 // ---------------------------------------------------------------------------
+// E4 — user categories (plan §9, §22.1).
+//
+// The twelve shelves in THEME_CATEGORIES are MEASURED and stay so: a skin's
+// built-in shelf is computed from its accent by sceneCategory() and is never
+// stored. A USER category is a named container a person creates; a skin joins
+// one by an explicit assignment kept on its index record (`category`), and
+// deleting the container does NOT touch the skin — the assignment stops
+// resolving and the skin falls back to its measured shelf. That fallback is
+// exactly why the measured classifier stays the floor and must never learn
+// about user categories.
+//
+// The routes ride the same rest transport as the override store, so a pane with
+// no backend degrades to "no user categories" rather than crashing the gallery.
+// ---------------------------------------------------------------------------
+
+/** The closed set of built-in shelf ids. The pane's THEME_CATEGORIES is the
+ *  source of truth; this is a derived set so a user category cannot shadow a
+ *  built-in one. Kept as a function so the tests read it the same way. */
+function builtinCategoryIds() {
+  return THEME_CATEGORIES.map(category => category.id)
+}
+
+/** Every USER category the backend holds, in the backend's own order. Tolerant
+ *  about the envelope ({categories:[...]} or a bare array) but strict about the
+ *  type: anything else means "no user categories", never a crash in the gallery. */
+async function listCategories() {
+  if (!_rest) return []
+  let result
+  try {
+    result = await _rest('categories')
+  } catch (e) {
+    return []
+  }
+  const rows = result && Array.isArray(result.categories)
+    ? result.categories
+    : (Array.isArray(result) ? result : [])
+  const out = []
+  for (const row of rows) {
+    if (row && typeof row === 'object' && typeof row.id === 'string' && row.id) {
+      out.push({
+        id: row.id,
+        title: typeof row.title === 'string' ? row.title : row.id,
+        order: typeof row.order === 'number' ? row.order : 0,
+        names: Array.isArray(row.names) ? row.names : null
+      })
+    }
+  }
+  return out
+}
+
+/** Create ONE user category: POST /categories with {id, title}. The backend
+ *  slugs the id and refuses a built-in or a duplicate with a 409 that the caller
+ *  shows as a field-level complaint — the create is not committed to local state
+ *  until the backend has answered. */
+async function createCategory(id, title) {
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  return await _rest('categories', {
+    method: 'POST',
+    body: JSON.stringify({ id: id || '', title: title || '' })
+  })
+}
+
+/** Drop ONE user category: DELETE /categories/{id}. No skin file and no index
+ *  record is touched — a skin assigned to it falls back to its measured shelf. */
+async function deleteCategory(id) {
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  return await _rest('categories/' + encodeURIComponent(id), { method: 'DELETE' })
+}
+
+/** Assign ONE skin to a category, or clear the assignment with '' — the "reset
+ *  to measured" choice. Rides the skin's own in-place route, so it obeys the same
+ *  ownership rule putSkin does. */
+async function putSkinCategory(name, category) {
+  if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  return await _rest('skins/' + encodeURIComponent(name), {
+    method: 'PUT',
+    body: JSON.stringify({ category: category || '' })
+  })
+}
+
+/** PURE: the category a skin lands in — the per-skin assignment first, then a
+ *  user category whose `names` list claims it by name, then the MEASURED shelf.
+ *
+ *  1. A non-empty `scene.category` is the explicit assignment. It counts only
+ *     while it names a built-in or a live user category, so an assignment left
+ *     behind by a DELETED category falls through rather than orphaning the card
+ *     in a shelf that is no longer rendered.
+ *  2. A user category whose `names` list names this skin (exact name,
+ *     case-insensitive; first match in declaration order).
+ *  3. `sceneCategory(scene)` — the measured floor. This is why the measured
+ *     classifier stays the floor and never learns about user categories. */
+function effectiveCategory(scene, userCategories) {
+  if (!scene || !scene.name) return 'minimal'
+  const list = Array.isArray(userCategories) ? userCategories : []
+  const live = new Set(builtinCategoryIds())
+  for (const cat of list) {
+    if (cat && typeof cat === 'object' && typeof cat.id === 'string' && cat.id) live.add(cat.id)
+  }
+  const assigned = typeof scene.category === 'string' ? scene.category.trim() : ''
+  if (assigned && live.has(assigned)) return assigned
+  const name = scene.name.toLowerCase()
+  for (const cat of list) {
+    const names = cat && Array.isArray(cat.names) ? cat.names : null
+    if (!names) continue
+    for (const claimed of names) {
+      if (typeof claimed === 'string' && claimed.trim().toLowerCase() === name) {
+        return cat && typeof cat.id === 'string' && cat.id ? cat.id : 'minimal'
+      }
+    }
+  }
+  return sceneCategory(scene)
+}
+
+/** PURE: map a failed create to a field-level complaint. A 409 (duplicate or a
+ *  built-in id) is a NAME problem the user fixes in place; a 400 is a malformed
+ *  entry. Mirrors duplicateFailure's contract so the modal treats them alike. */
+function categoryCreateFailure(error) {
+  const status = error && error.status ? error.status : null
+  const message = error && error.message ? error.message : String(error)
+  if (status === 409) {
+    return {
+      kind: 'collision', field: 'id', status: 409, message: message,
+      notice: {
+        kind: 'warning', title: 'Category already exists', message: message,
+        detail: 'Pick a different id. The category was not created and nothing was changed.'
+      }
+    }
+  }
+  if (status === 400) {
+    return {
+      kind: 'invalid', field: 'id', status: 400, message: message,
+      notice: {
+        kind: 'warning', title: 'Category not created', message: message,
+        detail: 'The id or title was rejected. Nothing was changed.'
+      }
+    }
+  }
+  return {
+    kind: 'error', field: null, status: status, message: message,
+    notice: {
+      kind: 'warning', title: 'Category not created', message: message,
+      detail: 'The backend refused the create. Nothing was changed.'
+    }
+  }
+}
+
+/** PURE: the schema-drift check for the category vocabulary. A category id the
+ *  pane renders but the backend does not list (or vice versa) is exactly the
+ *  drift this catches — the same failure mode the role drift already guards. */
+function schemaCategoryDrift(backendIds, paneCategories) {
+  const back = new Set(Array.isArray(backendIds) ? backendIds : [])
+  const pane = (paneCategories || THEME_CATEGORIES).map(category => category.id)
+  const drift = []
+  for (const id of pane) if (!back.has(id)) drift.push({ id: id, side: 'pane' })
+  for (const id of back) if (pane.indexOf(id) === -1) drift.push({ id: id, side: 'backend' })
+  return drift
+}
+
+/** The one notice the category drift raises, or null when nothing drifted. */
+function schemaCategoryDriftNotice(drift) {
+  if (!drift || !drift.length) return null
+  const first = drift[0]
+  const more = drift.length > 1 ? ' (' + drift.length + ' categories disagree)' : ''
+  return {
+    kind: 'warning',
+    title: 'Chroma category schema drift',
+    message: 'Category ' + first.id + ' is known to the ' + first.side + ' only' + more,
+    detail: 'The pane and the backend disagree about a category id. A category a skin is filed under may not render.'
+  }
+}
+
+// ---------------------------------------------------------------------------
 // The editor's SCHEMA (plan §19.2 item 1) — a drift alarm, not a rewrite.
 //
 // The six rows are the card's ANATOMY and stay the presentation contract; this
@@ -2113,18 +2285,39 @@ function sceneCategory(scene) {
 }
 
 /** The same scenes, grouped by category. Empty groups are dropped by the caller,
- *  so a category with nothing in it costs no vertical space. */
-function buildCategoryGroups(scenes) {
-  return THEME_CATEGORIES.map(category => ({
+ *  so a category with nothing in it costs no vertical space.
+ *
+ *  E4 — the twelve built-ins keep their ids, titles and order; USER categories
+ *  render as shelves AFTER them, so the familiar shelf never moves under the
+ *  user's feet. Membership follows effectiveCategory(): a skin the user filed
+ *  under a user category leaves its measured shelf and lands in that one. The
+ *  measured classifier is still the floor — a skin with no assignment lands
+ *  where sceneCategory() puts it. `userCategories` is optional so every existing
+ *  caller and test keeps its two-argument meaning. */
+function buildCategoryGroups(scenes, userCategories) {
+  const list = Array.isArray(userCategories) ? userCategories : []
+  const builtins = THEME_CATEGORIES.map(category => ({
     id: category.id,
     title: category.title,
-    scenes: scenes.filter(scene => sceneCategory(scene) === category.id)
+    builtin: true,
+    scenes: scenes.filter(scene => effectiveCategory(scene, list) === category.id)
   }))
+  const users = list
+    .filter(category => category && typeof category.id === 'string' && category.id)
+    .map(category => ({
+      id: category.id,
+      title: typeof category.title === 'string' && category.title ? category.title : category.id,
+      builtin: false,
+      scenes: scenes.filter(scene => effectiveCategory(scene, list) === category.id)
+    }))
+  return builtins.concat(users)
 }
 
 /** One entry point for both lenses, so the caller never branches on the mode. */
-function buildGroups(scenes, groupMode) {
-  return groupMode === 'theme' ? buildCategoryGroups(scenes) : buildThemeGroups(scenes)
+function buildGroups(scenes, groupMode, userCategories) {
+  return groupMode === 'theme'
+    ? buildCategoryGroups(scenes, userCategories)
+    : buildThemeGroups(scenes)
 }
 
 // ---------------------------------------------------------------------------
@@ -2611,8 +2804,23 @@ function ThemeCardDeleteConfirm({ scene, managing, onDelete, onCancel }) {
   ]
 }
 
-function ThemeCardManageButtons({ scene, onDelete, onRename, onExport, onStartRename, onStartConfirm }) {
+function ThemeCardManageButtons({ scene, onDelete, onRename, onExport, onStartRename, onStartConfirm, categories, currentCategory, onSetCategory }) {
+  const builtin = builtinCategoryIds()
+  const userCats = Array.isArray(categories) ? categories : []
   return [
+    jsx('select', {
+      key: 'category',
+      value: currentCategory || '',
+      onChange: e => onSetCategory(scene.name, e && e.target ? e.target.value : ''),
+      title: 'File this skin under a category. Empty resets to its measured shelf.',
+      'aria-label': 'Category for ' + (scene.label || scene.name),
+      className: 'min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)',
+      children: [
+        jsx('option', { key: 'measured', value: '', children: 'Measured shelf' }),
+        builtin.map(id => jsx('option', { key: 'b-' + id, value: id, children: id })),
+        userCats.map(cat => jsx('option', { key: 'u-' + cat.id, value: cat.id, children: cat.title || cat.id }))
+      ]
+    }),
     jsx('button', {
       key: 'export',
       type: 'button',
@@ -2638,18 +2846,19 @@ function ThemeCardManageButtons({ scene, onDelete, onRename, onExport, onStartRe
   ]
 }
 
-function ThemeCardActions({ scene, managing, onDelete, onRename, onExport }) {
+function ThemeCardActions({ scene, managing, onDelete, onRename, onExport, categories, onSetCategory }) {
   const [renaming, setRenaming] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [draft, setDraft] = useState('')
   const startRename = (target) => { setDraft(target.name); setRenaming(true) }
   const stopRenaming = () => setRenaming(false)
   const stopConfirming = () => setConfirming(false)
+  const currentCategory = effectiveCategory(scene, categories)
   const body = renaming
     ? jsx(ThemeCardRename, { scene, draft, setDraft, managing, onRename, onCancel: stopRenaming })
     : (confirming
       ? jsx(ThemeCardDeleteConfirm, { scene, managing, onDelete, onCancel: stopConfirming })
-      : jsx(ThemeCardManageButtons, { scene, onDelete, onRename, onExport, onStartRename: startRename, onStartConfirm: () => setConfirming(true) }))
+      : jsx(ThemeCardManageButtons, { scene, onDelete, onRename, onExport, onStartRename: startRename, onStartConfirm: () => setConfirming(true), categories, currentCategory, onSetCategory }))
   return jsxs('div', { className: MANAGE_ROW_CLASS, children: body })
 }
 
@@ -2747,8 +2956,8 @@ function applyOverride(scene, overrides) {
  *  from the scene it is handed, so a resolved list would re-file a card the
  *  moment its accent changed. Grouping runs on the authored list; the override
  *  is layered on afterwards, per card. */
-function groupCards(scenes, overrides, groupMode) {
-  return buildGroups(scenes, groupMode).map(group => Object.assign({}, group, {
+function groupCards(scenes, overrides, groupMode, userCategories) {
+  return buildGroups(scenes, groupMode, userCategories).map(group => Object.assign({}, group, {
     scenes: group.scenes.map(scene => applyOverride(scene, overrides))
   }))
 }
@@ -3198,7 +3407,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
   })
 }
 
-function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, shape, localScope, onEdit, onDuplicate, edited }) {
+function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, shape, localScope, onEdit, onDuplicate, edited, categories, onSetCategory }) {
   // Both halves of the pair, always: every scene ships both modes now, and the
   // card shows them side by side rather than only the mode that happens to be
   // live.
@@ -3261,7 +3470,7 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   // Only an owned skin has manage actions, and it keeps its unwrapped shape when it
   // does not: the extra flex column is what holds the action row.
   if (!owned) return stacked
-  return jsxs('div', { className: 'flex w-full flex-col', children: [stacked, jsx(ThemeCardActions, { scene, managing, onDelete, onRename, onExport })] })
+  return jsxs('div', { className: 'flex w-full flex-col', children: [stacked, jsx(ThemeCardActions, { scene, managing, onDelete, onRename, onExport, categories, onSetCategory })] })
 }
 
 // ---------------------------------------------------------------------------
@@ -3315,6 +3524,37 @@ function PackRow({ pack, busy, onExport, onDelete }) {
 }
 
 /** The pack list, with the required empty state. */
+function CategoryList({ categories, busy, onDelete }) {
+  if (!categories || !categories.length) {
+    return jsx(EmptyState, {
+      title: 'No user categories yet',
+      description: 'Create your own shelf to file skins under, beside the twelve measured ones.'
+    })
+  }
+  return jsxs('div', { className: 'flex flex-col gap-1', children: categories.map(cat =>
+    jsxs('div', {
+      key: cat.id,
+      className: 'flex items-center gap-1',
+      children: [
+        jsx('span', {
+          className: 'min-w-0 flex-1 truncate text-[0.625rem] text-(--ui-text-secondary)',
+          title: cat.id,
+          children: cat.title || cat.id
+        }),
+        jsx('button', {
+          key: 'delete',
+          type: 'button',
+          disabled: busy,
+          onClick: () => onDelete(cat.id),
+          title: 'Delete this category. Skins filed under it fall back to their measured shelf.',
+          className: MANAGE_BUTTON_CLASS,
+          children: busy ? '\u2026' : 'Delete'
+        })
+      ]
+    })
+  )})
+}
+
 function PackList({ packs, busy, onExport, onDelete }) {
   if (!packs || !packs.length) {
     return jsx(EmptyState, { title: 'No packs yet', description: 'Save your filtered skins as a pack, or import one someone sent you.' })
@@ -3498,6 +3738,20 @@ function ThemePicker() {
   // route was absent — the editor keeps its own defaults and says so quietly.
   const [schema, setSchema] = useState(null)
   const schemaNoted = useRef(false)
+  // E4 — the user's own categories. These are additive records the user creates;
+  // they never edit the twelve measured shelves. `categories` is the list the
+  // "by theme" lens renders as extra shelves, and the picker assigns a skin's
+  // category field. An absent /categories route (older backend) leaves this
+  // empty and the editor falls back to measured-only, same as packs.
+  const [categories, setCategories] = useState([])
+
+  // E4 — the category create form. `categoryName` is the id (a slug the user
+  // types), `categoryTitle` is the display name. Both reset on a successful
+  // create so the form is ready for the next one.
+  const [categoryName, setCategoryName] = useState('')
+  const [categoryTitle, setCategoryTitle] = useState('')
+  const [categoryBusy, setCategoryBusy] = useState(false)
+
   // E3 — the pack surface. `packs` is the list the section renders; the import
   // flow is a small state machine: a paste box, a dry-run PREVIEW grouped by
   // status, per-collision choices, then a confirmed write. Nothing is written
@@ -3531,12 +3785,34 @@ function ThemePicker() {
       }
       setSchema(next)
       const drift = schemaDrift(EDITOR_ROLES, next.paletteKeys)
+      const catDrift = schemaCategoryDrift(next.categories, THEME_CATEGORIES)
       if (drift.length) {
         for (const item of drift) {
           console.warn('Chroma editor schema drift: role ' + item.role + ' writes ' + item.key
             + ', which GET /schema does not list')
         }
         host.notify(schemaDriftNotice(drift))
+      }
+      if (catDrift.length) {
+        console.warn('Chroma editor schema category drift: ' + catDrift.length
+          + ' built-in categories absent from GET /schema')
+        host.notify(schemaCategoryDriftNotice(catDrift))
+      }
+      // E4 — the same vocabulary check for the category shelf. The backend's
+      // /schema answers the twelve built-in ids; the pane owns THEME_CATEGORIES.
+      // A disagreement means the editor would render a shelf the backend cannot
+      // accept, so it is surfaced the same way as a palette-key drift rather than
+      // silently ignored. The check is one-way (backend vs pane): the pane never
+      // treats a backend category id as one of its own, and the pane's user
+      // categories are absent from the backend's list by construction.
+      const categoryDrift = schemaCategoryDrift(
+        Array.isArray(next.categories) ? next.categories : [],
+        builtinCategoryIds()
+      )
+      if (categoryDrift.length) {
+        console.warn('Chroma editor schema drift: GET /schema categories disagree with the pane',
+          categoryDrift)
+        host.notify(schemaCategoryDriftNotice(categoryDrift))
       }
     })
     return () => { alive = false }
@@ -3572,6 +3848,15 @@ function ThemePicker() {
       setPacks(await listPacks())
     } catch (e) {
       setPacks([])
+    }
+    // Categories follow the same lenient read: an older backend answers /skins
+    // and not /categories, so a failure means "no user categories here" and the
+    // editor still renders the twelve measured shelves. A corrupt store makes a
+    // WRITER fail loudly, never a silent reset — see the backend.
+    try {
+      setCategories(await listCategories())
+    } catch (e) {
+      setCategories([])
     }
   }, [])
 
@@ -4103,6 +4388,73 @@ function ThemePicker() {
     }
   }
 
+  // E4 — the category handlers. Create POSTs to /categories and refreshes the
+  // list; delete DELETEs /categories/{id}; assign PUTs the skin's category field
+  // via the skin's own in-place route. All three ride refreshOwned() so the
+  // gallery, the shelves and the picker all see the new state at once.
+  const handleCreateCategory = async () => {
+    if (categoryBusy) return
+    const id = (categoryName || '').trim()
+    const title = (categoryTitle || '').trim()
+    if (!id) {
+      host.notify({ kind: 'error', message: 'Give the category an id' })
+      return
+    }
+    setCategoryBusy(true)
+    try {
+      await createCategory(id, title)
+      setCategoryName('')
+      setCategoryTitle('')
+      haptic('tap')
+      await refreshOwned()
+      host.notify({ kind: 'success', title: 'Category created', message: 'Filed under ' + id })
+    } catch (e) {
+      const failure = categoryCreateFailure(e)
+      host.notify(failure.notice)
+    } finally {
+      setCategoryBusy(false)
+    }
+  }
+
+  const handleDeleteCategory = async (id) => {
+    if (categoryBusy || !id) return
+    setCategoryBusy(true)
+    try {
+      await deleteCategory(id)
+      haptic('tap')
+      await refreshOwned()
+      host.notify({
+        kind: 'info',
+        title: 'Category deleted',
+        message: 'Removed ' + id + '. Skins filed under it fall back to their measured shelf.'
+      })
+    } catch (e) {
+      host.notify({ kind: 'error', message: 'Delete failed: ' + (e && e.message ? e.message : e) })
+    } finally {
+      setCategoryBusy(false)
+    }
+  }
+
+  const assignSkinCategory = async (name, category) => {
+    if (!name) return
+    setManaging(name)
+    try {
+      await putSkinCategory(name, category)
+      haptic('tap')
+      await refreshOwned()
+      host.notify({
+        kind: 'info',
+        message: category
+          ? ('Filed ' + name + ' under ' + category)
+          : ('Reset ' + name + ' to its measured shelf')
+      })
+    } catch (e) {
+      host.notify({ kind: 'error', message: 'Category assignment failed: ' + (e && e.message ? e.message : e) })
+    } finally {
+      setManaging(null)
+    }
+  }
+
   // Cards. A grid with auto-fill adapts to a resized window without a second
   // calculation -- the aspect ratio carries the look, not the width. The target
   // width is fixed, so a wide window shows MORE cards rather than four enormous
@@ -4111,7 +4463,7 @@ function ThemePicker() {
   const cardMin = cardMinFor(shape, size)
   // Groups are cut from the AUTHORED list, then each card is handed its effective
   // palette (§17.3.2): the shelf must not move when a scene is recoloured.
-  const groups = groupCards(filtered, overrides, groupMode).filter(group => group.scenes.length)
+  const groups = groupCards(filtered, overrides, groupMode, categories).filter(group => group.scenes.length)
   const activeScene = applyOverride(allSkins.find(scene => scene.name === active) || null, overrides)
   const activeColors = activeScene && ((mode === 'dark' ? activeScene.darkColors : activeScene.lightColors) || activeScene.colors)
   const editingScene = editing ? (allSkins.find(scene => scene.name === editing.name) || null) : null
@@ -4253,6 +4605,50 @@ function ThemePicker() {
           // import that PREVIEWS before it writes, and a two-choice delete.
           // Import reads a pasted bundle: the host exposes no file-OPEN dialog
           // (only a save path), so the paste box is the honest channel here.
+          // E4 — the category management surface. The twelve built-ins are
+          // measured and read-only; this section manages the user's OWN
+          // shelves. Create takes a slug id + display title; delete removes
+          // the record (skins filed under it fall back to their measured
+          // shelf); per-skin assignment rides the card's own selector.
+          jsxs('div', { key: 'categories', className: PACK_SECTION_CLASS, children: [
+            jsxs('div', { key: 'head', className: 'flex flex-wrap items-center justify-between gap-2', children: [
+              jsxs('div', { className: 'flex items-center gap-2', children: [
+                jsx('span', { className: 'text-[0.6875rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)', children: 'Categories' }),
+                jsx(Badge, { variant: 'muted', children: String((categories || []).length) })
+              ]})
+            ]}),
+            jsx(CategoryList, {
+              categories,
+              busy: categoryBusy,
+              onDelete: handleDeleteCategory
+            }),
+            jsxs('div', { key: 'create', className: 'flex flex-wrap items-center gap-1', children: [
+              jsx('input', {
+                type: 'text',
+                value: categoryName,
+                placeholder: 'category id',
+                title: 'A slug for the category (lowercase, dashes)',
+                onChange: e => setCategoryName(e && e.target ? e.target.value : ''),
+                className: 'h-6 w-24 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 font-mono text-[0.625rem]'
+              }),
+              jsx('input', {
+                type: 'text',
+                value: categoryTitle,
+                placeholder: 'Display title',
+                title: 'The title shown on the shelf',
+                onChange: e => setCategoryTitle(e && e.target ? e.target.value : ''),
+                className: 'h-6 w-28 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 text-[0.625rem]'
+              }),
+              jsx('button', {
+                type: 'button',
+                disabled: categoryBusy || !categoryName.trim(),
+                onClick: handleCreateCategory,
+                title: 'Create a new user category',
+                className: MANAGE_BUTTON_CLASS,
+                children: categoryBusy ? 'Working…' : 'Create category'
+              })
+            ]})
+          ]}),
           jsxs('div', { key: 'packs', className: PACK_SECTION_CLASS, children: [
             jsxs('div', { key: 'head', className: 'flex flex-wrap items-center justify-between gap-2', children: [
               jsxs('div', { className: 'flex items-center gap-2', children: [
@@ -4400,7 +4796,9 @@ function ThemePicker() {
                               // card already carries the resolved palette.
                               edited: !!overrides[scene.name],
                               shape,
-                              localScope: scope === APPLY_SCOPE_LOCAL
+                              localScope: scope === APPLY_SCOPE_LOCAL,
+                              categories,
+                              onSetCategory: assignSkinCategory
                             })
                           )
                         })

@@ -198,6 +198,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Ocean Skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -611,6 +703,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Ocean Skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -836,6 +1020,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Ocean Skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -1059,6 +1335,98 @@
      "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
      "type": "div",
      "children": [
+      {
+       "aria-label": "Category for Ocean Skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
       {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
@@ -1474,6 +1842,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Ocean Skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -1702,6 +2162,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Ocean Skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -1922,6 +2474,98 @@
      "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
      "type": "div",
      "children": [
+      {
+       "aria-label": "Category for Ocean Skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
       {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
@@ -2148,6 +2792,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Ocean Skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -2368,6 +3104,98 @@
      "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
      "type": "div",
      "children": [
+      {
+       "aria-label": "Category for Ocean Skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
       {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
@@ -2594,6 +3422,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for no-label-skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "dark",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -2818,6 +3738,98 @@
      "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
      "type": "div",
      "children": [
+      {
+       "aria-label": "Category for Thin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "light",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
       {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
@@ -3044,6 +4056,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Alias",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "light",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -3269,6 +4373,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Bare",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "dark",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -3493,6 +4689,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Bare",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "dark",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -3716,6 +5004,98 @@
      "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
      "type": "div",
      "children": [
+      {
+       "aria-label": "Category for Ocean Skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
       {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
@@ -4133,6 +5513,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Gateway",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -4357,6 +5829,98 @@
      "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
      "type": "div",
      "children": [
+      {
+       "aria-label": "Category for Gateway",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
       {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
@@ -4771,6 +6335,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Colors Only",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -4996,6 +6652,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Third Alias",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "dark",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -5219,6 +6967,98 @@
      "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
      "type": "div",
      "children": [
+      {
+       "aria-label": "Category for Ocean Skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
       {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
@@ -5445,6 +7285,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for Ocean Skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "cool",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -5670,6 +7602,98 @@
      "type": "div",
      "children": [
       {
+       "aria-label": "Category for no-label-skin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "dark",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
+      {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",
        "onClick": "[fn]",
@@ -5894,6 +7918,98 @@
      "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
      "type": "div",
      "children": [
+      {
+       "aria-label": "Category for Thin",
+       "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
+       "key": "category",
+       "onChange": "[fn]",
+       "title": "File this skin under a category. Empty resets to its measured shelf.",
+       "value": "light",
+       "type": "select",
+       "children": [
+        {
+         "key": "measured",
+         "value": "",
+         "type": "option",
+         "children": "Measured shelf"
+        },
+        [
+         {
+          "key": "b-minimal",
+          "value": "minimal",
+          "type": "option",
+          "children": "minimal"
+         },
+         {
+          "key": "b-pastels",
+          "value": "pastels",
+          "type": "option",
+          "children": "pastels"
+         },
+         {
+          "key": "b-vibrant",
+          "value": "vibrant",
+          "type": "option",
+          "children": "vibrant"
+         },
+         {
+          "key": "b-muted",
+          "value": "muted",
+          "type": "option",
+          "children": "muted"
+         },
+         {
+          "key": "b-earth",
+          "value": "earth",
+          "type": "option",
+          "children": "earth"
+         },
+         {
+          "key": "b-terminal",
+          "value": "terminal",
+          "type": "option",
+          "children": "terminal"
+         },
+         {
+          "key": "b-nature",
+          "value": "nature",
+          "type": "option",
+          "children": "nature"
+         },
+         {
+          "key": "b-warm",
+          "value": "warm",
+          "type": "option",
+          "children": "warm"
+         },
+         {
+          "key": "b-orange",
+          "value": "orange",
+          "type": "option",
+          "children": "orange"
+         },
+         {
+          "key": "b-gold",
+          "value": "gold",
+          "type": "option",
+          "children": "gold"
+         },
+         {
+          "key": "b-cool",
+          "value": "cool",
+          "type": "option",
+          "children": "cool"
+         },
+         {
+          "key": "b-violet",
+          "value": "violet",
+          "type": "option",
+          "children": "violet"
+         }
+        ],
+        []
+       ]
+      },
       {
        "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong)",
        "key": "export",

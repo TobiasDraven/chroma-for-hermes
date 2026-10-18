@@ -181,7 +181,10 @@ test('the rename row and the delete row are reachable as pieces, because useStat
   const buttons = plain(digestElement(helpers.ThemeCardManageButtons({
     scene, onDelete: () => {}, onRename: () => {}, onExport: () => {}, onStartRename: () => {}, onStartConfirm: () => {}
   })))
-  assert.deepEqual(buttons.map((b) => b.children), ['Export', 'Rename', 'Delete'])
+  // E4: the first child is the category <select>, then Export/Rename/Delete
+  assert.equal(buttons.length, 4, 'category select + 3 buttons')
+  assert.equal(buttons[0].type, 'select', 'first child is the category selector')
+  assert.deepEqual(buttons.slice(1).map((b) => b.children), ['Export', 'Rename', 'Delete'])
 })
 
 test('the label row shows the state only where the card has room for it', () => {
