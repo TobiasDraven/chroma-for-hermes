@@ -56,3 +56,22 @@ test('a catalogue with no pack data is not filtered at all', async () => {
   const bare = t.SKINS.map(skin => ({ ...skin, pack: undefined }))
   assert.equal(t.filterByPacks(bare, []).length, bare.length)
 })
+
+test('the pack choice persists, and a corrupt store is not fatal', async () => {
+  const { context } = await loadPlugin()
+  const t = context.testHelpers
+  const store = context.window.localStorage
+
+  store.removeItem('chroma-packs-v1')
+  assert.equal(JSON.stringify(t.readEnabledPacks()), '[]', 'nothing stored means no packs')
+
+  t.writeEnabledPacks(['retro', 'studio'])
+  assert.equal(JSON.stringify([...t.readEnabledPacks()].sort()), '["retro","studio"]')
+
+  t.writeEnabledPacks([])
+  assert.equal(JSON.stringify(t.readEnabledPacks()), '[]', 'an empty choice is a choice')
+
+  store.setItem('chroma-packs-v1', '{not json')
+  assert.equal(JSON.stringify(t.readEnabledPacks()), '[]', 'a corrupt store degrades to none, never throws')
+  store.removeItem('chroma-packs-v1')
+})

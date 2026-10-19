@@ -17,7 +17,10 @@ mkdir -p "$DESTINATION"
 
 # Never follow a destination symlink, including with --force. The bundle owns
 # regular skin files only and must not be able to overwrite an external target.
-for source_dir in "$BUNDLE_DIR/skins" "$BUNDLE_DIR/gateway-skins"; do
+# Only the mode-locked transports are installed. The retired v1 pair table
+# (skins/) is kept in the repo for the migration record and must never reach a
+# gateway: it would list 150 single-palette skins the picker does not show.
+for source_dir in "$BUNDLE_DIR/gateway-skins"; do
   [ -d "$source_dir" ] || { printf 'Missing required skin directory: %s\n' "$source_dir" >&2; exit 1; }
   for source in "$source_dir"/*.yaml; do
     [ -f "$source" ] || continue
@@ -31,7 +34,10 @@ done
 
 if [ "$force" -eq 0 ]; then
   collisions=''
-  for source_dir in "$BUNDLE_DIR/skins" "$BUNDLE_DIR/gateway-skins"; do
+  # Only the mode-locked transports are installed. The retired v1 pair table
+# (skins/) is kept in the repo for the migration record and must never reach a
+# gateway: it would list 150 single-palette skins the picker does not show.
+for source_dir in "$BUNDLE_DIR/gateway-skins"; do
     [ -d "$source_dir" ] || { printf 'Missing required skin directory: %s\n' "$source_dir" >&2; exit 1; }
     for source in "$source_dir"/*.yaml; do
       [ -f "$source" ] || continue
@@ -49,7 +55,10 @@ if [ "$force" -eq 0 ]; then
 fi
 
 count=0
-for source_dir in "$BUNDLE_DIR/skins" "$BUNDLE_DIR/gateway-skins"; do
+# Only the mode-locked transports are installed. The retired v1 pair table
+# (skins/) is kept in the repo for the migration record and must never reach a
+# gateway: it would list 150 single-palette skins the picker does not show.
+for source_dir in "$BUNDLE_DIR/gateway-skins"; do
   if [ ! -d "$source_dir" ]; then
     printf 'Missing required skin directory: %s\n' "$source_dir" >&2
     exit 1

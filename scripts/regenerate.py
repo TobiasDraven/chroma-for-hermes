@@ -524,16 +524,26 @@ def _load_v2_skins(skins_dir: Path) -> list[dict]:
     would break every ported skin, so the file records which half was ported.
     """
     skins: list[dict] = []
+    seen: dict[str, str] = {}
     for path in sorted(skins_dir.glob("*.yaml")):
         if not path.is_file() or path.is_symlink():
             continue
-        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        try:
+            data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        except yaml.YAMLError as exc:
+            raise ValueError(f"{path.name}: not valid YAML ({exc})") from exc
+        if not isinstance(data, dict):
+            raise ValueError(f"{path.name}: a skin file must be a mapping")
         if data.get("schema_version") != 2:
-            continue
+            raise ValueError(
+                f"{path.name}: schema_version is {data.get('schema_version')!r}, expected 2"
+            )
         light = data.get("light_colors") or {}
         dark = data.get("dark_colors") or {}
         if not light or not dark:
-            continue
+            raise ValueError(f"{path.name}: both light_colors and dark_colors are required")
+        if not data.get("name"):
+            raise ValueError(f"{path.name}: no name")
         derived = set((data.get("provenance") or {}).get("derived") or [])
         light_out = light if "light" in derived else {
             k: v for k, v in light.items() if k in KEEP_KEYS
@@ -543,6 +553,9 @@ def _load_v2_skins(skins_dir: Path) -> list[dict]:
         }
 
         name = data["name"]
+        if name in seen:
+            raise ValueError(f"{path.name}: duplicate skin id {name!r}, already in {seen[name]}")
+        seen[name] = path.name
         entry = {
             "name": name,
             "label": data.get("label") or name.replace("-", " ").title(),
@@ -754,8 +767,18 @@ def main() -> int:
     v2_dir = script_dir.parent / "skins-v2"
     user_skins = []
     builtins: list[dict] = []
+    if (argv[0] if argv else None) is None and not v2_dir.is_dir():
+        # Refuse to fall back: the v1 pair table is retired, and quietly
+        # rebuilding 109 scenes from it would look like a successful build.
+        print(f"ERROR: {v2_dir} is missing; refusing to fall back to the retired v1 bundle.",
+              file=sys.stderr)
+        return 1
     if v2_dir.is_dir() and (argv[0] if argv else None) is None:
-        user_skins = _load_v2_skins(v2_dir)
+        try:
+            user_skins = _load_v2_skins(v2_dir)
+        except ValueError as exc:
+            print(f"ERROR: {exc}; refusing to replace {out_path}.", file=sys.stderr)
+            return 1
         catalog = user_skins
     else:
         for p in sorted(skins_dir.glob("*.yaml")):

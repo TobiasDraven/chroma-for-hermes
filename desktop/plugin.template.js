@@ -2272,9 +2272,9 @@ function cardShapeClasses(shape) {
 
 function buildThemeGroups(scenes) {
   return [
-    { id: 'dynamic', title: 'Dynamic Scenes', scenes: scenes.filter(scene => scene.modeSupport === 'dynamic') },
-    { id: 'dark', title: 'Dark Mode Only', scenes: scenes.filter(scene => scene.modeSupport === 'dark') },
-    { id: 'light', title: 'Light Mode Only', scenes: scenes.filter(scene => scene.modeSupport === 'light') }
+    { id: 'dynamic', title: 'Skins', scenes: scenes.filter(scene => scene.modeSupport === 'dynamic') },
+    { id: 'dark', title: 'Dark only', scenes: scenes.filter(scene => scene.modeSupport === 'dark') },
+    { id: 'light', title: 'Light only', scenes: scenes.filter(scene => scene.modeSupport === 'light') }
   ]
 }
 
@@ -2356,6 +2356,30 @@ function filterByPacks(skins, enabledPacks) {
  *
  *  Deterministic, so the grid is stable between renders. Never throws on a
  *  partial palette: an unreadable accent falls back to Neutral, not `undefined`. */
+const PACKS_KEY = 'chroma-packs-v1'
+const PACK_TITLES = {
+  earth: 'Earth', cyberpunk: 'Cyberpunk', zen: 'Zen',
+  retro: 'Retro', noir: 'Noir', studio: 'Studio', core: 'Core'
+}
+
+/** The packs the user turned on. Never throws: a corrupt store means none. */
+function readEnabledPacks() {
+  try {
+    const raw = window.localStorage.getItem(PACKS_KEY)
+    const parsed = raw ? JSON.parse(raw) : null
+    if (Array.isArray(parsed)) return parsed.filter(p => typeof p === 'string')
+    if (parsed && Array.isArray(parsed.enabled)) return parsed.enabled.filter(p => typeof p === 'string')
+    return []
+  } catch { return [] }
+}
+
+/** Persist the choice. A full or blocked store must not break the click. */
+function writeEnabledPacks(list) {
+  try {
+    window.localStorage.setItem(PACKS_KEY, JSON.stringify(Array.isArray(list) ? list : []))
+  } catch { /* storage is a convenience, never a precondition */ }
+}
+
 function sceneCategory(scene) {
   if (scene.modeSupport === 'dark') return 'dark'
   if (scene.modeSupport === 'light') return 'light'
@@ -3445,7 +3469,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
             jsxs('span', { key: 'state', className: 'min-w-0 text-[0.625rem] text-(--ui-text-tertiary)', children: [
               owned
                 ? 'Your own skin file. '
-                : (overridden ? 'An override exists for this scene. ' : 'No override yet. '),
+                : (overridden ? 'An override exists for this skin. ' : 'No override yet. '),
               dirty ? jsx('span', { className: 'text-(--ui-warn)', children: 'Unsaved changes.' }) : null
             ]}),
             jsxs('div', { key: 'buttons', className: 'flex shrink-0 items-center gap-1', children: [
@@ -3990,14 +4014,7 @@ function ThemePicker() {
       setPacks([])
     }
     // Theme Packs persistence: load enabled pack ids from profile-scoped storage.
-    try {
-      const raw = window.localStorage.getItem('chroma-packs-v1')
-      const parsed = raw ? JSON.parse(raw) : null
-      const enabled = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.enabled) ? parsed.enabled : [])
-      setEnabledPacks(enabled)
-    } catch {
-      setEnabledPacks([])
-    }
+    setEnabledPacks(readEnabledPacks())
     // Categories follow the same lenient read: an older backend answers /skins
     // and not /categories, so a failure means "no user categories here" and the
     // editor still renders the twelve measured shelves. A corrupt store makes a
@@ -4635,7 +4652,23 @@ function ThemePicker() {
   // Theme Packs filter. Core is the default shelf: the pane opens on the thirty
   // core skins, and enabling a pack adds that pack (filterByPacks owns the rule).
   const packsAvailable = SKINS.some(scene => scene && scene.pack)
-  const groups = groupCards(filterByPacks(filtered, enabledPacks), overrides, groupMode, categories)
+  const visibleSkins = filterByPacks(filtered, enabledPacks)
+  const groups = groupCards(visibleSkins, overrides, groupMode, categories)
+  // The pack chips are built from the catalogue, so a new pack appears by itself.
+  const packIds = Array.from(new Set(SKINS.map(scene => scene && scene.pack).filter(p => p && p !== 'core')))
+  const packTotals = {}
+  for (const scene of SKINS) {
+    const id = (scene && scene.pack) || 'core'
+    packTotals[id] = (packTotals[id] || 0) + 1
+  }
+  const hiddenByPacks = Math.max(0, filtered.length - visibleSkins.length)
+  const togglePack = (pack) => {
+    setEnabledPacks(prev => {
+      const next = prev.includes(pack) ? prev.filter(p => p !== pack) : prev.concat(pack)
+      writeEnabledPacks(next)
+      return next
+    })
+  }
   const activeScene = applyOverride(allSkins.find(scene => scene.name === active) || null, overrides)
   const activeColors = activeScene && ((mode === 'dark' ? activeScene.darkColors : activeScene.lightColors) || activeScene.colors)
   const editingScene = editing ? (allSkins.find(scene => scene.name === editing.name) || null) : null
@@ -4679,7 +4712,7 @@ function ThemePicker() {
             ]
           }),
           jsx(SearchField, {
-            placeholder: 'Search scenes…',
+            placeholder: 'Search skins…',
             value: q,
             onChange: v => setQ(typeof v === 'string' ? v : '')
           }),
@@ -4844,21 +4877,6 @@ function ThemePicker() {
                   className: MANAGE_BUTTON_CLASS,
                   children: packBusy ? 'Working…' : 'Save filter as pack'
                 }),
-                // Theme Packs ship only when the catalog actually carries pack
-                // membership. Until the pack campaign fills scripts/packs.json
-                // and the generator emits a `pack` per scene, a filter would
-                // hide every skin whose pack is unknown — so it stays out of the
-                // pane rather than pretending to work.
-                packsAvailable ? jsx('button', {
-                  type: 'button',
-                  onClick: () => {
-                    const next = enabledPacks.length === 0 ? ['earth', 'cyberpunk', 'zen', 'retro', 'noir'] : []
-                    setEnabledPacks(next)
-                  },
-                  title: enabledPacks.length ? 'Show all packs' : 'Enable theme packs',
-                  className: MANAGE_BUTTON_CLASS,
-                  children: enabledPacks.length ? 'All packs' : 'Enable packs'
-                }) : null,
                 jsx('button', {
                   type: 'button',
                   onClick: () => setImportOpen(v => !v),
@@ -4935,12 +4953,46 @@ function ThemePicker() {
           ]})
         ]
       }),
+      packsAvailable ? jsxs('div', {
+        className: 'flex flex-wrap items-center gap-1 border-b border-(--ui-stroke-secondary) px-3 py-2',
+        children: [
+          jsx('span', {
+            className: 'mr-1 text-[0.5625rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)',
+            children: 'Packs'
+          }),
+          ...packIds.map(pack => jsx('button', {
+            key: pack,
+            type: 'button',
+            onClick: () => togglePack(pack),
+            'aria-pressed': enabledPacks.includes(pack) ? 'true' : 'false',
+            title: enabledPacks.includes(pack)
+              ? PACK_TITLES[pack] + ' is on — click to hide it'
+              : 'Show the ' + PACK_TITLES[pack] + ' pack (' + packTotals[pack] + ' skins)',
+            className: 'rounded border px-1.5 py-0.5 text-[0.625rem] '
+              + (enabledPacks.includes(pack)
+                ? 'border-(--ui-accent) text-(--ui-accent)'
+                : 'border-(--ui-stroke-secondary) text-(--ui-text-tertiary)'),
+            children: PACK_TITLES[pack] + ' ' + packTotals[pack]
+          })),
+          hiddenByPacks
+            ? jsx('span', {
+                className: 'ml-1 text-[0.5625rem] text-(--ui-text-tertiary)',
+                children: hiddenByPacks + (hiddenByPacks === 1 ? ' skin hidden' : ' skins hidden')
+              })
+            : null
+        ]
+      }) : null,
       jsx(ScrollArea, {
         className: 'min-h-0 flex-1 p-2',
         children: jsx(SkinBoundary, {
           children:
-            filtered.length === 0
-              ? jsx(EmptyState, { title: 'No skins found', description: 'Try a different search.' })
+            groups.length === 0
+              ? jsx(EmptyState, {
+                  title: 'No skins found',
+                  description: hiddenByPacks
+                    ? 'Nothing in the packs you have on matches. Turn a pack on above, or change the search.'
+                    : 'Try a different search.'
+                })
               : jsx('div', {
                   className: 'flex flex-col gap-4',
                   children: groups.map((group, index) =>

@@ -1,3 +1,7 @@
+> **HISTORICAL — 2026-10-19, before the v2 cutover.** Its counts (109 scenes,
+> 0 packs) describe the tree as it stood that morning, not the release.
+> See `docs/RELEASE-2.6.0.md`.
+
 # Distribution readiness review — 2026-10-19
 
 Repo: `C:/DEV/hermes-theme-picker` (`TobiasDraven/chroma-for-hermes`)

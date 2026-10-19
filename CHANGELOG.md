@@ -3,6 +3,43 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.6.0] - 2026-10-19
+
+The catalogue is rebuilt. This is the release prepared for the public directory.
+
+### Changed
+
+- **One skin, one file.** `skins-v2/` holds 94 skin files. Each carries a light
+  palette, a dark palette, a colour family, a pack, a measured energy and a font
+  choice. The old pair table in `skins/` is retired; the build no longer reads it.
+- **Twelve measured colour families** replace the old mixed-axis shelves:
+  Persimmon, Apricot, Amber, Gold, Lemon, Fern, Teal, Cobalt, Indigo, Violet,
+  Rose, Neutral. Each is cut on a real gap in the catalogue's own accent hues,
+  and Neutral is the shelf below chroma 0.04.
+- **Six theme packs.** Thirty core skins ship visible; Earth, Cyberpunk, Zen,
+  Retro, Noir and Studio hold the other 64 behind a chip row. The choice is
+  remembered per profile.
+- **A font per skin.** Every skin names its own sans and mono stack, ending in
+  the previous default so an uninstalled face changes nothing.
+- **The fifteen host built-in themes are gone.** They were Hermes' own themes and
+  the only cards that failed the signature-role check.
+
+### Fixed
+
+- The generator refuses a damaged skin file instead of silently shipping a
+  smaller catalogue, and it no longer falls back to the retired v1 bundle when
+  `skins-v2/` is missing.
+- `scripts/check-packs.py` now also rejects a missing pack, an unknown energy, a
+  skin with no sans font and a duplicate display label; it runs in CI.
+- Two skins were both called "Obsidian"; the core violet one is now
+  "Obsidian Violet".
+- The gateway installer no longer copies the 150 retired v1 skins.
+
+### Verified
+
+94 of 94 palettes byte-identical across the cutover; JS 222/222; backend 163/163;
+generator 16 passed; `hermes plugins validate .` passes.
+
 ## [2.5.2] - 2026-10-18
 
 ### Fixed

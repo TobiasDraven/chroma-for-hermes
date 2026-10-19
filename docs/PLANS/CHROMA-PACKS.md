@@ -1,5 +1,9 @@
 # Chroma Theme Packs — plan
 
+> **SUPERSEDED 2026-10-19.** This plan describes the campaign that produced
+> release 2.6.0. Where it disagrees with the build, the build wins:
+> read `docs/RELEASE-2.6.0.md` for what actually ships.
+
 **Status:** **APPROVED for implementation 2026-10-18** — all decisions (§3) and all five pack names
 (§6) confirmed by the Captain. Sequenced **after** the skin editor: the editor campaign ships first,
 this one follows.

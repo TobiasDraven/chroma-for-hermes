@@ -343,7 +343,7 @@ test('the card shape is remembered, and an unknown shape falls back to squares',
   assert.ok(!cardShapeClasses('square').includes('rounded-full'), 'the shapes must differ')
 })
 
-test('themes are grouped as dynamic, dark-only, then light-only', async () => {
+test('skins are grouped as both-mode, dark-only, then light-only', async () => {
   const storage = new Map()
   const plugin = await loadPlugin(storage, true)
   const { buildThemeGroups } = plugin.__test
@@ -355,7 +355,7 @@ test('themes are grouped as dynamic, dark-only, then light-only', async () => {
 
   assert.deepEqual(
     Array.from(groups, group => group.title),
-    ['Dynamic Scenes', 'Dark Mode Only', 'Light Mode Only']
+    ['Skins', 'Dark only', 'Light only']
   )
   assert.deepEqual(Array.from(groups, group => group.scenes[0].name), ['dynamic', 'dark', 'light'])
 })

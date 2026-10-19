@@ -205,14 +205,15 @@ Hermes skins are YAML files containing a name, description, and colors.
 - **Try one immediately:** place it in the gateway's `~/.hermes/skins/`
   directory and apply it once. Live discovery adds it to the current picker
   session.
-- **Make it part of the catalog:** add it to this repository's `skins/`
-  directory, regenerate `plugin.js`, reinstall the plugin, and reload Desktop
-  plugins.
+- **Make it part of the catalog:** add a file to this repository's `skins-v2/`
+  directory (one file, both palettes), regenerate `plugin.js`, reinstall the
+  plugin, and reload Desktop plugins. The retired `skins/` pair table is not
+  read by the build.
 
 ### Regenerate the catalog
 
 ```bash
-# Bundled skins/ → desktop/plugin.js
+# skins-v2/ → desktop/plugin.js
 python3 scripts/regenerate.py
 
 # Read another skin directory
@@ -250,8 +251,10 @@ THIRD_PARTY_NOTICES.md         Licenses for bundled palettes
 
 ## Uninstall
 
-Delete the `chroma` directory from the local `desktop-plugins` folder,
-then reload Desktop plugins or restart Hermes. Your skin files are not removed.
+Remove the plugin from both halves: delete the `chroma` directory from the
+local `desktop-plugins` folder, and remove `chroma` from `plugins.enabled` (or
+delete `plugins/chroma`) so the Python half stops loading. Then reload Desktop
+plugins or restart Hermes. Your skin files are not removed.
 
 ## FAQ
 
@@ -267,8 +270,8 @@ through Desktop's own theme API and keeps Desktop's React state in step, so it
 does not fight the provider.
 
 **Q: The lightbulb icon does not appear in the statusbar.**
-A: The lightbulb only appears when the active theme supports both light and
-dark modes. Single-mode themes (dark-only or light-only) do not show it.
+A: Every bundled skin supports both modes, so the lightbulb appears for all of
+them. It is absent only for a hand-made theme that carries one mode.
 
 **Q: I imported a theme but it does not show up.**
 A: Check the import format. Supported formats: TweakCN preset name or URL,
@@ -291,13 +294,15 @@ A: Yes. The local catalog works offline. The current Desktop applies and saves
 themes locally. Gateway sync is optional.
 
 **Q: How do I create my own skin?**
-A: Place a YAML file in `~/.hermes/skins/`. It appears in the picker after a
-reload. See [Add your own skins](#add-your-own-skins) above.
+A: Place a YAML file in `~/.hermes/skins/` and apply it once. It appears in the
+picker after that, not before. See [Add your own skins](#add-your-own-skins) above.
 
 ## Credits
 
-The picker is an original implementation and bundles MIT-licensed palettes
-from:
+Chroma is a hard fork of [Hermes Theme Picker](https://github.com/jdtimothy/hermes-theme-picker)
+by Joshua Timothy, used under the MIT License. The skin editor, the theme packs,
+the colour taxonomy and the current catalogue are this fork's work. It bundles
+MIT-licensed palettes from:
 
 - [BChop's Hermes Skins Pack](https://github.com/bchop-studio/hermes-skins-pack)
 - [CliffWade's Hermes Desktop Theme Pack](https://github.com/CliffWade/hermes-desktop-theme-pack),

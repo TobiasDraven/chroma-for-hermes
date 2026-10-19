@@ -27,6 +27,9 @@ jobs:
       - name: Run JS tests
         run: node --test tests/*.test.mjs
 
+      - name: The catalogue obeys its own contract
+        run: python scripts/check-packs.py
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -60,3 +63,9 @@ jobs:
 
       - name: The committed build must match its template
         run: git diff --exit-code -- desktop/plugin.js gateway-skins docs/DERIVED-PALETTES.md
+
+      # The data contract is a gate, not a convention: a skin that loses a
+      # palette, a pack that loses every member, or a duplicate label fails here
+      # instead of shipping.
+      - name: The catalogue obeys its own contract
+        run: python scripts/check-packs.py

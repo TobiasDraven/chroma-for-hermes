@@ -21,7 +21,7 @@ green:
 | Sidebar entry | `SIDEBAR_NAV_AREA` | path `/chroma` |
 | Status-bar chip | `STATUSBAR_AREAS` | renders the active skin |
 | Command palette | — | command id `chroma.open` |
-| Theme catalog | `THEMES_AREA` | two Desktop themes per skin (188 transports) |
+| Theme catalog | `THEMES_AREA` | one Desktop theme per skin (94); 188 gateway transports |
 | Gateway sync | — | pushes a picked skin to the gateway |
 
 ## Features

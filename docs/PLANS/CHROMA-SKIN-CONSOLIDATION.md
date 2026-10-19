@@ -1,5 +1,9 @@
 # Skin consolidation — one concept, one word
 
+> **SUPERSEDED 2026-10-19.** This plan describes the campaign that produced
+> release 2.6.0. Where it disagrees with the build, the build wins:
+> read `docs/RELEASE-2.6.0.md` for what actually ships.
+
 Status: PLAN — not started.
 Author: Faris al-Faris. Decisions by Captain Tobias, 2026-10-19.
 Baseline: `7eaa80b`, 109 cards, 150 palette files.

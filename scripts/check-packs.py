@@ -27,6 +27,8 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 CORE_TARGET = 30
 PACK_RANGE = (10, 20)
+ALL_PACKS = ("core", "earth", "cyberpunk", "zen", "retro", "noir", "studio")
+ENERGIES = {"quiet", "balanced", "vivid"}
 
 
 def main() -> int:
@@ -36,12 +38,13 @@ def main() -> int:
 
     taxonomy = json.loads((ROOT / "scripts" / "taxonomy.json").read_text(encoding="utf-8"))
     valid_categories = {f["id"] for f in taxonomy["families"]} | {taxonomy["neutral"]["id"]}
-    packs = {"core", "earth", "cyberpunk", "zen", "retro", "noir", "studio"}
+    packs = set(ALL_PACKS)
 
     failures: list[str] = []
     pack_counts: Counter = Counter()
     category_counts: Counter = Counter()
     seen: set[str] = set()
+    labels: dict[str, str] = {}
 
     files = sorted(Path(args.dir).glob("*.yaml"))
     if not files:
@@ -54,6 +57,12 @@ def main() -> int:
         if name in seen:
             failures.append(f"{name}: duplicate id")
         seen.add(name)
+
+        label = data.get("label") or ""
+        if label:
+            if label in labels:
+                failures.append(f"{name}: label {label!r} is already used by {labels[label]}")
+            labels[label] = name
 
         if path.stem != name:
             failures.append(f"{name}: file stem {path.stem} does not match id")
@@ -82,15 +91,28 @@ def main() -> int:
         typo = data.get("typography") or {}
         if not typo.get("fontMono"):
             failures.append(f"{name}: no fontMono")
+        if not typo.get("fontSans"):
+            failures.append(f"{name}: no fontSans")
+
+        if data.get("energy") not in ENERGIES:
+            failures.append(f"{name}: energy {data.get('energy')!r} is not one of {sorted(ENERGIES)}")
+
+        derived = (data.get("provenance") or {}).get("derived") or []
+        for mode in derived:
+            if mode not in ("light", "dark"):
+                failures.append(f"{name}: provenance.derived holds {mode!r}")
 
         if data.get("schema_version") != 2:
             failures.append(f"{name}: schema_version is {data.get('schema_version')!r}, expected 2")
 
     if pack_counts.get("core") != CORE_TARGET:
         failures.append(f"core holds {pack_counts.get('core')} skins, expected {CORE_TARGET}")
-    for pack, count in sorted(pack_counts.items()):
+    # Iterate the declared packs, not the observed ones: a pack that lost every
+    # member must fail, not vanish from the check.
+    for pack in ALL_PACKS:
         if pack == "core":
             continue
+        count = pack_counts.get(pack, 0)
         low, high = PACK_RANGE
         if not low <= count <= high:
             failures.append(f"pack {pack} holds {count} skins, outside {low}-{high}")

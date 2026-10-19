@@ -1,10 +1,12 @@
 # Third-Party Notices
 
 This project bundles skin palettes from two MIT-licensed upstream projects.
-The Theme Picker code itself is an original implementation and is licensed
-under the MIT License (see `LICENSE`); the bundled `skins/*.yaml` files are
-the unmodified work of their respective authors and are redistributed here
-under the terms of their MIT licenses, reproduced below.
+Chroma is a hard fork of Hermes Theme Picker by Joshua Timothy
+(https://github.com/jdtimothy/hermes-theme-picker), used under the MIT License
+(see `LICENSE`); the editor, theme packs, taxonomy and catalogue are this
+fork's work. The bundled `skins-v2/*.yaml` palettes are the work of their
+respective authors and are redistributed here under the terms of their MIT
+licenses, reproduced below.
 
 ## Bundled skins
 

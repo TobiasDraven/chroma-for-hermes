@@ -1,19 +1,45 @@
 {
   "version": "1.0.0",
-  "description": "Theme Packs — the second grouping axis beside the measured 12 category shelves. Each pack is a curated bundle of existing scenes; deleting a pack never deletes a skin file.",
+  "description": "Theme Packs \u2014 the second grouping axis beside the measured 12 category shelves. Each pack is a curated bundle of existing scenes; deleting a pack never deletes a skin file.",
   "packs": {
     "core": {
       "id": "core",
       "title": "Core",
-      "description": "The 30 measured reference skins — mandatory breadth, identity scenes, and the highest-contrast candidates from every shelf.",
+      "description": "The 30 measured reference skins \u2014 mandatory breadth, identity scenes, and the highest-contrast candidates from every shelf.",
       "members": [
-        "amber-terminal", "commodore-64", "dark-lcars", "green-screen", "retro-amber", "retro-blue",
-        "retro-terminal", "earth-brown", "earth-green", "earth-moss", "minimal-white",
-        "minimal-black", "vibrant-red", "vibrant-blue", "vibrant-green", "vibrant-purple",
-        "pastels-pink", "pastels-blue", "pastels-green", "pastels-cream",
-        "muted-ink", "muted-paper", "muted-stone", "nature-forest", "nature-ocean",
-        "warm-amber", "warm-coral", "orange-flame", "orange-ember",
-        "gold-harvest", "gold-morning", "cool-ice", "cool-deep"
+        "amber-terminal",
+        "commodore-64",
+        "dark-lcars",
+        "green-screen",
+        "retro-amber",
+        "retro-blue",
+        "retro-terminal",
+        "earth-brown",
+        "earth-green",
+        "earth-moss",
+        "minimal-white",
+        "minimal-black",
+        "vibrant-red",
+        "vibrant-blue",
+        "vibrant-green",
+        "vibrant-purple",
+        "pastels-pink",
+        "pastels-blue",
+        "pastels-green",
+        "pastels-cream",
+        "muted-ink",
+        "muted-paper",
+        "muted-stone",
+        "nature-forest",
+        "nature-ocean",
+        "warm-amber",
+        "warm-coral",
+        "orange-flame",
+        "orange-ember",
+        "gold-harvest",
+        "gold-morning",
+        "cool-ice",
+        "cool-deep"
       ],
       "target_size": 30,
       "final": true,
@@ -22,8 +48,20 @@
     "earth": {
       "id": "earth",
       "title": "Earth",
-      "description": "Soil, moss, clay, autumn, forest — the earth shelf extended to a full bundle.",
-      "members": ["earth-brown", "earth-green", "earth-moss", "nature-forest", "nature-moss", "warm-amber", "warm-coral", "gold-harvest", "gold-morning", "pastels-cream", "pastels-green"],
+      "description": "Soil, moss, clay, autumn, forest \u2014 the earth shelf extended to a full bundle.",
+      "members": [
+        "earth-brown",
+        "earth-green",
+        "earth-moss",
+        "nature-forest",
+        "nature-moss",
+        "warm-amber",
+        "warm-coral",
+        "gold-harvest",
+        "gold-morning",
+        "pastels-cream",
+        "pastels-green"
+      ],
       "target_size": 15,
       "final": true,
       "badge_text": "Earth"
@@ -31,8 +69,17 @@
     "cyberpunk": {
       "id": "cyberpunk",
       "title": "Cyberpunk",
-      "description": "Neon, synth, matrix, night-city — synthetic greens and neon accents.",
-      "members": ["vibrant-green", "vibrant-purple", "cool-ice", "cool-deep", "minimal-black", "vibrant-blue", "vibrant-red", "retros-green-terminal"],
+      "description": "Neon, synth, matrix, night-city \u2014 synthetic greens and neon accents.",
+      "members": [
+        "vibrant-green",
+        "vibrant-purple",
+        "cool-ice",
+        "cool-deep",
+        "minimal-black",
+        "vibrant-blue",
+        "vibrant-red",
+        "retros-green-terminal"
+      ],
       "target_size": 15,
       "final": true,
       "badge_text": "Cyberpunk"
@@ -40,8 +87,20 @@
     "zen": {
       "id": "zen",
       "title": "Zen",
-      "description": "Quiet, low-chroma, paper and ink — minimal, muted, pastels, the calm shelves.",
-      "members": ["minimal-white", "minimal-black", "muted-ink", "muted-paper", "pastels-cream", "pastels-pink", "muted-stone", "nature-ocean", "earth-moss", "pastels-blue", "pastels-green"],
+      "description": "Quiet, low-chroma, paper and ink \u2014 minimal, muted, pastels, the calm shelves.",
+      "members": [
+        "minimal-white",
+        "minimal-black",
+        "muted-ink",
+        "muted-paper",
+        "pastels-cream",
+        "pastels-pink",
+        "muted-stone",
+        "nature-ocean",
+        "earth-moss",
+        "pastels-blue",
+        "pastels-green"
+      ],
       "target_size": 15,
       "final": true,
       "badge_text": "Zen"
@@ -49,8 +108,17 @@
     "retro": {
       "id": "retro",
       "title": "Retro",
-      "description": "Phosphor CRTs and 1980s machines — the terminal shelf expanded.",
-      "members": ["amber-terminal", "commodore-64", "dark-lcars", "green-screen", "retro-amber", "retro-blue", "retro-terminal", "retro-green-terminal"],
+      "description": "Phosphor CRTs and 1980s machines \u2014 the terminal shelf expanded.",
+      "members": [
+        "amber-terminal",
+        "commodore-64",
+        "dark-lcars",
+        "green-screen",
+        "retro-amber",
+        "retro-blue",
+        "retro-terminal",
+        "retro-green-terminal"
+      ],
       "target_size": 15,
       "final": true,
       "badge_text": "Retro"
@@ -58,11 +126,23 @@
     "noir": {
       "id": "noir",
       "title": "Noir",
-      "description": "Deep, high-contrast, single-signal dark — cool/violet, monochrome-with-one-accent.",
-      "members": ["minimal-black", "vibrant-red", "vibrant-blue", "cool-deep", "vibrant-purple", "vibrant-green", "muted-ink", "pastels-cream", "earth-brown", "nature-ocean"],
+      "description": "Deep, high-contrast, single-signal dark \u2014 cool/violet, monochrome-with-one-accent.",
+      "members": [
+        "minimal-black",
+        "vibrant-red",
+        "vibrant-blue",
+        "cool-deep",
+        "vibrant-purple",
+        "vibrant-green",
+        "muted-ink",
+        "pastels-cream",
+        "earth-brown",
+        "nature-ocean"
+      ],
       "target_size": 15,
       "final": true,
       "badge_text": "Noir"
     }
-  }
+  },
+  "_status": "LEGACY - not read by the build since 2.6.0. Pack membership lives on each skin in skins-v2/. Kept for the campaign record only."
 }
