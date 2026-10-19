@@ -2288,8 +2288,15 @@ function cardAspect(shape) {
  *  inscribed area is narrower than its bounding box, so text set to the edges of
  *  the box would fall outside the circle. */
 function cardShapeClasses(shape) {
-  if (shape === 'circle') return 'rounded-full p-2.5'
-  return 'rounded-lg p-1.5'
+  if (shape === 'circle') return 'rounded-full'
+  return 'rounded-lg'
+}
+
+/** Inner padding for the card's own fill, per shape. A circle needs looser
+ *  padding: its inscribed area is narrower than its bounding box. Kept apart from
+ *  the frame's radius, because the action row must not inherit it. */
+function cardShapePadding(shape) {
+  return shape === 'circle' ? 'p-2.5' : 'p-1.5'
 }
 
 function buildThemeGroups(scenes) {
@@ -2932,7 +2939,7 @@ const CARD_ACTION_STYLE = {
   backdropFilter: 'blur(2px)',
   opacity: 0.9
 }
-const EDIT_GEAR_CLASS = 'rounded px-1.5 text-[0.5625rem] font-semibold leading-4 transition-opacity hover:opacity-100'
+const EDIT_GEAR_CLASS = 'rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm'
 
 function ThemeCardEditGear({ scene, onEdit }) {
   return jsx('button', {
@@ -2956,7 +2963,7 @@ function ThemeCardEditGear({ scene, onEdit }) {
 // shipped file (§17.1). It sits at the bottom-RIGHT so it never collides with
 // the centred gear, and it carries the same keyboard/touch reachability rule
 // (`focus-visible:` + `pointer-coarse:`) the gear carries.
-const EDIT_DUPLICATE_CLASS = 'rounded px-1.5 text-[0.5625rem] font-semibold leading-4 transition-opacity hover:opacity-100'
+const EDIT_DUPLICATE_CLASS = 'rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm'
 
 function ThemeCardDuplicate({ scene, onDuplicate }) {
   return jsx('button', {
@@ -4042,19 +4049,12 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   const card = jsxs('button', {
     type: 'button',
     onClick: () => onApply(scene),
-    // The aspect ratio is what makes the grid read as a gallery rather than a
-    // list: the colour block takes whatever height is left. The ratio itself is
-    // the shape the user picked.
-    style: { aspectRatio: cardAspect(shape) },
     disabled: applying === scene.name,
     title: cardTitle(scene, mode),
-    className: cn(
-      'flex w-full flex-col gap-1 border text-left transition-colors',
-      cardShapeClasses(shape),
-      isActive
-        ? 'border-(--ui-accent) bg-(--ui-bg-tertiary)'
-        : 'border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)'
-    ),
+    // The card FILLS its frame. The border, the radius and the aspect ratio
+    // belong to the box that also carries the action row (see cardBox below), so
+    // the row can sit inside the same edge instead of floating over it.
+    className: cn('absolute inset-0 flex w-full flex-col gap-1 text-left', cardShapePadding(shape)),
     children: cardChildren
   })
   // The preview pill and the editor's gear are DOM siblings of the card, and the
@@ -4062,24 +4062,37 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   // The gear appears only when the pane hands in an edit handler: a card with no
   // editor behind it must not offer the affordance.
   const boxChildren = [card, jsx(ThemeCardPreviewPill, { scene, previewing, previewUntil, onPreview, onStopPreview })]
-  // The pill row sits INSIDE the card's own box: inset by the card's own corner
-  // radius, on the palette block, so the actions belong to the skin they act on
-  // instead of hanging off its edge.
+  // The action row is IN FLOW: the frame's last child. It cannot hang over the
+  // card's edge, because it is not positioned at all. It rides the palette's
+  // bottom band (the card fills the frame behind it), and the row itself takes no
+  // pointer, so a click in the gap still reaches the card while the pills do not.
   const cardActions = []
   if (typeof onEdit === 'function') cardActions.push(jsx(ThemeCardEditGear, { scene, onEdit }))
   if (typeof onDuplicate === 'function') cardActions.push(jsx(ThemeCardDuplicate, { scene, onDuplicate }))
   if (cardActions.length) {
     boxChildren.push(jsx('div', {
-      className: 'pointer-events-none absolute inset-x-1 bottom-1 flex items-center justify-between gap-1',
+      className: cn(
+        'pointer-events-none relative z-20 mt-auto flex items-center gap-1.5',
+        shape === 'circle' ? 'justify-center px-2 pb-2' : 'justify-between px-1.5 pb-1.5'
+      ),
       children: cardActions.map((action, index) => jsx('span', {
         key: index,
-        className: 'pointer-events-auto opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 pointer-coarse:opacity-100',
+        className: 'pointer-events-auto',
         children: action
       }))
     }))
   }
   const cardBox = jsxs('div', {
-    className: 'group relative w-full',
+    // The frame: one border, one radius, the gallery's aspect ratio, and the
+    // overflow guard that keeps every child inside the edge.
+    style: { aspectRatio: cardAspect(shape) },
+    className: cn(
+      'group relative flex w-full flex-col overflow-hidden border transition-colors',
+      cardShapeClasses(shape),
+      isActive
+        ? 'border-(--ui-accent) bg-(--ui-bg-tertiary)'
+        : 'border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)'
+    ),
     children: boxChildren
   })
   // A circle cannot hold its label inside: a rounded-full box does not clip its

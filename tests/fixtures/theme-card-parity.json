@@ -6,16 +6,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -326,16 +326,16 @@
    ]
   },
   "square unowned dark": {
-   "className": "group relative w-full",
+   "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+   "style": {
+    "aspectRatio": "1"
+   },
    "type": "div",
    "children": [
     {
-     "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
      "disabled": false,
      "onClick": "[fn]",
-     "style": {
-      "aspectRatio": "1"
-     },
      "title": "A calm blue (dark variant)",
      "type": "button",
      "htmlType": "button",
@@ -514,16 +514,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "A calm blue (light variant)",
        "type": "button",
        "htmlType": "button",
@@ -838,16 +838,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "16 / 10"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "16 / 10"
-       },
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -1188,16 +1188,16 @@
        }
       },
       {
-       "className": "group relative w-full",
+       "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "style": {
+        "aspectRatio": "1"
+       },
        "type": "div",
        "children": [
         {
-         "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+         "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-2.5",
          "disabled": false,
          "onClick": "[fn]",
-         "style": {
-          "aspectRatio": "1"
-         },
          "title": "A calm blue (dark variant)",
          "type": "button",
          "htmlType": "button",
@@ -1507,16 +1507,16 @@
      }
     },
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-2.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -1694,16 +1694,16 @@
        }
       },
       {
-       "className": "group relative w-full",
+       "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "style": {
+        "aspectRatio": "1"
+       },
        "type": "div",
        "children": [
         {
-         "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+         "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-2.5",
          "disabled": false,
          "onClick": "[fn]",
-         "style": {
-          "aspectRatio": "1"
-         },
          "title": "A calm blue (dark variant)",
          "type": "button",
          "htmlType": "button",
@@ -1994,16 +1994,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -2321,16 +2321,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-accent) bg-(--ui-bg-tertiary)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-accent) bg-(--ui-bg-tertiary)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -2641,16 +2641,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": true,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -2965,16 +2965,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-accent) bg-(--ui-bg-tertiary)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-accent) bg-(--ui-bg-tertiary)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": true,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -3285,16 +3285,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "no-label-skin (dark only)",
        "type": "button",
        "htmlType": "button",
@@ -3613,16 +3613,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "Only two bands (light only)",
        "type": "button",
        "htmlType": "button",
@@ -3941,16 +3941,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "alias-skin (light only)",
        "type": "button",
        "htmlType": "button",
@@ -4269,16 +4269,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "bare-skin (dark only)",
        "type": "button",
        "htmlType": "button",
@@ -4627,16 +4627,16 @@
        }
       },
       {
-       "className": "group relative w-full",
+       "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "style": {
+        "aspectRatio": "1"
+       },
        "type": "div",
        "children": [
         {
-         "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+         "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-2.5",
          "disabled": false,
          "onClick": "[fn]",
-         "style": {
-          "aspectRatio": "1"
-         },
          "title": "bare-skin (dark only)",
          "type": "button",
          "htmlType": "button",
@@ -4950,16 +4950,16 @@
        }
       },
       {
-       "className": "group relative w-full",
+       "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-accent) bg-(--ui-bg-tertiary)",
+       "style": {
+        "aspectRatio": "1"
+       },
        "type": "div",
        "children": [
         {
-         "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-full p-2.5 border-(--ui-accent) bg-(--ui-bg-tertiary)",
+         "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-2.5",
          "disabled": false,
          "onClick": "[fn]",
-         "style": {
-          "aspectRatio": "1"
-         },
          "title": "A calm blue (light variant)",
          "type": "button",
          "htmlType": "button",
@@ -5243,16 +5243,16 @@
    ]
   },
   "rectangle previewing unowned": {
-   "className": "group relative w-full",
+   "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+   "style": {
+    "aspectRatio": "16 / 10"
+   },
    "type": "div",
    "children": [
     {
-     "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
      "disabled": false,
      "onClick": "[fn]",
-     "style": {
-      "aspectRatio": "16 / 10"
-     },
      "title": "A calm blue (dark variant)",
      "type": "button",
      "htmlType": "button",
@@ -5434,16 +5434,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "Pushed by the gateway (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -5758,16 +5758,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "Pushed by the gateway (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -6078,16 +6078,16 @@
    ]
   },
   "gateway unowned": {
-   "className": "group relative w-full",
+   "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+   "style": {
+    "aspectRatio": "1"
+   },
    "type": "div",
    "children": [
     {
-     "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
      "disabled": false,
      "onClick": "[fn]",
-     "style": {
-      "aspectRatio": "1"
-     },
      "title": "Pushed by the gateway (dark variant)",
      "type": "button",
      "htmlType": "button",
@@ -6266,16 +6266,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "colors-only-skin (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -6590,16 +6590,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "third-alias-skin (dark only)",
        "type": "button",
        "htmlType": "button",
@@ -6918,16 +6918,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-accent) bg-(--ui-bg-tertiary)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-accent) bg-(--ui-bg-tertiary)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -7241,16 +7241,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -7565,16 +7565,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "no-label-skin (dark only)",
        "type": "button",
        "htmlType": "button",
@@ -7893,16 +7893,16 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative w-full",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "style": {
+      "aspectRatio": "1"
+     },
      "type": "div",
      "children": [
       {
-       "className": "flex w-full flex-col gap-1 border text-left transition-colors rounded-lg p-1.5 border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
-       "style": {
-        "aspectRatio": "1"
-       },
        "title": "Only two bands (light only)",
        "type": "button",
        "htmlType": "button",

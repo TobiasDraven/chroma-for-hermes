@@ -84,9 +84,12 @@ test('the gear is on every card the pane renders, and only the eye cannot see it
   const withGear = t.ThemeCard(cardProps({ onEdit: () => {} }))
   const box = childrenOf(withGear)
   assert.equal(box.length, 3, 'the box holds the card, the preview pill and the action row')
-  // The actions sit INSIDE the card's box now, on the swatch, side by side.
+  // The actions sit INSIDE the card's frame: the row is the frame's last
+  // in-flow child, so nothing can hang over the card's edge.
   const actionRow = box[2]
-  assert.equal(at(actionRow, 'className').includes('absolute'), true, 'the row is placed over the card')
+  const rowClass = String(at(actionRow, 'className'))
+  assert.ok(rowClass.includes('mt-auto'), 'the row is the frame last in-flow child')
+  assert.equal(rowClass.includes('absolute'), false, 'the row does not float over the edge')
   const buttons = findAll(actionRow, el => el.type === 'button')
   assert.equal(buttons.length, 1, 'a card with only an editor offers only Edit')
   const both = findAll(childrenOf(t.ThemeCard(cardProps({ onEdit: () => {}, onDuplicate: () => {} })))[2],
