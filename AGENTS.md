@@ -19,9 +19,15 @@ version lives in `VERSION`. Upstream is a different project now — do not "sync
 `desktop/plugin.template.js` is the **source of truth**. `desktop/plugin.js` is **generated output**.
 
 ```bash
-python scripts/regenerate.py      # after EVERY edit to the template
-node --check desktop/plugin.js    # then prove it parses
+python scripts/regenerate.py                             # after EVERY edit to the template
+"/c/Program Files/nodejs/node" --check desktop/plugin.js # then prove it parses
 ```
+
+**Use the SYSTEM node for the syntax check.** The Hermes-bundled node is first on `PATH`, and its
+`node --check` silently reports success for an ESM file — including one with a deliberate syntax
+error (verified 2026-10-19: `node --check` exit 0 on a build with a missing `})`). The failure then
+surfaces inside the test harness as "Unexpected token" at a line number that belongs to the
+harness's transformed source, not to your file. `node --test` itself is trustworthy; the check is not.
 
 Editing `plugin.js` by hand is always wrong: the next regenerate discards it without a word. A change
 is not shipped until the build has been regenerated, and the template is the only file to review.
