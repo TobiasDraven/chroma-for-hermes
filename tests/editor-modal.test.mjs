@@ -92,10 +92,11 @@ test('the gear is on every card the pane renders, and only the eye cannot see it
   for (const token of ['opacity-0', 'group-hover:opacity-100', 'focus-visible:opacity-100', 'pointer-coarse:opacity-100']) {
     assert.ok(classes.includes(token), 'the gear must carry ' + token)
   }
-  // An SVG, not the host's icon font: a codicon the app does not load renders
-  // as an empty square, and an invisible control is not a control.
-  // The tree keeps the element type on the node, not in props.
-  assert.ok(findAll(gear, el => (el.type || at(el, 'type')) === 'svg').length, 'the gear paints an svg')
+  // A word, not a glyph. Two icon strategies reached the field as an empty
+  // control: a codicon the host did not paint, and an inline SVG the app's JSX
+  // runtime did not paint. Text is the one path both of them share.
+  assert.ok(findAll(gear, el => (el.children === 'Edit') || at(el, 'children') === 'Edit').length,
+    'the gear renders the word Edit')
   assert.equal(findAll(gear, el => String(at(el, 'className')).includes('codicon')).length, 0, 'and no icon font')
 
   // Pressing it opens the editor on THIS scene.

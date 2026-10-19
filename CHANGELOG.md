@@ -9,6 +9,28 @@ The catalogue is rebuilt. This is the release prepared for the public directory.
 
 ### Changed
 
+- **Every icon that failed in the field is a word now.** The card actions read
+  *Edit* and *Fork*; the mode badge reads *Both* / *Dark* / *Light*; the status
+  bar reads the mode it will switch to. Three icon strategies reached a real
+  Desktop as an empty control — a codicon face the host did not paint, an inline
+  SVG the app's JSX runtime did not paint, and a Unicode glyph the font did not
+  carry. Text is the one path all of them share.
+- **The pack manager moved behind a button.** It was a block in the manage panel
+  that rendered "No packs yet" over an empty shelf. The Theme packs dialog owns
+  it now, behind *Manage packs…*, and the gallery keeps the pane for skins.
+- **The pane shows its build.** A small version stamp sits beside the title, so a
+  field report names the build it came from instead of us inferring it.
+
+### Fixed
+
+- **The editor panel was black.** The opaque sheet resolved to its fallback
+  because the CSS variable it read is not defined in the overlay's scope. The
+  surface is now computed from the skin being edited — a real `#rrggbb`, wearing
+  the skin it edits, and impossible to resolve to nothing.
+- **A desktop-only install no longer reports a backend it does not have.** The
+  first backend call came back "not found" and raised a schema notice; one 404
+  now retires the transport for the session, and a missing schema is never news.
+
 - **The pack chips and the category manager moved into modals.** Two buttons in
   the settings row — *Theme packs* and *Categories* — open them, so the gallery
   keeps its height for skins. The rule is unchanged: core is always on, a pack

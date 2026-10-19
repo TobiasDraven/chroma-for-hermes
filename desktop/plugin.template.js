@@ -54,6 +54,9 @@ import { Component, useCallback, useEffect, useMemo, useRef, useState } from 're
 
 let _rest = null
 
+// Replaced with the real version at build time (scripts/regenerate.py).
+const BUILD_STAMP = '2.6.0'
+
 // The Python half is optional: the Desktop half applies and previews themes
 // with no backend at all. When it is absent every backend call throws this exact
 // message, and the UI recognises it so it can say "this Desktop only" instead of
@@ -1249,6 +1252,11 @@ async function fetchEditorSchema() {
       return schema
     }
   } catch (e) {
+    // A desktop-only install has no Python half. The host still hands us a
+    // transport, so the first backend call comes back "not found" — and every
+    // later one would too. One 404 is enough: retire the transport for the
+    // session so no other surface reports a backend that was never installed.
+    if (isMissingRoute(e)) _rest = null
     return null
   }
   return null
@@ -2845,7 +2853,9 @@ function ThemeCardPalette({ lightStrip, darkStrip, shape }) {
 // to sit in, and BENEATH it when it does not (a circle).
 function ThemeCardLabel({ scene, mode, active, localScope, showState, className, edited }) {
   const isActive = scene.name === active
-  const glyph = scene.modeSupport === 'dynamic' ? '⇄' : (scene.modeSupport === 'dark' ? '☾' : '☀')
+  // Words, not glyphs. `⇄` / `☾` / `☀` are not in every font this pane may be
+  // rendered with, and a missing glyph is an empty box on every card at once.
+  const glyph = scene.modeSupport === 'dynamic' ? 'Both' : (scene.modeSupport === 'dark' ? 'Dark' : 'Light')
   const modeClass = mode === 'dark' ? 'text-(--ui-accent)' : 'text-(--ui-warn)'
   const support = scene.modeSupport === 'dynamic' ? mode : scene.modeSupport
   const bit = isActive
@@ -2906,54 +2916,17 @@ function ThemeCardPreviewPill({ scene, previewing, previewUntil, onPreview, onSt
 // the centre of the card belongs to the preview pill.
 const EDIT_GEAR_CLASS = 'absolute bottom-1 left-1/2 z-10 -translate-x-1/2 rounded border border-white/25 bg-black/45 px-1 text-[0.625rem] leading-4 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100'
 
-// Inline SVGs, not the host's icon font. Two card actions shipped as
-// `codicon-*` spans and rendered as empty white squares on a Desktop that does
-// not load the codicon face — a control you cannot see is a control that does
-// not exist, whatever its title says.
-function IconPencil() {
-  return jsx('svg', {
-    viewBox: '0 0 16 16', width: '10', height: '10', fill: 'none',
-    stroke: 'currentColor', strokeWidth: '1.5', strokeLinecap: 'round',
-    strokeLinejoin: 'round', 'aria-hidden': 'true',
-    children: [
-      jsx('path', { key: 'body', d: 'M10.9 2.3 13.7 5.1 5.7 13.1 2.3 13.7 2.9 10.3z' }),
-      jsx('path', { key: 'tip', d: 'M9.5 3.7 12.3 6.5' })
-    ]
-  })
-}
-
-function IconFork() {
-  return jsx('svg', {
-    viewBox: '0 0 16 16', width: '10', height: '10', fill: 'none',
-    stroke: 'currentColor', strokeWidth: '1.5', strokeLinecap: 'round',
-    strokeLinejoin: 'round', 'aria-hidden': 'true',
-    children: [
-      jsx('rect', { key: 'back', x: '5.5', y: '1.5', width: '9', height: '9', rx: '1.5' }),
-      jsx('rect', { key: 'front', x: '1.5', y: '5.5', width: '9', height: '9', rx: '1.5' })
-    ]
-  })
-}
-
-function IconBulb() {
-  return jsx('svg', {
-    viewBox: '0 0 16 16', width: '11', height: '11', fill: 'none',
-    stroke: 'currentColor', strokeWidth: '1.4', strokeLinecap: 'round',
-    strokeLinejoin: 'round', 'aria-hidden': 'true',
-    children: [
-      jsx('path', { key: 'bulb', d: 'M8 1.8a3.9 3.9 0 0 0-2.2 7.1v1.6h4.4V8.9A3.9 3.9 0 0 0 8 1.8z' }),
-      jsx('path', { key: 'base', d: 'M6.3 13.2h3.4' })
-    ]
-  })
-}
-
 function ThemeCardEditGear({ scene, onEdit }) {
   return jsx('button', {
     type: 'button',
     onClick: () => onEdit(scene),
     title: 'Edit this skin: recolour it and save your own override',
     'aria-label': 'Edit ' + (scene.label || scene.name),
-    className: EDIT_GEAR_CLASS,
-    children: IconPencil()
+    className: EDIT_GEAR_CLASS + ' font-medium',
+    // A label, not an icon. The codicon face is not loaded by every Desktop and
+    // this app's JSX runtime does not paint namespaced SVG, so an icon either
+    // arrived as an empty square or did not arrive at all. A word always arrives.
+    children: 'Edit'
   })
 }
 
@@ -2972,8 +2945,8 @@ function ThemeCardDuplicate({ scene, onDuplicate }) {
     onClick: () => onDuplicate(scene),
     title: 'Fork this skin into a new skin you own — the source file is untouched',
     'aria-label': 'Duplicate ' + (scene.label || scene.name),
-    className: EDIT_DUPLICATE_CLASS,
-    children: IconFork()
+    className: EDIT_DUPLICATE_CLASS + ' font-medium',
+    children: 'Fork'
   })
 }
 
@@ -3367,10 +3340,25 @@ function ContrastChip({ ratio, target, label }) {
 }
 
 const EDITOR_OVERLAY_CLASS = 'fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4'
-// The sheet must be OPAQUE. It shipped on `bg-(--ui-bg-secondary)`, a token that
-// resolves to nothing in the overlay's context, so the editor read through to
-// the gallery behind it. `--card` is part of the app's guaranteed surface.
-const EDITOR_SHEET_STYLE = { backgroundColor: 'var(--card, #1b1f27)' }
+/** The opaque surface a dialog sits on, as a real colour.
+ *
+ *  Two attempts failed before this one. `bg-(--ui-bg-secondary)` resolved to
+ *  nothing in the overlay's context, so the editor read straight through to the
+ *  gallery; `var(--card, #1b1f27)` then resolved to its fallback, and the panel
+ *  went black. A CSS variable is a promise about a scope we do not own. A colour
+ *  computed from the skin being edited cannot fail, and it is the honest one:
+ *  the editor wears the skin it is editing. */
+function sheetSurface(scene, mode) {
+  try {
+    const theme = scene ? sceneToDesktopTheme(scene) : null
+    const palette = theme ? (mode === 'dark' ? theme.darkColors : theme.colors) : null
+    const colour = palette && (palette.card || palette.background)
+    if (typeof colour === 'string' && /^#[0-9a-f]{6}$/i.test(colour)) return colour
+  } catch (e) {
+    // A malformed skin must not stop the editor opening.
+  }
+  return '#20232b'
+}
 const EDITOR_SHEET_CLASS = 'mt-6 flex max-h-[80vh] w-full max-w-2xl flex-col gap-2 overflow-hidden rounded-lg border border-(--ui-stroke-secondary) p-3 shadow-xl'
 const EDITOR_PREVIEW_CLASS = 'flex h-14 w-full shrink-0 overflow-hidden rounded-[4px]'
 const EDITOR_ROW_CLASS = 'flex items-start gap-2'
@@ -3443,7 +3431,7 @@ function packTitleOf(id) {
 /** A modal shell: the same overlay and the same opaque sheet the editor uses, so
  *  every dialog in the plugin looks and behaves alike. Escape and a click on the
  *  backdrop close it; the header always carries a real Close button. */
-function ModalShell({ title, subtitle, onClose, children }) {
+function ModalShell({ title, subtitle, surface, onClose, children }) {
   return jsx('div', {
     className: EDITOR_OVERLAY_CLASS,
     role: 'dialog',
@@ -3453,7 +3441,7 @@ function ModalShell({ title, subtitle, onClose, children }) {
     onKeyDown: event => { if (event && event.key === 'Escape' && onClose) onClose() },
     children: jsxs('div', {
       className: EDITOR_SHEET_CLASS,
-      style: EDITOR_SHEET_STYLE,
+      style: { backgroundColor: surface || '#20232b' },
       children: [
         jsxs('div', { key: 'head', className: 'flex items-start justify-between gap-2', children: [
           jsxs('div', { className: 'min-w-0', children: [
@@ -3478,10 +3466,12 @@ function ModalShell({ title, subtitle, onClose, children }) {
 
 /** Which packs the gallery shows. The chips lived in a strip under the search
  *  field and ate the pane; the rule did not change, only where it is set. */
-function PackPickerModal({ packIds, packTotals, enabledPacks, hidden, onToggle, onClose }) {
+function PackPickerModal({ packIds, packTotals, enabledPacks, hidden, onToggle, surface, management, onClose }) {
+  const [managing, setManaging] = useState(false)
   return jsx(ModalShell, {
     title: 'Theme packs',
     subtitle: 'Core is always on. A pack adds its own skins; nothing is deleted.',
+    surface,
     onClose,
     children: jsxs('div', { className: 'flex flex-col gap-1.5', children: [
       jsx('div', {
@@ -3518,18 +3508,33 @@ function PackPickerModal({ packIds, packTotals, enabledPacks, hidden, onToggle, 
         key: 'hidden',
         className: 'pt-1 text-[0.625rem] text-(--ui-text-tertiary)',
         children: hidden + (hidden === 1 ? ' skin hidden by these packs' : ' skins hidden by these packs')
-      }) : null
+      }) : null,
+      // Management lives one level deeper still: the pane shows skins, the pack
+      // dialog shows packs, this shows the pack files. Nothing renders until it
+      // is asked for.
+      management ? jsxs('div', { key: 'manage', className: 'mt-2 border-t border-(--ui-stroke-secondary) pt-2', children: [
+        jsx('button', {
+          key: 'toggle',
+          type: 'button',
+          onClick: () => setManaging(prev => !prev),
+          'aria-expanded': managing ? 'true' : 'false',
+          className: MANAGE_BUTTON_CLASS,
+          children: managing ? 'Hide pack management' : 'Manage packs…'
+        }),
+        managing ? jsx('div', { key: 'body', className: 'pt-2', children: management }) : null
+      ]}) : null
     ]})
   })
 }
 
 /** The user's own shelves. The twelve measured families are read-only and are
  *  listed for orientation; the user's shelves can be created and dropped here. */
-function CategoryModal({ categories, busy, name, title, onName, onTitle, onCreate, onDelete, onClose }) {
+function CategoryModal({ categories, busy, name, title, onName, onTitle, onCreate, onDelete, surface, onClose }) {
   const list = Array.isArray(categories) ? categories : []
   return jsx(ModalShell, {
     title: 'Categories',
     subtitle: 'The twelve colour families are measured and fixed. These are your own shelves.',
+    surface,
     onClose,
     children: jsxs('div', { className: 'flex flex-col gap-2', children: [
       jsx('div', { key: 'builtins', className: 'flex flex-wrap gap-1', children:
@@ -3651,7 +3656,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
     onKeyDown: event => { if (event && event.key === 'Escape' && onClose) onClose() },
     children: jsxs('div', {
       className: EDITOR_SHEET_CLASS,
-      style: EDITOR_SHEET_STYLE,
+      style: { backgroundColor: sheetSurface(effective, mode) },
       children: [
         jsxs('div', { key: 'head', className: 'flex items-start justify-between gap-2', children: [
           jsxs('div', { className: 'min-w-0', children: [
@@ -4192,10 +4197,10 @@ function ThemePicker() {
     fetchEditorSchema().then(next => {
       if (!alive) return
       if (!next) {
-        if (!schemaNoted.current && hasGatewayBackend()) {
-          schemaNoted.current = true
-          host.notify(schemaMissingNotice())
-        }
+        // No backend, or a route that answered nothing useful. The editor has a
+        // documented default pair and works without the schema, so this is not
+        // news and it is not an error. A desktop-only install must never see a
+        // backend complaint for a backend it deliberately did not install.
         return
       }
       setSchema(next)
@@ -4933,6 +4938,111 @@ function ThemePicker() {
   const activeColors = activeScene && ((mode === 'dark' ? activeScene.darkColors : activeScene.lightColors) || activeScene.colors)
   const editingScene = editing ? (allSkins.find(scene => scene.name === editing.name) || null) : null
 
+  // The dialog surface is the skin the pane is showing, so a modal can never
+  // come up on a colour that resolves to nothing.
+  const modalSurface = sheetSurface(editingScene || activeScene || SKINS[0], mode)
+
+  // Pack management was a block in the manage panel that sat in the pane even
+  // with nothing in it. It is a dialog's job now: the Theme packs modal owns it,
+  // behind a Manage button, and the gallery keeps the whole pane for skins.
+  const packManagerNode =           jsxs('div', { key: 'packs', className: PACK_SECTION_CLASS, children: [
+      jsxs('div', { key: 'head', className: 'flex flex-wrap items-center justify-between gap-2', children: [
+        jsxs('div', { className: 'flex items-center gap-2', children: [
+          jsx('span', { className: 'text-[0.6875rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)', children: 'Packs' }),
+          jsx(Badge, { variant: 'muted', children: packCountLabel(packs) })
+        ]}),
+        jsxs('div', { className: 'flex min-w-0 items-center gap-1', children: [
+          jsx('input', {
+            type: 'text',
+            value: packName,
+            placeholder: 'pack name',
+            title: 'Name for the pack you save from the current filter (a slug)',
+            onChange: e => setPackName(e && e.target ? e.target.value : ''),
+            className: 'h-6 w-28 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 font-mono text-[0.625rem]'
+          }),
+          jsx('button', {
+            type: 'button',
+            disabled: packBusy,
+            onClick: exportPackFromFilter,
+            title: 'Save the skins matching the current filter as a pack bundle',
+            className: MANAGE_BUTTON_CLASS,
+            children: packBusy ? 'Working…' : 'Save filter as pack'
+          }),
+          jsx('button', {
+            type: 'button',
+            onClick: () => setImportOpen(v => !v),
+            className: MANAGE_BUTTON_CLASS,
+            children: importOpen ? 'Close import' : 'Import pack'
+          })
+        ]})
+      ]}),
+      jsx(PackList, { packs, busy: packBusy, onExport: exportPack, onDelete: askDeletePack }),
+      importOpen
+        ? jsxs('div', { key: 'import', className: 'flex flex-col gap-1', children: [
+            jsx('textarea', {
+              className: 'rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-2 py-1 font-mono text-[0.6875rem]',
+              rows: 4,
+              placeholder: 'Paste a Chroma pack bundle (JSON) here',
+              value: packText,
+              onChange: e => setPackText(e && e.target ? e.target.value : '')
+            }),
+            jsxs('div', { className: 'flex flex-wrap items-center gap-1', children: [
+              jsx('button', {
+                type: 'button',
+                disabled: packBusy || !packText.trim(),
+                onClick: previewPackImport,
+                title: 'Check what this bundle would do — nothing is written yet',
+                className: MANAGE_BUTTON_CLASS,
+                children: packBusy ? 'Checking…' : 'Preview import'
+              }),
+              packGroups
+                ? jsx('button', {
+                    type: 'button',
+                    disabled: packBusy,
+                    onClick: confirmPackImport,
+                    className: EDITOR_SAVE_CLASS,
+                    children: packBusy ? 'Importing…' : 'Confirm import'
+                  })
+                : null,
+              packGroups
+                ? jsx('button', {
+                    type: 'button',
+                    onClick: () => { setPackGroups(null); setPackBundle(null); setPackChoices({}) },
+                    className: MANAGE_BUTTON_CLASS,
+                    children: 'Cancel'
+                  })
+                : null
+            ]}),
+            packGroups ? jsx(PackImportPreview, { groups: packGroups, choices: packChoices, onChoice: chooseCollision }) : null,
+            packGroups ? jsx('div', { className: 'text-[0.5625rem] text-(--ui-text-tertiary)', children: 'Nothing is written until you confirm. A collision you leave as a rename is written under that new name; a skipped one is left alone.' }) : null
+          ]})
+        : null,
+      packConfirm
+        ? jsxs('div', { key: 'confirm', className: 'flex flex-col gap-1 rounded border border-(--ui-error) p-2', children: [
+            jsx('div', { className: 'text-[0.625rem] text-(--ui-error)', children: packDeleteNotice(packConfirm.pack, packConfirm.withSkins).title }),
+            jsx('div', { className: 'text-[0.5625rem] text-(--ui-text-tertiary)', children: packDeleteNotice(packConfirm.pack, packConfirm.withSkins).message }),
+            jsxs('div', { className: 'flex flex-wrap items-center gap-2', children: [
+              jsx('label', { className: 'flex items-center gap-1 text-[0.5625rem] text-(--ui-text-secondary)', children: [
+                jsx('input', {
+                  type: 'checkbox',
+                  checked: !!packConfirm.withSkins,
+                  onChange: e => setPackConfirm(prev => prev ? safeMerge(prev, { withSkins: !!(e && e.target && e.target.checked) }) : prev)
+                }),
+                'and the skins it names'
+              ]}),
+              jsx('button', {
+                type: 'button',
+                disabled: packBusy,
+                onClick: confirmDeletePack,
+                className: 'shrink-0 rounded border border-(--ui-error) px-1 py-0.5 text-[0.625rem] text-(--ui-error)',
+                children: packBusy ? 'Deleting…' : packDeleteNotice(packConfirm.pack, packConfirm.withSkins).confirm
+              }),
+              jsx('button', { type: 'button', onClick: cancelDeletePack, className: MANAGE_BUTTON_CLASS, children: 'Cancel' })
+            ]})
+          ]})
+        : null
+    ]})
+
   return jsxs('div', {
     className: 'flex h-full min-h-0 flex-col',
     children: [
@@ -4942,7 +5052,12 @@ function ThemePicker() {
           jsxs('div', {
             className: 'flex items-center justify-between gap-2',
             children: [
-              jsx('div', { className: 'text-sm font-semibold', children: 'Chroma' }),
+              jsxs('div', { className: 'flex items-baseline gap-1.5', children: [
+                jsx('div', { key: 'n', className: 'text-sm font-semibold', children: 'Chroma' }),
+                // Which build is on screen. A field report can then name it
+                // instead of us inferring it from symptoms.
+                jsx('span', { key: 'v', title: 'Loaded build', className: 'rounded border border-(--ui-stroke-secondary) px-1 text-[0.5625rem] text-(--ui-text-tertiary)', children: BUILD_STAMP })
+              ]}),
               jsxs('div', {
                 className: 'flex min-w-0 items-center gap-1.5',
                 children: [
@@ -5093,103 +5208,6 @@ function ThemePicker() {
           // The category manager lives in its own modal now (see the Categories
           // button in the settings row); the manage panel keeps the pack
           // scaffolding, which is a different job.
-          jsxs('div', { key: 'packs', className: PACK_SECTION_CLASS, children: [
-            jsxs('div', { key: 'head', className: 'flex flex-wrap items-center justify-between gap-2', children: [
-              jsxs('div', { className: 'flex items-center gap-2', children: [
-                jsx('span', { className: 'text-[0.6875rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)', children: 'Packs' }),
-                jsx(Badge, { variant: 'muted', children: packCountLabel(packs) })
-              ]}),
-              jsxs('div', { className: 'flex min-w-0 items-center gap-1', children: [
-                jsx('input', {
-                  type: 'text',
-                  value: packName,
-                  placeholder: 'pack name',
-                  title: 'Name for the pack you save from the current filter (a slug)',
-                  onChange: e => setPackName(e && e.target ? e.target.value : ''),
-                  className: 'h-6 w-28 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 font-mono text-[0.625rem]'
-                }),
-                jsx('button', {
-                  type: 'button',
-                  disabled: packBusy,
-                  onClick: exportPackFromFilter,
-                  title: 'Save the skins matching the current filter as a pack bundle',
-                  className: MANAGE_BUTTON_CLASS,
-                  children: packBusy ? 'Working…' : 'Save filter as pack'
-                }),
-                jsx('button', {
-                  type: 'button',
-                  onClick: () => setImportOpen(v => !v),
-                  className: MANAGE_BUTTON_CLASS,
-                  children: importOpen ? 'Close import' : 'Import pack'
-                })
-              ]})
-            ]}),
-            jsx(PackList, { packs, busy: packBusy, onExport: exportPack, onDelete: askDeletePack }),
-            importOpen
-              ? jsxs('div', { key: 'import', className: 'flex flex-col gap-1', children: [
-                  jsx('textarea', {
-                    className: 'rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-2 py-1 font-mono text-[0.6875rem]',
-                    rows: 4,
-                    placeholder: 'Paste a Chroma pack bundle (JSON) here',
-                    value: packText,
-                    onChange: e => setPackText(e && e.target ? e.target.value : '')
-                  }),
-                  jsxs('div', { className: 'flex flex-wrap items-center gap-1', children: [
-                    jsx('button', {
-                      type: 'button',
-                      disabled: packBusy || !packText.trim(),
-                      onClick: previewPackImport,
-                      title: 'Check what this bundle would do — nothing is written yet',
-                      className: MANAGE_BUTTON_CLASS,
-                      children: packBusy ? 'Checking…' : 'Preview import'
-                    }),
-                    packGroups
-                      ? jsx('button', {
-                          type: 'button',
-                          disabled: packBusy,
-                          onClick: confirmPackImport,
-                          className: EDITOR_SAVE_CLASS,
-                          children: packBusy ? 'Importing…' : 'Confirm import'
-                        })
-                      : null,
-                    packGroups
-                      ? jsx('button', {
-                          type: 'button',
-                          onClick: () => { setPackGroups(null); setPackBundle(null); setPackChoices({}) },
-                          className: MANAGE_BUTTON_CLASS,
-                          children: 'Cancel'
-                        })
-                      : null
-                  ]}),
-                  packGroups ? jsx(PackImportPreview, { groups: packGroups, choices: packChoices, onChoice: chooseCollision }) : null,
-                  packGroups ? jsx('div', { className: 'text-[0.5625rem] text-(--ui-text-tertiary)', children: 'Nothing is written until you confirm. A collision you leave as a rename is written under that new name; a skipped one is left alone.' }) : null
-                ]})
-              : null,
-            packConfirm
-              ? jsxs('div', { key: 'confirm', className: 'flex flex-col gap-1 rounded border border-(--ui-error) p-2', children: [
-                  jsx('div', { className: 'text-[0.625rem] text-(--ui-error)', children: packDeleteNotice(packConfirm.pack, packConfirm.withSkins).title }),
-                  jsx('div', { className: 'text-[0.5625rem] text-(--ui-text-tertiary)', children: packDeleteNotice(packConfirm.pack, packConfirm.withSkins).message }),
-                  jsxs('div', { className: 'flex flex-wrap items-center gap-2', children: [
-                    jsx('label', { className: 'flex items-center gap-1 text-[0.5625rem] text-(--ui-text-secondary)', children: [
-                      jsx('input', {
-                        type: 'checkbox',
-                        checked: !!packConfirm.withSkins,
-                        onChange: e => setPackConfirm(prev => prev ? safeMerge(prev, { withSkins: !!(e && e.target && e.target.checked) }) : prev)
-                      }),
-                      'and the skins it names'
-                    ]}),
-                    jsx('button', {
-                      type: 'button',
-                      disabled: packBusy,
-                      onClick: confirmDeletePack,
-                      className: 'shrink-0 rounded border border-(--ui-error) px-1 py-0.5 text-[0.625rem] text-(--ui-error)',
-                      children: packBusy ? 'Deleting…' : packDeleteNotice(packConfirm.pack, packConfirm.withSkins).confirm
-                    }),
-                    jsx('button', { type: 'button', onClick: cancelDeletePack, className: MANAGE_BUTTON_CLASS, children: 'Cancel' })
-                  ]})
-                ]})
-              : null
-          ]})
         ]
       }),
       jsx(ScrollArea, {
@@ -5265,6 +5283,8 @@ function ThemePicker() {
             enabledPacks,
             hidden: hiddenByPacks,
             onToggle: togglePack,
+            surface: modalSurface,
+            management: packManagerNode,
             onClose: () => setPacksOpen(false)
           })
         : null,
@@ -5279,6 +5299,7 @@ function ThemePicker() {
             onTitle: setCategoryTitle,
             onCreate: handleCreateCategory,
             onDelete: handleDeleteCategory,
+            surface: modalSurface,
             onClose: () => setCategoriesOpen(false)
           })
         : null,
@@ -5354,7 +5375,9 @@ function ThemeChip() {
         onClick: toggleMode,
         title: `Switch to ${mode === 'light' ? 'dark' : 'light'} mode`,
         className: 'flex h-full items-center px-1 text-[0.6875rem] text-(--ui-text-secondary) transition-colors hover:bg-(--chrome-action-hover) hover:text-foreground',
-        children: IconBulb()
+        // The target mode, as a word. The glyph it used to carry was a codicon
+        // that painted as an empty box wherever that font is not loaded.
+        children: mode === 'light' ? 'Dark' : 'Light'
       }) : null
     ]
   })

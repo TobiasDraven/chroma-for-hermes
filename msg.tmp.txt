@@ -1,0 +1,30 @@
+fix(ui): words where icons vanished, a computed dialog surface, and silence without a backend
+
+Four field reports from the G15, each traced to its cause rather than patched at
+the symptom.
+
+Icons. The card actions rendered as white squares, then rendered as nothing.
+Both failures are the same shape: a control whose only content is a glyph the
+renderer could not paint - a codicon face, then a namespaced SVG. They read Edit
+and Fork now, the mode badge reads Both/Dark/Light instead of an arrow the font
+may not carry, and the status bar names the mode it switches to. Text is the one
+rendering path every Desktop shares.
+
+The black editor. The sheet was painted with var(--card, #1b1f27); the variable
+is not defined in the overlay's scope, so the fallback won and the panel went
+black. A variable is a promise about a scope we do not own. The surface is now
+computed from the skin being edited - a real hex colour, wearing the skin it
+edits, and unable to resolve to nothing. The two dialogs share it.
+
+The schema route error. A desktop-only install has no Python half, but the host
+still hands the plugin a transport, so the first call came back not-found and we
+raised a notice for a backend the user deliberately did not install. One 404 now
+retires the transport for the session and a missing schema is never news.
+
+The packs block. It rendered an empty-pack note in the pane over an empty shelf.
+Management moved into the Theme packs dialog behind Manage packs..., so the pane
+holds skins and nothing else.
+
+Also: a build stamp beside the title, so the next report names its build.
+
+JS 234/234, backend 179 passed / 4 skipped, check-packs OK, validate passes.
