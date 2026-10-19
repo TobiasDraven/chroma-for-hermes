@@ -115,8 +115,7 @@ and a gate that everyone knows is red stops being a gate.
 ```bash
 python scripts/regenerate.py                     # after any template edit
 node --test tests/*.test.mjs                    # node suites
-<venv>/python.exe -m unittest tests.test_plugin_api
-<venv>/python.exe -m unittest tests.test_skin_contract
+<venv>/python.exe -m pytest tests/ -q            # all three Python suites (CI runs this)
 hermes plugins validate .                        # plugin admission gate (local only)
 python scripts/check-package.py                  # package contract (CI runs this too)
 python scripts/check-packs.py                    # catalogue contract

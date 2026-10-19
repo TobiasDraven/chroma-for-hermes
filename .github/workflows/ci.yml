@@ -32,7 +32,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install backend dependencies
-        run: pip install fastapi PyYAML
+        run: pip install fastapi PyYAML pytest
 
       # check-packs.py imports PyYAML at module scope, so it runs after the
       # interpreter and its dependency exist. The data contract is a gate: a
@@ -41,14 +41,13 @@ jobs:
       - name: The catalogue obeys its own contract
         run: python scripts/check-packs.py
 
-      - name: Backend tests (plugin API)
-        run: python -m unittest tests.test_plugin_api
-
-      - name: Generator tests
-        run: python -m unittest tests.test_regenerate
-
-      - name: Skin-contract tests
-        run: python -m unittest tests.test_skin_contract
+      # One runner for all three suites, because that is the command the repo
+      # documents. The previous shape ran each suite through `unittest` while
+      # `tests/test_skin_contract.py` imports pytest at module scope: CI could
+      # neither run it nor install its runner, so 2.7.0's central guarantee was
+      # green locally and unenforced on every push.
+      - name: Python suites
+        run: python -m pytest tests/ -q
 
   build-is-current:
     # desktop/plugin.js is committed because the installer loads it, so a
