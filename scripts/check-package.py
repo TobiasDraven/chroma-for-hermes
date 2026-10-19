@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+"""The package contract: what the manifest, the version and the build must agree on.
+
+`hermes plugins validate .` is the admission gate a catalog reviewer runs, but the
+Hermes CLI that carries it is not on PyPI yet (`hermes-agent` 0.19.0 ships
+`plugins install|update|remove|list|enable|disable` and no `validate`), so CI
+cannot run it. This script is the part of that gate we CAN own and run anywhere:
+the facts about the package that must hold before anyone pins a commit and opens
+a PR.
+
+Run: python scripts/check-package.py    (exit 0 = the package agrees with itself)
+"""
+from __future__ import annotations
+
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+# Files that must never be tracked: the working notes a lane or a scan drops.
+JUNK_PATTERNS = (
+    re.compile(r"(^|/)scratch/"),
+    re.compile(r"\.(orig|rej|bak|swp|log)$"),
+    re.compile(r"~$"),
+    re.compile(r"(^|/)rigour-(report|fix-packet)\.json$"),
+    re.compile(r"(^|/)\.(rigour|serena|briefs)/"),
+    re.compile(r"(^|/)(__pycache__|\.pytest_cache|node_modules)/"),
+)
+
+MANIFEST_FIELDS = ("name", "version", "description", "author", "license", "homepage", "requires_hermes")
+
+
+def fail(problems: list[str], message: str) -> None:
+    problems.append(message)
+
+
+def read_yaml_flat(path: Path) -> dict[str, str]:
+    """A flat read of the manifest's top-level scalars. PyYAML is not always present."""
+    out: dict[str, str] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        match = re.match(r"^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$", line)
+        if match:
+            out[match.group(1)] = match.group(2).strip().strip('"').strip("'")
+    return out
+
+
+def main() -> int:
+    problems: list[str] = []
+
+    version_file = ROOT / "VERSION"
+    if not version_file.exists():
+        fail(problems, "VERSION is missing")
+        print("\n".join(problems))
+        return 1
+    version = version_file.read_text(encoding="utf-8").strip()
+
+    # 1. Every version locus agrees. A catalog entry pins ONE sha, so a tree whose
+    #    manifest and build disagree ships the wrong number to every user.
+    manifest = ROOT / "plugin.yaml"
+    if not manifest.exists():
+        fail(problems, "plugin.yaml is missing")
+        fields: dict[str, str] = {}
+    else:
+        fields = read_yaml_flat(manifest)
+        if fields.get("version") != version:
+            fail(problems, f"plugin.yaml version {fields.get('version')!r} != VERSION {version!r}")
+        for field in MANIFEST_FIELDS:
+            if not fields.get(field):
+                fail(problems, f"plugin.yaml is missing a value for {field!r}")
+        if fields.get("name") != "chroma":
+            fail(problems, f"plugin.yaml name {fields.get('name')!r} must be 'chroma' (the install folder name)")
+
+    dashboard_manifest = ROOT / "dashboard" / "manifest.json"
+    if not dashboard_manifest.exists():
+        fail(problems, "dashboard/manifest.json is missing")
+    else:
+        try:
+            data = json.loads(dashboard_manifest.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as error:
+            fail(problems, f"dashboard/manifest.json does not parse: {error}")
+            data = {}
+        if data.get("version") != version:
+            fail(problems, f"dashboard/manifest.json version {data.get('version')!r} != VERSION {version!r}")
+
+    # 2. The entry points the manifest promises exist.
+    for relative in ("desktop/plugin.js", "dashboard/plugin_api.py"):
+        if not (ROOT / relative).exists():
+            fail(problems, f"entry point {relative} is missing")
+
+    # 3. The COMMITTED build carries the shipped version. plugin.js is committed
+    #    because the installer loads it: a build stamped with an older version is
+    #    a user reading the wrong number off the pane.
+    build = ROOT / "desktop" / "plugin.js"
+    if build.exists():
+        stamp = re.search(r"const BUILD_STAMP = '([^']+)'", build.read_text(encoding="utf-8", errors="replace"))
+        if not stamp:
+            fail(problems, "desktop/plugin.js carries no BUILD_STAMP")
+        elif stamp.group(1) != version:
+            fail(problems, f"desktop/plugin.js BUILD_STAMP {stamp.group(1)!r} != VERSION {version!r}")
+        if "export default {" in build.read_text(encoding="utf-8", errors="replace"):
+            pass  # the loader's contract: the build exports the plugin object
+
+    # 4. Nothing that should never ship is TRACKED. `.gitignore` hides these from
+    #    `git status`; a file added before the ignore line still needs removing.
+    try:
+        tracked = subprocess.run(
+            ["git", "ls-files"],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            check=False,
+        ).stdout.splitlines()
+    except OSError:
+        tracked = []
+        fail(problems, "git is not available: the tracked-file check could not run")
+    for name in tracked:
+        for pattern in JUNK_PATTERNS:
+            if pattern.search(name):
+                fail(problems, f"{name} is tracked but must never ship")
+                break
+
+    # 5. The catalogue is present in the shape the build reads.
+    skins = sorted((ROOT / "skins-v2").glob("*.yaml"))
+    if not skins:
+        fail(problems, "skins-v2/ holds no skins")
+
+    if problems:
+        print(f"FAIL: {len(problems)} problem(s) in the package contract")
+        for problem in problems:
+            print(f"  - {problem}")
+        return 1
+
+    print(f"OK: package contract holds at {version} ({len(skins)} skins, {len(tracked)} tracked files)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -107,9 +107,16 @@ Rules that shape those values:
 > are the upstream authors' MIT work; see `THIRD_PARTY_NOTICES.md`.
 >
 > **Evidence:** `hermes plugins validate .` passes every check including
-> `security scan — safe`; 228 JS tests, 179 backend tests, 16 generator tests and
-> the catalogue contract gate are green; the build is reproducible from a clean
-> checkout (byte-identical `plugin.js` and 188 transports).
+> `security scan — safe`; 242 JS tests, 164 backend tests + 5 skin-contract tests,
+> 16 generator tests (19 collected, 3 skipped) and the catalogue and package
+> contract gates are green; the build is reproducible from a clean checkout
+> (byte-identical `plugin.js` and 188 transports).
+>
+> The admission gate is a LOCAL check: the Hermes CLI is not on PyPI
+> (`hermes-agent` 0.19.0 has no `validate` subcommand), so CI runs
+> `scripts/check-package.py` instead — the same facts, without the CLI. Verify with
+> `hermes plugins validate .` on the machine that carries the CLI before opening
+> the PR.
 
 ## Procedure
 

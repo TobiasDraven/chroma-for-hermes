@@ -47,6 +47,9 @@ jobs:
       - name: Generator tests
         run: python -m unittest tests.test_regenerate
 
+      - name: Skin-contract tests
+        run: python -m unittest tests.test_skin_contract
+
   build-is-current:
     # desktop/plugin.js is committed because the installer loads it, so a
     # template edit that was never regenerated would ship stale code. Rebuilding
@@ -64,6 +67,14 @@ jobs:
 
       - name: The catalogue obeys its own contract
         run: python scripts/check-packs.py
+
+      # `hermes plugins validate .` is the catalog admission gate, but the Hermes
+      # CLI is not installable from PyPI yet (hermes-agent 0.19.0 ships no
+      # `validate` subcommand), so CI cannot run that exact check. This script owns
+      # the part of the gate that needs no CLI: every version locus, the manifest
+      # fields, the entry points, the committed build's stamp, and tracked junk.
+      - name: The package agrees with itself
+        run: python scripts/check-package.py
 
       - name: Rebuild the shipped plugin
         run: python scripts/regenerate.py

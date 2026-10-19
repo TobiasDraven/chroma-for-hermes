@@ -65,7 +65,10 @@ install/                  platform installers for the plugin
    and dependency-free — that is why the parsers are tables and regexes, not libraries.
 2. **Plain, uncompiled ESM.** No JSX syntax: build elements with `jsx()` / `jsxs()` calls. No build step
    other than `regenerate.py`, which only substitutes data.
-3. **Preserve CRLF** in the template and the generated build.
+3. **Line endings are normalised, not preserved.** `.gitattributes` sets `* text=auto eol=lf`, and
+   `regenerate.py` writes the build with LF. The template may be CRLF in your working tree; the
+   committed build is LF. An earlier version of this section said "preserve CRLF" — `.gitattributes`
+   and the generator have the last word, so do not chase a CRLF diff.
 4. **Two classes of localStorage key may be written, and no others.** (a) Chroma's own `chroma-*` keys.
    (b) The app's own appearance keys the code already reads and writes — the `hermes-desktop-*`
    theme/mode/profile keys and the `hermes-boot-*` boot hints (`desktop/plugin.template.js:69-73`).

@@ -79,6 +79,11 @@ is now a matrix over `ubuntu-latest`, `macos-latest`, `windows-latest`, runs bot
 Python suites, and adds a `build-is-current` job that rebuilds and fails on any
 diff to `desktop/plugin.js`, `gateway-skins/`, or `docs/DERIVED-PALETTES.md`.
 
+**Corrected 2026-10-19 by the readiness audit:** the matrix now runs a *third*
+Python suite (`tests/test_skin_contract.py`, added with 2.7.0 and unenforced until
+now) plus `scripts/check-package.py`. `hermes plugins validate .` remains
+local-only — the CLI is not installable from PyPI, so no runner can carry it.
+
 ### 2.6 Documentation and licence accuracy
 
 - `README` claimed **Python 3.8+**; the generator calls `str.removeprefix`

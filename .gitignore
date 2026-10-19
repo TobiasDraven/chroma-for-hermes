@@ -29,3 +29,11 @@ rigour-fix-packet.json
 
 # Local scratch
 cache/
+# Lane and audit working notes, and editor/merge leftovers. `scratch/` is a real
+# hazard: git does not report an empty directory, so it hides until it is not empty.
+scratch/
+*.orig
+*.rej
+*.bak
+*.swp
+*~
