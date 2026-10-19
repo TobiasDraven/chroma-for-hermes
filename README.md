@@ -127,7 +127,13 @@ Double-click `install/install-macos.command`, or run:
 
 If macOS blocks the downloaded script, right-click it and choose **Open**, or
 run `sh install/install-macos.command`. The installer uses `$HERMES_HOME` when
-set and otherwise installs under `~/.hermes`.
+set and otherwise installs under `~/.hermes`, with the same package layout as
+the Windows script.
+
+> The Windows installer has been walked end to end on Windows 11: both modes
+> install a directory that passes `hermes plugins validate`. The macOS script is
+> written against the same layout and checked for shell syntax, but it has not
+> been run on a Mac. If it fails, the manual layout below is the fallback.
 
 ### Linux or manual installation (Desktop half only)
 
