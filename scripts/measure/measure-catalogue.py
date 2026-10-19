@@ -1,9 +1,19 @@
-"""Measure the shipped catalogue so the guiding document quotes facts, not vibes."""
+"""Measure the shipped catalogue so the guiding document quotes facts, not vibes.
+
+Usage:
+    python scripts/measure/measure-catalogue.py > /tmp/catalogue.json
+
+Reads skins-v2/, prints one JSON object holding per-surface quantiles for both modes
+(OKLCH L and C) plus the contrast spread for text, quiet text and borders.
+"""
 
 import glob
 import json
+import math
 import statistics as st
-from colorsys import rgb_to_hls
+from pathlib import Path
+
+import yaml
 
 
 def hex_to_rgb(value):
@@ -32,7 +42,6 @@ def oklab(rgb):
 
 def oklch(value):
     L, a, b = oklab(hex_to_rgb(value))
-    import math
     return L, math.hypot(a, b), (math.degrees(math.atan2(b, a)) % 360)
 
 
@@ -63,8 +72,8 @@ SURFACES = ['background', 'status_bar_bg', 'ui_text', 'banner_dim', 'ui_accent',
             'ui_border', 'ui_ok', 'ui_warn', 'ui_error', 'selection_bg']
 
 rows = []
-for path in sorted(glob.glob('skins-v2/*.yaml')):
-    import yaml
+ROOT = Path(__file__).resolve().parents[2]
+for path in sorted(glob.glob(str(ROOT / 'skins-v2' / '*.yaml'))):
     data = yaml.safe_load(open(path, encoding='utf-8'))
     entry = {'name': data['name'], 'pack': data['pack'], 'category': data['category']}
     for mode, key in (('light', 'light_colors'), ('dark', 'dark_colors')):
@@ -98,5 +107,4 @@ stats['missing_surfaces'] = {
     for mode in ('light', 'dark') for surface in SURFACES
 }
 stats['skins'] = len(rows)
-json.dump({'stats': stats, 'rows': rows}, open('cache/scratch/measure.json', 'w'), indent=1)
-print(json.dumps(stats, indent=1)[:3000])
+print(json.dumps({'stats': stats, 'rows': rows}, indent=1))

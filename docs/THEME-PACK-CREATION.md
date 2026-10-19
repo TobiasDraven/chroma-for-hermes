@@ -524,4 +524,5 @@ Contrast, as an advisory measure rather than a gate (five skins fail; see §12):
 - OKLCH picker and conversion: <https://oklch.com>
 - CSS Color 4, `oklch()`: <https://www.w3.org/TR/css-color-4/#ok-lab>
 - APCA (draft): <https://w3c.github.io/APCA/>
-- Our own measurements: `cache/scratch/measure.py` over `skins-v2/`, 2026-10-19.
+- Our own measurements: `scripts/measure/measure-catalogue.py` over `skins-v2/`,
+  2026-10-19. Run it to re-derive every figure quoted here.
