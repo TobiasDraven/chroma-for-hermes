@@ -77,16 +77,17 @@ Two rules make that exact, and both were found the hard way:
 - A **derived** half is emitted whole (27 roles); an **authored** half is
   compacted to `KEEP_KEYS` on load. Compacting both broke 40 skins.
 
-### 4.3 Open — a ported half carries 27 of 43 roles
+### 4.3 Resolved — the 16 missing roles are completed at P6
 
 40 skins ship a ported half that lacks 16 roles (`diff_*`, `syntax_*`,
 `voice_status_bg`, `selection_bg`…). The picker never reads them, so nothing on
-screen is wrong today. Two honest options for P2:
+screen is wrong today.
 
-- **Accept**: the file records what ships, and the gap is documented.
-- **Complete**: port the remaining 16 with the same rule. Deterministic, not
-  invented — but it puts colour into files that never had it, so it is a
-  decision, not a cleanup.
+**Captain's decision (2026-10-19): accept now, complete at P6** — after the full
+colour-science redesign, so the missing roles are filled by the new rules rather
+than by the old ones.
+
+The migration therefore records exactly what ships. Nothing is invented in P2.
 
 ## 5. Phases
 
@@ -97,7 +98,7 @@ screen is wrong today. Two honest options for P2:
 | P3 | **Generator** — delete `THEME_PAIRS` (55 hardcoded pairs), delete `_port_palette` from the build path, delete pair collapsing | the build does one thing: file in, card out |
 | P4 | **Backend vocabulary** — one concept: `/skins/{name}` and its override; the separate `/overrides/{scene}` surface folds in | no route mentions a scene |
 | P5 | **Rename sweep** — 424 occurrences in the template, 77 in the generator, 52 in the backend, 8 test files | `grep -ri scene` in shipped code returns nothing |
-| P6 | **Taxonomy + packs** — apply the researched category scheme, curate the packs, both enforced | every skin has exactly one of each |
+| P6 | **Colour-science redesign, then allocation** — rebuild the taxonomy on measured OKLCH axes; assign every skin exactly one category and exactly one pack; complete the 16 missing roles in every ported half; the scheme must also **guide the creation of future packs**, not just label today's | every skin has exactly one of each; the rules generate a defensible assignment for a new skin without a human vote; a new pack can be tested for coherence before it ships |
 
 P6 depends on the two research lanes (`deleg_31885767`): a measured colour
 taxonomy and a 12-name vocabulary.
