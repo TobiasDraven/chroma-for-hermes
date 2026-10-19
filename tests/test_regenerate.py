@@ -254,9 +254,9 @@ class WindowsRunnerTests(unittest.TestCase):
 
 @MACOS_ONLY
 class MacInstallerTests(unittest.TestCase):
-    def test_installs_plugin_into_explicit_hermes_home(self):
+    def test_installs_the_package_into_explicit_hermes_home(self):
         installer = SCRIPT.parents[1] / 'install' / 'install-macos.command'
-        expected_plugin = SCRIPT.parents[1] / 'desktop' / 'plugin.js'
+        source_plugin = SCRIPT.parents[1] / 'desktop' / 'plugin.js'
 
         with tempfile.TemporaryDirectory() as temp_dir:
             hermes_home = Path(temp_dir) / 'custom-hermes-home'
@@ -271,13 +271,19 @@ class MacInstallerTests(unittest.TestCase):
                 text=True,
             )
 
-            installed_plugin = hermes_home / 'desktop-plugins' / 'chroma' / 'plugin.js'
-            self.assertEqual(installed_plugin.read_bytes(), expected_plugin.read_bytes())
-            self.assertIn(f'Installed Theme Picker into: {installed_plugin.parent}', result.stdout)
+            # The package layout, not a lone plugin.js: Hermes refuses a plugin
+            # directory without its manifest.
+            package = hermes_home / 'plugins' / 'chroma'
+            self.assertTrue((package / 'plugin.yaml').is_file())
+            self.assertTrue((package / 'LICENSE').is_file())
+            self.assertTrue((package / 'dashboard' / 'manifest.json').is_file())
+            self.assertEqual((package / 'desktop' / 'plugin.js').read_bytes(),
+                             source_plugin.read_bytes())
+            self.assertIn(f'Installed Chroma into: {package}', result.stdout)
 
-    def test_installs_plugin_into_default_home_when_hermes_home_is_unset(self):
+    def test_installs_the_package_into_default_home_when_hermes_home_is_unset(self):
         installer = SCRIPT.parents[1] / 'install' / 'install-macos.command'
-        expected_plugin = SCRIPT.parents[1] / 'desktop' / 'plugin.js'
+        source_plugin = SCRIPT.parents[1] / 'desktop' / 'plugin.js'
 
         with tempfile.TemporaryDirectory() as temp_dir:
             home = Path(temp_dir) / 'home with spaces'
@@ -293,8 +299,10 @@ class MacInstallerTests(unittest.TestCase):
                 text=True,
             )
 
-            installed_plugin = home / '.hermes' / 'desktop-plugins' / 'chroma' / 'plugin.js'
-            self.assertEqual(installed_plugin.read_bytes(), expected_plugin.read_bytes())
+            package = home / '.hermes' / 'plugins' / 'chroma'
+            self.assertTrue((package / 'plugin.yaml').is_file())
+            self.assertEqual((package / 'desktop' / 'plugin.js').read_bytes(),
+                             source_plugin.read_bytes())
 
 
 class GatewaySkinInstallerTests(unittest.TestCase):
