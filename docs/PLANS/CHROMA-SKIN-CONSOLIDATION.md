@@ -103,6 +103,40 @@ The migration therefore records exactly what ships. Nothing is invented in P2.
 P6 depends on the two research lanes (`deleg_31885767`): a measured colour
 taxonomy and a 12-name vocabulary.
 
+### 6.1 The taxonomy, decided
+
+Twelve families, cut on the measured gaps in the 94 accent hues: **Persimmon,
+Apricot, Amber, Gold, Lemon, Fern, Teal, Cobalt, Indigo, Violet, Rose, Neutral**
+(C < 0.04). Counts 8/5/8/8/4/7/8/13/8/8/7/10 — sums to 94, no shelf below 4.
+
+Three reconciliations were needed between the two lanes:
+
+- Lane A's cuts leave **teal and azure at 2 skins each** — unusable as filters.
+- Lane B's Rose/Magenta split needs a shelf of 2 at 322–345. One family, Rose.
+- Lane B's **Slate** is rejected: the host shipped a theme called `slate` (D6),
+  and Tailwind gives "olive" and "slate" different meanings. `Neutral` says what
+  it means.
+
+### 6.2 Character is measured alongside hue
+
+Hue alone cannot answer "is this muted?". **Energy** is measured from the accent
+chroma: quiet (C < 0.06) 15 · balanced 52 · vivid (C ≥ 0.14) 27.
+
+**11 name/colour conflicts are reported, never silently resolved** — e.g.
+`rice-paper` promises quiet and measures *vivid*; `vibrant-pacific` promises
+loud and measures *balanced*. A skin is never called muted when it measures
+otherwise.
+
+### 6.3 Pack allocation — blocked on a decision
+
+Defined by measured region and scored, an honest assignment gives Noir 16,
+Cyberpunk 14, Zen 12, but **Earth 5 and Retro 5**, with 12–16 skins fitting no
+theme. Forcing 13 per pack put an indigo and two neutrals in Earth and a vivid
+lemon in Noir — the duplicates problem wearing a different coat.
+
+Awaiting the Captain: build the missing Earth/Retro skins, relax the range, or
+add a sixth pack for the ported editor themes.
+
 ## 6. Gates
 
 1. **Palette digest** — SHA-256 of all 109 (or 94) palettes before and after;

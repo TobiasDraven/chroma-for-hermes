@@ -1,0 +1,462 @@
+{
+  "axes": [
+    {
+      "id": "hue",
+      "name": "Hue family",
+      "what_it_measures": "OKLCH hue angle h (degrees, 0-360) of the skin's identity accent, i.e. the angle of the (a,b) vector in Oklab.",
+      "rule": "h mod 360 falls in exactly one of 11 half-open intervals: [2.8,45.2) red, [45.2,58.5) orange, [58.5,88.4) amber, [88.4,117.8) yellow, [117.8,157.1) green, [157.1,178.0) jade, [178.0,202.5) teal, [202.5,227.3) azure, [227.3,276.2) blue, [276.2,319.9) violet, [319.9,2.8) magenta (wraps)."
+    },
+    {
+      "id": "chroma_floor",
+      "name": "Chroma floor",
+      "what_it_measures": "OKLCH chroma C of the identity accent: the radius from the neutral axis, i.e. how much hue the colour actually carries.",
+      "rule": "If C < 0.04 the accent is achromatic and the hue axis is not evaluated; otherwise the hue axis decides. C is not otherwise used to split categories."
+    }
+  ],
+  "categories": [
+    {
+      "id": "red",
+      "title": "Red",
+      "definition": "Red-family accents from the magenta/red boundary to the red/orange boundary, covering pure red and its crimson and vermilion neighbours.",
+      "rule_oklch": "C >= 0.04 and 2.8 <= h < 45.2",
+      "rationale": "11 skins, identity-accent h 8.0-39.5, median C 0.181, median L 0.581. Anchored by CSS red (h 29.2) and crimson (h 20.1); the band closes just past orangered (35.4) at the 39.5/50.8 density minimum.",
+      "sources": [
+        "https://www.w3.org/TR/css-color-4/",
+        "https://www.w3.org/TR/css-color-4/#named-colors",
+        "https://bottosson.github.io/posts/oklab/"
+      ]
+    },
+    {
+      "id": "orange",
+      "title": "Orange",
+      "definition": "The red-orange band between the red and amber cuts, where terracotta, sienna and chocolate hues sit.",
+      "rule_oklch": "C >= 0.04 and 45.2 <= h < 58.5",
+      "rationale": "5 skins, h 50.8-54.9, median C 0.123, median L 0.660. Anchored by chocolate (50.3) and saddlebrown (50.8); the band is narrow because the catalogue is thin between coral (40.2) and darkorange (58.3).",
+      "sources": [
+        "https://www.w3.org/TR/css-color-4/",
+        "https://www.w3.org/TR/css-color-4/#named-colors",
+        "https://bottosson.github.io/posts/oklab/"
+      ]
+    },
+    {
+      "id": "amber",
+      "title": "Amber",
+      "definition": "The yellow-orange band from darkorange to goldenrod: amber, brass, cream and warm-paper accents.",
+      "rule_oklch": "C >= 0.04 and 58.5 <= h < 88.4",
+      "rationale": "16 skins, h 62.0-86.2, median C 0.119, median L 0.770 - the second-largest cell. CSS orange (70.7) and goldenrod (84.0) both land here; the label 'amber' is chosen because it names the family more precisely than 'orange' at this hue. CSS has no 'amber' keyword; the anchors are orange (70.7) and goldenrod (84.0).",
+      "sources": [
+        "https://www.w3.org/TR/css-color-4/",
+        "https://www.w3.org/TR/css-color-4/#named-colors",
+        "https://bottosson.github.io/posts/oklab/"
+      ]
+    },
+    {
+      "id": "yellow",
+      "title": "Yellow",
+      "definition": "The yellow band from gold through pure yellow and olive.",
+      "rule_oklch": "C >= 0.04 and 88.4 <= h < 117.8",
+      "rationale": "5 skins, h 90.5-109.8, median C 0.145, median L 0.820. Anchored by gold (95.3), khaki (102.8) and yellow/olive (109.8).",
+      "sources": [
+        "https://www.w3.org/TR/css-color-4/",
+        "https://www.w3.org/TR/css-color-4/#named-colors",
+        "https://bottosson.github.io/posts/oklab/"
+      ]
+    },
+    {
+      "id": "green",
+      "title": "Green",
+      "definition": "The green band from chartreuse through pure green to spring green, including sage and forest tints.",
+      "rule_oklch": "C >= 0.04 and 117.8 <= h < 157.1",
+      "rationale": "8 skins, h 125.8-152.4, median C 0.118, median L 0.742. Anchored by yellowgreen (126.6), chartreuse (136.0) and green (142.5).",
+      "sources": [
+        "https://www.w3.org/TR/css-color-4/",
+        "https://www.w3.org/TR/css-color-4/#named-colors",
+        "https://bottosson.github.io/posts/oklab/"
+      ]
+    },
+    {
+      "id": "jade",
+      "title": "Jade",
+      "definition": "The blue-green band between spring green and the teal cut: mint, seafoam and jade accents.",
+      "rule_oklch": "C >= 0.04 and 157.1 <= h < 178.0",
+      "rationale": "3 skins, h 161.8-168.0, median C 0.081, median L 0.862. Anchored by mediumspringgreen (156.9) and aquamarine (169.0); this cell is separated from teal by a 20.0-degree empty interval, one of the widest in the catalogue. No CSS keyword sits at this hue; the anchors are mediumspringgreen (156.9) and aquamarine (169.0).",
+      "sources": [
+        "https://www.w3.org/TR/css-color-4/",
+        "https://www.w3.org/TR/css-color-4/#named-colors",
+        "https://bottosson.github.io/posts/oklab/"
+      ]
+    },
+    {
+      "id": "teal",
+      "title": "Teal",
+      "definition": "The teal band centred on the cyan/teal hue.",
+      "rule_oklch": "C >= 0.04 and 178.0 <= h < 202.5",
+      "rationale": "2 skins, h 188.0-195.1, median C 0.118, median L 0.777. CSS teal and cyan are both h 194.8. Thin cell: the catalogue has only two accents here.",
+      "sources": [
+        "https://www.w3.org/TR/css-color-4/",
+        "https://www.w3.org/TR/css-color-4/#named-colors",
+        "https://bottosson.github.io/posts/oklab/"
+      ]
+    },
+    {
+      "id": "azure",
+      "title": "Azure",
+      "definition": "Cyan-leaning blues between teal and true blue.",
+      "rule_oklch": "C >= 0.04 and 202.5 <= h < 227.3",
+      "rationale": "2 skins, h 209.8-217.2, median C 0.106, median L 0.739. Anchored by powderblue (205.7) and lightblue (219.7). Thin cell. CSS 'azure' itself is a pale cyan at h 196.9 and is not the anchor - the name labels the cyan-leaning blues anchored by powderblue/lightblue/skyblue.",
+      "sources": [
+        "https://www.w3.org/TR/css-color-4/",
+        "https://www.w3.org/TR/css-color-4/#named-colors",
+        "https://bottosson.github.io/posts/oklab/"
+      ]
+    },
+    {
+      "id": "blue",
+      "title": "Blue",
+      "definition": "The blue band from deep sky blue through pure blue to midnight blue.",
+      "rule_oklch": "C >= 0.04 and 227.3 <= h < 276.2",
+      "rationale": "28 skins, h 237.3-266.1, median C 0.126, median L 0.544 - the largest cell by far (26% of the catalogue). Anchored by deepskyblue (231.6), blue (264.1) and midnightblue (272.8).",
+      "sources": [
+        "https://www.w3.org/TR/css-color-4/",
+        "https://www.w3.org/TR/css-color-4/#named-colors",
+        "https://bottosson.github.io/posts/oklab/"
+      ]
+    },
+    {
+      "id": "violet",
+      "title": "Violet",
+      "definition": "The violet band from slate blue and indigo to dark orchid.",
+      "rule_oklch": "C >= 0.04 and 276.2 <= h < 319.9",
+      "rationale": "10 skins, h 286.3-311.4, median C 0.135, median L 0.647. Anchored by slateblue (285.5), blueviolet (301.4) and darkorchid (311.5).",
+      "sources": [
+        "https://www.w3.org/TR/css-color-4/",
+        "https://www.w3.org/TR/css-color-4/#named-colors",
+        "https://bottosson.github.io/posts/oklab/"
+      ]
+    },
+    {
+      "id": "magenta",
+      "title": "Magenta",
+      "definition": "The magenta/rose band from violet through magenta to pink, wrapping across 0 degrees.",
+      "rule_oklch": "C >= 0.04 and (h >= 319.9 or h < 2.8)",
+      "rationale": "8 skins, identity-accent h 328.4-357.5, median C 0.186, median L 0.690. Anchored by violet (327.2), magenta (328.4), hotpink (352.0) and pink (7.1). This is the only category whose interval wraps 0 degrees.",
+      "sources": [
+        "https://www.w3.org/TR/css-color-4/",
+        "https://www.w3.org/TR/css-color-4/#named-colors",
+        "https://bottosson.github.io/posts/oklab/"
+      ]
+    },
+    {
+      "id": "achromatic",
+      "title": "Achromatic",
+      "definition": "Accents with no usable hue: greys, off-whites and near-neutrals below the chroma floor.",
+      "rule_oklch": "C < 0.04 (any L, any h)",
+      "rationale": "11 skins, median C 0.024, median L 0.578. Nine of the eleven are named as neutrals (mono, obsidian, graphite, steel-thread, bone-white, liquid-silver, minimal-graphite, dark-bone, warm-ash); the other two (sisyphus, warm-parchment) are near-neutral by measurement. Hue is powerless in this cell by the CSS Color 4 rule.",
+      "sources": [
+        "https://www.w3.org/TR/css-color-4/",
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch",
+        "https://bottosson.github.io/posts/oklab/"
+      ]
+    }
+  ],
+  "assignments": {
+    "nous": "blue",
+    "midnight": "violet",
+    "ember": "orange",
+    "mono": "achromatic",
+    "cyberpunk": "green",
+    "rose": "magenta",
+    "shadow-thief": "violet",
+    "hermes-teal": "teal",
+    "dark-aubergine": "violet",
+    "dark-ayu": "blue",
+    "dark-bone": "achromatic",
+    "dark-catppuccin": "blue",
+    "dark-charcoal": "blue",
+    "dark-cozy-paper": "amber",
+    "dark-crimson": "amber",
+    "dark-dracula": "violet",
+    "dark-everforest": "green",
+    "dark-github": "blue",
+    "dark-gruvbox": "amber",
+    "dark-kanagawa": "blue",
+    "dark-lcars": "amber",
+    "dark-lemon": "yellow",
+    "dark-mac": "blue",
+    "dark-material": "blue",
+    "dark-navy": "blue",
+    "dark-nord": "blue",
+    "dark-obsidian": "violet",
+    "dark-one": "blue",
+    "dark-plum": "violet",
+    "dark-rosepine": "red",
+    "dark-sage": "green",
+    "dark-solarized": "blue",
+    "dark-tokyo-night": "blue",
+    "dark-vanilla": "amber",
+    "dark-vscode": "blue",
+    "minimal-graphite": "achromatic",
+    "nature-autumn": "orange",
+    "nature-desert": "amber",
+    "nature-forest": "green",
+    "nature-nordic": "blue",
+    "nature-ocean": "teal",
+    "newsprint-noir": "amber",
+    "peach-fuzz": "red",
+    "redwood": "red",
+    "retro-amber": "amber",
+    "retro-blue": "blue",
+    "retro-terminal": "green",
+    "slate-mist": "blue",
+    "stained-glass": "blue",
+    "steel-thread": "achromatic",
+    "vaporwave-mall": "magenta",
+    "vibrant-neon": "jade",
+    "vibrant-pacific": "azure",
+    "vibrant-sunset": "red",
+    "vibrant-synthwave": "magenta",
+    "void-sunset": "magenta",
+    "warm-ash": "achromatic",
+    "dark-pastel-cotton-candy": "magenta",
+    "dark-pastel-mint-sorbet": "jade",
+    "dark-pastel-buttercup": "amber",
+    "dark-pastel-powder-blue": "blue",
+    "dark-pastel-peach-blossom": "orange",
+    "alabaster": "blue",
+    "amber-terminal": "amber",
+    "arcane-tome": "yellow",
+    "aurora-boreal": "blue",
+    "baby-blue": "blue",
+    "black-canary": "yellow",
+    "blueprint": "blue",
+    "bone-white": "achromatic",
+    "brutalist-concrete": "red",
+    "chrome-rain": "magenta",
+    "commodore-64": "violet",
+    "deep-ocean": "azure",
+    "deep-void": "violet",
+    "desert-neon": "amber",
+    "dragon-blood": "red",
+    "dusty-rose": "magenta",
+    "eclipse": "violet",
+    "enchanted-forest": "yellow",
+    "forge-master": "blue",
+    "glitch-punk": "red",
+    "graphite": "achromatic",
+    "green-screen": "green",
+    "high-noon": "blue",
+    "lavender-dream": "violet",
+    "linen-sage": "green",
+    "liquid-silver": "achromatic",
+    "midnight-studio": "amber",
+    "moss-stone": "green",
+    "neon-ghost": "magenta",
+    "netrunner": "amber",
+    "obsidian": "achromatic",
+    "red-alert": "red",
+    "rice-paper": "red",
+    "sandstone": "orange",
+    "seafoam-silk": "jade",
+    "single-malt": "amber",
+    "solar-flare": "red",
+    "typewriter-cream": "amber",
+    "warm-parchment": "achromatic",
+    "white-flash": "yellow",
+    "ares": "red",
+    "slate": "blue",
+    "daylight": "blue",
+    "warm-lightmode": "orange",
+    "poseidon": "blue",
+    "sisyphus": "achromatic",
+    "charizard": "amber"
+  },
+  "counts": {
+    "red": 11,
+    "orange": 5,
+    "amber": 16,
+    "yellow": 5,
+    "green": 8,
+    "jade": 3,
+    "teal": 2,
+    "azure": 2,
+    "blue": 28,
+    "violet": 10,
+    "magenta": 8,
+    "achromatic": 11
+  },
+  "coverage_report": {
+    "empty_categories": [],
+    "largest": {
+      "id": "blue",
+      "n": 28
+    },
+    "smallest": {
+      "id": "teal",
+      "n": 2
+    }
+  },
+  "hard_calls": [
+    {
+      "skin": "alabaster",
+      "measured": "L 0.485 / C 0.145 / h 266.1",
+      "name_suggests": "achromatic",
+      "chosen": "blue",
+      "why": "The name describes the shell (#F7F6FA, C 0.007). The accent is #7CA1FA at h 266 / C 0.145, a periwinkle blue, so the accent rule says blue. A shell-based rule would say achromatic; the taxonomy measures the accent."
+    },
+    {
+      "skin": "aurora-boreal",
+      "measured": "L 0.646 / C 0.110 / h 256.0",
+      "name_suggests": "jade",
+      "chosen": "blue",
+      "why": "Accent h 256 / C 0.110 is a sky blue, about 35 deg from the jade centroid; 'aurora' is thematic, not chromatic. Kept blue."
+    },
+    {
+      "skin": "brutalist-concrete",
+      "measured": "L 0.676 / C 0.217 / h 38.8",
+      "name_suggests": "achromatic",
+      "chosen": "red",
+      "why": "Accent #AA3602 is rust at C 0.217; 'concrete' names the wall. Kept red."
+    },
+    {
+      "skin": "charizard",
+      "measured": "L 0.763 / C 0.150 / h 65.4",
+      "name_suggests": "orange",
+      "chosen": "amber",
+      "why": "h 65.4 sits 6.9 deg inside amber, between CSS darkorange (58.3) and orange (70.7). The character is orange-amber; the cut puts it in amber. It is the first skin that would move if the orange/amber cut moved to about 65."
+    },
+    {
+      "skin": "chrome-rain",
+      "measured": "L 0.629 / C 0.218 / h 356.4",
+      "name_suggests": "achromatic",
+      "chosen": "magenta",
+      "why": "Accent #A53065 is a deep rose (C 0.218); 'chrome' and 'rain' are surface metaphors. Kept magenta."
+    },
+    {
+      "skin": "dark-charcoal",
+      "measured": "L 0.530 / C 0.107 / h 253.1",
+      "name_suggests": "achromatic",
+      "chosen": "blue",
+      "why": "The authored light accent is a slate blue (h 253, C 0.107), 2.7x the chroma floor; charcoal describes the shell. Blue is the measured accent - a shell-based taxonomy would call it achromatic."
+    },
+    {
+      "skin": "dark-crimson",
+      "measured": "L 0.806 / C 0.136 / h 84.9",
+      "name_suggests": "red",
+      "chosen": "amber",
+      "why": "The dark palette is a red wall (#200608) with a gold accent (#E8B84A, h 84.9). 'Crimson' names the wall; the accent is amber. This is the weakest result in the catalogue and the clearest argument for a future shell-aware revision."
+    },
+    {
+      "skin": "dark-obsidian",
+      "measured": "L 0.770 / C 0.126 / h 289.8",
+      "name_suggests": "achromatic",
+      "chosen": "violet",
+      "why": "Accent h 289.8 / C 0.126 is violet; obsidian names the black shell. Kept violet."
+    },
+    {
+      "skin": "dark-pastel-buttercup",
+      "measured": "L 0.874 / C 0.088 / h 86.2",
+      "name_suggests": "yellow",
+      "chosen": "amber",
+      "why": "h 86.2 is 2.18 deg below the amber/yellow cut - the closest skin to any boundary. Chroma is low (0.088), so the hue reads less strongly than the name suggests."
+    },
+    {
+      "skin": "dark-rosepine",
+      "measured": "L 0.549 / C 0.080 / h 23.1",
+      "name_suggests": "magenta",
+      "chosen": "red",
+      "why": "Identity accent is the light one at h 23.1 (C 0.080), a crimson rose. The nearest named reference is crimson (20.1), not magenta, so red."
+    },
+    {
+      "skin": "enchanted-forest",
+      "measured": "L 0.758 / C 0.132 / h 97.0",
+      "name_suggests": "green",
+      "chosen": "yellow",
+      "why": "Accent #C8B040 is olive-gold at h 97, 45 deg from the green anchor; the forest is in the shell. Kept yellow."
+    },
+    {
+      "skin": "midnight",
+      "measured": "L 0.656 / C 0.151 / h 286.3",
+      "name_suggests": "blue",
+      "chosen": "violet",
+      "why": "Accent #8B80E8 is periwinkle at h 286.3 / C 0.151 - violet, not navy. 'Midnight' is a mood word. Kept violet."
+    },
+    {
+      "skin": "nature-ocean",
+      "measured": "L 0.809 / C 0.118 / h 195.1",
+      "name_suggests": "azure",
+      "chosen": "teal",
+      "why": "h 195.1 is CSS teal (194.8) to within 0.3 deg. The name reads blue, the measurement does not."
+    },
+    {
+      "skin": "newsprint-noir",
+      "measured": "L 0.534 / C 0.080 / h 62.0",
+      "name_suggests": "achromatic",
+      "chosen": "amber",
+      "why": "Two-identity skin: the authored light accent is sepia (#8E623A, h 62) and the dark accent is grey (C 0.036). The rule takes the authored light accent (dark is derived), giving amber. A dark-mode-first user would call it achromatic."
+    },
+    {
+      "skin": "peach-fuzz",
+      "measured": "L 0.553 / C 0.150 / h 39.5",
+      "name_suggests": "orange",
+      "chosen": "red",
+      "why": "Identity accent is the light one at h 39.5 / C 0.150 - coral (CSS coral is 40.2), 5.7 deg inside red. Peach reads orange; at this hue it is a coral red."
+    },
+    {
+      "skin": "rice-paper",
+      "measured": "L 0.559 / C 0.190 / h 25.9",
+      "name_suggests": "amber",
+      "chosen": "red",
+      "why": "The accent is vermilion (h 25.9, C 0.190) on cream paper; the paper is the shell. Kept red."
+    },
+    {
+      "skin": "solar-flare",
+      "measured": "L 0.581 / C 0.173 / h 39.5",
+      "name_suggests": "orange",
+      "chosen": "red",
+      "why": "Accent h 39.5 / C 0.173 is coral red, 5.7 deg from the cut. Sun imagery reads orange, the hue is red-side."
+    },
+    {
+      "skin": "vibrant-sunset",
+      "measured": "L 0.549 / C 0.135 / h 8.0",
+      "name_suggests": "orange",
+      "chosen": "red",
+      "why": "Identity accent is the light one at h 8.0 / C 0.135 - a deep pink red, 5.2 deg from the magenta cut and 37 deg from orange. Sunset reads orange; the measurement does not."
+    },
+    {
+      "skin": "void-sunset",
+      "measured": "L 0.729 / C 0.228 / h 340.5",
+      "name_suggests": "orange",
+      "chosen": "magenta",
+      "why": "Accent h 340.5 / C 0.228 is hot pink; 'sunset' is thematic. Kept magenta."
+    },
+    {
+      "skin": "warm-lightmode",
+      "measured": "L 0.471 / C 0.112 / h 50.9",
+      "name_suggests": "amber",
+      "chosen": "orange",
+      "why": "Accent h 50.9 is terracotta (CSS chocolate is 50.3), 5.7 deg inside orange. 'Warm' does not separate orange from amber."
+    },
+    {
+      "skin": "warm-parchment",
+      "measured": "L 0.400 / C 0.036 / h 18.8",
+      "name_suggests": "amber",
+      "chosen": "achromatic",
+      "why": "The authored light accent has C 0.0365, 0.0035 under the chroma floor; the dark accent has C 0.060. The skin straddles the gate - at a floor of 0.03 it would be orange."
+    },
+    {
+      "skin": "white-flash",
+      "measured": "L 0.968 / C 0.211 / h 109.8",
+      "name_suggests": "achromatic",
+      "chosen": "yellow",
+      "why": "Accent is #FFFF00, pure yellow at C 0.211; the name describes a flash of light, not a hue. Kept yellow."
+    }
+  ],
+  "unverified": [
+    "The chroma floor C < 0.04 is ASSERTED, not sourced. No peer-reviewed OKLCH chroma JND value was retrieved. 0.04 sits in the largest gap of the low-chroma tail (0.0383 to 0.0420) but that gap is only 0.0037 wide. A forced-choice hue-naming experiment at C 0.02-0.06 on the product's actual dark shells would settle it.",
+    "The number of hue sectors (11) is a product constraint - 12 chips minus one achromatic cell - not a result derived from colour science. At 10 or 12 chromatic sectors some cut falls inside an occupied cluster.",
+    "Category names are English colour words, not a controlled vocabulary; mapping a word to an OKLCH interval is conventional. In particular the 'amber' cell contains CSS orange (h 70.7), and the 45.2-58.5 cell could be called terracotta rather than orange.",
+    "The identity-accent rule (authored mode first, then higher chroma) was chosen on principle; it was not validated against observer data. Using the light accent unconditionally would move 14 of 109 skins.",
+    "'Name implies' labels are my own reading of the 74 skin names that carry a colour word; 35 names make no colour claim and are excluded from the agreement test, so 70% agreement is a lower bound on nothing in particular.",
+    "No observer study, no naming-agreement survey, and no perceptual validation were run for this document."
+  ]
+}

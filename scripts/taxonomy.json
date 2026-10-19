@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "note": "Measured taxonomy. Cut points sit on real gaps in the 94-skin accent-hue distribution, not on an even wheel, so every shelf carries at least four skins. Applied to the DARK accent; if a skin has no dark accent, the light one is used.",
+  "axes": {
+    "hue": "hue angle of the signature accent in OKLCH, degrees 0-360",
+    "chroma_floor": "C < 0.04 is achromatic: the accent carries no hue to name"
+  },
+  "neutral": {
+    "id": "neutral",
+    "title": "Neutral",
+    "rule": "C < 0.04"
+  },
+  "families": [
+    {
+      "id": "persimmon",
+      "title": "Persimmon",
+      "from": 2.8,
+      "to": 45.2,
+      "covers": "red through red-orange"
+    },
+    {
+      "id": "apricot",
+      "title": "Apricot",
+      "from": 45.2,
+      "to": 60,
+      "covers": "orange"
+    },
+    {
+      "id": "amber",
+      "title": "Amber",
+      "from": 60,
+      "to": 78,
+      "covers": "orange-yellow"
+    },
+    {
+      "id": "gold",
+      "title": "Gold",
+      "from": 78,
+      "to": 92,
+      "covers": "yellow-orange"
+    },
+    {
+      "id": "lemon",
+      "title": "Lemon",
+      "from": 92,
+      "to": 118,
+      "covers": "yellow"
+    },
+    {
+      "id": "fern",
+      "title": "Fern",
+      "from": 118,
+      "to": 156,
+      "covers": "yellow-green through green"
+    },
+    {
+      "id": "teal",
+      "title": "Teal",
+      "from": 156,
+      "to": 232,
+      "covers": "spring green, jade, teal, cyan"
+    },
+    {
+      "id": "cobalt",
+      "title": "Cobalt",
+      "from": 232,
+      "to": 256,
+      "covers": "blue"
+    },
+    {
+      "id": "indigo",
+      "title": "Indigo",
+      "from": 256,
+      "to": 278,
+      "covers": "blue-violet"
+    },
+    {
+      "id": "violet",
+      "title": "Violet",
+      "from": 278,
+      "to": 322,
+      "covers": "violet through purple"
+    },
+    {
+      "id": "rose",
+      "title": "Rose",
+      "from": 322,
+      "to": 362.8,
+      "covers": "magenta, rose, pink"
+    }
+  ],
+  "wrapper": {
+    "note": "An angle below 2.8 is the same family as an angle above 322: the wheel wraps.",
+    "family": "rose"
+  },
+  "measured": {
+    "catalogue": 94,
+    "counts": {
+      "persimmon": 8,
+      "apricot": 5,
+      "amber": 8,
+      "gold": 8,
+      "lemon": 4,
+      "fern": 7,
+      "teal": 8,
+      "cobalt": 13,
+      "indigo": 8,
+      "violet": 8,
+      "magenta": 7,
+      "neutral": 10
+    }
+  },
+  "naming": {
+    "source": "docs/RESEARCH/CATEGORY-NAMES.md, reconciled",
+    "register": "each family is named after the object the colour is named after (persimmon, amber, lemon, fern, teal, cobalt, indigo, violet, rose)",
+    "divergences": [
+      "Lane B proposed Rose and Magenta as separate families; the catalogue has only 2 accents between 322 and 345, so a split would leave a shelf of 2. One family, named Rose, carries all 7.",
+      "Lane B proposed Slate for achromatic. Rejected: the host ships a theme called slate (dropped in D6) and Tailwind's olive/slate carry different meanings. Neutral says what it means.",
+      "Lane A's cuts leave teal and azure at 2 each. These cuts sit on the measured gaps instead, so every shelf carries at least 4."
+    ],
+    "collision_check": "no family name matches or paraphrases a pack (Earth, Cyberpunk, Zen, Retro, Noir, core), and no category id equals 'earth'."
+  }
+}

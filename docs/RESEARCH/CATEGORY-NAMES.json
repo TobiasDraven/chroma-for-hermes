@@ -1,0 +1,238 @@
+{
+  "candidates": [
+    {
+      "id": "rose",
+      "title": "Rose",
+      "one_line": "The red that has already turned pink — petals, not warning lights.",
+      "covers": "OKLCH h 340-15 at any chroma above the neutral floor. Dusty rose, cherry, coral-red, neon pink-red: rose(358), dusty-rose(356), chrome-rain(356), vaporwave-mall(347), dark-pastel-cotton-candy(349), vibrant-synthwave(350), void-sunset(341), vibrant-sunset(8).",
+      "precedent": [
+        "https://en.wikipedia.org/wiki/Rose_(color)",
+        "https://tailwindcss.com/docs/colors",
+        "https://en.wikipedia.org/wiki/ISCC%E2%80%93NBS_system"
+      ],
+      "risk": "Read literally it promises pastel pink; the bucket also holds saturated reds (vibrant-synthwave, void-sunset), so the vivid cards look misfiled."
+    },
+    {
+      "id": "persimmon",
+      "title": "Persimmon",
+      "one_line": "Ripe fruit orange: the warm end of red, before it becomes gold.",
+      "covers": "OKLCH h 15-48. Vermilion, terracotta, salmon, neon orange: glitch-punk(22), dark-rosepine(23), dragon-blood(25), rice-paper(26), ares(30), red-alert(35), peach-fuzz(39), redwood(39), brutalist-concrete(39), solar-flare(40), warm-parchment(19).",
+      "precedent": [
+        "https://en.wikipedia.org/wiki/Shades_of_orange",
+        "https://en.wikipedia.org/wiki/ISCC%E2%80%93NBS_system"
+      ],
+      "risk": "The fruit reads muted-autumn; the bucket's most saturated cards (glitch-punk C=0.254, ares C=0.186) are louder than the name suggests."
+    },
+    {
+      "id": "amber",
+      "title": "Amber",
+      "one_line": "Warm gold you can see through — resin, lamplight, old paper.",
+      "covers": "OKLCH h 48-72. Gold, brass, honey, cream-gold: warm-lightmode(50), nature-autumn(51), dark-pastel-peach-blossom(52), sandstone(54), ember(55), dark-cozy-paper(62), newsprint-noir(62), charizard(65), dark-lcars(66), retro-amber(70).",
+      "precedent": [
+        "https://tailwindcss.com/docs/colors",
+        "https://www.radix-ui.com/colors/docs/palette-composition/scales"
+      ],
+      "risk": "Amber's own canonical swatch sits near h84 (brighter, more yellow) than this arc, which is the muted/dark warm gold; a colour-literate reviewer will say amber belongs one step clockwise."
+    },
+    {
+      "id": "olive",
+      "title": "Olive",
+      "one_line": "Yellow gone dark and vegetal — khaki, brass, unlit gold.",
+      "covers": "OKLCH h 72-90. Khaki, brass, dark yellow, warm cream-khaki: nature-desert(76), netrunner(76), single-malt(76), amber-terminal(77), typewriter-cream(80), desert-neon(81), dark-gruvbox(83), dark-vanilla(83), midnight-studio(83), dark-crimson(85), dark-pastel-buttercup(86), obsidian(90), sisyphus(90).",
+      "precedent": [
+        "https://en.wikipedia.org/wiki/ISCC%E2%80%93NBS_system",
+        "https://www.radix-ui.com/colors/docs/palette-composition/scales",
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/named-color"
+      ],
+      "risk": "Tailwind's newer 'olive' is a grey-green neutral, so users trained on it will expect desaturated green, not warm khaki; olive also implies low chroma while netrunner (C=0.170) is vivid."
+    },
+    {
+      "id": "lemon",
+      "title": "Lemon",
+      "one_line": "Acid yellow with green waiting inside it.",
+      "covers": "OKLCH h 90-112. Chartreuse, acid yellow, near-white yellow: arcane-tome(90), black-canary(95), enchanted-forest(97), dark-lemon(104), white-flash(110).",
+      "precedent": [
+        "https://en.wikipedia.org/wiki/Lemon_(color)",
+        "https://tailwindcss.com/docs/colors"
+      ],
+      "risk": "In English 'a lemon' means a defective unit — a quality word sneaking in through idiom; the bucket also holds near-white white-flash (L=0.97), which reads as off-white, not lemon."
+    },
+    {
+      "id": "fern",
+      "title": "Fern",
+      "one_line": "Leaf green with the sun off it — sage, moss, forest.",
+      "covers": "OKLCH h 112-150. Sage, moss, forest, pure green: dark-everforest(126), moss-stone(126), dark-sage(129), linen-sage(129), green-screen(143), cyberpunk(144), nature-forest(144).",
+      "precedent": [
+        "https://en.wikipedia.org/wiki/Shades_of_green",
+        "https://en.wikipedia.org/wiki/Traditional_colors_of_Japan"
+      ],
+      "risk": "Fern is a muted leaf colour, but the bucket also carries the catalogue's most saturated green (cyberpunk, C=0.278); the name undersells it."
+    },
+    {
+      "id": "teal",
+      "title": "Teal",
+      "one_line": "The duck's wing: green that has gone cold, blue that has gone green.",
+      "covers": "OKLCH h 150-215. Seafoam, mint, cyan, deep ocean: retro-terminal(152), seafoam-silk(162), dark-pastel-mint-sorbet(164), vibrant-neon(168), hermes-teal(188), nature-ocean(195), graphite(195), deep-ocean(210).",
+      "precedent": [
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/named-color",
+        "https://tailwindcss.com/docs/colors"
+      ],
+      "risk": "One name has to hold a 65-degree arc, so deep-ocean(210) will look blue to a user expecting teal; the widest semantic span in the set."
+    },
+    {
+      "id": "cobalt",
+      "title": "Cobalt",
+      "one_line": "The blue of glass and glaze — clean, cold, unmistakably blue.",
+      "covers": "OKLCH h 215-255. Sky, azure, navy, powder blue: bone-white(216), vibrant-pacific(217), dark-ayu(237), poseidon(241), dark-solarized(244), nature-nordic(244), retro-blue(245), slate-mist(245), dark-navy(249), baby-blue(249), forge-master(249), dark-mac(250), dark-pastel-powder-blue(251), slate(251), dark-vscode(252), dark-charcoal(253), dark-nord(254).",
+      "precedent": [
+        "https://en.wikipedia.org/wiki/Cobalt_blue",
+        "https://tailwindcss.com/docs/colors"
+      ],
+      "risk": "Cobalt implies a deep saturated pigment; the bucket includes bone-white (C=0.060) and powder blue, and cobalt's own swatch (h~260) sits just past the arc's upper edge."
+    },
+    {
+      "id": "indigo",
+      "title": "Indigo",
+      "one_line": "Blue with the red already in it — dye, dusk, deep water.",
+      "covers": "OKLCH h 255-280. Royal blue, ultramarine, blue-violet: aurora-boreal(256), high-noon(256), dark-tokyo-night(257), dark-github(258), stained-glass(258), blueprint(259), dark-catppuccin(262), nous(263), dark-one(263), daylight(263), dark-kanagawa(264), dark-material(264), alabaster(266).",
+      "precedent": [
+        "https://tailwindcss.com/docs/colors",
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/named-color"
+      ],
+      "risk": "CSS 'indigo' is a purple (#4B0082) and Tailwind's is blue-violet; users who learned either will expect different things. This arc is the blue side."
+    },
+    {
+      "id": "violet",
+      "title": "Violet",
+      "one_line": "Purple at its clearest — the last hue before blue gives out.",
+      "covers": "OKLCH h 280-300. Purple, plum, twilight, lilac-grey: midnight(286), liquid-silver(286), dark-obsidian(290), deep-void(294), commodore-64(297), eclipse(299).",
+      "precedent": [
+        "https://tailwindcss.com/docs/colors",
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/named-color"
+      ],
+      "risk": "Violet is a spectral hue (short-wavelength blue-violet) while this arc is purple proper; CSS violet (#EE82EE) is pale magenta-leaning, so the name and the swatch disagree."
+    },
+    {
+      "id": "magenta",
+      "title": "Magenta",
+      "one_line": "Purple that has picked up red until it hums.",
+      "covers": "OKLCH h 300-340. Fuchsia, orchid, aubergine, hot pink: dark-dracula(300), lavender-dream(301), dark-plum(305), dark-aubergine(306), shadow-thief(311), neon-ghost(328).",
+      "precedent": [
+        "https://developer.mozilla.org/en-US/docs/Web/CSS/named-color",
+        "https://en.wikipedia.org/wiki/Traditional_colors_of_Japan"
+      ],
+      "risk": "Magenta is a printing ink at maximum chroma; half this bucket is deep and muted (plum, aubergine), so the name over-promises intensity and under-describes the pinks."
+    },
+    {
+      "id": "slate",
+      "title": "Slate",
+      "one_line": "Colour with the colour taken out — stone, ash, graphite.",
+      "covers": "Achromatic: accent chroma below the neutral floor, hue irrelevant. mono(C=0.000), dark-bone(0.021), minimal-graphite(0.024), steel-thread(0.012), warm-ash(0.031).",
+      "precedent": [
+        "https://tailwindcss.com/docs/colors",
+        "https://www.radix-ui.com/colors/docs/palette-composition/scales",
+        "https://en.wikipedia.org/wiki/ISCC%E2%80%93NBS_system"
+      ],
+      "risk": "Slate is a cool blue-grey, but the bucket holds warm greys (warm-ash, dark-bone); 'Slate' quietly makes the category feel colder than its contents."
+    }
+  ],
+  "recommended": [
+    { "id": "rose", "title": "Rose" },
+    { "id": "persimmon", "title": "Persimmon" },
+    { "id": "amber", "title": "Amber" },
+    { "id": "olive", "title": "Olive" },
+    { "id": "lemon", "title": "Lemon" },
+    { "id": "fern", "title": "Fern" },
+    { "id": "teal", "title": "Teal" },
+    { "id": "cobalt", "title": "Cobalt" },
+    { "id": "indigo", "title": "Indigo" },
+    { "id": "violet", "title": "Violet" },
+    { "id": "magenta", "title": "Magenta" },
+    { "id": "slate", "title": "Slate" }
+  ],
+  "collisions": [
+    {
+      "with": "Earth (pack)",
+      "severity": "warns",
+      "why": "Olive, Fern and (weakly) Persimmon belong to the same natural-world vocabulary as the Earth pack. They name hue, not mood, so they do not duplicate the axis — but Fern is the one word that could be mistaken for a mood, and Earth-pack skins (nature-forest, moss-stone, sandstone) are exactly the cards that will appear under it. Category and pack will visibly agree on those cards, which makes the two axes look redundant."
+    },
+    {
+      "with": "Retro (pack)",
+      "severity": "notes",
+      "why": "Amber-on-black (amber-terminal, retro-amber) and teal CRT (retro-terminal, vibrant-neon) are the retro computing trope. A user may reach for the Retro pack when they mean the Amber category; the cards overlap by design but the names must not."
+    },
+    {
+      "with": "Cyberpunk (pack)",
+      "severity": "notes",
+      "why": "Magenta, Lemon and Teal are the neon triad of the cyberpunk aesthetic (glitch-punk, netrunner, neon-ghost). No name duplicates 'Cyberpunk', but three categories sit in its colour story."
+    },
+    {
+      "with": "Noir (pack)",
+      "severity": "notes",
+      "why": "Slate is the nearest category to Noir's register — both are dark and neutral. 'Slate' is a hue family, 'Noir' is a served mood, so the axes stay distinct, but on a dark card the two read similarly."
+    },
+    {
+      "with": "Zen (pack)",
+      "severity": "notes",
+      "why": "Fern and Olive carry the same quiet-green signal as Zen. Low risk because Zen is a mood and the names are plants, but a Zen card and a Fern card can be the same card."
+    },
+    {
+      "with": "core (pack)",
+      "severity": "notes",
+      "why": "No candidate is a synonym of 'core'. It is the default/provenance pack, and provenance words are already banned from category names, so the axes cannot collide here — listed for completeness."
+    },
+    {
+      "with": "Chroma (product name)",
+      "severity": "notes",
+      "why": "The product name already occupies the colour-behaviour register. No candidate repeats it, but 'Chroma' + twelve colour words means the product name stops doing any work; category names must stay concrete nouns, not colour-abstract nouns."
+    },
+    {
+      "with": "earth (existing category id)",
+      "severity": "blocks",
+      "why": "Pre-existing, not introduced here: the current id 'earth' is a straight duplicate of the Earth pack. Two axes sharing one word is the exact defect this pass removes. Any migration must retire it, not map it to a new 'earthy' word."
+    },
+    {
+      "with": "Olive in Tailwind (new neutral)",
+      "severity": "warns",
+      "why": "External, not in-product: Tailwind now ships 'olive' as a grey-green neutral. Our Olive is warm khaki. Users who know Tailwind will expect desaturated green, so the chip colour and the chip name must do the explaining."
+    },
+    {
+      "with": "skin names slate / rose / ember",
+      "severity": "notes",
+      "why": "The catalogue already contains skins called 'slate', 'slate-mist', 'rose' and 'ember'. A category named Slate containing a skin named Slate is legal but redundant at the card level; 'ember' is also one letter from Amber, which is why Amber's neighbour could never be called Ember."
+    },
+    {
+      "with": "violet (existing category id)",
+      "severity": "notes",
+      "why": "Violet is the one name carried over unchanged. That is deliberate — it is a hue word with no pack conflict — but its arc must shrink from the old catch-all to 280-300, or the word keeps its old meaning by accident."
+    }
+  ],
+  "rejected": [
+    { "title": "Ember", "why": "Phonetic twin of Amber. In a filter row the two are indistinguishable when spoken aloud and easy to misread; one of the two had to go, and Amber has the stronger hue precedent." },
+    { "title": "Earthy", "why": "Explicitly banned: paraphrase of the Earth pack. Same for Terra, Terracotta, Clay, Soil, Loam." },
+    { "title": "Noir", "why": "Banned: duplicate of the Noir pack." },
+    { "title": "Cyber, Neon, Chrome", "why": "Collide with the Cyberpunk pack and imply intensity/mode rather than hue family." },
+    { "title": "Retro, Zen", "why": "Pack names. Any category using them would merge two axes the product deliberately separates." },
+    { "title": "Pastel", "why": "A chroma-and-lightness class, not a hue. It implies light mode, and it is one of the four character words this pass exists to remove." },
+    { "title": "Vibrant", "why": "Intensity, not hue — it overlaps every category and would either empty itself or swallow the vivid cards of all twelve." },
+    { "title": "Muted", "why": "Same failure as Vibrant, inverted; it is a rule that belongs inside each category, not a category." },
+    { "title": "Minimal", "why": "A style claim about the skin, not a measurement of its accent. Cannot be derived from a palette by any rule." },
+    { "title": "Warm / Cool", "why": "A temperature axis, not a hue family. Both span five or more categories, so either word would be a second, contradictory sort key." },
+    { "title": "Gold", "why": "Near-synonym of Amber with no reliable boundary between them; also one of the twelve deprecated ids, so keeping it would blur old and new taxonomies." },
+    { "title": "Stone", "why": "Rejected in favour of Slate: 'stone' is an Earth-pack word and would be read as a material mood rather than a chroma floor." },
+    { "title": "Brown", "why": "ISCC-NBS has it as a basic term, but in UI accents brown is a darkened orange: it would steal the muted warm cards from Persimmon and Amber and read as the Earth pack." },
+    { "title": "Chartreuse", "why": "Ten letters, French liqueur etymology, routinely misspelt and mistranslated; fails the translation and scan tests where Lemon passes." },
+    { "title": "The gemstone set (Garnet, Amethyst, Emerald, Sapphire, Citrine)", "why": "Coherent and pretty, but three to four syllables each, a jewellery-brand register, and several (Garnet, Citrine) are not stable colour terms outside English." },
+    { "title": "Sunset, Aurora, Dusk, Mist", "why": "Scenes and times of day, not hue families. Each names a gradient or a lighting condition, and all four echo the Retro/Noir mood axis." },
+    { "title": "Prism, Spectrum, Multi", "why": "Describes how many hues a skin uses, which is a different axis from which hue it uses; would need its own measured rule and would cut across all twelve." },
+    { "title": "Premium, Pro, Signature", "why": "Quality claims, not colours; forbidden by the naming principles." },
+    { "title": "Taupe, Mauve, Mist", "why": "Tailwind's low-chroma neutrals: ambiguous against Slate, hard to translate, and they describe greys that our floor already assigns to Slate." }
+  ],
+  "unverified": [
+    "Pack membership per skin: PALETTE-ANALYSIS.json reports pack as an empty string for all 109 cards, so every pack-collision judgement here is semantic (by name) rather than measured (by shared cards).",
+    "Whether the twelve current category ids are already translated anywhere in the product; the translation-survival claim for these names is a judgement, not a test.",
+    "Radix chromatic scale names beyond Gray/Mauve/Slate/Sage/Olive, which is all the fetched Scales page rendered; the claim that Radix names scales after hues is supported only for the neutrals.",
+    "Comprehension of 'Persimmon' outside English-speaking markets (the fruit is widely known; the colour term is not).",
+    "The exact hue cut points. The arcs in this document are descriptive of where the 109 accents actually fall, not prescribed thresholds; the rules lane owns the boundaries and may move any of them by a few degrees."
+  ]
+}
