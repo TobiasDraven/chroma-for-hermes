@@ -25,3 +25,4 @@ rigour-fix-packet.json
 
 # Lane briefs are working notes, not repo content
 .briefs/
+*.log
