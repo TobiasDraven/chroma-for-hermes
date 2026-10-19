@@ -42,19 +42,19 @@ test('builtinCategoryIds returns the twelve pane shelves in display order', asyn
   const ids = t.builtinCategoryIds()
   assert.equal(ids.length, 12)
   assert.equal(typeof ids[0], 'string')
-  assert.equal(ids[0], 'minimal')
-  assert.equal(ids[11], 'violet')
+  assert.equal(ids[0], 'persimmon')
+  assert.equal(ids[11], 'neutral')
   // Join to compare as a plain string, avoiding VM prototype mismatches
-  assert.equal(ids.join(','), 'minimal,pastels,vibrant,muted,earth,terminal,nature,warm,orange,gold,cool,violet')
+  assert.equal(ids.join(','), 'persimmon,apricot,amber,gold,lemon,fern,teal,cobalt,indigo,violet,rose,neutral')
 })
 
 // --- effectiveCategory ---------------------------------------------------------
 
 test('effectiveCategory: a non-empty assignment wins when it names a live category', async () => {
   const t = await ctx()
-  const scene = { name: 'my-skin', category: 'earth', lightColors: { ui_accent: '#ff0000' } }
-  assert.equal(t.effectiveCategory(scene, []), 'earth')
-  assert.equal(t.effectiveCategory(scene, [{ id: 'custom', title: 'Custom', names: [] }]), 'earth')
+  const scene = { name: 'my-skin', category: 'indigo', lightColors: { ui_accent: '#ff0000' } }
+  assert.equal(t.effectiveCategory(scene, []), 'indigo')
+  assert.equal(t.effectiveCategory(scene, [{ id: 'custom', title: 'Custom', names: [] }]), 'indigo')
 })
 
 test('effectiveCategory: an assignment to a deleted category falls through to measured', async () => {
@@ -87,10 +87,10 @@ test('effectiveCategory: measured floor when no assignment and no names match', 
   assert.ok(t.builtinCategoryIds().includes(result), `fell to a builtin shelf, got ${result}`)
 })
 
-test('effectiveCategory: a scene with no name returns minimal', async () => {
+test('effectiveCategory: a scene with no name returns neutral', async () => {
   const t = await ctx()
-  assert.equal(t.effectiveCategory(null, []), 'minimal')
-  assert.equal(t.effectiveCategory({}, []), 'minimal')
+  assert.equal(t.effectiveCategory(null, []), 'neutral')
+  assert.equal(t.effectiveCategory({}, []), 'neutral')
 })
 
 // --- buildCategoryGroups / buildGroups -----------------------------------------
@@ -110,7 +110,7 @@ test('buildCategoryGroups: user shelves render AFTER the twelve builtins', async
   assert.equal(groups.length, 14)
   // First 12 are builtins (join to avoid VM prototype mismatches)
   const builtinIds = groups.slice(0, 12).map(g => g.id).join(',')
-  assert.equal(builtinIds, 'minimal,pastels,vibrant,muted,earth,terminal,nature,warm,orange,gold,cool,violet')
+  assert.equal(builtinIds, 'persimmon,apricot,amber,gold,lemon,fern,teal,cobalt,indigo,violet,rose,neutral')
   // Last 2 are user categories, in the order they were declared
   assert.equal(groups[12].id, 'zzz-custom')
   assert.equal(groups[12].builtin, false)
@@ -120,13 +120,13 @@ test('buildCategoryGroups: user shelves render AFTER the twelve builtins', async
 
 test('buildCategoryGroups: a skin assigned to a user category leaves its measured shelf', async () => {
   const t = await ctx()
-  // 'ashes' measures as earth; assign it to a user category
+  // 'ashes' measures into some family; assignment must move it out of that shelf
   const scenes = [{ name: 'ashes', lightColors: { ui_accent: '#8B4513' } }]
+  const measured = t.effectiveCategory(scenes[0], [])
   const cats = [{ id: 'my-earth', title: 'My Earth', names: ['ashes'] }]
   const groups = t.buildCategoryGroups(scenes, cats)
-  // The earth builtin shelf should be empty
-  const earth = groups.find(g => g.id === 'earth')
-  assert.equal(earth.scenes.length, 0, 'ashes left the earth builtin shelf')
+  const shelf = groups.find(g => g.id === measured)
+  assert.equal(shelf.scenes.length, 0, 'ashes left its measured shelf')
   // The user shelf should have it
   const myEarth = groups.find(g => g.id === 'my-earth')
   assert.equal(myEarth.scenes.length, 1)
@@ -304,12 +304,12 @@ test('deleteCategory: throws when no backend', async () => {
 test('putSkinCategory: PUT /skins/{name} with category field', async () => {
   const { t, calls } = await withRest(async (path, options) => {
     calls.push({ path, options })
-    return { name: 'my-skin', category: 'earth' }
+    return { name: 'my-skin', category: 'indigo' }
   })
-  await t.putSkinCategory('my-skin', 'earth')
+  await t.putSkinCategory('my-skin', 'indigo')
   assert.equal(calls[0].path, 'skins/my-skin')
   assert.equal(calls[0].options.method, 'PUT')
-  assert.deepEqual(plain(JSON.parse(calls[0].options.body)), { category: 'earth' })
+  assert.deepEqual(plain(JSON.parse(calls[0].options.body)), { category: 'indigo' })
 })
 
 test('putSkinCategory: empty string clears the assignment', async () => {

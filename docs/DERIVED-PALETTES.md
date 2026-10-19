@@ -7,7 +7,7 @@ hues are kept, the lightness moves in Oklab, and each role is nudged until
 it clears a contrast target against its own shell. A real counterpart file
 always wins over a port, so adding one retires the row below.
 
-Derived palettes: 47.
+Derived palettes: 40.
 
 | scene | derived | shell | text | accent | text/shell | accent/shell |
 |---|---|---|---|---|---|---|
@@ -51,10 +51,3 @@ Derived palettes: 47.
 | Typewriter Cream | light | `#F9F6F2` | `#26241E` | `#765F38` | 14.4:1 | 5.6:1 |
 | Warm Parchment | dark | `#120F08` | `#F1EAE3` | `#C89696` | 16.1:1 | 7.5:1 |
 | White Flash | light | `#FAF5F6` | `#26241D` | `#67680E` | 14.4:1 | 5.5:1 |
-| Ares | light | `#FBF5F5` | `#27241D` | `#AC3226` | 14.4:1 | 6.0:1 |
-| Slate | light | `#F5F7FB` | `#20252A` | `#2E669E` | 14.4:1 | 5.6:1 |
-| Daylight | dark | `#0B1016` | `#E7EBF3` | `#75A2FD` | 16.0:1 | 7.6:1 |
-| Warm Lightmode | dark | `#130F09` | `#F3E9E5` | `#DD8F62` | 16.0:1 | 7.4:1 |
-| Poseidon | light | `#F4F7FB` | `#1F2529` | `#116A9B` | 14.4:1 | 5.5:1 |
-| Sisyphus | light | `#F8F7F2` | `#26241D` | `#71623A` | 14.5:1 | 5.6:1 |
-| Charizard | light | `#FBF5F4` | `#27241E` | `#8D5405` | 14.3:1 | 5.7:1 |

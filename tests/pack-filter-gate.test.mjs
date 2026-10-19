@@ -26,21 +26,23 @@ function hasPackButton(tree) {
   return found
 }
 
-test('the pack filter is absent when no scene carries a pack', async () => {
+test('every shipped skin carries a pack, and the filter is visible', async () => {
   const { context } = await loadPlugin()
   const t = context.testHelpers
-  assert.equal(
-    t.SKINS.some(scene => scene && scene.pack),
-    false,
-    'the shipped catalog carries no pack membership yet'
-  )
-  assert.doesNotThrow(() => t.ThemePicker({}))
-  assert.equal(hasPackButton(t.ThemePicker({})), false, 'no filter over data that does not exist')
+  const without = t.SKINS.filter(scene => !scene || !scene.pack)
+  assert.equal(without.length, 0, `skins with no pack: ${without.map(s => s.name).join(', ')}`)
+  assert.equal(hasPackButton(t.ThemePicker({})), true, 'the filter renders over real pack data')
 })
 
-test('the pack filter appears as soon as a scene carries a pack', async () => {
+test('the filter follows the data: strip the packs and the control goes away', async () => {
   const { context } = await loadPlugin()
   const t = context.testHelpers
-  t.SKINS[0].pack = 'earth'
-  assert.equal(hasPackButton(t.ThemePicker({})), true, 'the filter follows the data')
+  const saved = t.SKINS.map(scene => scene.pack)
+  try {
+    for (const scene of t.SKINS) scene.pack = undefined
+    assert.equal(hasPackButton(t.ThemePicker({})), false, 'no filter over data that does not exist')
+  } finally {
+    t.SKINS.forEach((scene, index) => { scene.pack = saved[index] })
+  }
+  assert.equal(hasPackButton(t.ThemePicker({})), true, 'the control returns with the data')
 })

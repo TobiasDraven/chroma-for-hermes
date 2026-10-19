@@ -295,8 +295,8 @@ def list_chroma_skins() -> dict[str, Any]:
 # source of truth — a test reads its list back out of the template and pins the two
 # together, so this copy cannot drift silently.
 BUILTIN_CATEGORY_IDS: tuple[str, ...] = (
-    "minimal", "pastels", "vibrant", "muted", "earth", "terminal",
-    "nature", "warm", "orange", "gold", "cool", "violet",
+    "persimmon", "apricot", "amber", "gold", "lemon", "fern",
+    "teal", "cobalt", "indigo", "violet", "rose", "neutral",
 )
 
 CORE_NAMES = frozenset(

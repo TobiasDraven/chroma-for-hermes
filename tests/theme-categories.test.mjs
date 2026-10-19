@@ -23,8 +23,8 @@ const plain = (value) => JSON.parse(JSON.stringify(value))
 
 // Display order is deliberate: measured/character buckets before hue families.
 const EXPECTED = [
-  'minimal', 'pastels', 'vibrant', 'muted', 'earth', 'terminal',
-  'nature', 'warm', 'orange', 'gold', 'cool', 'violet'
+  'persimmon', 'apricot', 'amber', 'gold', 'lemon', 'fern',
+  'teal', 'cobalt', 'indigo', 'violet', 'rose', 'neutral'
 ]
 
 test('the category lens is exactly twelve categories, in deliberate order', () => {
@@ -34,11 +34,11 @@ test('the category lens is exactly twelve categories, in deliberate order', () =
   for (const group of groups) assert.ok(group.title, `${group.id} has no title`)
 })
 
-test('every scene lands in exactly one category, and the counts sum to 109', () => {
+test('every scene lands in exactly one category, and the counts sum to the catalogue', () => {
   const groups = buildCategoryGroups(scenes)
   const total = groups.reduce((n, group) => n + group.scenes.length, 0)
   assert.equal(total, scenes.length, 'the groups must not drop or duplicate a scene')
-  assert.equal(total, 109)
+  assert.equal(total, 94, 'the shipped catalogue is 94 skins')
 })
 
 test('every one of the twelve categories is reached by at least one real scene', () => {
@@ -53,18 +53,14 @@ test('a partial palette never throws and falls back to a neutral category, not u
     const id = sceneCategory(scene)
     assert.ok(ids.has(id), `${scene.name} got an unknown category: ${id}`)
   }
-  assert.equal(sceneCategory({ name: 'no-colors' }), 'minimal')
-  assert.equal(sceneCategory({ name: 'empty', lightColors: {} }), 'minimal')
-  assert.equal(sceneCategory({ name: 'junk', lightColors: { ui_accent: 'not-a-color' } }), 'minimal')
+  assert.equal(sceneCategory({ name: 'no-colors' }), 'neutral')
+  assert.equal(sceneCategory({ name: 'empty', lightColors: {} }), 'neutral')
+  assert.equal(sceneCategory({ name: 'junk', lightColors: { ui_accent: 'not-a-color' } }), 'neutral')
 })
 
-test('terminal is the closed list of names it claims, and nothing else', () => {
-  const terminal = plain(scenes
-    .filter((scene) => sceneCategory(scene) === 'terminal')
-    .map((scene) => scene.name)
-    .sort())
-  assert.deepEqual(terminal, [
-    'amber-terminal', 'commodore-64', 'dark-lcars', 'green-screen',
-    'retro-amber', 'retro-blue', 'retro-terminal'
-  ])
+test('a stored category is honoured, and every skin carries one', () => {
+  for (const scene of scenes) {
+    assert.ok(EXPECTED.includes(scene.category), `${scene.name} has no stored category`)
+    assert.equal(sceneCategory(scene), scene.category, `${scene.name} ignored its stored category`)
+  }
 })

@@ -93,7 +93,7 @@ test('the lightbulb repaints a scene whose second palette was PORTED (originally
 })
 
 test('the lightbulb repaints a scene that always shipped a PAIR (authored both ways)', async () => {
-  const { helpers, css, root, scene } = await loadAppliedChip({ theme: 'shadow-thief', mode: 'dark' })
+  const { helpers, css, root, scene } = await loadAppliedChip({ theme: 'dark-aubergine', mode: 'dark' })
   assert.notEqual(scene.derivedLight, true, 'fixture: this palette pair is authored')
   assert.notEqual(scene.derivedDark, true, 'fixture: this palette pair is authored')
   assert.equal(root.dataset.hermesMode, 'dark', 'fixture: it starts on the dark palette')
@@ -106,7 +106,7 @@ test('the lightbulb repaints a scene that always shipped a PAIR (authored both w
 
 test('the lightbulb repaints EVERY dynamic scene, so the failure is not origin-specific', async () => {
   // Prove the scope of the defect rather than trusting the report's guess that
-  // it only affects single-mode-origin scenes: the same path runs for all 109.
+  // it only affects single-mode-origin scenes: the same path runs for all 94.
   const calls = []
   const { context } = await loadPlugin({ stubbed: { useTheme: () => provider('dark', calls) } })
   const helpers = context.testHelpers
@@ -143,5 +143,5 @@ test('the lightbulb repaints EVERY dynamic scene, so the failure is not origin-s
     [],
     `the lightbulb left these scenes on the old palette: ${failures.join(', ')}`
   )
-  assert.equal(scenes.length, 109, 'the shipped catalog is 109 dynamic scenes')
+  assert.equal(scenes.length, 94, 'the shipped catalog is 94 skins')
 })

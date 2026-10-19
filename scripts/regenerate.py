@@ -516,6 +516,59 @@ def _single_scene(skin: dict) -> dict:
     }
 
 
+def _load_v2_skins(skins_dir: Path) -> list[dict]:
+    """Read dual-mode skin files: one file, one skin, both palettes authored.
+
+    A ported half was written once at migration and is emitted whole; an
+    authored half is compacted to KEEP_KEYS exactly as before. Compacting both
+    would break every ported skin, so the file records which half was ported.
+    """
+    skins: list[dict] = []
+    for path in sorted(skins_dir.glob("*.yaml")):
+        if not path.is_file() or path.is_symlink():
+            continue
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        if data.get("schema_version") != 2:
+            continue
+        light = data.get("light_colors") or {}
+        dark = data.get("dark_colors") or {}
+        if not light or not dark:
+            continue
+        derived = set((data.get("provenance") or {}).get("derived") or [])
+        light_out = light if "light" in derived else {
+            k: v for k, v in light.items() if k in KEEP_KEYS
+        }
+        dark_out = dark if "dark" in derived else {
+            k: v for k, v in dark.items() if k in KEEP_KEYS
+        }
+
+        name = data["name"]
+        entry = {
+            "name": name,
+            "label": data.get("label") or name.replace("-", " ").title(),
+            "description": data.get("description", ""),
+            "category": data.get("category", ""),
+            "pack": data.get("pack", "core"),
+            "energy": data.get("energy", ""),
+            "typography": data.get("typography") or {},
+            "source": "user",
+            "modeSupport": "dynamic",
+            "colors": light_out,
+            "lightColors": light_out,
+            "darkColors": dark_out,
+            "lightName": (data.get("provenance") or {}).get("light_file"),
+            "darkName": (data.get("provenance") or {}).get("dark_file"),
+            "gatewayLightName": f"theme-picker-{name}-light",
+            "gatewayDarkName": f"theme-picker-{name}-dark",
+        }
+        if "light" in derived:
+            entry["derivedLight"] = True
+        if "dark" in derived:
+            entry["derivedDark"] = True
+        skins.append(entry)
+    return skins
+
+
 def _build_catalog(
     user_skins: list[dict],
     backend_builtins: list[dict],
@@ -696,13 +749,22 @@ def main() -> int:
     default_out = repo_out if (script_dir.parent / "desktop").is_dir() else home / "desktop-plugins" / "theme-picker" / "plugin.js"
     out_path = Path(argv[1]) if len(argv) > 1 else (out_override or default_out)
 
+    # Schema v2 lives beside the v1 bundle: one file per skin, both palettes.
+    # When it is present it is the catalogue; the v1 pair table is retired.
+    v2_dir = script_dir.parent / "skins-v2"
     user_skins = []
-    for p in sorted(skins_dir.glob("*.yaml")):
-        if not p.is_file() or p.is_symlink():
-            continue
-        parsed = _parse_skin_file(p)
-        if parsed and parsed.get("colors"):
-            user_skins.append(parsed)
+    builtins: list[dict] = []
+    if v2_dir.is_dir() and (argv[0] if argv else None) is None:
+        user_skins = _load_v2_skins(v2_dir)
+        catalog = user_skins
+    else:
+        for p in sorted(skins_dir.glob("*.yaml")):
+            if not p.is_file() or p.is_symlink():
+                continue
+            parsed = _parse_skin_file(p)
+            if parsed and parsed.get("colors"):
+                user_skins.append(parsed)
+        catalog = None
 
     # Backend built-ins are supplemental. Never let them turn an empty,
     # malformed, or non-regular supplied bundle into a destructive partial
@@ -711,12 +773,13 @@ def main() -> int:
         print(f"ERROR: no valid bundled skins found in {skins_dir}; refusing to replace {out_path}.", file=sys.stderr)
         return 1
 
-    try:
-        builtins = _backend_builtins()
-    except RuntimeError as exc:
-        print(f"ERROR: {exc}; refusing to replace {out_path}.", file=sys.stderr)
-        return 1
-    catalog = _build_catalog(user_skins, builtins)
+    if catalog is None:
+        try:
+            builtins = _backend_builtins()
+        except RuntimeError as exc:
+            print(f"ERROR: {exc}; refusing to replace {out_path}.", file=sys.stderr)
+            return 1
+        catalog = _build_catalog(user_skins, builtins)
     derived_count = _write_derivation_report(catalog, Path(__file__).resolve().parent.parent / "docs" / "DERIVED-PALETTES.md")
     repo_gateway_skins = script_dir.parent / "gateway-skins"
     transport_count = _write_gateway_transport_skins(catalog, repo_gateway_skins)

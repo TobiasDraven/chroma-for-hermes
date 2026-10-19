@@ -212,7 +212,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -223,58 +223,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -283,16 +247,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -728,7 +728,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -739,58 +739,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -799,16 +763,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -1056,7 +1056,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -1067,58 +1067,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -1127,16 +1091,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -1383,7 +1383,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -1394,58 +1394,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -1454,16 +1418,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -1900,7 +1900,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -1911,58 +1911,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -1971,16 +1935,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -2231,7 +2231,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -2242,58 +2242,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -2302,16 +2266,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -2555,7 +2555,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -2566,58 +2566,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -2626,16 +2590,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -2883,7 +2883,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -2894,58 +2894,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -2954,16 +2918,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -3207,7 +3207,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -3218,58 +3218,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -3278,16 +3242,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -3546,58 +3546,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -3606,16 +3570,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -3874,58 +3874,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -3934,16 +3898,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -4202,58 +4202,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -4262,16 +4226,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -4530,58 +4530,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -4590,16 +4554,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -4857,58 +4857,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -4917,16 +4881,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -5173,7 +5173,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -5184,58 +5184,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -5244,16 +5208,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -5692,7 +5692,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -5703,58 +5703,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -5763,16 +5727,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -6020,7 +6020,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -6031,58 +6031,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -6091,16 +6055,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -6536,7 +6536,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -6547,58 +6547,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -6607,16 +6571,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -6875,58 +6875,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -6935,16 +6899,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -7191,7 +7191,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -7202,58 +7202,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -7262,16 +7226,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -7519,7 +7519,7 @@
          "key": "category",
          "onChange": "[fn]",
          "title": "File this skin under a category. Empty resets to its measured shelf.",
-         "value": "cool",
+         "value": "cobalt",
          "type": "select",
          "children": [
           {
@@ -7530,58 +7530,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -7590,16 +7554,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -7858,58 +7858,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -7918,16 +7882,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []
@@ -8186,58 +8186,22 @@
           },
           [
            {
-            "key": "b-minimal",
-            "value": "minimal",
+            "key": "b-persimmon",
+            "value": "persimmon",
             "type": "option",
-            "children": "minimal"
+            "children": "persimmon"
            },
            {
-            "key": "b-pastels",
-            "value": "pastels",
+            "key": "b-apricot",
+            "value": "apricot",
             "type": "option",
-            "children": "pastels"
+            "children": "apricot"
            },
            {
-            "key": "b-vibrant",
-            "value": "vibrant",
+            "key": "b-amber",
+            "value": "amber",
             "type": "option",
-            "children": "vibrant"
-           },
-           {
-            "key": "b-muted",
-            "value": "muted",
-            "type": "option",
-            "children": "muted"
-           },
-           {
-            "key": "b-earth",
-            "value": "earth",
-            "type": "option",
-            "children": "earth"
-           },
-           {
-            "key": "b-terminal",
-            "value": "terminal",
-            "type": "option",
-            "children": "terminal"
-           },
-           {
-            "key": "b-nature",
-            "value": "nature",
-            "type": "option",
-            "children": "nature"
-           },
-           {
-            "key": "b-warm",
-            "value": "warm",
-            "type": "option",
-            "children": "warm"
-           },
-           {
-            "key": "b-orange",
-            "value": "orange",
-            "type": "option",
-            "children": "orange"
+            "children": "amber"
            },
            {
             "key": "b-gold",
@@ -8246,16 +8210,52 @@
             "children": "gold"
            },
            {
-            "key": "b-cool",
-            "value": "cool",
+            "key": "b-lemon",
+            "value": "lemon",
             "type": "option",
-            "children": "cool"
+            "children": "lemon"
+           },
+           {
+            "key": "b-fern",
+            "value": "fern",
+            "type": "option",
+            "children": "fern"
+           },
+           {
+            "key": "b-teal",
+            "value": "teal",
+            "type": "option",
+            "children": "teal"
+           },
+           {
+            "key": "b-cobalt",
+            "value": "cobalt",
+            "type": "option",
+            "children": "cobalt"
+           },
+           {
+            "key": "b-indigo",
+            "value": "indigo",
+            "type": "option",
+            "children": "indigo"
            },
            {
             "key": "b-violet",
             "value": "violet",
             "type": "option",
             "children": "violet"
+           },
+           {
+            "key": "b-rose",
+            "value": "rose",
+            "type": "option",
+            "children": "rose"
+           },
+           {
+            "key": "b-neutral",
+            "value": "neutral",
+            "type": "option",
+            "children": "neutral"
            }
           ],
           []

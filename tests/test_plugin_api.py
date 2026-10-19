@@ -783,10 +783,10 @@ class IndexCategoryTests(EditorTestCase):
 
     def test_a_category_round_trips_through_the_index(self):
         self.api._write_index(
-            {"categorised": {"source": "chroma", "label": "C", "category": "cool"}}
+            {"categorised": {"source": "chroma", "label": "C", "category": "teal"}}
         )
         self._write_skin("categorised")
-        self.assertEqual(self.api.list_chroma_skins()["skins"][0]["category"], "cool")
+        self.assertEqual(self.api.list_chroma_skins()["skins"][0]["category"], "teal")
 
     def test_an_import_records_the_category_key(self):
         self._import("fresh")
@@ -1449,18 +1449,18 @@ class CategoryStoreTests(EditorTestCase):
         from fastapi import HTTPException
 
         with self.assertRaises(HTTPException) as ctx:
-            self._mkcat("cool", "Cool")
+            self._mkcat("teal", "Cool")
         self.assertEqual(ctx.exception.status_code, 409)
-        self.assertIn("cool", str(ctx.exception.detail))
+        self.assertIn("teal", str(ctx.exception.detail))
         self.assertIn("built-in", str(ctx.exception.detail))
 
     def test_refuses_a_builtin_id_on_delete(self):
         from fastapi import HTTPException
 
         with self.assertRaises(HTTPException) as ctx:
-            self.api.delete_category("cool")
+            self.api.delete_category("teal")
         self.assertEqual(ctx.exception.status_code, 409)
-        self.assertIn("cool", str(ctx.exception.detail))
+        self.assertIn("teal", str(ctx.exception.detail))
 
     def test_refuses_a_duplicate_id(self):
         from fastapi import HTTPException
@@ -1563,9 +1563,9 @@ class CategoryAssignmentTests(EditorTestCase):
 
     def test_assigns_a_builtin_category_and_persists_it(self):
         self._import("mine")
-        result = self.api.put_skin("mine", self.api.ScenePaletteRequest(category="cool"))
-        self.assertEqual(result["category"], "cool")
-        self.assertEqual(self.api._read_index()["mine"]["category"], "cool")
+        result = self.api.put_skin("mine", self.api.ScenePaletteRequest(category="teal"))
+        self.assertEqual(result["category"], "teal")
+        self.assertEqual(self.api._read_index()["mine"]["category"], "teal")
 
     def test_assigns_a_user_category(self):
         self._import("mine")
@@ -1584,7 +1584,7 @@ class CategoryAssignmentTests(EditorTestCase):
 
     def test_empty_string_clears_a_previously_set_category(self):
         self._import("mine")
-        self.api.put_skin("mine", self.api.ScenePaletteRequest(category="cool"))
+        self.api.put_skin("mine", self.api.ScenePaletteRequest(category="teal"))
         result = self.api.put_skin("mine", self.api.ScenePaletteRequest(category=""))
         self.assertEqual(result["category"], "")
         self.assertEqual(self.api._read_index()["mine"]["category"], "")
@@ -1593,7 +1593,7 @@ class CategoryAssignmentTests(EditorTestCase):
         """A request carrying only a category must not be refused by the
         "nothing to write" guard."""
         self._import("mine")
-        result = self.api.put_skin("mine", self.api.ScenePaletteRequest(category="cool"))
+        result = self.api.put_skin("mine", self.api.ScenePaletteRequest(category="teal"))
         self.assertTrue(result["ok"])
 
     def test_a_write_that_changes_nothing_at_all_is_still_refused(self):
@@ -1606,8 +1606,8 @@ class CategoryAssignmentTests(EditorTestCase):
 
     def test_get_skin_reports_the_stored_category(self):
         self._import("mine")
-        self.api.put_skin("mine", self.api.ScenePaletteRequest(category="cool"))
-        self.assertEqual(self.api.get_skin("mine")["category"], "cool")
+        self.api.put_skin("mine", self.api.ScenePaletteRequest(category="teal"))
+        self.assertEqual(self.api.get_skin("mine")["category"], "teal")
 
     def test_an_unknown_category_does_not_leave_a_half_write(self):
         from fastapi import HTTPException
@@ -1662,11 +1662,11 @@ class CategoryImportTests(PackTestCase):
     def test_a_builtin_collision_is_refused(self):
         from fastapi import HTTPException
 
-        bundle = self._bundle_with_cats([{"id": "cool", "title": "Cool"}])
+        bundle = self._bundle_with_cats([{"id": "teal", "title": "Cool"}])
         with self.assertRaises(HTTPException) as ctx:
             self.api.import_pack(self.api.PackImportRequest(**bundle))
         self.assertEqual(ctx.exception.status_code, 400)
-        self.assertIn("cool", str(ctx.exception.detail))
+        self.assertIn("teal", str(ctx.exception.detail))
 
     def test_a_failed_import_leaves_the_store_unchanged(self):
         """The category is created first, then the colliding skin aborts the import:

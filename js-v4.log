@@ -1,0 +1,499 @@
+✔ one consumer unmounting cannot null the provider slot a still-mounted consumer needs (36.9942ms)
+✔ the slot survives the chip unmounting first, and clears with the page (26.8579ms)
+✔ builtinCategoryIds returns the twelve pane shelves in display order (45.4978ms)
+✔ effectiveCategory: a non-empty assignment wins when it names a live category (18.3014ms)
+✔ effectiveCategory: an assignment to a deleted category falls through to measured (23.1151ms)
+✔ effectiveCategory: a user category names list claims a skin by exact name (19.8456ms)
+✔ effectiveCategory: names matching is case-insensitive (21.7579ms)
+✔ effectiveCategory: measured floor when no assignment and no names match (24.147ms)
+✔ effectiveCategory: a scene with no name returns neutral (15.2307ms)
+✔ buildCategoryGroups: user shelves render AFTER the twelve builtins (24.3007ms)
+✔ buildCategoryGroups: a skin assigned to a user category leaves its measured shelf (19.2944ms)
+✔ buildCategoryGroups: an empty user shelf is dropped by the caller (34.2493ms)
+✔ buildGroups: theme mode passes userCategories through (24.5311ms)
+✔ buildGroups: non-theme mode ignores userCategories (25.5181ms)
+✔ buildCategoryGroups: backward compatible with no userCategories argument (17.6931ms)
+✔ schemaCategoryDrift: empty when backend and pane agree (15.8527ms)
+✔ schemaCategoryDrift: reports pane-only and backend-only ids (16.5295ms)
+✔ schemaCategoryDrift: backend-only id is reported (19.3051ms)
+✔ schemaCategoryDriftNotice: null when no drift, warning when drift (19.8024ms)
+✔ categoryCreateFailure: 409 is a collision on the id field (39.4545ms)
+✔ categoryCreateFailure: 400 is invalid input (16.3124ms)
+✔ categoryCreateFailure: other statuses are generic errors (12.3829ms)
+✔ categoryCreateFailure: no status is still an error (10.9981ms)
+✔ listCategories: GET /categories returns the parsed list (57.3376ms)
+✔ listCategories: a bare array envelope is accepted (48.5778ms)
+✔ listCategories: a non-array envelope yields an empty list (54.5051ms)
+✔ listCategories: a transport failure yields an empty list (31.5919ms)
+✔ createCategory: POST /categories with id and title (36.6095ms)
+✔ createCategory: throws when no backend (13.1344ms)
+✔ deleteCategory: DELETE /categories/{id} (35.2279ms)
+✔ deleteCategory: throws when no backend (7.7271ms)
+✔ putSkinCategory: PUT /skins/{name} with category field (35.7324ms)
+✔ putSkinCategory: empty string clears the assignment (30.257ms)
+✔ putSkinCategory: throws when no backend (18.6208ms)
+✔ the gear is on every card the pane renders, and only the eye cannot see it (45.3634ms)
+✔ an overridden card carries the edited marker, and an authored one carries nothing extra (20.9114ms)
+✔ the colour field is a swatch over a hidden native input, plus a hex field that validates (23.3845ms)
+✔ a role below its advisory target is marked, never refused, and an unreadable colour is a dash (15.5988ms)
+✔ the modal lays out header, preview, six role rows, the advisory strip and the actions (19.9055ms)
+✔ an override reaches the fields, offers Reset, and a read-only card says why (31.8976ms)
+✔ a busy write labels itself, and a palette with nothing in it renders dashes (30.8763ms)
+✔ the effective palette is override ?? authored, and the authored scene is never mutated (25.1651ms)
+✔ the shelf does not move: grouping runs on the authored palette (23.8953ms)
+✔ an override is written through PUT /overrides/{scene} and cleared with DELETE (56.6483ms)
+✔ a 404 says restart Hermes, and a failed write never reads as a success (20.4951ms)
+✔ a draft becomes the override body the routes expect (12.1931ms)
+✔ the duplicate body carries concrete skin keys and a defaulted label (40.0761ms)
+✔ a 409 from duplicate is a field-level collision, not a thrown crash (27.8162ms)
+✔ duplicateSkin posts the exact body through the rest transport (98.0095ms)
+✔ the bundle builder pins the §7 document shape (17.2987ms)
+✔ the export filename is the pack slug plus .json (18.4397ms)
+✔ a pack that lost members says so instead of rendering as whole (17.6752ms)
+✔ the import preview groups new / identical / collides (28.7714ms)
+✔ a rename choice lands in the applied payload; a skip drops the skin (16.7002ms)
+✔ requestPackImport sends dryRun, and the applied notice reports what happened (66.0372ms)
+✔ a malformed bundle produces a readable error path, never a stack trace (23.33ms)
+✔ the delete confirmation names both choices, and the route passes withSkins (79.0043ms)
+✔ listPacks tolerates the envelope and never crashes on a bad answer (175.2017ms)
+✔ an owned skin is written IN PLACE through PUT /skins/{name} (90.6014ms)
+✔ the payload iterates the modes /schema reports, defaulting to the pair (13.7198ms)
+✔ the mode pair comes from /schema when it answers, and falls back when it does not (19.0958ms)
+✔ the size caps are read from /schema, not re-declared (22.0678ms)
+✔ a role whose primary key is missing from paletteKeys raises a drift alarm (39.9876ms)
+✔ fetchEditorSchema reads once, caches, and degrades to null when the route is absent (115.2665ms)
+✔ an in-place save folds the backend read-back into the pane scene (22.2137ms)
+✔ a failed save names the door that failed (29.0593ms)
+✔ applyOverride: a typography override is merged onto the scene (39.779ms)
+✔ applyOverride: a scene with no override keeps its authored typography (12.9279ms)
+✔ applyOverride: a font-only override does not clobber colours (14.7652ms)
+✔ applyOverride: the authored scene object is never mutated (12.6188ms)
+✔ sceneToDesktopTheme: the scene typography wins over SCENE_TYPOGRAPHY (17.929ms)
+✔ sceneToDesktopTheme: a scene with no typography uses SCENE_TYPOGRAPHY (34.0814ms)
+✔ withEmojiFallback: appends the fallback when missing (30.667ms)
+✔ withEmojiFallback: does not duplicate when already present (39.4149ms)
+✔ validTypoStack: refuses forbidden characters (30.7559ms)
+✔ overridePayload: carries typography keys the user set (13.0223ms)
+✔ overridePayload: a font-only override carries no light/dark (18.884ms)
+✔ schemaTypoDrift: empty when backend lists both font keys (12.8513ms)
+✔ schemaTypoDrift: reports a missing key (23.0007ms)
+✔ schemaTypoDriftNotice: null when no drift, warning when drift (31.7596ms)
+✔ boot survival: register() is synchronous and an overlay in the mirror reaches the registered theme (55.6273ms)
+✔ boot survival: a reset clears the mirror so the shipped palette boots (19.0328ms)
+✔ boot survival: applyOverride carries typography into sceneToDesktopTheme (27.9674ms)
+✔ a single skin exports as its own YAML, byte for byte (43.4856ms)
+✔ a bulk export saves the backend bundle under its declared filename (19.1049ms)
+✔ an empty or malformed payload fails loudly instead of writing a dead file (16.8123ms)
+✔ the bulk filename is never inferred from a single non-YAML file (35.5855ms)
+✔ normHex reduces every colour form these formats carry to 6-digit hex (50.6548ms)
+✔ a Windows Terminal scheme maps its literal colours and guesses the rest (34.5068ms)
+✔ pasting a whole Windows Terminal settings file picks the selected scheme (27.7321ms)
+✔ an unselected multi-scheme settings file falls back to its first scheme (23.5896ms)
+✔ Base16 legacy flat file parses, with no hash and no variant marker (29.0394ms)
+✔ Tinted 0.11 nested palette parses and honours its explicit variant (19.117ms)
+✔ a VS Code theme parses despite comments and trailing commas (22.9673ms)
+✔ a syntax-only VS Code theme is refused rather than imported empty (21.6181ms)
+✔ iTerm2 is recognised and refused, not half-read (15.6582ms)
+✔ unrecognised text fails with a message that names the accepted formats (49.7089ms)
+✔ every accepted format delivers the shape the existing backend writer consumes (17.4477ms)
+✔ a real gateway mint reports a plain success (37.3612ms)
+✔ a missing backend is reported as local-only, never as success (40.6599ms)
+✔ a backend that errors is reported with its reason, not swallowed (16.2948ms)
+✔ hasGatewayBackend tracks the mounted backend slot (58.7109ms)
+✔ the shipped build never discards a backend failure with .catch(() => null) (8.2532ms)
+✖ the pack filter is absent when no scene carries a pack (63.922ms)
+✔ the pack filter appears as soon as a scene carries a pack (51.2186ms)
+✔ a preview holds for ten seconds and reverts (61.0344ms)
+✔ the countdown floors at zero and never goes negative (18.5029ms)
+✔ the shipped build arms no hover preview (5.7785ms)
+✔ the pill previews on click, and stops on a second click (24.2188ms)
+✔ while previewing the pill shows the countdown instead of the label (13.691ms)
+✔ the pill is a sibling of the card, never inside it (19.6572ms)
+✔ the card still applies the theme when its body is clicked (20.5432ms)
+✔ an owned card renders its manage actions plus the pill (21.6856ms)
+✔ a circle holds only its palette, and its label sits ABOVE the card (13.3037ms)
+✔ square and rectangle cards keep their label inside the card (17.6413ms)
+✔ the shipped build imports every hook it uses (22.4405ms)
+✖ the plugin registers and both render surfaces render (70.9933ms)
+✔ ThemeCard and ThemePicker component bodies execute (41.8962ms)
+✔ safeMerge copies ordinary keys (44.689ms)
+✔ safeMerge refuses __proto__ from a parsed payload (17.5962ms)
+✔ safeMerge refuses constructor and prototype keys too (18.3728ms)
+✔ applyOverride cannot be made to pollute by a hostile palette (21.3232ms)
+✖ every catalog scene still maps to its recorded palette (39.3534ms)
+✖ the representative skins keep their exact palettes (18.5841ms)
+✔ hand-built edge skins still resolve as recorded (22.6995ms)
+✔ every palette is complete, in the same key order, and every value is a 6-digit hex (48.1507ms)
+✔ splitUsableSkins keeps every drawable skin and reports the ones it cannot draw (67.7897ms)
+✖ a malformed entry among valid ones does not white-screen the picker (40.3499ms)
+✔ SkinBoundary shows an honest fallback with a way to carry on, and reports the error (14.4326ms)
+✔ the plugin still identifies itself as chroma (67.0464ms)
+✔ the full-page picker route is still registered (44.7665ms)
+✔ the sidebar entry is still registered (43.4544ms)
+✔ the statusbar chip is still registered (38.8056ms)
+✔ the command palette entry is still registered (36.9224ms)
+✔ the theme catalog is still registered as Desktop themes (35.5836ms)
+✔ gateway sync is still wired into the shipped build (30.1503ms)
+✔ applying a skin still hands the switch to the Desktop ThemeProvider (33.9245ms)
+✔ the app-owned localStorage keys are still untouched (25.2424ms)
+✖ every card case renders exactly the DOM it rendered before the card was split up (14.7587ms)
+✔ the palette strip takes the first name a skin carries for each of the six roles (1.0673ms)
+✔ the palette is a 2 x 6 matrix: a flex column of two flex rows of six swatches (2.3557ms)
+✔ an unowned card offers only itself and the preview pill; an owned one adds the three actions (1.5651ms)
+✔ a circle holds only its palette, and its label sits ABOVE the card (1.1723ms)
+✔ the active skin is badged, and the applying skin is disabled (28.7085ms)
+✔ the preview pill offers a preview, and a running preview counts down (1.4278ms)
+✔ the mode a card offers is named in its title, and a single-mode skin says which one it is (1.1658ms)
+✔ the rename row and the delete row are reachable as pieces, because useState hides them inside the card (1.1243ms)
+✔ the label row shows the state only where the card has room for it (0.6955ms)
+✔ clicking the card applies that exact scene, once (0.8158ms)
+✔ the manage row is wired to its handlers, and Rename opens a row instead of renaming (0.6246ms)
+✔ the rename row commits the draft on Enter and on Save, and only Escape cancels (0.3275ms)
+✔ the delete confirmation deletes on Yes and only closes on No (0.2975ms)
+✔ the CLI badge never claims a gateway skin reaches the CLI under a local scope (0.2273ms)
+✔ the category lens is exactly twelve categories, in deliberate order (9.4824ms)
+✔ every scene lands in exactly one category, and the counts sum to the catalogue (3.9381ms)
+✔ every one of the twelve categories is reached by at least one real scene (2.7981ms)
+✔ a partial palette never throws and falls back to a neutral category, not undefined (5.5747ms)
+✔ a stored category is honoured, and every skin carries one (0.6953ms)
+✔ the lightbulb repaints a scene whose second palette was PORTED (originally dark-only) (40.2657ms)
+✖ the lightbulb repaints a scene that always shipped a PAIR (authored both ways) (15.0464ms)
+✖ the lightbulb repaints EVERY dynamic scene, so the failure is not origin-specific (139.5101ms)
+✔ registering the picker seeds every contributed skin for boot-time theme resolution (69.1326ms)
+✔ registration upgrades legacy single-palette picker themes to dynamic scenes (50.3571ms)
+✔ registration repairs a stale pre-2.4.0 cache whose one palette is stored as both halves (40.9247ms)
+✔ registration repairs a stale cache that carries no darkColors at all (43.593ms)
+✔ registration preserves dark mode when upgrading a selected canonical dark source theme (32.2541ms)
+✔ registration does not force a current combined scene from light to dark (36.9524ms)
+✔ registration never overwrites an unrelated single-palette user import (20.7319ms)
+✔ legacy migration never overwrites a same-signature user import with a different palette (21.3642ms)
+✔ registration migrates a selected variant to its dynamic scene and mode (16.4727ms)
+✔ registration migrates a gateway transport variant back to its dynamic scene (16.9752ms)
+✔ active variant names resolve to their dynamic scene card (3.821ms)
+✔ the grid target is fixed, so a wide window shows more cards, not bigger ones (3.6383ms)
+✔ the card shape is remembered, and an unknown shape falls back to squares (3.9221ms)
+✔ themes are grouped as dynamic, dark-only, then light-only (6.2449ms)
+✔ the theme lens puts every scene in exactly one category, and no category ships empty (6.9528ms)
+✖ the classifier reads perceptual lightness and chroma, and pastel is a colour (5.2857ms)
+✔ the grouping lens persists, and defaults to the scene view (7.0325ms)
+✔ appearance persistence stores theme and explicit mode for the active profile (4.2041ms)
+✔ desktop mode follows the rendered mode and falls back to the active profile (3.8409ms)
+✔ applying a scene repaints in place without reloading or leaving the picker (5.186ms)
+✔ applying a dynamic scene immediately repaints locally and synchronizes its selected variant through the gateway (7.0681ms)
+✔ a profile-scoped pick repaints locally and sends NO gateway broadcast (4.2748ms)
+✔ the default scope is unchanged, so an existing pick still broadcasts (4.2553ms)
+✔ the scope is remembered per profile, not globally (5.7247ms)
+✔ clearing the scope restores the broadcast (4.7235ms)
+✔ rapid scene changes preserve gateway request order while repainting locally immediately (4.9408ms)
+✔ queued gateway changes never leak into a different active profile (5.7834ms)
+✔ an in-flight failure never repaints its old profile over the newly active profile (4.2568ms)
+✔ an in-flight success restores the newly active profile after the old broadcast repaints it (4.9677ms)
+✔ an in-flight success restores a switched profile from its pre-request persisted appearance (4.6855ms)
+✔ gateway acknowledgement restores the dynamic scene name after Desktop ingests the concrete variant (4.9903ms)
+✔ gateway success reasserts every requested dark dynamic palette after Desktop applies it with stale light mode (92.1932ms)
+✔ gateway synchronization failure keeps the local repaint and reports a warning (8.2464ms)
+✔ a stale acknowledgement cannot replace the latest persisted scene when the latest gateway request fails (6.8392ms)
+✔ post-ack persistence failure warns that the combined scene is not durable (6.0066ms)
+✔ in-place repaint still works when appearance storage is unavailable (19.4934ms)
+✔ applying a contributed scene warns when its boot theme cache cannot be saved (6.9572ms)
+✔ the self-contained plugin never fetches remote theme fonts (3.3123ms)
+✔ applying a scene hands the switch to Desktop's ThemeProvider so its state cannot revert it (7.1507ms)
+✔ applying a scene without a captured provider still paints (non-React fallback) (13.4116ms)
+✔ normalises hex, oklch and rgb colour tokens to #rrggbb (26.2989ms)
+✔ rejects colour values it cannot convert (10.6361ms)
+✔ maps a TweakCN registry item onto a valid DesktopTheme (11.4359ms)
+✔ derives darkColors only when the preset ships a dark group (10.7777ms)
+✔ refuses to shadow a built-in desktop theme name (9.3301ms)
+✔ resolves a preset name to the registry URL and passes a URL through (15.1179ms)
+✔ reports an HTML answer as a bad preset instead of a JSON parse error (8.3836ms)
+✔ fetches and converts a preset, and surfaces a bad response (18.2494ms)
+✔ registers the catalog as pure data without any apply machinery (35.9357ms)
+✔ parses raw shadcn CSS into a DesktopTheme (10.3225ms)
+✔ parses CSS without a dark block (light-only theme) (7.7375ms)
+✔ rejects CSS without a :root block (9.1072ms)
+✔ refuses to shadow a built-in desktop theme name (6.8925ms)
+✔ a scene carrying gateway transports is CLI-capable (6.9852ms)
+✔ a scene without gateway transports is Desktop-only (8.588ms)
+✔ the shipped catalog actually carries gateway transports (9.9347ms)
+ℹ tests 217
+ℹ suites 0
+ℹ pass 208
+ℹ fail 9
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1392.7497
+
+✖ failing tests:
+
+test at tests\pack-filter-gate.test.mjs:29:1
+✖ the pack filter is absent when no scene carries a pack (63.922ms)
+  AssertionError [ERR_ASSERTION]: the shipped catalog carries no pack membership yet
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///C:/DEV/hermes-theme-picker/tests/pack-filter-gate.test.mjs:32:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\render-smoke.test.mjs:29:1
+✖ the plugin registers and both render surfaces render (70.9933ms)
+  AssertionError [ERR_ASSERTION]: the catalog must still register its themes
+      at TestContext.<anonymous> (file:///C:/DEV/hermes-theme-picker/tests/render-smoke.test.mjs:38:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\scene-parity.test.mjs:26:1
+✖ every catalog scene still maps to its recorded palette (39.3534ms)
+  AssertionError [ERR_ASSERTION]: the catalog size changed
+  
+  94 !== 109
+  
+      at TestContext.<anonymous> (file:///C:/DEV/hermes-theme-picker/tests/scene-parity.test.mjs:30:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 94,
+    expected: 109,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\scene-parity.test.mjs:41:1
+✖ the representative skins keep their exact palettes (18.5841ms)
+  AssertionError [ERR_ASSERTION]: golden scene nous is not in the catalog
+      at TestContext.<anonymous> (file:///C:/DEV/hermes-theme-picker/tests/scene-parity.test.mjs:49:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\skin-boundary.test.mjs:36:1
+✖ a malformed entry among valid ones does not white-screen the picker (40.3499ms)
+  AssertionError [ERR_ASSERTION]: the valid cards still render
+      at TestContext.<anonymous> (file:///C:/DEV/hermes-theme-picker/tests/skin-boundary.test.mjs:50:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\theme-card.test.mjs:37:1
+✖ every card case renders exactly the DOM it rendered before the card was split up (14.7587ms)
+  AssertionError [ERR_ASSERTION]: card case drifted: square owned idle dark
+  + actual - expected
+  ... Skipped lines
+  
+    {
+      children: [
+        {
+          children: [
+            {
+  ...
+                      {
+  +                     children: 'persimmon',
+  +                     key: 'b-persimmon',
+  -                     children: 'minimal',
+  -                     key: 'b-minimal',
+                        type: 'option',
+  +                     value: 'persimmon'
+  -                     value: 'minimal'
+                      },
+                      {
+  +                     children: 'apricot',
+  +                     key: 'b-apricot',
+  -                     children: 'pastels',
+  -                     key: 'b-pastels',
+                        type: 'option',
+  +                     value: 'apricot'
+  -                     value: 'pastels'
+                      },
+                      {
+  +                     children: 'amber',
+  +                     key: 'b-amber',
+  -                     children: 'vibrant',
+  -                     key: 'b-vibrant',
+                        type: 'option',
+  +                     value: 'amber'
+  -                     value: 'vibrant'
+                      },
+                      {
+  +                     children: 'gold',
+  +                     key: 'b-gold',
+  -                     children: 'muted',
+  -                     key: 'b-muted',
+                        type: 'option',
+  +                     value: 'gold'
+  -                     value: 'muted'
+                      },
+                      {
+  +                     children: 'lemon',
+  +                     key: 'b-lemon',
+  -                     children: 'earth',
+  -                     key: 'b-earth',
+                        type: 'option',
+  +                     value: 'lemon'
+  -                     value: 'earth'
+                      },
+                      {
+  +                     children: 'fern',
+  +                     key: 'b-fern',
+  -                     children: 'terminal',
+  -                     key: 'b-terminal',
+                        type: 'option',
+  +                     value: 'fern'
+  -                     value: 'terminal'
+                      },
+                      {
+  +                     children: 'teal',
+  +                     key: 'b-teal',
+  -                     children: 'nature',
+  -                     key: 'b-nature',
+                        type: 'option',
+  +                     value: 'teal'
+  -                     value: 'nature'
+                      },
+                      {
+  +                     children: 'cobalt',
+  +                     key: 'b-cobalt',
+  -                     children: 'warm',
+  -                     key: 'b-warm',
+                        type: 'option',
+  +                     value: 'cobalt'
+  -                     value: 'warm'
+                      },
+                      {
+  +                     children: 'indigo',
+  +                     key: 'b-indigo',
+  -                     children: 'orange',
+  -                     key: 'b-orange',
+                        type: 'option',
+  +                     value: 'indigo'
+  -                     value: 'orange'
+                      },
+                      {
+  +                     children: 'violet',
+  +                     key: 'b-violet',
+  -                     children: 'gold',
+  -                     key: 'b-gold',
+                        type: 'option',
+  +                     value: 'violet'
+  -                     value: 'gold'
+                      },
+                      {
+  +                     children: 'rose',
+  +                     key: 'b-rose',
+  -                     children: 'cool',
+  -                     key: 'b-cool',
+                        type: 'option',
+  +                     value: 'rose'
+  -                     value: 'cool'
+                      },
+                      {
+  +                     children: 'neutral',
+  +                     key: 'b-neutral',
+  -                     children: 'violet',
+  -                     key: 'b-violet',
+                        type: 'option',
+  +                     value: 'neutral'
+  -                     value: 'violet'
+                      }
+                    ],
+                    []
+                  ],
+                  className: 'min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)',
+  ...
+                  type: 'select',
+  +               value: 'cobalt'
+  -               value: 'cool'
+                },
+                {
+                  children: 'Export',
+                  className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100',
+                  htmlType: 'button',
+  
+      at TestContext.<anonymous> (file:///C:/DEV/hermes-theme-picker/tests/theme-card.test.mjs:41:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: { className: 'flex w-full flex-col', type: 'div', children: [ [Object], [Object] ] },
+    expected: { className: 'flex w-full flex-col', type: 'div', children: [ [Object], [Object] ] },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests\theme-chip-mode.test.mjs:95:1
+✖ the lightbulb repaints a scene that always shipped a PAIR (authored both ways) (15.0464ms)
+  AssertionError [ERR_ASSERTION]: the catalog must carry shadow-thief
+      at loadAppliedChip (file:///C:/DEV/hermes-theme-picker/tests/theme-chip-mode.test.mjs:70:10)
+      at async TestContext.<anonymous> (file:///C:/DEV/hermes-theme-picker/tests/theme-chip-mode.test.mjs:96:41)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\theme-chip-mode.test.mjs:107:1
+✖ the lightbulb repaints EVERY dynamic scene, so the failure is not origin-specific (139.5101ms)
+  AssertionError [ERR_ASSERTION]: the shipped catalog is 109 dynamic scenes
+  
+  94 !== 109
+  
+      at TestContext.<anonymous> (file:///C:/DEV/hermes-theme-picker/tests/theme-chip-mode.test.mjs:146:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 94,
+    expected: 109,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\theme-persistence.test.mjs:392:1
+✖ the classifier reads perceptual lightness and chroma, and pastel is a colour (5.2857ms)
+  AssertionError [ERR_ASSERTION]: a pale pink
+  
+  'rose' !== 'pastels'
+  
+      at TestContext.<anonymous> (file:///C:/DEV/hermes-theme-picker/tests/theme-persistence.test.mjs:399:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'rose',
+    expected: 'pastels',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

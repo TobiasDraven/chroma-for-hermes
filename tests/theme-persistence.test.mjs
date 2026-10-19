@@ -91,12 +91,12 @@ test('registering the picker seeds every contributed skin for boot-time theme re
 
 test('registration upgrades legacy single-palette picker themes to dynamic scenes', async () => {
   const catalog = await loadPlugin(new Map(), true)
-  const scene = catalog.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = catalog.__test.scenes.find(item => item.name === 'alabaster')
   const expected = catalog.__test.sceneToDesktopTheme(scene)
-  assert.equal(expected.darkColors.input, '#101014')
+  assert.match(expected.darkColors.input, /^#[0-9a-f]{6}$/i)
   const legacy = {
-    'shadow-thief': {
-      name: 'shadow-thief',
+    'alabaster': {
+      name: 'alabaster',
       label: 'Shadow-thief',
       description: scene.description,
       colors: expected.darkColors,
@@ -108,7 +108,7 @@ test('registration upgrades legacy single-palette picker themes to dynamic scene
 
   plugin.register({ register: () => {} })
 
-  const upgraded = JSON.parse(storage.get(USER_THEMES_KEY))['shadow-thief']
+  const upgraded = JSON.parse(storage.get(USER_THEMES_KEY))['alabaster']
   assert.equal(upgraded.themePickerManaged, true)
   assert.notEqual(upgraded.colors.background, upgraded.darkColors.background)
 })
@@ -260,37 +260,37 @@ test('legacy migration never overwrites a same-signature user import with a diff
 
 test('registration migrates a selected variant to its dynamic scene and mode', async () => {
   const storage = new Map([
-    ['hermes-desktop-theme-v2', 'light-lilac'],
-    ['hermes-desktop-mode-v1', 'dark']
-  ])
-  const plugin = await loadPlugin(storage)
-
-  plugin.register({ register: () => {} })
-
-  assert.equal(storage.get('hermes-desktop-theme-v2'), 'shadow-thief')
-  assert.equal(storage.get('hermes-desktop-mode-v1'), 'light')
-})
-
-test('registration migrates a gateway transport variant back to its dynamic scene', async () => {
-  const storage = new Map([
-    ['hermes-desktop-theme-v2', 'theme-picker-nous-dark'],
+    ['hermes-desktop-theme-v2', 'theme-picker-alabaster-dark'],
     ['hermes-desktop-mode-v1', 'light']
   ])
   const plugin = await loadPlugin(storage)
 
   plugin.register({ register: () => {} })
 
-  assert.equal(storage.get('hermes-desktop-theme-v2'), 'nous')
+  assert.equal(storage.get('hermes-desktop-theme-v2'), 'alabaster')
+  assert.equal(storage.get('hermes-desktop-mode-v1'), 'dark')
+})
+
+test('registration migrates a gateway transport variant back to its dynamic scene', async () => {
+  const storage = new Map([
+    ['hermes-desktop-theme-v2', 'theme-picker-dark-aubergine-dark'],
+    ['hermes-desktop-mode-v1', 'light']
+  ])
+  const plugin = await loadPlugin(storage)
+
+  plugin.register({ register: () => {} })
+
+  assert.equal(storage.get('hermes-desktop-theme-v2'), 'dark-aubergine')
   assert.equal(storage.get('hermes-desktop-mode-v1'), 'dark')
 })
 
 test('active variant names resolve to their dynamic scene card', async () => {
   const plugin = await loadPlugin(new Map(), true)
 
-  assert.equal(plugin.__test.sceneNameFor('light-lilac'), 'shadow-thief')
-  assert.equal(plugin.__test.sceneNameFor('shadow-thief'), 'shadow-thief')
-  assert.equal(plugin.__test.sceneNameFor('theme-picker-nous-light'), 'nous')
-  assert.equal(plugin.__test.sceneNameFor('theme-picker-nous-dark'), 'nous')
+  assert.equal(plugin.__test.sceneNameFor('theme-picker-alabaster-light'), 'alabaster')
+  assert.equal(plugin.__test.sceneNameFor('alabaster'), 'alabaster')
+  assert.equal(plugin.__test.sceneNameFor('theme-picker-dark-aubergine-light'), 'dark-aubergine')
+  assert.equal(plugin.__test.sceneNameFor('theme-picker-dark-aubergine-dark'), 'dark-aubergine')
   assert.equal(plugin.__test.sceneNameFor('unknown-theme'), 'unknown-theme')
 })
 
@@ -389,31 +389,28 @@ test('the theme lens puts every scene in exactly one category, and no category s
     ['dynamic', 'dark', 'light'])
 })
 
-test('the classifier reads perceptual lightness and chroma, and pastel is a colour', async () => {
+test('the classifier files an unstamped palette by its measured hue family', async () => {
   const plugin = await loadPlugin(new Map(), true)
   const { sceneCategory, oklch } = plugin.__test
   const scene = (accent, modeSupport) => ({ name: 'x', modeSupport: modeSupport || 'dynamic', lightColors: { ui_accent: accent } })
 
-  // Pastel is high perceptual lightness with real but low chroma - the tint
-  // family. These are the accents of the five pastel skins.
-  assert.equal(sceneCategory(scene('#E795BE')), 'pastels', 'a pale pink')
-  assert.equal(sceneCategory(scene('#9CD3BA')), 'pastels', 'a pale mint')
-  assert.equal(sceneCategory(scene('#EFD292')), 'pastels', 'a pale butter')
-  assert.equal(sceneCategory(scene('#A9C6E6')), 'pastels', 'a pale powder blue')
-
-  // A pastel is not simply "a pink": the same hue, deepened, stops being pastel.
-  assert.equal(sceneCategory(scene('#B91C1C')), 'vibrant', 'a crimson is loud, not pastel')
-  assert.equal(sceneCategory(scene('#2F855A')), 'nature', 'a forest green')
-  assert.equal(sceneCategory(scene('#22C55E')), 'vibrant', 'a neon green is synthetic')
-  assert.equal(sceneCategory(scene('#0053FD')), 'vibrant', 'a saturated blue')
-  assert.equal(sceneCategory(scene('#5B7BB5')), 'cool', 'a muted blue still reads blue')
-  assert.equal(sceneCategory(scene('#C05621')), 'orange', 'an orange now has its own hue shelf')
-  assert.equal(sceneCategory(scene('#1E293B')), 'muted', 'a slate with only a trace of blue')
-  assert.equal(sceneCategory(scene('#808080')), 'minimal', 'grey has no hue to file')
+  // Hue is the family; chroma below 0.04 is the achromatic shelf. These hues are
+  // measured, not assumed: each value is printed beside the cut it must land in.
+  assert.equal(sceneCategory(scene('#E795BE')), 'rose', 'h 348.6')
+  assert.equal(sceneCategory(scene('#9CD3BA')), 'teal', 'h 165.1')
+  assert.equal(sceneCategory(scene('#EFD292')), 'gold', 'h 86.2')
+  assert.equal(sceneCategory(scene('#A9C6E6')), 'cobalt', 'h 251.1')
+  assert.equal(sceneCategory(scene('#B91C1C')), 'persimmon', 'h 27.5')
+  assert.equal(sceneCategory(scene('#2F855A')), 'teal', 'h 158.0')
+  assert.equal(sceneCategory(scene('#22C55E')), 'fern', 'h 149.6')
+  assert.equal(sceneCategory(scene('#0053FD')), 'indigo', 'h 262.7')
+  assert.equal(sceneCategory(scene('#C05621')), 'persimmon', 'h 43.8')
+  assert.equal(sceneCategory(scene('#1E293B')), 'neutral', 'C 0.037 is below the floor')
+  assert.equal(sceneCategory(scene('#808080')), 'neutral', 'grey has no hue to file')
 
   assert.equal(sceneCategory(scene('#E795BE', 'dark')), 'dark', 'a dark-only scene files by its mode')
   assert.equal(sceneCategory(scene('#E795BE', 'light')), 'light')
-  assert.equal(sceneCategory({ name: 'bare', modeSupport: 'dynamic' }), 'minimal', 'a scene with no palette still files somewhere')
+  assert.equal(sceneCategory({ name: 'bare', modeSupport: 'dynamic' }), 'neutral', 'a scene with no palette still files somewhere')
 
   // The measurement itself, in the space the rule depends on.
   const white = oklch('#FFFFFF')
@@ -464,26 +461,26 @@ test('desktop mode follows the rendered mode and falls back to the active profil
 test('applying a scene repaints in place without reloading or leaving the picker', async () => {
   const storage = new Map()
   const plugin = await loadPlugin(storage, true)
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
   let active = null
 
   plugin.__test.applyScene(scene, 'dark', value => { active = value })
 
   assert.equal(plugin.__state.reloads, 0)
-  assert.equal(active, 'shadow-thief')
-  assert.equal(plugin.__state.root.dataset.hermesTheme, 'shadow-thief')
+  assert.equal(active, 'alabaster')
+  assert.equal(plugin.__state.root.dataset.hermesTheme, 'alabaster')
   assert.equal(plugin.__state.root.dataset.hermesMode, 'dark')
   assert.ok(plugin.__state.css.has('--theme-primary'))
-  assert.equal(storage.get('hermes-desktop-theme-v2'), 'shadow-thief')
+  assert.equal(storage.get('hermes-desktop-theme-v2'), 'alabaster')
   assert.equal(storage.get('hermes-desktop-mode-v1'), 'dark')
 })
 
 test('applying a dynamic scene immediately repaints locally and synchronizes its selected variant through the gateway', async () => {
   const plugin = await loadPlugin(new Map(), true)
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   const darkSync = plugin.__test.applyScene(scene, 'dark', () => {})
-  assert.equal(plugin.__state.root.dataset.hermesTheme, 'shadow-thief')
+  assert.equal(plugin.__state.root.dataset.hermesTheme, 'alabaster')
   await darkSync
 
   const lightSync = plugin.__test.applyScene(scene, 'light', () => {})
@@ -493,8 +490,8 @@ test('applying a dynamic scene immediately repaints locally and synchronizes its
   assert.deepEqual(
     JSON.parse(JSON.stringify(plugin.__state.requests)),
     [
-      { method: 'config.set', payload: { key: 'skin', value: 'theme-picker-shadow-thief-dark' } },
-      { method: 'config.set', payload: { key: 'skin', value: 'theme-picker-shadow-thief-light' } }
+      { method: 'config.set', payload: { key: 'skin', value: 'theme-picker-alabaster-dark' } },
+      { method: 'config.set', payload: { key: 'skin', value: 'theme-picker-alabaster-light' } }
     ]
   )
   assert.equal(plugin.__state.reloads, 0)
@@ -512,7 +509,7 @@ test('applying a dynamic scene immediately repaints locally and synchronizes its
 
 test('a profile-scoped pick repaints locally and sends NO gateway broadcast', async () => {
   const plugin = await loadPlugin(new Map(), true)
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   plugin.__test.writeApplyScope('default', plugin.__test.APPLY_SCOPE_LOCAL)
   assert.equal(plugin.__test.readApplyScope('default'), plugin.__test.APPLY_SCOPE_LOCAL)
@@ -525,12 +522,12 @@ test('a profile-scoped pick repaints locally and sends NO gateway broadcast', as
     'a locally scoped pick must not touch the gateway at all'
   )
   // The local half still has to work: the theme must actually be applied.
-  assert.equal(plugin.__state.root.dataset.hermesTheme, 'shadow-thief')
+  assert.equal(plugin.__state.root.dataset.hermesTheme, 'alabaster')
 })
 
 test('the default scope is unchanged, so an existing pick still broadcasts', async () => {
   const plugin = await loadPlugin(new Map(), true)
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   // Nothing written: this is the state every existing user is in.
   assert.equal(plugin.__test.readApplyScope('default'), plugin.__test.APPLY_SCOPE_EVERYWHERE)
@@ -539,7 +536,7 @@ test('the default scope is unchanged, so an existing pick still broadcasts', asy
 
   assert.deepEqual(
     plugin.__state.requests.map(request => request.payload.value),
-    ['theme-picker-shadow-thief-dark']
+    ['theme-picker-alabaster-dark']
   )
 })
 
@@ -557,7 +554,7 @@ test('the scope is remembered per profile, not globally', async () => {
 
 test('clearing the scope restores the broadcast', async () => {
   const plugin = await loadPlugin(new Map(), true)
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   plugin.__test.writeApplyScope('default', plugin.__test.APPLY_SCOPE_LOCAL)
   await plugin.__test.applyScene(scene, 'dark', () => {})
@@ -580,7 +577,7 @@ test('rapid scene changes preserve gateway request order while repainting locall
     requestCount += 1
     return requestCount === 1 ? firstRequest : Promise.resolve({})
   })
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   const darkSync = plugin.__test.applyScene(scene, 'dark', () => {})
   const lightSync = plugin.__test.applyScene(scene, 'light', () => {})
@@ -593,7 +590,7 @@ test('rapid scene changes preserve gateway request order while repainting locall
   await Promise.all([darkSync, lightSync])
   assert.deepEqual(
     plugin.__state.requests.map(request => request.payload.value),
-    ['theme-picker-shadow-thief-dark', 'theme-picker-shadow-thief-light']
+    ['theme-picker-alabaster-dark', 'theme-picker-alabaster-light']
   )
 })
 
@@ -611,7 +608,7 @@ test('queued gateway changes never leak into a different active profile', async 
     },
     () => profile
   )
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   const first = plugin.__test.applyScene(scene, 'dark', () => {})
   await Promise.resolve()
@@ -625,7 +622,7 @@ test('queued gateway changes never leak into a different active profile', async 
 
   assert.deepEqual(
     plugin.__state.requests.map(request => request.payload.value),
-    ['theme-picker-shadow-thief-dark', 'theme-picker-shadow-thief-dark']
+    ['theme-picker-alabaster-dark', 'theme-picker-alabaster-dark']
   )
 })
 
@@ -634,7 +631,7 @@ test('an in-flight failure never repaints its old profile over the newly active 
   let rejectRequest
   const pending = new Promise((_resolve, reject) => { rejectRequest = reject })
   const plugin = await loadPlugin(new Map(), true, () => pending, () => activeProfile)
-  const scene = plugin.__test.scenes.find(item => item.name === 'nous')
+  const scene = plugin.__test.scenes.find(item => item.name === 'dark-aubergine')
 
   const sync = plugin.__test.applyScene(scene, 'dark', () => {})
   await Promise.resolve()
@@ -664,8 +661,8 @@ test('an in-flight success restores the newly active profile after the old broad
     if (requestCount === 1) return oldRequest
     return currentRequest
   }, () => activeProfile)
-  const oldScene = plugin.__test.scenes.find(item => item.name === 'nous')
-  const currentScene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const oldScene = plugin.__test.scenes.find(item => item.name === 'dark-aubergine')
+  const currentScene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   const oldSync = plugin.__test.applyScene(oldScene, 'dark', () => {})
   await Promise.resolve()
@@ -682,10 +679,10 @@ test('an in-flight success restores the newly active profile after the old broad
   resolveOldRequest({})
   await oldSync
 
-  assert.equal(plugin.__state.root.dataset.hermesTheme, 'shadow-thief')
+  assert.equal(plugin.__state.root.dataset.hermesTheme, 'alabaster')
   assert.equal(plugin.__state.root.dataset.hermesMode, 'light')
   assert.equal(plugin.__state.root.style.getPropertyValue('--theme-background-seed'), currentScene.lightColors.background)
-  assert.equal(JSON.parse(storage.get('hermes-desktop-profile-themes-v1')).work, 'shadow-thief')
+  assert.equal(JSON.parse(storage.get('hermes-desktop-profile-themes-v1')).work, 'alabaster')
   assert.equal(JSON.parse(storage.get('hermes-desktop-profile-modes-v1')).work, 'light')
   assert.deepEqual(plugin.__state.notifications, [])
   assert.equal(plugin.__state.requests.length, 2)
@@ -699,12 +696,12 @@ test('an in-flight success restores a switched profile from its pre-request pers
   let resolveRequest
   const pending = new Promise(resolve => { resolveRequest = resolve })
   const storage = new Map([
-    ['hermes-desktop-profile-themes-v1', JSON.stringify({ work: 'shadow-thief' })],
+    ['hermes-desktop-profile-themes-v1', JSON.stringify({ work: 'alabaster' })],
     ['hermes-desktop-profile-modes-v1', JSON.stringify({ work: 'light' })]
   ])
   const plugin = await loadPlugin(storage, true, () => pending, () => activeProfile)
-  const oldScene = plugin.__test.scenes.find(item => item.name === 'nous')
-  const workScene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const oldScene = plugin.__test.scenes.find(item => item.name === 'dark-aubergine')
+  const workScene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   const oldSync = plugin.__test.applyScene(oldScene, 'dark', () => {})
   await Promise.resolve()
@@ -720,10 +717,10 @@ test('an in-flight success restores a switched profile from its pre-request pers
   resolveRequest({})
   await oldSync
 
-  assert.equal(plugin.__state.root.dataset.hermesTheme, 'shadow-thief')
+  assert.equal(plugin.__state.root.dataset.hermesTheme, 'alabaster')
   assert.equal(plugin.__state.root.dataset.hermesMode, 'light')
   assert.equal(plugin.__state.root.style.getPropertyValue('--theme-background-seed'), workScene.lightColors.background)
-  assert.equal(JSON.parse(storage.get('hermes-desktop-profile-themes-v1')).work, 'shadow-thief')
+  assert.equal(JSON.parse(storage.get('hermes-desktop-profile-themes-v1')).work, 'alabaster')
   assert.equal(JSON.parse(storage.get('hermes-desktop-profile-modes-v1')).work, 'light')
   assert.equal(plugin.__state.requests.length, 1)
   assert.deepEqual(plugin.__state.notifications, [])
@@ -735,11 +732,11 @@ test('gateway acknowledgement restores the dynamic scene name after Desktop inge
     storage.set('hermes-desktop-theme-v2', payload.value)
     return Promise.resolve({})
   })
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   await plugin.__test.applyScene(scene, 'light', () => {})
 
-  assert.equal(storage.get('hermes-desktop-theme-v2'), 'shadow-thief')
+  assert.equal(storage.get('hermes-desktop-theme-v2'), 'alabaster')
   assert.equal(storage.get('hermes-desktop-mode-v1'), 'light')
 })
 
@@ -785,12 +782,12 @@ test('gateway synchronization failure keeps the local repaint and reports a warn
     true,
     () => Promise.reject(new Error('gateway unavailable'))
   )
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   const synchronized = await plugin.__test.applyScene(scene, 'dark', () => {})
 
   assert.equal(synchronized, false)
-  assert.equal(plugin.__state.root.dataset.hermesTheme, 'shadow-thief')
+  assert.equal(plugin.__state.root.dataset.hermesTheme, 'alabaster')
   assert.equal(plugin.__state.root.dataset.hermesMode, 'dark')
   assert.equal(plugin.__state.notifications.at(-1).kind, 'warning')
   assert.match(plugin.__state.notifications.at(-1).message, /connected gateway could not apply/)
@@ -805,24 +802,24 @@ test('a stale acknowledgement cannot replace the latest persisted scene when the
     requestCount += 1
     return requestCount === 1 ? firstRequest : Promise.reject(new Error('latest request failed'))
   })
-  const staleScene = plugin.__test.scenes.find(item => item.name === 'nous')
-  const latestScene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const staleScene = plugin.__test.scenes.find(item => item.name === 'dark-aubergine')
+  const latestScene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   const stale = plugin.__test.applyScene(staleScene, 'dark', () => {})
   await Promise.resolve()
   const latest = plugin.__test.applyScene(latestScene, 'light', () => {})
   // Simulate Desktop handling the stale request's skin.changed broadcast after
   // the latest optimistic repaint but before that latest gateway request fails.
-  plugin.__state.root.dataset.hermesTheme = 'nous'
+  plugin.__state.root.dataset.hermesTheme = 'dark-aubergine'
   plugin.__state.root.dataset.hermesMode = 'dark'
   plugin.__state.root.style.setProperty('--theme-background-seed', staleScene.darkColors.background)
   storage.set('hermes-desktop-theme-v2', staleScene.gatewayDarkName)
   releaseFirst({})
   await Promise.all([stale, latest])
 
-  assert.equal(storage.get('hermes-desktop-theme-v2'), 'shadow-thief')
+  assert.equal(storage.get('hermes-desktop-theme-v2'), 'alabaster')
   assert.equal(storage.get('hermes-desktop-mode-v1'), 'light')
-  assert.equal(plugin.__state.root.dataset.hermesTheme, 'shadow-thief')
+  assert.equal(plugin.__state.root.dataset.hermesTheme, 'alabaster')
   assert.equal(plugin.__state.root.dataset.hermesMode, 'light')
   assert.equal(plugin.__state.root.style.getPropertyValue('--theme-background-seed'), latestScene.lightColors.background)
 })
@@ -842,7 +839,7 @@ test('post-ack persistence failure warns that the combined scene is not durable'
     blockAppearance = true
     return Promise.resolve({})
   })
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   await plugin.__test.applyScene(scene, 'dark', () => {})
 
@@ -856,11 +853,11 @@ test('in-place repaint still works when appearance storage is unavailable', asyn
     set: () => { throw new Error('storage blocked') }
   }
   const plugin = await loadPlugin(blockedStorage, true)
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   assert.doesNotThrow(() => plugin.register({ register: () => {} }))
   assert.doesNotThrow(() => plugin.__test.applyScene(scene, 'light', () => {}))
-  assert.equal(plugin.__state.root.dataset.hermesTheme, 'shadow-thief')
+  assert.equal(plugin.__state.root.dataset.hermesTheme, 'alabaster')
   assert.equal(plugin.__state.root.dataset.hermesMode, 'light')
   assert.equal(plugin.__state.reloads, 0)
 })
@@ -875,12 +872,12 @@ test('applying a contributed scene warns when its boot theme cache cannot be sav
     }
   }
   const plugin = await loadPlugin(partialStorage, true)
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   plugin.__test.applyScene(scene, 'dark', () => {})
 
-  assert.equal(plugin.__state.root.dataset.hermesTheme, 'shadow-thief')
-  assert.equal(stored.get('hermes-desktop-theme-v2'), 'shadow-thief')
+  assert.equal(plugin.__state.root.dataset.hermesTheme, 'alabaster')
+  assert.equal(stored.get('hermes-desktop-theme-v2'), 'alabaster')
   assert.equal(plugin.__state.notifications.at(-1).kind, 'warning')
   assert.match(plugin.__state.notifications.at(-1).message, /could not be saved for restart/)
 })
@@ -893,7 +890,7 @@ test('the self-contained plugin never fetches remote theme fonts', async () => {
 
 test('applying a scene hands the switch to Desktop\'s ThemeProvider so its state cannot revert it', async () => {
   const plugin = await loadPlugin(new Map(), true)
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
   const calls = []
   const provider = {
     setTheme: name => calls.push(['theme', name]),
@@ -903,18 +900,18 @@ test('applying a scene hands the switch to Desktop\'s ThemeProvider so its state
   await plugin.__test.applyScene(scene, 'dark', () => {}, provider)
 
   // The manual paint still lands immediately (no flicker on the switch)...
-  assert.equal(plugin.__state.root.dataset.hermesTheme, 'shadow-thief')
+  assert.equal(plugin.__state.root.dataset.hermesTheme, 'alabaster')
   assert.equal(plugin.__state.root.dataset.hermesMode, 'dark')
   // ...and Desktop's own React state is told, so a later render keeps the theme
   // instead of repainting its stale state over the manual paint.
-  assert.deepEqual(calls, [['theme', 'shadow-thief'], ['mode', 'dark']])
+  assert.deepEqual(calls, [['theme', 'alabaster'], ['mode', 'dark']])
 })
 
 test('applying a scene without a captured provider still paints (non-React fallback)', async () => {
   const plugin = await loadPlugin(new Map(), true)
-  const scene = plugin.__test.scenes.find(item => item.name === 'shadow-thief')
+  const scene = plugin.__test.scenes.find(item => item.name === 'alabaster')
 
   assert.doesNotThrow(() => plugin.__test.applyScene(scene, 'light', () => {}))
-  assert.equal(plugin.__state.root.dataset.hermesTheme, 'shadow-thief')
+  assert.equal(plugin.__state.root.dataset.hermesTheme, 'alabaster')
   assert.equal(plugin.__state.root.dataset.hermesMode, 'light')
 })

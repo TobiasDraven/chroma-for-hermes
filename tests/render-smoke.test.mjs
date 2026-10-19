@@ -35,7 +35,7 @@ test('the plugin registers and both render surfaces render', async () => {
     storage: { get: async () => null, set: async () => {} }
   })
 
-  assert.ok(regs.length >= 100, 'the catalog must still register its themes')
+  assert.ok(regs.length >= 90, 'the catalog must still register its themes')
 
   const rendered = []
   for (const entry of regs) {

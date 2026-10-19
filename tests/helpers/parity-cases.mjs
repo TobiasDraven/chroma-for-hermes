@@ -21,4 +21,4 @@ export const EDGE_SKINS = [
 // The full palettes kept verbatim in the fixture, for key-level diagnosis when a
 // digest moves. The rest of the set is digests only, to keep the fixture small.
 export const GOLDEN_EDGES = ['edge-full', 'edge-lighttext']
-export const GOLDEN_SCENES = ['nous', 'mono', 'ember']
+export const GOLDEN_SCENES = ['dark-aubergine', 'alabaster']

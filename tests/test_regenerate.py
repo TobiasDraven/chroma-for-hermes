@@ -130,67 +130,53 @@ class ThemeCatalogTests(unittest.TestCase):
             self.assertEqual(scene['gatewayLightName'], f"theme-picker-{scene['name']}-light")
             self.assertEqual(scene['gatewayDarkName'], f"theme-picker-{scene['name']}-dark")
 
-    def test_gateway_transport_skins_cover_desktop_only_variants(self):
+    def _v2(self):
+        return regenerate._load_v2_skins(SCRIPT.parents[1] / 'skins-v2')
+
+    def test_every_skin_ships_a_matching_gateway_transport(self):
         gateway_dir = SCRIPT.parents[1] / 'gateway-skins'
 
-        for scene in regenerate._desktop_builtin_scenes():
-            for mode, palette_key in (('light', 'lightColors'), ('dark', 'darkColors')):
-                skin_name = scene[f'gateway{mode.title()}Name']
-                skin = regenerate._parse_skin_file(gateway_dir / f'{skin_name}.yaml')
-                self.assertIsNotNone(skin)
-                self.assertEqual(skin['name'], skin_name)
-                self.assertEqual(skin['colors']['background'].lower(), scene[palette_key]['background'].lower())
-                self.assertEqual(skin['colors']['ui_accent'].lower(), scene[palette_key]['ui_accent'].lower())
-                self.assertEqual(skin['colors']['ui_text'].lower(), scene[palette_key]['ui_text'].lower())
+        for skin in self._v2():
+            for mode in ('light', 'dark'):
+                transport_name = skin[f'gateway{mode.title()}Name']
+                transport = regenerate._parse_skin_file(gateway_dir / f'{transport_name}.yaml')
+                self.assertIsNotNone(transport, transport_name)
+                self.assertEqual(transport['name'], transport_name)
+                palette = skin[f'{mode}Colors']
+                for role in ('background', 'ui_accent', 'ui_text'):
+                    self.assertEqual(transport['colors'][role].lower(), palette[role].lower())
 
     def test_every_dynamic_variant_uses_a_unique_mode_locked_gateway_transport(self):
         repo = SCRIPT.parents[1]
-        user_skins = [
-            skin for path in sorted((repo / 'skins').glob('*.yaml'))
-            if (skin := regenerate._parse_skin_file(path)) is not None
-        ]
-        catalog = regenerate._build_catalog(user_skins, regenerate._backend_builtins())
-        dynamic = [scene for scene in catalog if scene['modeSupport'] == 'dynamic']
-        transport_names = []
+        catalog = self._v2()
+        names = []
 
-        for scene in dynamic:
+        for skin in catalog:
             for mode in ('light', 'dark'):
-                gateway_name = scene[f'gateway{mode.title()}Name']
-                transport_names.append(gateway_name)
-                self.assertTrue(gateway_name.startswith('theme-picker-'), scene['name'])
-                self.assertNotIn(gateway_name, {scene['name'], scene.get(f'{mode}Name')})
-                transport = regenerate.yaml.safe_load(
-                    (repo / 'gateway-skins' / f'{gateway_name}.yaml').read_text(encoding='utf-8')
-                )
-                self.assertEqual(transport['name'], gateway_name)
-                self.assertEqual(transport['colors'], scene[f'{mode}Colors'])
+                name = skin[f'gateway{mode.title()}Name']
+                names.append(name)
+                self.assertEqual(name, f"theme-picker-{skin['name']}-{mode}")
+                transport = regenerate._parse_skin_file(repo / 'gateway-skins' / f'{name}.yaml')
+                self.assertIsNotNone(transport, name)
+                # Authored halves are compacted in one place and whole in the
+                # other, so the invariant is the signature roles, not the length.
+                for role in ('background', 'ui_accent', 'ui_text'):
+                    self.assertEqual(transport['colors'][role], skin[f'{mode}Colors'][role], role)
 
-        # Every scene ships both modes by design, so the invariant is that the
-        # transport set is exactly two per scene and all of them are unique —
-        # not a count that has to be re-pinned every time a skin is added.
-        self.assertEqual(len(dynamic), len(catalog), 'every scene ships both modes')
-        self.assertEqual(len(transport_names), 2 * len(dynamic))
-        self.assertEqual(len(set(transport_names)), len(transport_names), 'every transport name is unique')
-        self.assertEqual(len(list((repo / 'gateway-skins').glob('*.yaml'))), len(transport_names))
+        self.assertEqual(len(names), 2 * len(catalog))
+        self.assertEqual(len(set(names)), len(names), 'every transport name is unique')
+        self.assertEqual(len(list((repo / 'gateway-skins').glob('*.yaml'))), len(names))
 
     def test_every_catalog_scene_selects_a_gateway_resolvable_variant(self):
         repo = SCRIPT.parents[1]
-        user_skins = [
-            skin for path in (repo / 'skins').glob('*.yaml')
-            if (skin := regenerate._parse_skin_file(path)) is not None
-        ]
-        catalog = regenerate._build_catalog(user_skins, [])
-        available = {skin['name'] for skin in user_skins}
-        available.update(path.stem for path in (repo / 'gateway-skins').glob('*.yaml'))
-        available.update({'default', 'ares', 'mono', 'slate', 'daylight', 'warm-lightmode', 'poseidon', 'sisyphus', 'charizard'})
+        available = {path.stem for path in (repo / 'gateway-skins').glob('*.yaml')}
 
-        for scene in catalog:
-            if scene['modeSupport'] in {'dynamic', 'light'}:
-                light_name = scene.get('gatewayLightName') or scene.get('lightName') or scene['name']
-                self.assertIn(light_name, available, f"missing gateway light skin for {scene['name']}")
-            if scene['modeSupport'] in {'dynamic', 'dark'}:
-                dark_name = scene.get('gatewayDarkName') or scene.get('darkName') or scene['name']
-                self.assertIn(dark_name, available, f"missing gateway dark skin for {scene['name']}")
+        for skin in self._v2():
+            for mode in ('light', 'dark'):
+                self.assertIn(
+                    skin[f'gateway{mode.title()}Name'], available,
+                    f"missing gateway {mode} transport for {skin['name']}",
+                )
 
     def test_backend_builtins_are_pinned_without_importing_hermes(self):
         real_import = __import__

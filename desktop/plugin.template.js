@@ -110,19 +110,20 @@ const GROUP_MODES = ['scene', 'theme']
  *  The classifier still returns 'light'/'dark' for a single-mode scene, as a
  *  fallback for an import that arrives locked. */
 const THEME_CATEGORIES = [
-  { id: 'minimal', title: 'Minimal' },
-  { id: 'pastels', title: 'Pastels' },
-  { id: 'vibrant', title: 'Vibrant' },
-  { id: 'muted', title: 'Muted' },
-  { id: 'earth', title: 'Earth' },
-  { id: 'terminal', title: 'Retro & Terminal' },
-  { id: 'nature', title: 'Nature' },
-  { id: 'warm', title: 'Warm' },
-  { id: 'orange', title: 'Orange' },
+  { id: 'persimmon', title: 'Persimmon' },
+  { id: 'apricot', title: 'Apricot' },
+  { id: 'amber', title: 'Amber' },
   { id: 'gold', title: 'Gold' },
-  { id: 'cool', title: 'Cool' },
+  { id: 'lemon', title: 'Lemon' },
+  { id: 'fern', title: 'Fern' },
+  { id: 'teal', title: 'Teal' },
+  { id: 'cobalt', title: 'Cobalt' },
+  { id: 'indigo', title: 'Indigo' },
   { id: 'violet', title: 'Violet' },
+  { id: 'rose', title: 'Rose' },
+  { id: 'neutral', title: 'Neutral' },
 ]
+const MEASURED_CATEGORY_IDS = new Set(THEME_CATEGORIES.map(c => c.id))
 const CORE_DESKTOP_THEMES = new Set(['nous', 'midnight', 'ember', 'mono', 'cyberpunk', 'slate'])
 const EMOJI_FALLBACK = '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", emoji'
 const DEFAULT_FONT_SANS = '"Segoe WPC", "Segoe UI", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif, ' + EMOJI_FALLBACK
@@ -1127,7 +1128,7 @@ async function putSkinCategory(name, category) {
  *  3. `sceneCategory(scene)` — the measured floor. This is why the measured
  *     classifier stays the floor and never learns about user categories. */
 function effectiveCategory(scene, userCategories) {
-  if (!scene || !scene.name) return 'minimal'
+  if (!scene || !scene.name) return 'neutral'
   const list = Array.isArray(userCategories) ? userCategories : []
   const live = new Set(builtinCategoryIds())
   for (const cat of list) {
@@ -1141,7 +1142,7 @@ function effectiveCategory(scene, userCategories) {
     if (!names) continue
     for (const claimed of names) {
       if (typeof claimed === 'string' && claimed.trim().toLowerCase() === name) {
-        return cat && typeof cat.id === 'string' && cat.id ? cat.id : 'minimal'
+        return cat && typeof cat.id === 'string' && cat.id ? cat.id : 'neutral'
       }
     }
   }
@@ -2353,39 +2354,28 @@ const TERMINAL_SCENE_NAMES = new Set([
 function sceneCategory(scene) {
   if (scene.modeSupport === 'dark') return 'dark'
   if (scene.modeSupport === 'light') return 'light'
+  // Write once, never derive again: the catalogue stores the measured family on
+  // the skin, and the runtime reads it. The rule below is only the floor for a
+  // scene that arrives without one - an import, or an older saved theme.
+  if (scene.category && MEASURED_CATEGORY_IDS.has(scene.category)) return scene.category
   const colors = scene.lightColors || scene.darkColors || scene.colors || {}
   const accent = oklch(colors.ui_accent || colors.banner_accent || colors.banner_title)
-  if (!accent) return 'minimal'
-  if (TERMINAL_SCENE_NAMES.has(scene.name)) return 'terminal'
-  // Pastel is a property of the COLOUR, not of the shell: a tint is high
-  // lightness with real but low chroma, which is what "paste" in pastello
-  // describes. Judged on the accent, the colour a theme is read by.
-  //
-  // Measured, not assumed: a shell test (pale, faintly tinted background) looks
-  // obvious and is useless here, because nearly every light theme in the catalog
-  // has exactly that shell - it caught 18 scenes and called dark-sage a pastel.
-  // On the accent it now catches exactly the five shipped pastels.
-  if (accent.l >= 0.72 && accent.c >= 0.03 && accent.c <= 0.14) return 'pastels'
-  if (accent.c < 0.03) return 'minimal'
-  if (accent.c >= 0.16) return 'vibrant'
-  // Hue family before character for greens: "nature" is the one hue with a
-  // natural meaning, so a muted forest green is a forest, not merely "muted".
-  // A green loud enough to clear the vibrant test is synthetic - neon,
-  // cyberpunk, phosphor terminal - and stays with the loud ones.
-  // 118-178 in OKLCH, not 75-170: Oklab puts yellow near 90 and cream near 80,
-  // so the wider band filed "vanilla" and "lemon" under Nature. This band is
-  // yellow-green through teal-green, which is what a person means by green.
-  if (accent.h >= 118 && accent.h < 178) return 'nature'
-  // Desaturated, but with real colour. Warm low-chroma is Earth (browns, tans,
-  // creams); cool low-chroma is Muted (blue-greys). Both are kept apart from
-  // Pastels by lightness and from Minimal by chroma.
-  if (accent.c < 0.09) return (accent.h < 118 || accent.h >= 330) ? 'earth' : 'muted'
-  // Hue family for the rest, wrapping red through pink at 330.
-  if (accent.h < 30 || accent.h >= 330) return 'warm'
-  if (accent.h < 60) return 'orange'
-  if (accent.h < 118) return 'gold'
-  if (accent.h < 288) return 'cool'
-  return 'violet'
+  if (!accent) return 'neutral'
+  if (accent.c < 0.04) return 'neutral'
+  // The same cut points the catalogue was measured with (scripts/taxonomy.json).
+  // This path only runs for a palette that arrived without a stored category.
+  const h = ((accent.h % 360) + 360) % 360
+  const FAMILIES = [
+    [2.8, 'persimmon'], [45.2, 'apricot'], [60, 'amber'], [78, 'gold'],
+    [92, 'lemon'], [118, 'fern'], [156, 'teal'], [232, 'cobalt'],
+    [256, 'indigo'], [278, 'violet'], [322, 'rose'],
+  ]
+  if (h >= 2.8 && h < 322) {
+    for (let i = 0; i < FAMILIES.length - 1; i += 1) {
+      if (h >= FAMILIES[i][0] && h < FAMILIES[i + 1][0]) return FAMILIES[i][1]
+    }
+  }
+  return 'rose'
 }
 
 /** The same scenes, grouped by category. Empty groups are dropped by the caller,
