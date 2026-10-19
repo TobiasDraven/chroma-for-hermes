@@ -141,11 +141,24 @@ harness can catch an undefined global here (§5).
 ```bash
 node --test tests/<name>.test.mjs      # one suite; WITHOUT a pipe, so you see the real exit code
 node --test tests/                     # every JS suite
-python -m unittest tests.test_plugin_api   # backend; needs a venv with fastapi + pyyaml
-python -m unittest tests.test_regenerate   # installer/regeneration safety
-hermes plugins validate .              # the plugin admission gate
+python -m pytest tests/ -q             # every Python suite; needs a venv with fastapi + pyyaml + pytest
+python scripts/check-package.py        # package contract: version loci, entry points, tracked junk
+python scripts/check-packs.py          # catalogue contract
+python scripts/check-host-classes.py   # a class we use that the HOST stylesheet never generates
+hermes plugins validate .              # the plugin admission gate (LOCAL ONLY: no PyPI package carries it)
 rigour check --ci                      # quality gates (exit 1 = FAIL, 2 = no config)
 ```
+
+**Run the Python suites with pytest, not unittest.** `tests/test_skin_contract.py`
+imports pytest at module scope, and under `unittest` a pytest-style module loads and
+runs ZERO tests — a green step that proves nothing. CI installs pytest for this reason.
+
+**`check-host-classes.py` needs the Desktop app's compiled stylesheet** (auto-discovered
+under `apps/desktop/dist/assets/*.css`; pass `--css '<glob>'` otherwise). It escapes
+selectors the Tailwind way, so an unescaped `grep 'max-h-[87vh]'` is NOT evidence: it
+returns 0 for a present class too. A class with no rule silently takes the browser
+default — that is how a white pill, an invisible role colour and an unscrollable modal
+all shipped. Anything that constrains layout or carries meaning is an INLINE STYLE.
 
 Environment truths that change the answer:
 
