@@ -55,7 +55,7 @@ import { Component, useCallback, useEffect, useMemo, useRef, useState } from 're
 let _rest = null
 
 // Replaced with the real version at build time (scripts/regenerate.py).
-const BUILD_STAMP = '2.8.0'
+const BUILD_STAMP = '2.8.1'
 
 // The Python half is optional: the Desktop half applies and previews themes
 // with no backend at all. When it is absent every backend call throws this exact

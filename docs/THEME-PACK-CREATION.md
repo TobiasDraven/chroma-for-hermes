@@ -327,9 +327,10 @@ WCAG 2.1, which is what our gate measures:
 
 Our gate uses **4.5** as the floor for any colour used as text (`MIN_CONTRAST_RATIO`
 in the plugin). Measured over the catalogue: reading text sits at 6.0–21.0:1
-(median 13.6). Quiet text (`banner_dim`) sits at 1.30–7.39:1 (median 5.2) — and
-**44 of 94 skins fall below 4.5:1 in one mode**: 11 in light, 33 in dark, none in
-both. That is a real defect, recorded in §12 and fixed per skin, not globally.
+(median 13.6). Quiet text (`banner_dim`) sits at 4.50–7.39:1 (median 5.1):
+**0 of 94 skins fall below 4.5:1 in either mode**. The 44 one-mode failures this
+section recorded before 2026-10-19 were fixed per skin and per mode, not by a
+global rule; see §12.
 
 **Borders are the honest exception.** Our `ui_border` sits at 1.1–6.9:1 (median 1.4)
 because it is a decorative seam, not a control boundary. The moment a border *is* the
@@ -487,22 +488,26 @@ hermes plugins validate .
 | `hermes plugins validate .` | the package is loadable by the host |
 | `rigour check --ci` | known-red, 24 violations recorded in `docs/REVIEWS/`; not a silent pass |
 
-Contrast, as an advisory measure rather than a gate (five skins fail; see §12):
+Contrast, as an advisory measure rather than a gate (no skin fails; see §12):
 
 - reading text on `background` ≥ 4.5:1 — catalogue 6.0–21.0
-- quiet text on `background` ≥ 4.5:1 — catalogue 1.30–7.39 (median 5.2); 44 skins miss
+- quiet text on `background` ≥ 4.5:1 — catalogue 4.50–7.39 (median 5.1); 0 skins miss
 - accent as text ≥ 4.5:1
 
 ---
 
 ## 12. Known limits, stated
 
-1. **44 of 94 skins put quiet text below 4.5:1 in one mode** — 11 in light (worst:
-   `linen-sage` 1.98, `alabaster` 2.13, `rice-paper` 2.22), 33 in dark (worst:
-   `single-malt` 1.30, `deep-void` 1.38, `brutalist-concrete` 1.39). No skin fails in
-   both modes, which suggests a per-mode habit rather than a systemic error. They are
-   v1: each is fixed when it is revised, and the fix is the skin's own, not a global
-   rule that would flatten 94 deliberate choices.
+1. **0 of 94 skins put quiet text below 4.5:1 in either mode** (2026-10-19). Before
+   this pass 44 of 94 did — 11 in light (worst: `linen-sage` 1.98, `alabaster` 2.13,
+   `rice-paper` 2.22), 33 in dark (worst: `single-malt` 1.30, `deep-void` 1.38,
+   `brutalist-concrete` 1.39), none in both. The 44 one-mode failures were fixed by
+   moving that skin's quiet tier — `banner_dim`, `status_bar_dim`, `ui_thinking`,
+   `syntax_comment` — to the lightness that reaches 4.5:1 on `background`; the fix
+   stayed per skin and per mode, not a global rule that would flatten 94 deliberate
+   choices. `status_bar_dim` remains below 4.5:1 on the raised `status_bar_bg` in 11
+   light skins (worst 3.996:1), accepted because every moved key improved and none
+   regressed.
 2. **29 of the 43 keys do not repaint the Desktop window.** The CLI reads all 43. The
    editor marks those rows `CLI`. A user editing `syntax_comment` changes the CLI and
    nothing else; the badge is the honest answer.

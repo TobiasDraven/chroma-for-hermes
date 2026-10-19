@@ -3,6 +3,47 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.8.1] - 2026-10-19
+
+### Fixed
+
+- **The quiet tier of 44 skins now clears AA.** `banner_dim` failed the 4.5:1 floor
+  against its own surface on 44 (skin, mode) pairs (11 light, 33 dark). Each now sits
+  at the smallest lightness that reaches the floor, with hue and chroma held fixed.
+  Because the quiet tier is one authored value copied across keys in these skins, the
+  move carries `status_bar_dim`, `ui_thinking` and `syntax_comment` with it: 168 values
+  in 44 files. 0 of 94 skins are below 4.5:1 in either mode, was 44 of 94.
+- Eleven light-mode `status_bar_dim` values remain between 3.996:1 and 4.238:1 on
+  `status_bar_bg`: every one improved (1.77-3.96 before) and none regressed. The bar
+  surface is darker than `background`, so a lightness tuned for the banner stops just
+  short. Accepted and recorded in `docs/THEME-PACK-CREATION.md` section 12.
+
+### Added
+
+- `scripts/check-package.py` - the package contract: every version locus, the manifest
+  fields, both entry points, the committed build's stamp, and tracked junk. CI runs it.
+- `scripts/check-host-classes.py` - fails on any class the pane uses that the HOST's
+  compiled stylesheet never generates. The Desktop app builds Tailwind from its own
+  sources, so a utility the host never used has no rule and the element silently takes
+  the browser default. CI cannot run it (it needs the installed app's CSS).
+
+### Fixed (pane)
+
+- The editor dialog could not be scrolled. `max-h-[87vh]` and `w-[min(94vw,64rem)]`
+  have no rule in the host's stylesheet, so the sheet grew to its full 36-row height
+  and ran off the viewport with the Save button. The cap, the column, the scrim and the
+  scroll container are inline styles now, pinned by a test.
+- Twenty-five further classes in the same state (role colours, alpha fills, the card
+  preview pill's centring, hairline rings) were replaced by inline styles, or deleted
+  where the variant never had a rule. The gate reports 0.
+- The card's action row (star, Edit, Fork) sat over the card's edge; the frame now owns
+  the border, radius and aspect ratio, and the row is the frame's last in-flow child.
+
+### Added (pane)
+
+- Favourites: a star on every card, a scrollable rail on the left, removable from
+  either. Stored under `chroma-favorites-v1`.
+
 ## [2.8.0] - 2026-10-19
 
 Favourites, and a card frame that the actions cannot leave.

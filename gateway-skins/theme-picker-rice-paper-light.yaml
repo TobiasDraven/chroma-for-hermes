@@ -5,7 +5,7 @@ colors:
   banner_border: '#888888'
   banner_title: '#1a1a1a'
   banner_accent: '#cc3333'
-  banner_dim: '#aaaaaa'
+  banner_dim: '#737373'
   banner_text: '#1a1a1a'
   ui_accent: '#cc3333'
   ui_text: '#1a1a1a'

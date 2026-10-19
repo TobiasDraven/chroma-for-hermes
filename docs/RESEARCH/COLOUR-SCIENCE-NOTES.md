@@ -296,13 +296,13 @@ From `scripts/measure/measure-catalogue.py` over 94 skins:
 | Measure | Light median (min) | Dark median (min) |
 |---|---|---|
 | text on background | 13.64 (6.04) | 13.49 (6.19) |
-| dim text on background | 5.39 (1.98) | 4.85 (1.30) |
+| dim text on background | 5.39 (4.50) | 4.85 (4.50) |
 | border on background | 1.40 (1.10) | 1.60 (1.15) |
 
 - Body text clears AAA (7:1) at the median and still clears AA at the minimum.
-- Muted text is the failure surface: light minimum `1.98`, dark minimum `1.30`, both
-  below 4.5:1; the medians only just clear AA. A theme with muted text below 4.5:1 is
-  unfinished.
+- Muted text now clears the floor: light minimum `4.50`, dark minimum `4.50` (fixed
+  2026-10-19; they were `1.98` and `1.30`), and the medians clear AA. A theme with
+  muted text below 4.5:1 is unfinished.
 - Hairlines are decorative at the median (`1.40`, `1.60`, below 3:1). Acceptable for
   a separator, not for a control boundary or focus ring, which must reach 3:1
   (<https://www.w3.org/TR/WCAG21/#non-text-contrast>).
