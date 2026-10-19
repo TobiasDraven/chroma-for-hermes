@@ -207,7 +207,9 @@ test('the modal lays out header, preview, six role rows, the advisory strip and 
   assert.equal(at(modal, 'aria-modal'), 'true')
   assert.equal(at(modal, 'aria-label'), 'Edit Ocean Skin')
   assert.ok(String(at(modal, 'className')).includes('fixed'), 'the dialog is an overlay, inside the pane tree')
-  assert.ok(String(at(modal, 'className')).includes('bg-black/50'), 'and it dims what is behind it')
+  // The dim is an inline style, not `bg-black/50`: that class has no rule in the
+  // host's compiled stylesheet, so the dialog used to sit on an undimmed pane.
+  assert.ok(String((at(modal, 'style') || {}).backgroundColor).length > 0, 'and it dims what is behind it')
 
   const sheet = childrenOf(modal)[0]
   const zones = childrenOf(sheet)
@@ -445,4 +447,38 @@ test('a draft becomes the override body the routes expect', async () => {
   assert.equal(t.adviceTarget({ kind: 'text' }), 9)
   assert.equal(t.adviceTarget({ kind: 'signals' }), 4.5)
   assert.equal(t.adviceTarget({ kind: 'interface' }), 3)
+})
+
+test('the dialog caps its height and scrolls its own body (field bug, 2026-10-19)', async () => {
+  const { context } = await loadPlugin()
+  const t = context.testHelpers
+  // The report: "Still cannot scroll the editor modal." The cause was not a wrong
+  // offset. EDITOR_SHEET_CLASS caps the sheet with `max-h-[87vh]`, an arbitrary-value
+  // utility the HOST's compiled stylesheet does not contain, so the sheet grew to its
+  // full 36-row height, ran off the viewport, and the scroll container inside it never
+  // had a bounded box to scroll within. The cap, the column, and the scroll are now
+  // INLINE STYLES, which no build can drop.
+  const modal = t.EditorModal(modalProps())
+
+  const overlay = at(modal, 'style') || {}
+  assert.ok(String(overlay.backgroundColor).length > 0, 'the dialog dims what is behind it')
+  assert.equal(String(overlay.overflowY), 'auto', 'and can scroll if a sheet ever outgrows the viewport')
+
+  const sheet = childrenOf(modal)[0]
+  const sheetStyle = at(sheet, 'style') || {}
+  assert.match(String(sheetStyle.maxHeight), /vh$/, 'the sheet is capped against the viewport, not against its content')
+  assert.equal(sheetStyle.display, 'flex')
+  assert.equal(sheetStyle.flexDirection, 'column')
+  assert.equal(sheetStyle.overflow, 'hidden', 'the sheet itself never scrolls: its body does')
+
+  const scroller = findAll(sheet, el => at(el, 'style') && at(el, 'style').overflowY === 'auto')[0]
+  assert.ok(scroller, 'one scroll container exists inside the sheet')
+  const scrollerStyle = at(scroller, 'style')
+  assert.equal(scrollerStyle.minHeight, 0, 'a flex child will not shrink below its content without this')
+  assert.ok(String(scrollerStyle.flex).includes('1'), 'and it takes the room between header and footer')
+
+  const head = childrenOf(sheet)[0]
+  const foot = childrenOf(sheet)[childrenOf(sheet).length - 1]
+  assert.ok(!(at(head, 'style') || {}).overflowY, 'the header is pinned, not scrolled')
+  assert.ok(!(at(foot, 'style') || {}).overflowY, 'and so is the footer: Save never leaves the screen')
 })

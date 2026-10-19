@@ -3480,7 +3480,8 @@ function ContrastChip({ ratio, target, label }) {
   })
 }
 
-const EDITOR_OVERLAY_CLASS = 'fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4'
+// `bg-black/50` is missing from the host's stylesheet too, so the scrim is inline.
+const EDITOR_OVERLAY_CLASS = 'fixed inset-0 z-50 flex items-start justify-center p-4'
 /** The opaque surface a dialog sits on, as a real colour.
  *
  *  Two attempts failed before this one. `bg-(--ui-bg-secondary)` resolved to
@@ -3502,7 +3503,12 @@ function sheetSurface(scene, mode) {
 }
 // Wider than it is tall, on a 4px rhythm, so a 43-colour palette reads as a
 // list and not as a scroll bar with a clipboard attached.
-const EDITOR_SHEET_CLASS = 'mt-4 flex max-h-[87vh] w-[min(94vw,64rem)] max-w-none flex-col gap-3 overflow-hidden rounded-xl border border-(--ui-stroke-secondary) p-4 shadow-2xl'
+// The height cap and the width are NOT here: they are inline styles on the sheet.
+// `max-h-[87vh]` and `w-[min(94vw,64rem)]` are arbitrary-value utilities, and the
+// host's compiled stylesheet does not contain them — the host's own source never
+// used those literals — so the cap silently did not apply and the dialog ran off the
+// viewport, unscrollable. scripts/check-host-classes.py reports the class of defect.
+const EDITOR_SHEET_CLASS = 'mt-4 flex max-w-none flex-col gap-3 rounded-xl border border-(--ui-stroke-secondary) p-4 shadow-2xl'
 const EDITOR_PREVIEW_CLASS = 'flex h-16 w-full shrink-0 overflow-hidden rounded-lg ring-1 ring-black/20'
 const EDITOR_ROW_CLASS = 'flex items-center gap-2 rounded px-1 py-[3px] transition-colors hover:bg-black/5'
 const EDITOR_ACTION_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-2 py-0.5 text-[0.625rem] hover:border-(--ui-stroke-strong) disabled:opacity-50'
@@ -3919,6 +3925,11 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
       : 'Saving stores an override. The shipped catalogue is never rewritten.')
   return jsx('div', {
     className: EDITOR_OVERLAY_CLASS,
+    // The scrim and the scroll fallback, as inline styles. `bg-black/50` is not in
+    // the host's compiled stylesheet (the host never uses that exact class), so the
+    // dialog had no dim behind it and no way to reach a sheet taller than the
+    // viewport. See scripts/check-host-classes.py.
+    style: { backgroundColor: 'rgba(0,0,0,0.5)', overflowY: 'auto' },
     role: 'dialog',
     'aria-modal': 'true',
     'aria-label': 'Edit ' + name,
@@ -3929,7 +3940,20 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
     onKeyDown: event => { if (event && event.key === 'Escape' && onClose) onClose() },
     children: jsxs('div', {
       className: EDITOR_SHEET_CLASS,
-      style: { backgroundColor: sheetSurface(effective, mode) },
+      // THE MODAL MUST CAP AND SCROLL, and the class cannot do it: `max-h-[87vh]`
+      // and `w-[min(94vw,64rem)]` are arbitrary-value utilities that the HOST's
+      // compiled stylesheet does not contain — the host's own source never used
+      // those literals — so the sheet grew to its full 36-row content height and ran
+      // off the viewport, unreachable. Verified live: 0 rules for either class in
+      // apps/desktop/dist/assets/*.css. scripts/check-host-classes.py is the gate.
+      style: {
+        backgroundColor: sheetSurface(effective, mode),
+        maxHeight: '87vh',
+        width: 'min(94vw, 64rem)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden'
+      },
       children: [
         jsxs('div', { key: 'head', className: 'flex items-start justify-between gap-2', children: [
           jsxs('div', { className: 'min-w-0', children: [
@@ -3952,6 +3976,10 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
         jsx('div', {
           key: 'body',
           className: 'flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1',
+          // The one scroll container, pinned between header and footer. The classes
+          // rely on the host having generated them; the inline trio does not rely on
+          // anything. A dialog you cannot scroll is a dialog you cannot save.
+          style: { overflowY: 'auto', minHeight: 0, flex: '1 1 auto' },
           children: [
         jsx('div', {
           key: 'preview',
