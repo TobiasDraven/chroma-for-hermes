@@ -3,6 +3,10 @@
  "cases": {
   "square owned idle dark": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -13,9 +17,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Ocean Skin (dark variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -51,7 +61,9 @@
          ]
         },
         {
+         "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -188,6 +200,7 @@
        ]
       },
       {
+       "aria-label": "Preview Ocean Skin for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -195,13 +208,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Ocean Skin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -209,7 +228,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Ocean Skin favourites",
+          "aria-label": "Add Ocean Skin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -220,6 +239,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -242,6 +262,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -258,6 +279,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -279,7 +301,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Ocean Skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -287,6 +314,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -375,26 +403,38 @@
          ]
         },
         {
+         "aria-label": "Export Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -407,15 +447,25 @@
   },
   "square unowned dark": {
    "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "style": {
     "aspectRatio": "1"
    },
    "type": "div",
    "children": [
     {
+     "aria-current": null,
+     "aria-label": "Apply Ocean Skin (dark variant)",
      "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
      "disabled": false,
      "onClick": "[fn]",
+     "ref": {
+      "current": null
+     },
+     "tabIndex": 0,
      "title": "A calm blue (dark variant)",
      "type": "button",
      "htmlType": "button",
@@ -451,7 +501,9 @@
        ]
       },
       {
+       "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
        "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+       "role": "img",
        "style": {
         "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
        },
@@ -588,6 +640,7 @@
      ]
     },
     {
+     "aria-label": "Preview Ocean Skin for 10 seconds",
      "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
      "onClick": "[fn]",
      "style": {
@@ -595,13 +648,19 @@
       "margin": "auto",
       "maxWidth": "calc(100% - 0.5rem)"
      },
+     "tabIndex": -1,
      "title": "Preview this theme for 10 seconds, then revert",
      "type": "button",
      "htmlType": "button",
      "children": "Preview 10s"
     },
     {
+     "aria-label": "Ocean Skin actions",
      "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+     "ref": {
+      "current": null
+     },
+     "role": "toolbar",
      "type": "div",
      "children": [
       {
@@ -609,7 +668,7 @@
        "key": "star",
        "type": "span",
        "children": {
-        "aria-label": "Add Ocean Skin favourites",
+        "aria-label": "Add Ocean Skin to favourites",
         "aria-pressed": "false",
         "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
         "onClick": "[fn]",
@@ -620,6 +679,7 @@
          "color": "#ffffff",
          "opacity": 0.9
         },
+        "tabIndex": -1,
         "title": "Star this skin: it joins the favourites rail on the left",
         "type": "button",
         "htmlType": "button",
@@ -642,6 +702,7 @@
           "color": "#ffffff",
           "opacity": 0.9
          },
+         "tabIndex": -1,
          "title": "Edit this skin: recolour it and save your own override",
          "type": "button",
          "htmlType": "button",
@@ -658,6 +719,7 @@
           "color": "#ffffff",
           "opacity": 0.9
          },
+         "tabIndex": -1,
          "title": "Fork this skin into a new skin you own — the source file is untouched",
          "type": "button",
          "htmlType": "button",
@@ -671,6 +733,10 @@
   },
   "square light mode": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -681,9 +747,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Ocean Skin (light variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "A calm blue (light variant)",
        "type": "button",
        "htmlType": "button",
@@ -719,7 +791,9 @@
          ]
         },
         {
+         "aria-label": "Ocean Skin palette, light variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -856,6 +930,7 @@
        ]
       },
       {
+       "aria-label": "Preview Ocean Skin for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -863,13 +938,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Ocean Skin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -877,7 +958,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Ocean Skin favourites",
+          "aria-label": "Add Ocean Skin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -888,6 +969,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -910,6 +992,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -926,6 +1009,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -947,7 +1031,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Ocean Skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -955,6 +1044,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -1043,26 +1133,38 @@
          ]
         },
         {
+         "aria-label": "Export Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -1075,6 +1177,10 @@
   },
   "rectangle owned": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -1085,9 +1191,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Ocean Skin (dark variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -1123,7 +1235,9 @@
          ]
         },
         {
+         "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -1260,6 +1374,7 @@
        ]
       },
       {
+       "aria-label": "Preview Ocean Skin for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -1267,13 +1382,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Ocean Skin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -1281,7 +1402,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Ocean Skin favourites",
+          "aria-label": "Add Ocean Skin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -1292,6 +1413,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -1314,6 +1436,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -1330,6 +1453,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -1351,7 +1475,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Ocean Skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -1359,6 +1488,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -1447,26 +1577,38 @@
          ]
         },
         {
+         "aria-label": "Export Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -1479,6 +1621,10 @@
   },
   "circle owned": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -1516,15 +1662,23 @@
        "type": "div",
        "children": [
         {
+         "aria-current": null,
+         "aria-label": "Apply Ocean Skin (dark variant)",
          "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-2.5",
          "disabled": false,
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": 0,
          "title": "A calm blue (dark variant)",
          "type": "button",
          "htmlType": "button",
          "children": [
           {
+           "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
            "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-full",
+           "role": "img",
            "style": {
             "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
            },
@@ -1661,6 +1815,7 @@
          ]
         },
         {
+         "aria-label": "Preview Ocean Skin for 10 seconds",
          "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
          "onClick": "[fn]",
          "style": {
@@ -1668,13 +1823,19 @@
           "margin": "auto",
           "maxWidth": "calc(100% - 0.5rem)"
          },
+         "tabIndex": -1,
          "title": "Preview this theme for 10 seconds, then revert",
          "type": "button",
          "htmlType": "button",
          "children": "Preview 10s"
         },
         {
+         "aria-label": "Ocean Skin actions",
          "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-center px-2 pb-2",
+         "ref": {
+          "current": null
+         },
+         "role": "toolbar",
          "type": "div",
          "children": [
           {
@@ -1682,7 +1843,7 @@
            "key": "star",
            "type": "span",
            "children": {
-            "aria-label": "Add Ocean Skin favourites",
+            "aria-label": "Add Ocean Skin to favourites",
             "aria-pressed": "false",
             "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
             "onClick": "[fn]",
@@ -1693,6 +1854,7 @@
              "color": "#ffffff",
              "opacity": 0.9
             },
+            "tabIndex": -1,
             "title": "Star this skin: it joins the favourites rail on the left",
             "type": "button",
             "htmlType": "button",
@@ -1715,6 +1877,7 @@
               "color": "#ffffff",
               "opacity": 0.9
              },
+             "tabIndex": -1,
              "title": "Edit this skin: recolour it and save your own override",
              "type": "button",
              "htmlType": "button",
@@ -1731,6 +1894,7 @@
               "color": "#ffffff",
               "opacity": 0.9
              },
+             "tabIndex": -1,
              "title": "Fork this skin into a new skin you own — the source file is untouched",
              "type": "button",
              "htmlType": "button",
@@ -1754,7 +1918,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Ocean Skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -1762,6 +1931,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -1850,26 +2020,38 @@
          ]
         },
         {
+         "aria-label": "Export Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -1882,6 +2064,10 @@
   },
   "circle unowned": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -1915,15 +2101,23 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Ocean Skin (dark variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-2.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
        "children": [
         {
+         "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-full",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -2060,6 +2254,7 @@
        ]
       },
       {
+       "aria-label": "Preview Ocean Skin for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -2067,13 +2262,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Ocean Skin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-center px-2 pb-2",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -2081,7 +2282,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Ocean Skin favourites",
+          "aria-label": "Add Ocean Skin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -2092,6 +2293,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -2114,6 +2316,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -2130,6 +2333,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -2145,6 +2349,10 @@
   },
   "circle previewing": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -2182,15 +2390,23 @@
        "type": "div",
        "children": [
         {
+         "aria-current": null,
+         "aria-label": "Apply Ocean Skin (dark variant)",
          "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-2.5",
          "disabled": false,
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": 0,
          "title": "A calm blue (dark variant)",
          "type": "button",
          "htmlType": "button",
          "children": [
           {
+           "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
            "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-full",
+           "role": "img",
            "style": {
             "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
            },
@@ -2327,6 +2543,7 @@
          ]
         },
         {
+         "aria-label": "Stop previewing Ocean Skin",
          "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
          "onClick": "[fn]",
          "style": {
@@ -2334,6 +2551,7 @@
           "margin": "auto",
           "maxWidth": "calc(100% - 0.5rem)"
          },
+         "tabIndex": -1,
          "title": "Stop the preview and go back to your theme",
          "type": "button",
          "htmlType": "button",
@@ -2343,7 +2561,12 @@
          }
         },
         {
+         "aria-label": "Ocean Skin actions",
          "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-center px-2 pb-2",
+         "ref": {
+          "current": null
+         },
+         "role": "toolbar",
          "type": "div",
          "children": [
           {
@@ -2351,7 +2574,7 @@
            "key": "star",
            "type": "span",
            "children": {
-            "aria-label": "Add Ocean Skin favourites",
+            "aria-label": "Add Ocean Skin to favourites",
             "aria-pressed": "false",
             "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
             "onClick": "[fn]",
@@ -2362,6 +2585,7 @@
              "color": "#ffffff",
              "opacity": 0.9
             },
+            "tabIndex": -1,
             "title": "Star this skin: it joins the favourites rail on the left",
             "type": "button",
             "htmlType": "button",
@@ -2384,6 +2608,7 @@
               "color": "#ffffff",
               "opacity": 0.9
              },
+             "tabIndex": -1,
              "title": "Edit this skin: recolour it and save your own override",
              "type": "button",
              "htmlType": "button",
@@ -2400,6 +2625,7 @@
               "color": "#ffffff",
               "opacity": 0.9
              },
+             "tabIndex": -1,
              "title": "Fork this skin into a new skin you own — the source file is untouched",
              "type": "button",
              "htmlType": "button",
@@ -2423,7 +2649,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Ocean Skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -2431,6 +2662,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -2519,26 +2751,38 @@
          ]
         },
         {
+         "aria-label": "Export Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -2551,6 +2795,10 @@
   },
   "square previewing": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -2561,9 +2809,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Ocean Skin (dark variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -2599,7 +2853,9 @@
          ]
         },
         {
+         "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -2736,6 +2992,7 @@
        ]
       },
       {
+       "aria-label": "Stop previewing Ocean Skin",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -2743,6 +3000,7 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Stop the preview and go back to your theme",
        "type": "button",
        "htmlType": "button",
@@ -2752,7 +3010,12 @@
        }
       },
       {
+       "aria-label": "Ocean Skin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -2760,7 +3023,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Ocean Skin favourites",
+          "aria-label": "Add Ocean Skin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -2771,6 +3034,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -2793,6 +3057,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -2809,6 +3074,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -2830,7 +3096,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Ocean Skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -2838,6 +3109,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -2926,26 +3198,38 @@
          ]
         },
         {
+         "aria-label": "Export Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -2958,6 +3242,10 @@
   },
   "active square": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -2968,9 +3256,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": "true",
+       "aria-label": "Apply Ocean Skin (dark variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -3002,7 +3296,9 @@
          ]
         },
         {
+         "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -3139,6 +3435,7 @@
        ]
       },
       {
+       "aria-label": "Preview Ocean Skin for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -3146,13 +3443,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Ocean Skin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -3160,7 +3463,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Ocean Skin favourites",
+          "aria-label": "Add Ocean Skin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -3171,6 +3474,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -3193,6 +3497,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -3209,6 +3514,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -3230,7 +3536,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Ocean Skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -3238,6 +3549,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -3326,26 +3638,38 @@
          ]
         },
         {
+         "aria-label": "Export Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -3358,6 +3682,10 @@
   },
   "applying square": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -3368,9 +3696,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Ocean Skin (dark variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": true,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -3406,7 +3740,9 @@
          ]
         },
         {
+         "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -3543,6 +3879,7 @@
        ]
       },
       {
+       "aria-label": "Preview Ocean Skin for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -3550,13 +3887,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Ocean Skin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -3564,7 +3907,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Ocean Skin favourites",
+          "aria-label": "Add Ocean Skin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -3575,6 +3918,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -3597,6 +3941,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -3613,6 +3958,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -3634,7 +3980,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Ocean Skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -3642,6 +3993,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -3730,26 +4082,38 @@
          ]
         },
         {
+         "aria-label": "Export Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -3762,6 +4126,10 @@
   },
   "active + applying": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -3772,9 +4140,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": "true",
+       "aria-label": "Apply Ocean Skin (dark variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": true,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -3806,7 +4180,9 @@
          ]
         },
         {
+         "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -3943,6 +4319,7 @@
        ]
       },
       {
+       "aria-label": "Preview Ocean Skin for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -3950,13 +4327,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Ocean Skin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -3964,7 +4347,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Ocean Skin favourites",
+          "aria-label": "Add Ocean Skin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -3975,6 +4358,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -3997,6 +4381,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -4013,6 +4398,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -4034,7 +4420,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Ocean Skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -4042,6 +4433,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -4130,26 +4522,38 @@
          ]
         },
         {
+         "aria-label": "Export Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -4162,6 +4566,10 @@
   },
   "no label": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -4172,9 +4580,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply no-label-skin (dark only)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "no-label-skin (dark only)",
        "type": "button",
        "htmlType": "button",
@@ -4217,7 +4631,9 @@
          ]
         },
         {
+         "aria-label": "no-label-skin palette, dark only, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -4354,6 +4770,7 @@
        ]
       },
       {
+       "aria-label": "Preview no-label-skin for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -4361,13 +4778,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "no-label-skin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -4375,7 +4798,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add no-label-skin favourites",
+          "aria-label": "Add no-label-skin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -4386,6 +4809,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -4408,6 +4832,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -4424,6 +4849,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -4445,7 +4871,12 @@
        "children": "core"
       },
       {
+       "aria-label": "no-label-skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -4453,6 +4884,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "dark",
          "type": "select",
@@ -4541,26 +4973,38 @@
          ]
         },
         {
+         "aria-label": "Export no-label-skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename no-label-skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete no-label-skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -4573,6 +5017,10 @@
   },
   "thin palette": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -4583,9 +5031,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Thin (light only)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "Only two bands (light only)",
        "type": "button",
        "htmlType": "button",
@@ -4628,7 +5082,9 @@
          ]
         },
         {
+         "aria-label": "Thin palette, light only, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -4765,6 +5221,7 @@
        ]
       },
       {
+       "aria-label": "Preview Thin for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -4772,13 +5229,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Thin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -4786,7 +5249,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Thin favourites",
+          "aria-label": "Add Thin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -4797,6 +5260,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -4819,6 +5283,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -4835,6 +5300,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -4856,7 +5322,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Thin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -4864,6 +5335,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "light",
          "type": "select",
@@ -4952,26 +5424,38 @@
          ]
         },
         {
+         "aria-label": "Export Thin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Thin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Thin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -4984,6 +5468,10 @@
   },
   "alias palette": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -4994,9 +5482,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Alias (light only)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "alias-skin (light only)",
        "type": "button",
        "htmlType": "button",
@@ -5039,7 +5533,9 @@
          ]
         },
         {
+         "aria-label": "Alias palette, light only, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -5176,6 +5672,7 @@
        ]
       },
       {
+       "aria-label": "Preview Alias for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -5183,13 +5680,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Alias actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -5197,7 +5700,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Alias favourites",
+          "aria-label": "Add Alias to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -5208,6 +5711,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -5230,6 +5734,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -5246,6 +5751,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -5267,7 +5773,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Alias manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -5275,6 +5786,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "light",
          "type": "select",
@@ -5363,26 +5875,38 @@
          ]
         },
         {
+         "aria-label": "Export Alias",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Alias",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Alias",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -5395,6 +5919,10 @@
   },
   "no palette at all": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -5405,9 +5933,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Bare (dark only)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "bare-skin (dark only)",
        "type": "button",
        "htmlType": "button",
@@ -5450,7 +5984,9 @@
          ]
         },
         {
+         "aria-label": "Bare palette, dark only, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -5587,6 +6123,7 @@
        ]
       },
       {
+       "aria-label": "Preview Bare for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -5594,13 +6131,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Bare actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -5608,7 +6151,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Bare favourites",
+          "aria-label": "Add Bare to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -5619,6 +6162,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -5641,6 +6185,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -5657,6 +6202,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -5678,7 +6224,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Bare manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -5686,6 +6237,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "dark",
          "type": "select",
@@ -5774,26 +6326,38 @@
          ]
         },
         {
+         "aria-label": "Export Bare",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Bare",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Bare",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -5806,6 +6370,10 @@
   },
   "circle + no palette": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -5850,15 +6418,23 @@
        "type": "div",
        "children": [
         {
+         "aria-current": null,
+         "aria-label": "Apply Bare (dark only)",
          "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-2.5",
          "disabled": false,
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": 0,
          "title": "bare-skin (dark only)",
          "type": "button",
          "htmlType": "button",
          "children": [
           {
+           "aria-label": "Bare palette, dark only, six bands per mode",
            "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-full",
+           "role": "img",
            "style": {
             "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
            },
@@ -5995,6 +6571,7 @@
          ]
         },
         {
+         "aria-label": "Preview Bare for 10 seconds",
          "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
          "onClick": "[fn]",
          "style": {
@@ -6002,13 +6579,19 @@
           "margin": "auto",
           "maxWidth": "calc(100% - 0.5rem)"
          },
+         "tabIndex": -1,
          "title": "Preview this theme for 10 seconds, then revert",
          "type": "button",
          "htmlType": "button",
          "children": "Preview 10s"
         },
         {
+         "aria-label": "Bare actions",
          "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-center px-2 pb-2",
+         "ref": {
+          "current": null
+         },
+         "role": "toolbar",
          "type": "div",
          "children": [
           {
@@ -6016,7 +6599,7 @@
            "key": "star",
            "type": "span",
            "children": {
-            "aria-label": "Add Bare favourites",
+            "aria-label": "Add Bare to favourites",
             "aria-pressed": "false",
             "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
             "onClick": "[fn]",
@@ -6027,6 +6610,7 @@
              "color": "#ffffff",
              "opacity": 0.9
             },
+            "tabIndex": -1,
             "title": "Star this skin: it joins the favourites rail on the left",
             "type": "button",
             "htmlType": "button",
@@ -6049,6 +6633,7 @@
               "color": "#ffffff",
               "opacity": 0.9
              },
+             "tabIndex": -1,
              "title": "Edit this skin: recolour it and save your own override",
              "type": "button",
              "htmlType": "button",
@@ -6065,6 +6650,7 @@
               "color": "#ffffff",
               "opacity": 0.9
              },
+             "tabIndex": -1,
              "title": "Fork this skin into a new skin you own — the source file is untouched",
              "type": "button",
              "htmlType": "button",
@@ -6088,7 +6674,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Bare manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -6096,6 +6687,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "dark",
          "type": "select",
@@ -6184,26 +6776,38 @@
          ]
         },
         {
+         "aria-label": "Export Bare",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Bare",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Bare",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -6216,6 +6820,10 @@
   },
   "light mode circle active": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -6253,15 +6861,23 @@
        "type": "div",
        "children": [
         {
+         "aria-current": "true",
+         "aria-label": "Apply Ocean Skin (light variant)",
          "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-2.5",
          "disabled": false,
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": 0,
          "title": "A calm blue (light variant)",
          "type": "button",
          "htmlType": "button",
          "children": [
           {
+           "aria-label": "Ocean Skin palette, light variant, six bands per mode",
            "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-full",
+           "role": "img",
            "style": {
             "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
            },
@@ -6398,6 +7014,7 @@
          ]
         },
         {
+         "aria-label": "Preview Ocean Skin for 10 seconds",
          "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
          "onClick": "[fn]",
          "style": {
@@ -6405,13 +7022,19 @@
           "margin": "auto",
           "maxWidth": "calc(100% - 0.5rem)"
          },
+         "tabIndex": -1,
          "title": "Preview this theme for 10 seconds, then revert",
          "type": "button",
          "htmlType": "button",
          "children": "Preview 10s"
         },
         {
+         "aria-label": "Ocean Skin actions",
          "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-center px-2 pb-2",
+         "ref": {
+          "current": null
+         },
+         "role": "toolbar",
          "type": "div",
          "children": [
           {
@@ -6419,7 +7042,7 @@
            "key": "star",
            "type": "span",
            "children": {
-            "aria-label": "Add Ocean Skin favourites",
+            "aria-label": "Add Ocean Skin to favourites",
             "aria-pressed": "false",
             "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
             "onClick": "[fn]",
@@ -6430,6 +7053,7 @@
              "color": "#ffffff",
              "opacity": 0.9
             },
+            "tabIndex": -1,
             "title": "Star this skin: it joins the favourites rail on the left",
             "type": "button",
             "htmlType": "button",
@@ -6452,6 +7076,7 @@
               "color": "#ffffff",
               "opacity": 0.9
              },
+             "tabIndex": -1,
              "title": "Edit this skin: recolour it and save your own override",
              "type": "button",
              "htmlType": "button",
@@ -6468,6 +7093,7 @@
               "color": "#ffffff",
               "opacity": 0.9
              },
+             "tabIndex": -1,
              "title": "Fork this skin into a new skin you own — the source file is untouched",
              "type": "button",
              "htmlType": "button",
@@ -6491,7 +7117,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Ocean Skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -6499,6 +7130,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -6587,26 +7219,38 @@
          ]
         },
         {
+         "aria-label": "Export Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -6619,15 +7263,25 @@
   },
   "rectangle previewing unowned": {
    "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "style": {
     "aspectRatio": "16 / 10"
    },
    "type": "div",
    "children": [
     {
+     "aria-current": null,
+     "aria-label": "Apply Ocean Skin (dark variant)",
      "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
      "disabled": false,
      "onClick": "[fn]",
+     "ref": {
+      "current": null
+     },
+     "tabIndex": 0,
      "title": "A calm blue (dark variant)",
      "type": "button",
      "htmlType": "button",
@@ -6663,7 +7317,9 @@
        ]
       },
       {
+       "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
        "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+       "role": "img",
        "style": {
         "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
        },
@@ -6800,6 +7456,7 @@
      ]
     },
     {
+     "aria-label": "Stop previewing Ocean Skin",
      "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
      "onClick": "[fn]",
      "style": {
@@ -6807,6 +7464,7 @@
       "margin": "auto",
       "maxWidth": "calc(100% - 0.5rem)"
      },
+     "tabIndex": -1,
      "title": "Stop the preview and go back to your theme",
      "type": "button",
      "htmlType": "button",
@@ -6816,7 +7474,12 @@
      }
     },
     {
+     "aria-label": "Ocean Skin actions",
      "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+     "ref": {
+      "current": null
+     },
+     "role": "toolbar",
      "type": "div",
      "children": [
       {
@@ -6824,7 +7487,7 @@
        "key": "star",
        "type": "span",
        "children": {
-        "aria-label": "Add Ocean Skin favourites",
+        "aria-label": "Add Ocean Skin to favourites",
         "aria-pressed": "false",
         "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
         "onClick": "[fn]",
@@ -6835,6 +7498,7 @@
          "color": "#ffffff",
          "opacity": 0.9
         },
+        "tabIndex": -1,
         "title": "Star this skin: it joins the favourites rail on the left",
         "type": "button",
         "htmlType": "button",
@@ -6857,6 +7521,7 @@
           "color": "#ffffff",
           "opacity": 0.9
          },
+         "tabIndex": -1,
          "title": "Edit this skin: recolour it and save your own override",
          "type": "button",
          "htmlType": "button",
@@ -6873,6 +7538,7 @@
           "color": "#ffffff",
           "opacity": 0.9
          },
+         "tabIndex": -1,
          "title": "Fork this skin into a new skin you own — the source file is untouched",
          "type": "button",
          "htmlType": "button",
@@ -6886,6 +7552,10 @@
   },
   "gateway owned, this profile": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -6896,9 +7566,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Gateway (dark variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "Pushed by the gateway (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -6934,7 +7610,9 @@
          ]
         },
         {
+         "aria-label": "Gateway palette, dark variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -7071,6 +7749,7 @@
        ]
       },
       {
+       "aria-label": "Preview Gateway for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -7078,13 +7757,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Gateway actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -7092,7 +7777,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Gateway favourites",
+          "aria-label": "Add Gateway to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -7103,6 +7788,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -7125,6 +7811,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -7141,6 +7828,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -7162,7 +7850,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Gateway manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -7170,6 +7863,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -7258,26 +7952,38 @@
          ]
         },
         {
+         "aria-label": "Export Gateway",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Gateway",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Gateway",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -7290,6 +7996,10 @@
   },
   "gateway owned, everywhere": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -7300,9 +8010,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Gateway (dark variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "Pushed by the gateway (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -7340,7 +8056,9 @@
          ]
         },
         {
+         "aria-label": "Gateway palette, dark variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -7477,6 +8195,7 @@
        ]
       },
       {
+       "aria-label": "Preview Gateway for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -7484,13 +8203,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Gateway actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -7498,7 +8223,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Gateway favourites",
+          "aria-label": "Add Gateway to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -7509,6 +8234,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -7531,6 +8257,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -7547,6 +8274,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -7568,7 +8296,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Gateway manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -7576,6 +8309,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -7664,26 +8398,38 @@
          ]
         },
         {
+         "aria-label": "Export Gateway",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Gateway",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Gateway",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -7696,15 +8442,25 @@
   },
   "gateway unowned": {
    "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "style": {
     "aspectRatio": "1"
    },
    "type": "div",
    "children": [
     {
+     "aria-current": null,
+     "aria-label": "Apply Gateway (dark variant)",
      "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
      "disabled": false,
      "onClick": "[fn]",
+     "ref": {
+      "current": null
+     },
+     "tabIndex": 0,
      "title": "Pushed by the gateway (dark variant)",
      "type": "button",
      "htmlType": "button",
@@ -7742,7 +8498,9 @@
        ]
       },
       {
+       "aria-label": "Gateway palette, dark variant, six bands per mode",
        "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+       "role": "img",
        "style": {
         "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
        },
@@ -7879,6 +8637,7 @@
      ]
     },
     {
+     "aria-label": "Preview Gateway for 10 seconds",
      "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
      "onClick": "[fn]",
      "style": {
@@ -7886,13 +8645,19 @@
       "margin": "auto",
       "maxWidth": "calc(100% - 0.5rem)"
      },
+     "tabIndex": -1,
      "title": "Preview this theme for 10 seconds, then revert",
      "type": "button",
      "htmlType": "button",
      "children": "Preview 10s"
     },
     {
+     "aria-label": "Gateway actions",
      "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+     "ref": {
+      "current": null
+     },
+     "role": "toolbar",
      "type": "div",
      "children": [
       {
@@ -7900,7 +8665,7 @@
        "key": "star",
        "type": "span",
        "children": {
-        "aria-label": "Add Gateway favourites",
+        "aria-label": "Add Gateway to favourites",
         "aria-pressed": "false",
         "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
         "onClick": "[fn]",
@@ -7911,6 +8676,7 @@
          "color": "#ffffff",
          "opacity": 0.9
         },
+        "tabIndex": -1,
         "title": "Star this skin: it joins the favourites rail on the left",
         "type": "button",
         "htmlType": "button",
@@ -7933,6 +8699,7 @@
           "color": "#ffffff",
           "opacity": 0.9
          },
+         "tabIndex": -1,
          "title": "Edit this skin: recolour it and save your own override",
          "type": "button",
          "htmlType": "button",
@@ -7949,6 +8716,7 @@
           "color": "#ffffff",
           "opacity": 0.9
          },
+         "tabIndex": -1,
          "title": "Fork this skin into a new skin you own — the source file is untouched",
          "type": "button",
          "htmlType": "button",
@@ -7962,6 +8730,10 @@
   },
   "colors only, no per-mode palette": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -7972,9 +8744,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Colors Only (dark variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "colors-only-skin (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -8010,7 +8788,9 @@
          ]
         },
         {
+         "aria-label": "Colors Only palette, dark variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -8147,6 +8927,7 @@
        ]
       },
       {
+       "aria-label": "Preview Colors Only for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -8154,13 +8935,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Colors Only actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -8168,7 +8955,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Colors Only favourites",
+          "aria-label": "Add Colors Only to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -8179,6 +8966,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -8201,6 +8989,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -8217,6 +9006,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -8238,7 +9028,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Colors Only manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -8246,6 +9041,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -8334,26 +9130,38 @@
          ]
         },
         {
+         "aria-label": "Export Colors Only",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Colors Only",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Colors Only",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -8366,6 +9174,10 @@
   },
   "title and border from their later aliases": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -8376,9 +9188,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Third Alias (dark only)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "third-alias-skin (dark only)",
        "type": "button",
        "htmlType": "button",
@@ -8421,7 +9239,9 @@
          ]
         },
         {
+         "aria-label": "Third Alias palette, dark only, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -8558,6 +9378,7 @@
        ]
       },
       {
+       "aria-label": "Preview Third Alias for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -8565,13 +9386,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Third Alias actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -8579,7 +9406,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Third Alias favourites",
+          "aria-label": "Add Third Alias to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -8590,6 +9417,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -8612,6 +9440,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -8628,6 +9457,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -8649,7 +9479,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Third Alias manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -8657,6 +9492,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "dark",
          "type": "select",
@@ -8745,26 +9581,38 @@
          ]
         },
         {
+         "aria-label": "Export Third Alias",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Third Alias",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Third Alias",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -8777,6 +9625,10 @@
   },
   "active and previewing at once": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -8787,9 +9639,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": "true",
+       "aria-label": "Apply Ocean Skin (dark variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -8821,7 +9679,9 @@
          ]
         },
         {
+         "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -8958,6 +9818,7 @@
        ]
       },
       {
+       "aria-label": "Stop previewing Ocean Skin",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -8965,6 +9826,7 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Stop the preview and go back to your theme",
        "type": "button",
        "htmlType": "button",
@@ -8974,7 +9836,12 @@
        }
       },
       {
+       "aria-label": "Ocean Skin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -8982,7 +9849,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Ocean Skin favourites",
+          "aria-label": "Add Ocean Skin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -8993,6 +9860,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -9015,6 +9883,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -9031,6 +9900,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -9052,7 +9922,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Ocean Skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -9060,6 +9935,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -9148,26 +10024,38 @@
          ]
         },
         {
+         "aria-label": "Export Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -9180,6 +10068,10 @@
   },
   "dynamic dark title": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -9190,9 +10082,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Ocean Skin (dark variant)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "A calm blue (dark variant)",
        "type": "button",
        "htmlType": "button",
@@ -9228,7 +10126,9 @@
          ]
         },
         {
+         "aria-label": "Ocean Skin palette, dark variant, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -9365,6 +10265,7 @@
        ]
       },
       {
+       "aria-label": "Preview Ocean Skin for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -9372,13 +10273,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Ocean Skin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -9386,7 +10293,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Ocean Skin favourites",
+          "aria-label": "Add Ocean Skin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -9397,6 +10304,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -9419,6 +10327,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -9435,6 +10344,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -9456,7 +10366,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Ocean Skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -9464,6 +10379,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "cobalt",
          "type": "select",
@@ -9552,26 +10468,38 @@
          ]
         },
         {
+         "aria-label": "Export Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Ocean Skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -9584,6 +10512,10 @@
   },
   "single-mode dark title": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -9594,9 +10526,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply no-label-skin (dark only)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "no-label-skin (dark only)",
        "type": "button",
        "htmlType": "button",
@@ -9639,7 +10577,9 @@
          ]
         },
         {
+         "aria-label": "no-label-skin palette, dark only, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -9776,6 +10716,7 @@
        ]
       },
       {
+       "aria-label": "Preview no-label-skin for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -9783,13 +10724,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "no-label-skin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -9797,7 +10744,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add no-label-skin favourites",
+          "aria-label": "Add no-label-skin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -9808,6 +10755,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -9830,6 +10778,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -9846,6 +10795,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -9867,7 +10817,12 @@
        "children": "core"
       },
       {
+       "aria-label": "no-label-skin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -9875,6 +10830,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "dark",
          "type": "select",
@@ -9963,26 +10919,38 @@
          ]
         },
         {
+         "aria-label": "Export no-label-skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename no-label-skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete no-label-skin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"
@@ -9995,6 +10963,10 @@
   },
   "single-mode light title": {
    "className": "flex w-full flex-col",
+   "onKeyDown": "[fn]",
+   "ref": {
+    "current": null
+   },
    "type": "div",
    "children": [
     {
@@ -10005,9 +10977,15 @@
      "type": "div",
      "children": [
       {
+       "aria-current": null,
+       "aria-label": "Apply Thin (light only)",
        "className": "absolute inset-0 flex w-full flex-col gap-1 text-left p-1.5",
        "disabled": false,
        "onClick": "[fn]",
+       "ref": {
+        "current": null
+       },
+       "tabIndex": 0,
        "title": "Only two bands (light only)",
        "type": "button",
        "htmlType": "button",
@@ -10050,7 +11028,9 @@
          ]
         },
         {
+         "aria-label": "Thin palette, light only, six bands per mode",
          "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "role": "img",
          "style": {
           "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
          },
@@ -10187,6 +11167,7 @@
        ]
       },
       {
+       "aria-label": "Preview Thin for 10 seconds",
        "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
        "style": {
@@ -10194,13 +11175,19 @@
         "margin": "auto",
         "maxWidth": "calc(100% - 0.5rem)"
        },
+       "tabIndex": -1,
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
       },
       {
+       "aria-label": "Thin actions",
        "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -10208,7 +11195,7 @@
          "key": "star",
          "type": "span",
          "children": {
-          "aria-label": "Add Thin favourites",
+          "aria-label": "Add Thin to favourites",
           "aria-pressed": "false",
           "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
@@ -10219,6 +11206,7 @@
            "color": "#ffffff",
            "opacity": 0.9
           },
+          "tabIndex": -1,
           "title": "Star this skin: it joins the favourites rail on the left",
           "type": "button",
           "htmlType": "button",
@@ -10241,6 +11229,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Edit this skin: recolour it and save your own override",
            "type": "button",
            "htmlType": "button",
@@ -10257,6 +11246,7 @@
             "color": "#ffffff",
             "opacity": 0.9
            },
+           "tabIndex": -1,
            "title": "Fork this skin into a new skin you own — the source file is untouched",
            "type": "button",
            "htmlType": "button",
@@ -10278,7 +11268,12 @@
        "children": "core"
       },
       {
+       "aria-label": "Thin manage actions",
        "className": "mt-1 flex items-center gap-1 text-[0.625rem]",
+       "ref": {
+        "current": null
+       },
+       "role": "toolbar",
        "type": "div",
        "children": [
         {
@@ -10286,6 +11281,7 @@
          "className": "min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)",
          "key": "category",
          "onChange": "[fn]",
+         "tabIndex": -1,
          "title": "File this skin under a category. Empty resets to its measured shelf.",
          "value": "light",
          "type": "select",
@@ -10374,26 +11370,38 @@
          ]
         },
         {
+         "aria-label": "Export Thin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
+         "tabIndex": -1,
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
          "type": "button",
          "htmlType": "button",
          "children": "Export"
         },
         {
+         "aria-label": "Rename Thin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Rename"
         },
         {
+         "aria-label": "Delete Thin",
          "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
+         "ref": {
+          "current": null
+         },
+         "tabIndex": -1,
          "type": "button",
          "htmlType": "button",
          "children": "Delete"

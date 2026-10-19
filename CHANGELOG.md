@@ -3,6 +3,54 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.9.0] - 2026-10-19
+
+### Added
+
+- **The pane is operable and announceable without a pointer or a screen (C9).** The
+  last open roast item, closed by a scout, a plan, an adversarial review and an
+  implementation — all four on the record under `docs/PLANS/` and `docs/REVIEWS/`.
+  - **Real modals.** `useModalA11y` gives both dialogs focus-in on open, a Tab trap, a
+    document-level Escape (the old handler only fired once focus was already inside
+    the overlay, which is why Escape did nothing right after opening) and focus
+    restore to whatever opened the dialog. `aria-modal` stops lying.
+  - **Names.** Words instead of glyphs on the five segmented controls, each group
+    labelled; a stable skin-scoped name on the preview pill; item-scoped names on every
+    repeated verb (`Export <skin>`, `Rename <skin>`, `Delete <skin>`, `Skip <name>`,
+    `Export <pack>`, `Delete <pack>`); `aria-label` on every unlabelled input;
+    `aria-hidden` on the decorative dots; `aria-pressed` on the skip control.
+  - **State and structure.** An explicit, concise accessible name on every card button —
+    including circle cards, whose name was previously nothing but the palette inside
+    them — plus `aria-current` on the active card, `aria-describedby` + `role='alert'`
+    on field errors, `role='list'`/`listitem` on the gallery, headings labelling their
+    sections, a labelled `aside` for the favourites rail, and a concise `role='img'`
+    text alternative on the palette (a description, not a hex wall).
+  - **One live region per surface.** A visually hidden `aria-live='polite'` region,
+    written on discrete events only: preview start and end, "Unsaved changes",
+    collision, and the busy outcomes. The countdown ticks four times a second and is
+    never announced. The colour well shows the host's own focus ring when the platform
+    picker is reached by keyboard.
+
+### Changed
+
+- **A card is one tab stop.** The preview pill, the action row and the manage row are a
+  roving set reached with the arrow keys from the card; each row is a labelled
+  `role='toolbar'` and every member is `tabIndex=-1` until the card is focused. A mouse
+  user is unaffected — every control stays visible and clickable. This removes four to
+  eight stops per card, times the whole catalogue, from the tab sequence.
+
+### Accepted, not hidden
+
+- **Focus behaviour is not unit-tested, and this entry does not claim it is.** The
+  harness has no real `document`, no layout and stubs `useEffect`, so focus-in, the Tab
+  trap, document Escape, focus restore and the roving keys are verified by a headless
+  render and the Captain's walk — not by `tests/aria.test.mjs`, whose header says so in
+  as many words. The suite covers the attribute surface (13 tests).
+- **Rigour: 23 findings, none introduced by this pass.** All pre-existing — complexity
+  16 in `stripJsonNoise`, the loader-provided-import CRITICALs, file-size debt. The five
+  `style-drift` LOWs are Python naming drift in files this pass never touched; rigour's
+  adaptive baseline is why they surface in one run and not another.
+
 ## [2.8.1] - 2026-10-19
 
 ### Fixed

@@ -55,7 +55,7 @@ import { Component, useCallback, useEffect, useMemo, useRef, useState } from 're
 let _rest = null
 
 // Replaced with the real version at build time (scripts/regenerate.py).
-const BUILD_STAMP = '2.8.1'
+const BUILD_STAMP = '2.9.0'
 
 // The Python half is optional: the Desktop half applies and previews themes
 // with no backend at all. When it is absent every backend call throws this exact
@@ -2775,6 +2775,92 @@ function isGatewayCapable(scene) {
   return !!(scene && (scene.gatewayLightName || scene.gatewayDarkName))
 }
 
+// ---------------------------------------------------------------------------
+// Keyboard focus helpers (C9). DOM-only, and every call is guarded: the render
+// harness loads the build with no `document` and no layout, so an absent DOM
+// must be a no-op rather than a throw. `focusableIn` is the single list the Tab
+// trap, the roving toolbars and the "focus the first control" step all read, so
+// they cannot disagree about what is reachable.
+// ---------------------------------------------------------------------------
+const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+function focusableIn(root) {
+  if (!root || typeof root.querySelectorAll !== 'function') return []
+  try {
+    return Array.prototype.slice.call(root.querySelectorAll(FOCUSABLE_SELECTOR))
+  } catch (e) {
+    return []
+  }
+}
+
+/** Focus the first focusable descendant, or the root itself if there is none. */
+function focusFirstIn(root) {
+  const list = focusableIn(root)
+  const target = list.length ? list[0] : (root && typeof root.focus === 'function' ? root : null)
+  if (target && typeof target.focus === 'function') target.focus()
+  return target
+}
+
+/** Move within a toolbar's own members, wrapping at both ends. */
+function focusRelative(root, current, step) {
+  const list = focusableIn(root)
+  if (!list.length) return
+  let index = list.indexOf(current)
+  index = index < 0 ? 0 : (index + step + list.length) % list.length
+  const target = list[index]
+  if (target && typeof target.focus === 'function') target.focus()
+}
+
+/** The behaviour `aria-modal` promises, for an in-pane overlay: focus moves in
+ *  on open, Tab stays inside, Escape closes from anywhere (document level — the
+ *  overlay's own onKeyDown only fires once focus is already inside it), and
+ *  focus returns to whatever opened the dialog. The single mount effect makes the
+ *  restore idempotent: EditorModal remounts on Reset via `key`, so a stale
+ *  restore must not fight the new one. */
+function useModalA11y({ overlayRef, sheetRef, onClose }) {
+  useEffect(() => {
+    const doc = typeof document !== 'undefined' ? document : null
+    const sheet = sheetRef && sheetRef.current
+    const opener = doc && doc.activeElement && typeof doc.activeElement.focus === 'function'
+      ? doc.activeElement
+      : null
+    // 1. Focus into the sheet. A dialog that opens with focus left behind is the
+    //    exact failure aria-modal was lying about.
+    focusFirstIn(sheet)
+    const onKey = event => {
+      if (!event) return
+      if (event.key === 'Escape') {
+        if (event.preventDefault) event.preventDefault()
+        if (onClose) onClose()
+        return
+      }
+      if (event.key !== 'Tab') return
+      // 2. Trap Tab and Shift+Tab inside the sheet.
+      const list = focusableIn(sheet)
+      if (!list.length) return
+      const first = list[0]
+      const last = list[list.length - 1]
+      const active = doc ? doc.activeElement : null
+      const inside = sheet && typeof sheet.contains === 'function' && sheet.contains(active)
+      if (event.shiftKey && (active === first || !inside)) {
+        if (event.preventDefault) event.preventDefault()
+        if (last.focus) last.focus()
+      } else if (!event.shiftKey && (active === last || !inside)) {
+        if (event.preventDefault) event.preventDefault()
+        if (first.focus) first.focus()
+      }
+    }
+    if (doc && doc.addEventListener) doc.addEventListener('keydown', onKey, true)
+    return () => {
+      if (doc && doc.removeEventListener) doc.removeEventListener('keydown', onKey, true)
+      // 3. Restore focus to the opener, if it is still in the document.
+      if (opener && typeof opener.focus === 'function') {
+        try { opener.focus() } catch (e) { }
+      }
+    }
+  }, [])
+}
+
 function CliBadge({ scene, localScope }) {
   const gateway = isGatewayCapable(scene)
   // The badge must never claim what the current scope suppresses. With a local
@@ -2882,13 +2968,21 @@ function cardTitle(scene, mode) {
 //
 // Neither row is dimmed for the current mode. A preview exists to show the
 // colours as they are, and the label already says which mode is live.
-function ThemeCardPalette({ lightStrip, darkStrip, shape }) {
+function ThemeCardPalette({ lightStrip, darkStrip, shape, label }) {
   const rows = [lightStrip, darkStrip]
+  // On a card the strip IS the theme's preview, so it is an image named by the
+  // skin (a concise text alternative, never a wall of hex). In the editor the
+  // fields are the authority and the strip is decoration, so it is hidden. The
+  // role is decided by whether a label was supplied, not by a second prop.
+  const imgProps = label
+    ? { role: 'img', 'aria-label': label }
+    : { 'aria-hidden': 'true' }
   return jsx('div', {
     // `flex` IS REQUIRED: `flex-col` alone sets only flex-direction and leaves
     // the div a block, so its inline <span> children collapse to zero size and
     // the swatches paint nothing. The render harness cannot see layout — see
     // the flex-contract assertion in tests/theme-card.test.mjs.
+    ...imgProps,
     className: cn(
       'flex flex-col min-h-0 w-full flex-1 overflow-hidden',
       shape === 'circle' ? 'rounded-full' : 'rounded-[4px]'
@@ -2971,10 +3065,16 @@ const PREVIEW_PILL_LIVE = 'border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui
 const PREVIEW_PILL_IDLE = 'border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
 
 function ThemeCardPreviewPill({ scene, previewing, previewUntil, onPreview, onStopPreview }) {
+  // The countdown is a sighted affordance; the accessible NAME must not tick.
+  // It is the skin and the action, so it survives every re-render of the timer.
+  const pillName = scene.label || scene.name
   return jsx('button', {
     type: 'button',
     onClick: () => { if (previewing) onStopPreview(); else onPreview(scene) },
+    // Entered from the card by ArrowDown; part of the card's action toolbar.
+    tabIndex: -1,
     title: previewing ? 'Stop the preview and go back to your theme' : 'Preview this theme for 10 seconds, then revert',
+    'aria-label': previewing ? 'Stop previewing ' + pillName : 'Preview ' + pillName + ' for 10 seconds',
     className: cn(PREVIEW_PILL_CLASS, previewing ? PREVIEW_PILL_LIVE : PREVIEW_PILL_IDLE),
     style: PREVIEW_PILL_STYLE,
     children: previewing
@@ -3027,10 +3127,13 @@ function ThemeCardFavorite({ scene, favorited, onToggleFavorite }) {
   return jsx('button', {
     type: 'button',
     onClick: () => onToggleFavorite(scene),
+    tabIndex: -1,
     title: favorited
       ? 'Remove this skin from your favourites'
       : 'Star this skin: it joins the favourites rail on the left',
-    'aria-label': (favorited ? 'Remove ' : 'Add ') + (scene.label || scene.name) + ' favourites',
+    'aria-label': favorited
+      ? 'Remove ' + (scene.label || scene.name) + ' from favourites'
+      : 'Add ' + (scene.label || scene.name) + ' to favourites',
     'aria-pressed': favorited ? 'true' : 'false',
     className: FAVORITE_CLASS,
     style: favorited ? CARD_ACTION_STYLE_ON : CARD_ACTION_STYLE,
@@ -3042,6 +3145,7 @@ function ThemeCardEditGear({ scene, onEdit }) {
   return jsx('button', {
     type: 'button',
     onClick: () => onEdit(scene),
+    tabIndex: -1,
     title: 'Edit this skin: recolour it and save your own override',
     'aria-label': 'Edit ' + (scene.label || scene.name),
     className: EDIT_GEAR_CLASS,
@@ -3066,6 +3170,7 @@ function ThemeCardDuplicate({ scene, onDuplicate }) {
   return jsx('button', {
     type: 'button',
     onClick: () => onDuplicate(scene),
+    tabIndex: -1,
     title: 'Fork this skin into a new skin you own — the source file is untouched',
     'aria-label': 'Duplicate ' + (scene.label || scene.name),
     className: EDIT_DUPLICATE_CLASS,
@@ -3081,11 +3186,18 @@ const MANAGE_ROW_CLASS = 'mt-1 flex items-center gap-1 text-[0.625rem]'
 const MANAGE_BUTTON_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2'
 
 function ThemeCardRename({ scene, draft, setDraft, managing, onRename, onCancel }) {
+  const inputRef = useRef(null)
+  // WS1b: the row that replaces the buttons must take focus, or focus falls to
+  // <body>. A guard keeps the harness (no DOM) from throwing.
+  useEffect(() => { focusFirstIn(inputRef.current) }, [])
+  const name = scene.label || scene.name
   return [
     jsx('input', {
       key: 'name',
+      ref: inputRef,
       type: 'text',
       value: draft,
+      'aria-label': 'New name for ' + name,
       onChange: e => setDraft(e.target.value),
       onKeyDown: e => {
         if (e.key === 'Enter') { onRename(scene.name, draft); onCancel() }
@@ -3097,6 +3209,7 @@ function ThemeCardRename({ scene, draft, setDraft, managing, onRename, onCancel 
       key: 'save',
       type: 'button',
       disabled: managing,
+      'aria-label': 'Save rename of ' + name,
       onClick: () => { onRename(scene.name, draft); onCancel() },
       className: MANAGE_BUTTON_CLASS,
       children: managing ? 'Saving…' : 'Save'
@@ -3105,12 +3218,17 @@ function ThemeCardRename({ scene, draft, setDraft, managing, onRename, onCancel 
 }
 
 function ThemeCardDeleteConfirm({ scene, managing, onDelete, onCancel }) {
+  const noRef = useRef(null)
+  // WS1b: focus the SAFE default on open — No, never the destructive Yes.
+  useEffect(() => { focusFirstIn(noRef.current) }, [])
+  const name = scene.label || scene.name
   return [
     jsx('span', { key: 'q', className: 'text-(--ui-text-tertiary)', children: 'Delete? It goes to the trash.' }),
     jsx('button', {
       key: 'yes',
       type: 'button',
       disabled: managing,
+      'aria-label': 'Delete ' + name,
       onClick: () => { onDelete(scene.name); onCancel() },
       className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5',
       // The destructive colour is inline: `text-(--ui-error)` has no host rule.
@@ -3119,7 +3237,9 @@ function ThemeCardDeleteConfirm({ scene, managing, onDelete, onCancel }) {
     }),
     jsx('button', {
       key: 'no',
+      ref: noRef,
       type: 'button',
+      'aria-label': 'Keep ' + name,
       onClick: onCancel,
       className: MANAGE_BUTTON_CLASS,
       children: 'No'
@@ -3127,16 +3247,18 @@ function ThemeCardDeleteConfirm({ scene, managing, onDelete, onCancel }) {
   ]
 }
 
-function ThemeCardManageButtons({ scene, onDelete, onRename, onExport, onStartRename, onStartConfirm, categories, currentCategory, onSetCategory }) {
+function ThemeCardManageButtons({ scene, onDelete, onRename, onExport, onStartRename, onStartConfirm, categories, currentCategory, onSetCategory, renameRef, deleteRef }) {
   const builtin = builtinCategoryIds()
   const userCats = Array.isArray(categories) ? categories : []
+  const name = scene.label || scene.name
   return [
     jsx('select', {
       key: 'category',
       value: currentCategory || '',
+      tabIndex: -1,
       onChange: e => onSetCategory(scene.name, e && e.target ? e.target.value : ''),
       title: 'File this skin under a category. Empty resets to its measured shelf.',
-      'aria-label': 'Category for ' + (scene.label || scene.name),
+      'aria-label': 'Category for ' + name,
       className: 'min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 text-[0.625rem] text-(--ui-text-secondary)',
       children: [
         jsx('option', { key: 'measured', value: '', children: 'Measured shelf' }),
@@ -3147,42 +3269,69 @@ function ThemeCardManageButtons({ scene, onDelete, onRename, onExport, onStartRe
     jsx('button', {
       key: 'export',
       type: 'button',
+      tabIndex: -1,
       onClick: () => onExport(scene.name),
       title: 'Save this skin as hand-editable YAML you can edit and re-import',
+      'aria-label': 'Export ' + name,
       className: MANAGE_BUTTON_CLASS,
       children: 'Export'
     }),
     jsx('button', {
       key: 'rename',
+      ref: renameRef,
       type: 'button',
+      tabIndex: -1,
       onClick: () => onStartRename(scene),
+      'aria-label': 'Rename ' + name,
       className: MANAGE_BUTTON_CLASS,
       children: 'Rename'
     }),
     jsx('button', {
       key: 'delete',
+      ref: deleteRef,
       type: 'button',
+      tabIndex: -1,
       onClick: onStartConfirm,
+      'aria-label': 'Delete ' + name,
       className: MANAGE_BUTTON_CLASS,
       children: 'Delete'
     })
   ]
 }
 
-function ThemeCardActions({ scene, managing, onDelete, onRename, onExport, categories, onSetCategory }) {
+function ThemeCardActions({ scene, managing, onDelete, onRename, onExport, categories, onSetCategory, containerRef }) {
   const [renaming, setRenaming] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [draft, setDraft] = useState('')
+  const renameButtonRef = useRef(null)
+  const deleteButtonRef = useRef(null)
+  const pendingFocus = useRef(null)
   const startRename = (target) => { setDraft(target.name); setRenaming(true) }
-  const stopRenaming = () => setRenaming(false)
-  const stopConfirming = () => setConfirming(false)
+  const stopRenaming = () => { pendingFocus.current = 'rename'; setRenaming(false) }
+  const stopConfirming = () => { pendingFocus.current = 'delete'; setConfirming(false) }
+  // The manage buttons are UNMOUNTED while the rename/confirm row is shown, so
+  // the restore cannot run synchronously at cancel time — it waits for the
+  // re-render that remounts them. The ref is consumed once, so a subsequent
+  // render does not steal focus.
+  useEffect(() => {
+    const target = pendingFocus.current
+    if (!target) return
+    pendingFocus.current = null
+    focusFirstIn((target === 'rename' ? renameButtonRef : deleteButtonRef).current)
+  }, [renaming, confirming])
   const currentCategory = effectiveCategory(scene, categories)
   const body = renaming
     ? jsx(ThemeCardRename, { scene, draft, setDraft, managing, onRename, onCancel: stopRenaming })
     : (confirming
       ? jsx(ThemeCardDeleteConfirm, { scene, managing, onDelete, onCancel: stopConfirming })
-      : jsx(ThemeCardManageButtons, { scene, onDelete, onRename, onExport, onStartRename: startRename, onStartConfirm: () => setConfirming(true), categories, currentCategory, onSetCategory }))
-  return jsxs('div', { className: MANAGE_ROW_CLASS, children: body })
+      : jsx(ThemeCardManageButtons, { scene, onDelete, onRename, onExport, onStartRename: startRename, onStartConfirm: () => setConfirming(true), categories, currentCategory, onSetCategory, renameRef: renameButtonRef, deleteRef: deleteButtonRef }))
+  return jsxs('div', {
+    ref: containerRef,
+    role: 'toolbar',
+    'aria-label': (scene.label || scene.name) + ' manage actions',
+    className: MANAGE_ROW_CLASS,
+    children: body
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -3443,9 +3592,12 @@ function ColorField({ id, value, label, onChange }) {
     const next = normaliseHex(draft)
     if (next) onChange(next)
   }
+  const errorId = id ? id + '-hex-error' : undefined
   return jsxs('span', { className: 'flex min-w-0 flex-1 items-center gap-1', children: [
     jsxs('label', {
-      className: 'relative inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded',
+      // The host's own focus ring pair (accent-swatch.tsx). Both utilities exist
+      // in the compiled stylesheet; a plain `focus-within:outline` would not.
+      className: 'relative inline-flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded focus-within:outline-2 focus-within:outline-ring',
       title: label,
       children: [
         jsx('input', {
@@ -3475,6 +3627,8 @@ function ColorField({ id, value, label, onChange }) {
       placeholder: '#rrggbb',
       'aria-label': label + ' hex',
       'aria-invalid': invalid ? 'true' : 'false',
+      // aria-invalid says "invalid"; the described-by message says WHY.
+      'aria-describedby': invalid ? errorId : undefined,
       title: invalid ? 'Not a hex colour — try #rrggbb' : label,
       onChange: event => change(event && event.target ? event.target.value : ''),
       onBlur: commit,
@@ -3482,7 +3636,15 @@ function ColorField({ id, value, label, onChange }) {
       className: 'min-w-0 w-full flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 font-mono text-[0.625rem]',
       // The error border colour is inline, not a utility the host must generate.
       style: invalid ? { borderColor: 'var(--ui-error)' } : undefined
-    })
+    }),
+    errorId
+      ? jsx('span', {
+          id: errorId,
+          role: 'alert',
+          className: 'sr-only',
+          children: invalid ? 'Not a hex colour — use #rrggbb' : ''
+        })
+      : null
   ]})
 }
 
@@ -3497,6 +3659,9 @@ function ContrastChip({ ratio, target, label }) {
     : label + ': not a colour that can be measured'
   return jsx('span', {
     title,
+    // The chip's children stay exactly the ratio string (a pinned assertion);
+    // the advisory sentence rides aria-label instead of a new child span.
+    'aria-label': title,
     className: cn('shrink-0 rounded px-1 font-mono text-[0.5625rem] leading-4', below ? null : 'text-(--ui-text-tertiary)'),
     // Warning colour and its 15% fill are inline: neither utility is generated
     // by the host's compiled stylesheet.
@@ -3730,47 +3895,71 @@ function packTitleOf(id) {
 /** A modal shell: the same overlay and the same opaque sheet the editor uses, so
  *  every dialog in the plugin looks and behaves alike. Escape and a click on the
  *  backdrop close it; the header always carries a real Close button. */
-function ModalShell({ title, subtitle, surface, onClose, children }) {
-  return jsx('div', {
+function ModalShell({ title, subtitle, surface, onClose, children, idPrefix, announcement }) {
+  const overlayRef = useRef(null)
+  const sheetRef = useRef(null)
+  useModalA11y({ overlayRef, sheetRef, onClose })
+  // Ids must be unique: ModalShell is instantiated for both packs and categories.
+  const prefix = idPrefix || 'chroma-modal'
+  const titleId = prefix + '-title'
+  const subtitleId = prefix + '-subtitle'
+  // The live region is a SIBLING of the sheet, not inside it: the sheet's own
+  // child shape is pinned, and a region inside the body would move it.
+  const live = jsx('div', {
+    key: 'live',
+    className: 'sr-only',
+    'aria-live': 'polite',
+    children: announcement || ''
+  })
+  return jsxs('div', {
+    ref: overlayRef,
     className: EDITOR_OVERLAY_CLASS,
     role: 'dialog',
     'aria-modal': 'true',
     'aria-label': title,
+    'aria-labelledby': titleId,
+    'aria-describedby': subtitle ? subtitleId : undefined,
     onClick: event => { if (event && event.target === event.currentTarget && onClose) onClose() },
     onKeyDown: event => { if (event && event.key === 'Escape' && onClose) onClose() },
-    children: jsxs('div', {
-      className: EDITOR_SHEET_CLASS,
-      style: { backgroundColor: surface || '#20232b' },
-      children: [
-        jsxs('div', { key: 'head', className: 'flex shrink-0 items-start justify-between gap-2 border-b border-(--ui-stroke-secondary) pb-2', children: [
-          jsxs('div', { className: 'min-w-0', children: [
-            jsx('div', { className: 'truncate text-sm font-semibold', children: title }),
-            subtitle ? jsx('div', { className: 'text-[0.625rem] text-(--ui-text-tertiary)', children: subtitle }) : null
+    children: [
+      jsxs('div', {
+        ref: sheetRef,
+        className: EDITOR_SHEET_CLASS,
+        style: { backgroundColor: surface || '#20232b' },
+        children: [
+          jsxs('div', { key: 'head', className: 'flex shrink-0 items-start justify-between gap-2 border-b border-(--ui-stroke-secondary) pb-2', children: [
+            jsxs('div', { className: 'min-w-0', children: [
+              jsx('div', { id: titleId, className: 'truncate text-sm font-semibold', children: title }),
+              subtitle ? jsx('div', { id: subtitleId, className: 'text-[0.625rem] text-(--ui-text-tertiary)', children: subtitle }) : null
+            ]}),
+            jsx('button', {
+              key: 'close',
+              type: 'button',
+              onClick: onClose,
+              title: 'Close (Escape)',
+              'aria-label': 'Close ' + title,
+              className: EDITOR_ACTION_CLASS,
+              children: '✕'
+            })
           ]}),
-          jsx('button', {
-            key: 'close',
-            type: 'button',
-            onClick: onClose,
-            title: 'Close (Escape)',
-            'aria-label': 'Close ' + title,
-            className: EDITOR_ACTION_CLASS,
-            children: '✕'
-          })
-        ]}),
-        jsx('div', { key: 'body', className: 'min-h-0 overflow-y-auto', children })
-      ]
-    })
+          jsx('div', { key: 'body', className: 'min-h-0 overflow-y-auto', children })
+        ]
+      }),
+      live
+    ]
   })
 }
 
 /** Which packs the gallery shows. The chips lived in a strip under the search
  *  field and ate the pane; the rule did not change, only where it is set. */
-function PackPickerModal({ packIds, packTotals, enabledPacks, hidden, onToggle, surface, management, onClose }) {
+function PackPickerModal({ packIds, packTotals, enabledPacks, hidden, onToggle, surface, management, onClose, announcement }) {
   const [managing, setManaging] = useState(false)
   return jsx(ModalShell, {
     title: 'Theme packs',
     subtitle: 'Core is always on. A pack adds its own skins; nothing is deleted.',
     surface,
+    idPrefix: 'chroma-packs',
+    announcement,
     onClose,
     children: jsxs('div', { className: 'flex flex-col gap-1.5', children: [
       jsx('div', {
@@ -3828,12 +4017,14 @@ function PackPickerModal({ packIds, packTotals, enabledPacks, hidden, onToggle, 
 
 /** The user's own shelves. The twelve measured families are read-only and are
  *  listed for orientation; the user's shelves can be created and dropped here. */
-function CategoryModal({ categories, busy, name, title, onName, onTitle, onCreate, onDelete, surface, onClose }) {
+function CategoryModal({ categories, busy, name, title, onName, onTitle, onCreate, onDelete, surface, onClose, announcement }) {
   const list = Array.isArray(categories) ? categories : []
   return jsx(ModalShell, {
     title: 'Categories',
     subtitle: 'The twelve colour families are measured and fixed. These are your own shelves.',
     surface,
+    idPrefix: 'chroma-categories',
+    announcement,
     onClose,
     children: jsxs('div', { className: 'flex flex-col gap-2', children: [
       jsx('div', { key: 'builtins', className: 'flex flex-wrap gap-1', children:
@@ -3853,6 +4044,7 @@ function CategoryModal({ categories, busy, name, title, onName, onTitle, onCreat
           value: name,
           placeholder: 'category id',
           title: 'A slug for the category (lowercase, dashes)',
+          'aria-label': 'Category id',
           onChange: e => onName(e && e.target ? e.target.value : ''),
           className: 'h-7 w-28 rounded border border-(--ui-stroke-secondary) px-1 font-mono text-[0.625rem]'
         }),
@@ -3862,6 +4054,7 @@ function CategoryModal({ categories, busy, name, title, onName, onTitle, onCreat
           value: title,
           placeholder: 'Display title',
           title: 'The title shown on the shelf',
+          'aria-label': 'Category title',
           onChange: e => onTitle(e && e.target ? e.target.value : ''),
           className: 'h-7 w-32 rounded border border-(--ui-stroke-secondary) px-1 text-[0.625rem]'
         }),
@@ -3878,7 +4071,13 @@ function CategoryModal({ categories, busy, name, title, onName, onTitle, onCreat
   })
 }
 
-function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose, onSave, onReset, onDuplicate }) {
+function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose, onSave, onReset, onDuplicate, announcement }) {
+  const overlayRef = useRef(null)
+  const sheetRef = useRef(null)
+  useModalA11y({ overlayRef, sheetRef, onClose })
+  const idPrefix = 'chroma-editor'
+  const titleId = idPrefix + '-title'
+  const subtitleId = idPrefix + '-subtitle'
   const effective = applyOverride(scene, overrides)
   const overridden = !!(overrides && overrides[scene.name])
   // One draft per mode, seeded from the effective palette. Kept apart so `dirty`
@@ -3956,7 +4155,16 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
     : (overridden
       ? 'Carries your override. Reset puts the shipped palette back.'
       : 'Saving stores an override. The shipped catalogue is never rewritten.')
-  return jsx('div', {
+  // The live region rides the overlay as a SIBLING of the sheet: the body's five
+  // zones are pinned, and a region inside the sheet would sit among them.
+  const live = jsx('div', {
+    key: 'live',
+    className: 'sr-only',
+    'aria-live': 'polite',
+    children: announcement || ''
+  })
+  return jsxs('div', {
+    ref: overlayRef,
     className: EDITOR_OVERLAY_CLASS,
     // The scrim and the scroll fallback, as inline styles. `bg-black/50` is not in
     // the host's compiled stylesheet (the host never uses that exact class), so the
@@ -3966,12 +4174,14 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
     role: 'dialog',
     'aria-modal': 'true',
     'aria-label': 'Edit ' + name,
-    // Click-outside and Escape both close. There is no focus trap in E1 (E6 owns
-    // keyboard reach); the header holds a real Close button so the modal is never
-    // a trap for the mouse-free.
+    'aria-labelledby': titleId,
+    'aria-describedby': subtitleId,
+    // Escape also closes at the document level (useModalA11y); this handler is the
+    // same-behaviour fallback for a click order that never moves focus.
     onClick: event => { if (event && event.target === event.currentTarget && onClose) onClose() },
     onKeyDown: event => { if (event && event.key === 'Escape' && onClose) onClose() },
-    children: jsxs('div', {
+    children: [jsxs('div', {
+      ref: sheetRef,
       className: EDITOR_SHEET_CLASS,
       // THE MODAL MUST CAP AND SCROLL, and the class cannot do it: `max-h-[87vh]`
       // and `w-[min(94vw,64rem)]` are arbitrary-value utilities that the HOST's
@@ -3990,8 +4200,8 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
       children: [
         jsxs('div', { key: 'head', className: 'flex items-start justify-between gap-2', children: [
           jsxs('div', { className: 'min-w-0', children: [
-            jsx('div', { className: 'truncate text-sm font-semibold', children: 'Edit ' + name }),
-            jsx('div', { className: 'text-[0.625rem] text-(--ui-text-tertiary)', children: subtitle })
+            jsx('div', { id: titleId, className: 'truncate text-sm font-semibold', children: 'Edit ' + name }),
+            jsx('div', { id: subtitleId, className: 'text-[0.625rem] text-(--ui-text-tertiary)', children: subtitle })
           ]}),
           jsx('button', {
             key: 'close',
@@ -4172,7 +4382,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
           ]
         })
       ]
-    })
+    }), live]
   })
 }
 
@@ -4197,6 +4407,7 @@ function FavoritesRail({ favorites, skins, mode, onApply, onRemove }) {
           className: 'flex min-w-0 flex-1 items-center gap-1 rounded px-1 py-1 text-left',
           children: [
             jsx('span', {
+              'aria-hidden': 'true',
               className: 'h-2.5 w-2.5 shrink-0 rounded-full',
               style: { backgroundColor: colors.ui_accent || colors.banner_accent || 'var(--ui-accent)' }
             }),
@@ -4216,6 +4427,7 @@ function FavoritesRail({ favorites, skins, mode, onApply, onRemove }) {
   }
   return jsxs('aside', {
     className: 'flex w-36 shrink-0 flex-col gap-1 overflow-hidden rounded-lg border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) p-1.5',
+    'aria-label': 'Favourites',
     'data-favorites': String(rows.length),
     children: [
       jsx('div', {
@@ -4237,6 +4449,39 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   const lightStrip = paletteStrip(scene.lightColors || scene.colors || {})
   const darkStrip = paletteStrip(scene.darkColors || scene.colors || {})
   const isActive = scene.name === active
+  // C9: the card is ONE tab stop, and its controls are a roving set reached with
+  // the arrow keys. Only the card is tabbable; every action is tabIndex=-1 and is
+  // entered from the card. A mouse user is unaffected — everything stays visible
+  // and clickable.
+  const cardRef = useRef(null)
+  const roveRef = useRef(null)
+  const actionsRef = useRef(null)
+  const manageRef = useRef(null)
+  const name = scene.label || scene.name
+  const support = scene.modeSupport === 'dynamic' ? mode + ' variant' : scene.modeSupport + ' only'
+  const onRove = event => {
+    if (!event) return
+    const key = event.key
+    const nav = (key === 'ArrowDown' || key === 'ArrowRight') ? 1
+      : ((key === 'ArrowUp' || key === 'ArrowLeft') ? -1 : 0)
+    if (key === 'Escape') {
+      if (event.preventDefault) event.preventDefault()
+      focusFirstIn(cardRef.current)
+      return
+    }
+    if (!nav) return
+    if (event.target === cardRef.current) {
+      if (nav < 0) return
+      if (event.preventDefault) event.preventDefault()
+      focusFirstIn(actionsRef.current || manageRef.current)
+      return
+    }
+    if (event.preventDefault) event.preventDefault()
+    focusRelative(roveRef.current, event.target, nav)
+  }
+  // Attach the roving handler+ref to whichever element is outermost for the shape,
+  // exactly once, so a bubbling key event cannot move focus twice.
+  const withRove = el => ({ type: el.type, key: el.key, props: { ...el.props, ref: roveRef, onKeyDown: onRove } })
   const labelClass = shape === 'circle'
     ? 'mb-1 flex w-full items-center justify-center gap-1'
     : 'flex w-full items-center justify-between gap-1'
@@ -4244,12 +4489,28 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   if (shape !== 'circle') {
     cardChildren.push(jsx(ThemeCardLabel, { scene, mode, active, localScope, showState: true, className: labelClass, edited }))
   }
-  cardChildren.push(jsx(ThemeCardPalette, { lightStrip, darkStrip, shape }))
+  // The palette IS the preview, so the card names it (a concise text alternative);
+  // in the editor the same component is called without a label and is decorative.
+  cardChildren.push(jsx(ThemeCardPalette, {
+    lightStrip,
+    darkStrip,
+    shape,
+    label: name + ' palette, ' + support + ', six bands per mode'
+  }))
   const card = jsxs('button', {
     type: 'button',
+    ref: cardRef,
+    // The card is the ONE tab stop for this card's controls; its actions rove.
+    tabIndex: 0,
     onClick: () => onApply(scene),
     disabled: applying === scene.name,
     title: cardTitle(scene, mode),
+    // The accessible name is explicit and item-scoped. Content-derived, it leaked
+    // a child's text in, and for a circle the palette was its only name.
+    'aria-label': 'Apply ' + name + ' (' + support + ')',
+    // The active state rides the BUTTON as an attribute, so a circle card needs no
+    // extra child to say it.
+    'aria-current': isActive ? 'true' : undefined,
     // The card FILLS its frame. The border, the radius and the aspect ratio
     // belong to the box that also carries the action row (see cardBox below), so
     // the row can sit inside the same edge instead of floating over it.
@@ -4286,7 +4547,10 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
     }))
   }
   if (rowChildren.length) {
-    boxChildren.push(jsx('div', {
+    boxChildren.push(jsxs('div', {
+      ref: actionsRef,
+      role: 'toolbar',
+      'aria-label': name + ' actions',
       className: cn(
         'pointer-events-none relative z-20 mt-auto flex items-center gap-1.5',
         shape === 'circle' ? 'justify-center px-2 pb-2' : 'justify-between px-1.5 pb-1.5'
@@ -4321,17 +4585,17 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
     : cardBox
   // Only an owned skin has manage actions, and it keeps its unwrapped shape when it
   // does not: the extra flex column is what holds the action row.
-  if (!owned) return stacked
+  if (!owned) return withRove(stacked)
   // Theme Packs badge (§9): 'core' for core members; pack id otherwise. Text only (not colour-only) per plan.
   const packId = scene && scene.pack ? scene.pack : (scene && scene.name ? 'core' : 'core')
   const badgeText = packId === 'core' ? 'core' : (packId || 'core')
-  return jsxs('div', { className: 'flex w-full flex-col', children: [
+  return withRove(jsxs('div', { className: 'flex w-full flex-col', children: [
     stacked,
     jsxs('div', { className: 'mt-1 flex items-center gap-1', children: [
       jsx('span', { className: 'inline-flex items-center rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-0.5 py-0.5 text-[0.5625rem] text-(--ui-text-secondary) font-medium', children: badgeText }),
-      jsx(ThemeCardActions, { scene, managing, onDelete, onRename, onExport, categories, onSetCategory })
+      jsx(ThemeCardActions, { scene, managing, onDelete, onRename, onExport, categories, onSetCategory, containerRef: manageRef })
     ]})
-  ]})
+  ]}))
 }
 
 // ---------------------------------------------------------------------------
@@ -4370,6 +4634,7 @@ function PackRow({ pack, busy, onExport, onDelete }) {
         disabled: !!busy,
         onClick: () => onExport(pack),
         title: 'Save this pack as a self-contained bundle you can send to someone else',
+        'aria-label': 'Export ' + (pack.name || slugName),
         className: MANAGE_BUTTON_CLASS,
         children: 'Export'
       }),
@@ -4379,6 +4644,7 @@ function PackRow({ pack, busy, onExport, onDelete }) {
         disabled: !!busy,
         onClick: () => onDelete(pack),
         title: 'Drop the pack record, or the record and the skins it names',
+        'aria-label': 'Delete ' + (pack.name || slugName),
         className: MANAGE_BUTTON_CLASS,
         children: 'Delete'
       })
@@ -4410,6 +4676,7 @@ function CategoryList({ categories, busy, onDelete }) {
           disabled: busy,
           onClick: () => onDelete(cat.id),
           title: 'Delete this category. Skins filed under it fall back to their measured shelf.',
+          'aria-label': 'Delete category ' + (cat.title || cat.id),
           className: MANAGE_BUTTON_CLASS,
           children: busy ? '\u2026' : 'Delete'
         })
@@ -4442,11 +4709,14 @@ function PackImportPreview({ groups, choices, onChoice }) {
       jsx('input', {
         className: 'min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 font-mono text-[0.625rem]',
         value: (choices && choices[r.name] && choices[r.name].to) || (r.to || (r.name + '-2')),
+        'aria-label': 'Rename ' + r.name + ' on import',
         onChange: e => onChoice(r.name, { action: 'rename', to: e && e.target ? e.target.value : '' })
       }),
       jsx('button', {
         type: 'button',
         onClick: () => onChoice(r.name, { action: 'skip' }),
+        'aria-label': 'Skip ' + r.name,
+        'aria-pressed': (choices && choices[r.name] && choices[r.name].action === 'skip') ? 'true' : 'false',
         className: MANAGE_BUTTON_CLASS,
         children: (choices && choices[r.name] && choices[r.name].action === 'skip') ? 'skipped' : 'skip'
       })
@@ -4545,6 +4815,9 @@ function ThemePicker() {
   const [active, setActive, live] = useActiveSkin()
   const desktopTheme = useDesktopThemeApi()
   const [q, setQ] = useState('')
+  // One polite announcement channel for the pane. Written on DISCRETE events
+  // only — never the preview countdown, which ticks four times a second.
+  const [announcement, setAnnouncement] = useState('')
   const [applying, setApplying] = useState(null)
   const profile = useValue(host.state.profile) || 'default'
   const [mode, setMode] = useState(() => desktopModeFor(profile, document.documentElement.dataset.hermesMode))
@@ -4587,6 +4860,7 @@ function ThemePicker() {
     }
     setFavorites(next)
     haptic('tap')
+    setAnnouncement((starred ? 'Starred ' : 'Unstarred ') + (scene.label || scene.name))
     host.notify({
       kind: 'info',
       message: (starred ? 'Starred ' : 'Unstarred ') + (scene.label || scene.name)
@@ -4954,6 +5228,7 @@ function ThemePicker() {
       try { api.clearThemePreview() } catch (e) { }
     }
     setPreview(null)
+    setAnnouncement('Preview ended.')
   }, [])
   const stopPreview = useCallback(() => {
     if (previewTimer.current) { clearTimeout(previewTimer.current); previewTimer.current = null }
@@ -4966,6 +5241,7 @@ function ThemePicker() {
     const previewMode = scene.modeSupport === 'dynamic' ? mode : scene.modeSupport
     try { api.previewTheme(scene.name, previewMode === 'dark' ? 'dark' : 'light') } catch (e) { }
     setPreview({ name: scene.name, until: Date.now() + PREVIEW_MS })
+    setAnnouncement('Previewing ' + (scene.label || scene.name) + '. It reverts in 10 seconds.')
     previewTimer.current = setTimeout(() => { previewTimer.current = null; revertPreview() }, PREVIEW_MS)
   }, [mode, revertPreview])
   // A preview left armed when the picker unmounts would strand the user on a
@@ -5227,9 +5503,13 @@ function ThemePicker() {
     setPackBusy(true)
     try {
       const preview = await requestPackImport(parsed.bundle, true)
+      const plan = groupImportPlan(preview)
       setPackBundle(parsed.bundle)
-      setPackGroups(groupImportPlan(preview))
+      setPackGroups(plan)
       setPackChoices({})
+      setAnnouncement(plan.collides.length
+        ? (plan.collides.length + ' name collision(s): ' + plan.collides.map(r => r.name).join(', ') + '. Rename or skip each before confirming.')
+        : ('Ready to import ' + plan.new.length + ' skin(s); ' + plan.identical.length + ' already identical.'))
     } catch (e) {
       setPackBundle(null)
       setPackGroups(null)
@@ -5244,10 +5524,12 @@ function ThemePicker() {
   const confirmPackImport = async () => {
     if (packBusy || !packBundle) return
     setPackBusy(true)
+    setAnnouncement('Importing the pack.')
     try {
       const applied = applyPackChoices(packBundle, packChoices)
       const result = await requestPackImport(applied.bundle, false)
       haptic('tap')
+      setAnnouncement(packImportNotice(result).title)
       setPackBundle(null)
       setPackGroups(null)
       setPackChoices({})
@@ -5426,6 +5708,7 @@ function ThemePicker() {
             value: packName,
             placeholder: 'pack name',
             title: 'Name for the pack you save from the current filter (a slug)',
+            'aria-label': 'Pack name',
             onChange: e => setPackName(e && e.target ? e.target.value : ''),
             className: 'h-6 w-28 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 font-mono text-[0.625rem]'
           }),
@@ -5452,6 +5735,7 @@ function ThemePicker() {
               className: 'rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-2 py-1 font-mono text-[0.6875rem]',
               rows: 4,
               placeholder: 'Paste a Chroma pack bundle (JSON) here',
+              'aria-label': 'Pack bundle',
               value: packText,
               onChange: e => setPackText(e && e.target ? e.target.value : '')
             }),
@@ -5517,6 +5801,9 @@ function ThemePicker() {
   return jsxs('div', {
     className: 'flex h-full min-h-0 flex-col',
     children: [
+      // The pane's polite announcement channel. Discrete events only; the preview
+      // countdown never writes here.
+      jsx('div', { key: 'live', className: 'sr-only', 'aria-live': 'polite', role: 'status', children: announcement }),
       jsxs('div', {
         className: 'flex flex-col gap-2 border-b border-(--ui-stroke-secondary) p-3',
         children: [
@@ -5537,6 +5824,7 @@ function ThemePicker() {
                         className: 'flex min-w-0 items-center gap-1 rounded-full border border-(--ui-stroke-secondary) px-2 py-0.5',
                         children: [
                           jsx('span', {
+                            'aria-hidden': 'true',
                             className: 'h-2 w-2 shrink-0 rounded-full',
                             style: { backgroundColor: activeColors?.ui_accent || activeColors?.banner_accent || 'var(--ui-accent)' }
                           }),
@@ -5577,6 +5865,7 @@ function ThemePicker() {
                     // `w-[7.5rem]` is an arbitrary value the host never generated.
                     style: { width: '7.5rem' },
                     title: 'Group the gallery by skin, or by colour family',
+                    'aria-label': 'Group gallery by',
                     children: jsx(SelectValue, {})
                   }),
                   jsxs(SelectContent, {
@@ -5602,65 +5891,78 @@ function ThemePicker() {
                 className: MANAGE_BUTTON_CLASS + ' h-7 px-2 text-[0.6875rem]',
                 children: 'Categories'
               }),
+              // Word labels, not glyphs: `☾`/`□` are meaningless to a screen
+              // reader and are not in every font. Each control sits in a labelled
+              // `group` because the host SegmentedControl exposes no group prop.
               jsx('div', {
+                role: 'group',
+                'aria-label': 'Preview mode',
                 title: 'Preview in dark or light mode',
                 children: jsx(SegmentedControl, {
                   options: [
-                    { id: 'dark', label: '☾' },
-                    { id: 'light', label: '☀' }
+                    { id: 'dark', label: 'Dark' },
+                    { id: 'light', label: 'Light' }
                   ],
                   value: mode,
                   onChange: onModeChange
                 })
               }),
               jsx('div', {
+                role: 'group',
+                'aria-label': 'Card shape',
                 title: 'Card shape: squares, rectangles or circles',
                 children: jsx(SegmentedControl, {
                   options: [
-                    { id: 'square', label: '□' },
-                    { id: 'rectangle', label: '▭' },
-                    { id: 'circle', label: '○' }
+                    { id: 'square', label: 'Square' },
+                    { id: 'rectangle', label: 'Rectangle' },
+                    { id: 'circle', label: 'Circle' }
                   ],
                   value: shape,
                   onChange: changeShape
                 })
               }),
               jsx('div', {
+                role: 'group',
+                'aria-label': 'Card size',
                 title: 'Card size: small, medium or large',
                 children: jsx(SegmentedControl, {
                   options: [
-                    { id: 'sm', label: 'S' },
-                    { id: 'md', label: 'M' },
-                    { id: 'lg', label: 'L' }
+                    { id: 'sm', label: 'Small' },
+                    { id: 'md', label: 'Medium' },
+                    { id: 'lg', label: 'Large' }
                   ],
                   value: size,
                   onChange: changeSize
                 })
               }),
-              jsx(SegmentedControl, {
-                // The scope is a first-class control, not a setting buried elsewhere:
-                // it decides whether a pick reaches the CLI, and the badges below
-                // change meaning with it.
-                options: [
-                  { id: APPLY_SCOPE_LOCAL, label: 'This profile' },
-                  { id: APPLY_SCOPE_EVERYWHERE, label: 'Everywhere' }
-                ],
-                value: scope,
-                onChange: changeScope
+              jsx('div', {
+                role: 'group',
+                'aria-label': 'Apply scope',
+                children: jsx(SegmentedControl, {
+                  // The scope is a first-class control, not a setting buried elsewhere:
+                  // it decides whether a pick reaches the CLI, and the badges below
+                  // change meaning with it.
+                  options: [
+                    { id: APPLY_SCOPE_LOCAL, label: 'This profile' },
+                    { id: APPLY_SCOPE_EVERYWHERE, label: 'Everywhere' }
+                  ],
+                  value: scope,
+                  onChange: changeScope
+                })
               })
             ]
           }),
           jsx('div', {
             className: 'flex items-center gap-2 min-w-0',
             children: [
-              jsx('div', { className: 'shrink-0', children: jsx(SegmentedControl, {
+              jsx('div', { className: 'shrink-0', role: 'group', 'aria-label': 'Import from', children: jsx(SegmentedControl, {
                 options: [ { id: 'url', label: 'URL' }, { id: 'css', label: 'CSS' } ],
                 value: importMode,
                 onChange: v => { if (v === 'url' || v === 'css') setImportMode(v) }
               }) }),
               importMode === 'url'
-                ? jsx(Input, { placeholder: 'TweakCN preset name or URL (e.g. catppuccin)', value: importRef, onChange: e => setImportRef(e && e.target ? e.target.value : '') })
-                : jsx('textarea', { className: 'flex-1 rounded-md border px-2 py-1 text-[0.75rem] font-mono', style: { borderColor: 'var(--chrome-stroke)', backgroundColor: 'var(--chrome-surface)', color: 'var(--chrome-text)' }, placeholder: 'Paste shadcn CSS, a Windows Terminal scheme, a Base16/24 scheme, or a VS Code color theme', value: importRef, rows: 3, onChange: e => setImportRef(e && e.target ? e.target.value : '') }),
+                ? jsx(Input, { placeholder: 'TweakCN preset name or URL (e.g. catppuccin)', 'aria-label': 'TweakCN preset name or URL', value: importRef, onChange: e => setImportRef(e && e.target ? e.target.value : '') })
+                : jsx('textarea', { className: 'flex-1 rounded-md border px-2 py-1 text-[0.75rem] font-mono', style: { borderColor: 'var(--chrome-stroke)', backgroundColor: 'var(--chrome-surface)', color: 'var(--chrome-text)' }, placeholder: 'Paste shadcn CSS, a Windows Terminal scheme, a Base16/24 scheme, or a VS Code color theme', 'aria-label': 'Paste a theme to import', value: importRef, rows: 3, onChange: e => setImportRef(e && e.target ? e.target.value : '') }),
               jsx(Button, { variant: 'secondary', disabled: busy || !importRef.trim(), onClick: importTweakcn, children: busy ? 'Importing…' : 'Import' })
             ]
           }),
@@ -5700,6 +6002,8 @@ function ThemePicker() {
             : null,
           jsx(ScrollArea, {
             className: 'min-h-0 flex-1',
+            'aria-label': 'Theme skins',
+            tabIndex: 0,
             children: jsx(SkinBoundary, {
           children:
             // Group builders always return their shelves, so a group count is
@@ -5707,23 +6011,31 @@ function ThemePicker() {
             // reads the skins that survived the search AND the pack filter.
             visibleSkins.length === 0
               ? jsx(EmptyState, emptyStateFor(visibleSkins.length, hiddenByPacks))
-              : jsx('div', {
+                : jsx('div', {
                   className: 'flex flex-col gap-4',
-                  children: groups.map((group, index) =>
-                    jsxs('section', {
+                  children: groups.map((group, index) => {
+                    const headingId = 'chroma-group-' + group.id
+                    return jsxs('section', {
                       key: group.id,
+                      'aria-labelledby': headingId,
                       className: index ? 'border-t border-(--ui-stroke-secondary) pt-4' : '',
                       children: [
-                        jsx('div', {
+                        // A real heading, not a styled div, so the group is a
+                        // navigable landmark and the section can be named by it.
+                        jsx('h3', {
+                          id: headingId,
                           className: 'mb-2 text-[0.6875rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)',
                           children: `${group.title} (${group.scenes.length})`
                         }),
                         jsx('div', {
+                          role: 'list',
                           className: 'grid',
                           style: { gap, gridTemplateColumns: 'repeat(auto-fill, minmax(' + cardMin + 'px, 1fr))' },
                           children: group.scenes.map(scene =>
-                            jsx(ThemeCard, {
+                            jsx('div', {
                               key: scene.name,
+                              role: 'listitem',
+                              children: jsx(ThemeCard, {
                               scene,
                               mode: scene.modeSupport === 'dynamic' ? mode : scene.modeSupport,
                               active,
@@ -5754,12 +6066,13 @@ function ThemePicker() {
                               localScope: scope === APPLY_SCOPE_LOCAL,
                               categories,
                               onSetCategory: assignSkinCategory
+                              })
                             })
                           )
                         })
                       ]
                     })
-                  )
+                  })
                 })
             })
           })
@@ -5777,6 +6090,7 @@ function ThemePicker() {
             onToggle: togglePack,
             surface: modalSurface,
             management: packManagerNode,
+            announcement: packBusy ? 'Working on the pack import.' : '',
             onClose: () => setPacksOpen(false)
           })
         : null,
@@ -5792,6 +6106,7 @@ function ThemePicker() {
             onCreate: handleCreateCategory,
             onDelete: handleDeleteCategory,
             surface: modalSurface,
+            announcement: categoryBusy ? 'Working on the category.' : '',
             onClose: () => setCategoriesOpen(false)
           })
         : null,
@@ -5809,6 +6124,7 @@ function ThemePicker() {
             modes,
             caps,
             busy: editorBusy,
+            announcement: editorBusy === 'save' ? 'Saving your skin.' : (editorBusy === 'reset' ? 'Resetting the override.' : (editorBusy === 'fork' ? 'Saving a copy.' : '')),
             onClose: closeEditor,
             onSave: saveEditor,
             onReset: resetEditor,
@@ -5853,9 +6169,11 @@ function ThemeChip() {
           host.navigate(PAGE_PATH)
         },
         title: `Active theme: ${active || 'nous'} — open Chroma`,
+        'aria-label': 'Active theme: ' + (active || 'nous') + ' — open Chroma',
         className: 'flex h-full items-center gap-1.5 px-1.5 text-[0.6875rem] text-(--ui-text-secondary) transition-colors hover:bg-(--chrome-action-hover) hover:text-foreground',
         children: [
           jsx('span', {
+            'aria-hidden': 'true',
             className: 'h-2 w-2 shrink-0 rounded-full',
             style: { backgroundColor: activeColors?.ui_accent || activeColors?.banner_accent || 'var(--ui-accent)' }
           }),

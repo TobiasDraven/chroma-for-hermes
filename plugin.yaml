@@ -1,5 +1,5 @@
 name: chroma
-version: "2.8.1"
+version: "2.9.0"
 requires_hermes: ">=0.22.0"
 description: >-
   Chroma for Hermes — browse, import and manage Hermes skins from the Desktop,
