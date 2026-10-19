@@ -22,7 +22,7 @@ The entry we will open a PR with:
 ```yaml
 name: chroma
 repo: https://github.com/TobiasDraven/chroma-for-hermes
-sha: 711858b4bfdd1a16d76d5bd96f813da64aef12ba
+sha: 4462d0513f9daad83ef2dbdf91a21d19f60b681a
 description: >-
   Browse, import and apply Hermes skins from the Desktop, including TweakCN
   imports that mint real gateway skins so the CLI and every connected Desktop
@@ -39,6 +39,11 @@ capabilities:
   provides_middleware: []
   requires_env: []
 ```
+
+**Re-pin before you submit.** This value is the tip of `main` when the file was last
+touched; the contract is to pin the tip at the moment you open the PR
+(`git rev-parse origin/main`). A pin one docs-commit behind the tip is fine; a pin that
+does not describe the tree the reviewer will fetch is not.
 
 Rules that shape those values:
 
