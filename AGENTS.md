@@ -36,7 +36,8 @@ desktop/
   plugin.js            GENERATED from the template — never edit
 dashboard/plugin_api.py   FastAPI backend mounted at /api/plugins/chroma/ (skins, import, export, trash)
 scripts/regenerate.py     template -> build; also emits the skin catalog and gateway transports
-skins/ gateway-skins/     bundled and gateway-provided skins (data, not code)
+skins-v2/ gateway-skins/  the catalogue and its mode-locked transports (data, not code)
+skins/                    retired v1 pair table - not read by the build
 tests/                    node:test suites + helpers; fixtures/ holds pinned parity data
   helpers/load-plugin.mjs THE harness: loads the built plugin into a vm context
 docs/SPEC.md              surfaces, features, backend contract, acceptance commands

@@ -97,7 +97,7 @@ A change is done when all of these are green:
 
 ```bash
 python scripts/regenerate.py                     # after any template edit
-node --test tests/                               # node suites
+node --test tests/*.test.mjs                               # node suites
 <venv>/python.exe -m unittest tests.test_plugin_api
 hermes plugins validate .                        # plugin admission gate
 rigour check --ci                                # quality gates

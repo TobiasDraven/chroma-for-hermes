@@ -1,4 +1,4 @@
-# Rebuild the installed Windows Theme Picker without dropping bundled skins.
+# Rebuild the installed Chroma plugin from this checkout's skins-v2 catalogue.
 # Run from PowerShell: .\install\regenerate-windows.ps1
 $ErrorActionPreference = 'Stop'
 
@@ -8,8 +8,9 @@ $hermesHome = if ($env:HERMES_HOME) {
 } else {
   Join-Path $env:LOCALAPPDATA 'hermes'
 }
-$bundledSkins = Join-Path $bundle '..\skins'
-$liveSkins = Join-Path $hermesHome 'skins'
+# The catalogue is skins-v2: one file per skin, both palettes. The retired v1
+# pair table (skins/) is not valid input and the generator refuses it.
+$bundledSkins = Join-Path $bundle '..\skins-v2'
 $pluginPath = Join-Path $hermesHome 'desktop-plugins\chroma\plugin.js'
 $regenerator = Join-Path $bundle '..\scripts\regenerate.py'
 $stagingSkins = Join-Path ([System.IO.Path]::GetTempPath()) "hermes-chroma-skins-$PID"
@@ -27,13 +28,8 @@ try {
   New-Item -ItemType Directory -Force -Path $stagingSkins | Out-Null
   Copy-Item -Path (Join-Path $bundledSkins '*.yaml') -Destination $stagingSkins -Force
 
-  # Local Windows skins override same-named bundled files and are included with
-  # the complete bundled catalog in the rebuilt plugin.
-  if (Test-Path $liveSkins) {
-    Get-ChildItem -Path $liveSkins -Filter '*.yaml' -File | ForEach-Object {
-      Copy-Item -Path $_.FullName -Destination $stagingSkins -Force
-    }
-  }
+  # Gateway skins are mode-locked transports, not catalogue skins: they are not
+  # merged here. The build needs skins-v2 input only.
 
   & py $regenerator $stagingSkins $pluginPath
   if ($LASTEXITCODE -ne 0) {

@@ -18,7 +18,7 @@ The catalogue is rebuilt. This is the release prepared for the public directory.
   and Neutral is the shelf below chroma 0.04.
 - **Six theme packs.** Thirty core skins ship visible; Earth, Cyberpunk, Zen,
   Retro, Noir and Studio hold the other 64 behind a chip row. The choice is
-  remembered per profile.
+  remembered on this machine.
 - **A font per skin.** Every skin names its own sans and mono stack, ending in
   the previous default so an uninstalled face changes nothing.
 - **The fifteen host built-in themes are gone.** They were Hermes' own themes and
@@ -37,7 +37,7 @@ The catalogue is rebuilt. This is the release prepared for the public directory.
 
 ### Verified
 
-94 of 94 palettes byte-identical across the cutover; JS 222/222; backend 163/163;
+94 of 94 palettes byte-identical across the cutover; JS 224/224; backend 163/163;
 generator 16 passed; `hermes plugins validate .` passes.
 
 ## [2.5.2] - 2026-10-18

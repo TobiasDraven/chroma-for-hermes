@@ -75,3 +75,46 @@ test('the pack choice persists, and a corrupt store is not fatal', async () => {
   assert.equal(JSON.stringify(t.readEnabledPacks()), '[]', 'a corrupt store degrades to none, never throws')
   store.removeItem('chroma-packs-v1')
 })
+
+test('a search that only matches a hidden pack leaves nothing visible', async () => {
+  const { context } = await loadPlugin()
+  const t = context.testHelpers
+  // The pane's empty state is guarded on exactly this value: the skins that
+  // survived both the search and the pack filter. If it is zero the user is
+  // told why, instead of being shown three shelves reading (0).
+  const matches = t.SKINS.filter(skin => /vscode/i.test(skin.name))
+  assert.ok(matches.length > 0, 'the catalogue still has a studio skin named vscode')
+  assert.equal(t.filterByPacks(matches, []).length, 0, 'hidden by the pack filter')
+  assert.equal(t.filterByPacks(matches, ['studio']).length, matches.length, 'visible once studio is on')
+})
+
+test('a search that matches nothing at all also leaves nothing visible', async () => {
+  const { context } = await loadPlugin()
+  const t = context.testHelpers
+  const matches = t.SKINS.filter(skin => /zzzz-no-such-skin/i.test(skin.name))
+  assert.equal(t.filterByPacks(matches, []).length, 0)
+  assert.equal(t.filterByPacks(matches, ['studio', 'retro', 'noir']).length, 0)
+})
+
+test('the shipped toggle writes the store, not just the component state', async () => {
+  const { context } = await loadPlugin()
+  const t = context.testHelpers
+  const store = context.window.localStorage
+  store.removeItem('chroma-packs-v1')
+
+  // togglePackChoice is the function the chip handler passes to setEnabledPacks.
+  // If the write were dropped from it, this test fails.
+  const after = t.togglePackChoice([], 'studio')
+  assert.equal(JSON.stringify(after), '["studio"]')
+  assert.equal(store.getItem('chroma-packs-v1'), '["studio"]', 'the click reached storage')
+
+  const off = t.togglePackChoice(after, 'studio')
+  assert.equal(JSON.stringify(off), '[]')
+  assert.equal(store.getItem('chroma-packs-v1'), '[]', 'turning it off is written too')
+
+  const both = t.togglePackChoice(t.togglePackChoice([], 'retro'), 'studio')
+  assert.equal(JSON.stringify([...both].sort()), '["retro","studio"]')
+  assert.equal(store.getItem('chroma-packs-v1'), JSON.stringify(both))
+
+  store.removeItem('chroma-packs-v1')
+})

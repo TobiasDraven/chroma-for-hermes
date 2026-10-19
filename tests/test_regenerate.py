@@ -246,9 +246,10 @@ class WindowsRunnerTests(unittest.TestCase):
         source = runner.read_text(encoding='utf-8')
 
         self.assertIn("Join-Path $env:LOCALAPPDATA 'hermes'", source)
-        self.assertIn("Join-Path $bundle '..\\skins'", source)
-        self.assertIn("Join-Path $hermesHome 'skins'", source)
-        self.assertIn("scripts\\regenerate.py", source)
+        self.assertIn("Join-Path $bundle '..\\skins-v2'", source)
+        self.assertIn("scripts" + chr(92) + "regenerate.py", source)
+        self.assertNotIn("Join-Path $hermesHome 'skins'", source,
+                         'the runner must not feed retired gateway skins into the catalogue')
 
 
 @MACOS_ONLY
@@ -313,7 +314,9 @@ class GatewaySkinInstallerTests(unittest.TestCase):
             )
 
             installed = hermes_home / 'skins'
-            expected = list((repo / 'skins').glob('*.yaml')) + list((repo / 'gateway-skins').glob('*.yaml'))
+            # Only the mode-locked transports install; the retired v1 pair table
+            # stays in the repo and must never reach a gateway.
+            expected = list((repo / 'gateway-skins').glob('*.yaml'))
             self.assertEqual(len(list(installed.glob('*.yaml'))), len(expected))
             for source in expected:
                 self.assertEqual((installed / source.name).read_bytes(), source.read_bytes())
@@ -326,8 +329,8 @@ class GatewaySkinInstallerTests(unittest.TestCase):
             hermes_home = Path(temp_dir) / 'gateway'
             destination = hermes_home / 'skins'
             destination.mkdir(parents=True)
-            collision = destination / 'dark-ayu.yaml'
-            collision.write_text('name: dark-ayu\n# locally customized\n', encoding='utf-8')
+            collision = destination / 'theme-picker-alabaster-light.yaml'
+            collision.write_text('name: theme-picker-alabaster-light\n# locally customized\n', encoding='utf-8')
             env = {**os.environ, 'HERMES_HOME': str(hermes_home)}
 
             refused = subprocess.run(
@@ -339,8 +342,7 @@ class GatewaySkinInstallerTests(unittest.TestCase):
             )
             self.assertNotEqual(refused.returncode, 0)
             self.assertIn('Refusing to overwrite modified gateway skins', refused.stderr)
-            self.assertEqual(collision.read_text(encoding='utf-8'), 'name: dark-ayu\n# locally customized\n')
-            self.assertFalse((destination / 'theme-picker-nous-light.yaml').exists())
+            self.assertEqual(collision.read_text(encoding='utf-8'), 'name: theme-picker-alabaster-light\n# locally customized\n')
 
             subprocess.run(
                 ['sh', str(installer), '--force'],
@@ -349,7 +351,7 @@ class GatewaySkinInstallerTests(unittest.TestCase):
                 capture_output=True,
                 text=True,
             )
-            self.assertEqual(collision.read_bytes(), (repo / 'skins' / collision.name).read_bytes())
+            self.assertEqual(collision.read_bytes(), (repo / 'gateway-skins' / collision.name).read_bytes())
 
     @unittest.skipUnless(SYMLINKS_SUPPORTED, 'needs symlink creation privilege')
     def test_force_still_refuses_destination_symlinks(self):
@@ -363,7 +365,7 @@ class GatewaySkinInstallerTests(unittest.TestCase):
             destination.mkdir(parents=True)
             outside = root / 'outside.yaml'
             outside.write_text('name: protected\n', encoding='utf-8')
-            (destination / 'dark-ayu.yaml').symlink_to(outside)
+            (destination / 'theme-picker-alabaster-light.yaml').symlink_to(outside)
 
             refused = subprocess.run(
                 ['sh', str(installer), '--force'],
@@ -402,10 +404,20 @@ class RegeneratePreservesOverridesTests(unittest.TestCase):
         (desktop / 'plugin.template.js').write_text(
             'window.__CHROMA_CATALOG__ = __SKINS_DATA__;\n', encoding='utf-8'
         )
-        skins = repo / 'skins'
+        skins = repo / 'skins-v2'
         skins.mkdir()
         (skins / 'mine.yaml').write_text(
-            "name: mine\ndescription: Mine\ncolors:\n"
+            "schema_version: 2\n"
+            "name: mine\n"
+            "label: Mine\n"
+            "description: Mine\n"
+            "category: persimmon\n"
+            "pack: core\n"
+            "energy: vivid\n"
+            "typography:\n  fontSans: Inter, sans-serif\n  fontMono: Consolas, monospace\n"
+            "light_colors:\n"
+            "  background: '#ffffff'\n  ui_text: '#111111'\n  ui_accent: '#ff0000'\n"
+            "dark_colors:\n"
             "  background: '#101010'\n  ui_text: '#eeeeee'\n  ui_accent: '#ff0000'\n",
             encoding='utf-8',
         )
@@ -416,7 +428,7 @@ class RegeneratePreservesOverridesTests(unittest.TestCase):
     def test_regeneration_leaves_a_populated_overrides_file_byte_identical(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             repo = self._build_temp_repo(Path(temp_dir))
-            skins = repo / 'skins'
+            skins = repo / 'skins-v2'
             overrides = skins / '.chroma' / 'overrides.json'
             overrides.parent.mkdir(parents=True)
             payload = json.dumps(

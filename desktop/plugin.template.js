@@ -2380,6 +2380,19 @@ function writeEnabledPacks(list) {
   } catch { /* storage is a convenience, never a precondition */ }
 }
 
+/** Toggle one pack and persist the result in the same call.
+ *
+ *  This is the shipped path: the chip handler passes it straight to setEnabledPacks.
+ *  Keeping the write here means a test can call the real function and see the
+ *  store change - a test that only called writeEnabledPacks could stay green
+ *  while the pane never wrote at all. */
+function togglePackChoice(prev, pack) {
+  const current = Array.isArray(prev) ? prev : []
+  const next = current.includes(pack) ? current.filter(p => p !== pack) : current.concat(pack)
+  writeEnabledPacks(next)
+  return next
+}
+
 function sceneCategory(scene) {
   if (scene.modeSupport === 'dark') return 'dark'
   if (scene.modeSupport === 'light') return 'light'
@@ -4454,7 +4467,8 @@ function ThemePicker() {
   // --- packs (E3) ------------------------------------------------------------
   const exportPackFromFilter = async () => {
     if (packBusy) return
-    const body = packExportBody(packName || slug(q) || 'chroma-pack', filtered.map(s => s.name), '')
+    // A pack must hold what the user can see, not what the search matched.
+    const body = packExportBody(packName || slug(q) || 'chroma-pack', visibleSkins.map(s => s.name), '')
     if (!isSlug(body.name)) {
       host.notify({ kind: 'error', message: 'Pack name "' + body.name + '" is not a slug — lowercase letters, digits and dashes' })
       return
@@ -4656,6 +4670,7 @@ function ThemePicker() {
   const groups = groupCards(visibleSkins, overrides, groupMode, categories)
   // The pack chips are built from the catalogue, so a new pack appears by itself.
   const packIds = Array.from(new Set(SKINS.map(scene => scene && scene.pack).filter(p => p && p !== 'core')))
+  const packTitle = (id) => PACK_TITLES[id] || (id.charAt(0).toUpperCase() + id.slice(1))
   const packTotals = {}
   for (const scene of SKINS) {
     const id = (scene && scene.pack) || 'core'
@@ -4663,11 +4678,7 @@ function ThemePicker() {
   }
   const hiddenByPacks = Math.max(0, filtered.length - visibleSkins.length)
   const togglePack = (pack) => {
-    setEnabledPacks(prev => {
-      const next = prev.includes(pack) ? prev.filter(p => p !== pack) : prev.concat(pack)
-      writeEnabledPacks(next)
-      return next
-    })
+    setEnabledPacks(prev => togglePackChoice(prev, pack))
   }
   const activeScene = applyOverride(allSkins.find(scene => scene.name === active) || null, overrides)
   const activeColors = activeScene && ((mode === 'dark' ? activeScene.darkColors : activeScene.lightColors) || activeScene.colors)
@@ -4706,7 +4717,7 @@ function ThemePicker() {
                     className: 'rounded border border-(--ui-stroke-secondary) px-1.5 py-0.5 text-[0.625rem] hover:border-(--ui-stroke-strong) disabled:opacity-50',
                     children: exporting ? 'Exporting…' : 'Export all'
                   }),
-                  jsx(Badge, { variant: 'muted', children: `${filtered.length}` })
+                  jsx(Badge, { variant: 'muted', children: `${visibleSkins.length}` })
                 ]
               })
             ]
@@ -4958,7 +4969,7 @@ function ThemePicker() {
         children: [
           jsx('span', {
             className: 'mr-1 text-[0.5625rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)',
-            children: 'Packs'
+            children: 'Theme packs'
           }),
           ...packIds.map(pack => jsx('button', {
             key: pack,
@@ -4966,13 +4977,13 @@ function ThemePicker() {
             onClick: () => togglePack(pack),
             'aria-pressed': enabledPacks.includes(pack) ? 'true' : 'false',
             title: enabledPacks.includes(pack)
-              ? PACK_TITLES[pack] + ' is on — click to hide it'
-              : 'Show the ' + PACK_TITLES[pack] + ' pack (' + packTotals[pack] + ' skins)',
+              ? packTitle(pack) + ' is on — click to hide it'
+              : 'Show the ' + packTitle(pack) + ' pack (' + packTotals[pack] + ' skins)',
             className: 'rounded border px-1.5 py-0.5 text-[0.625rem] '
               + (enabledPacks.includes(pack)
                 ? 'border-(--ui-accent) text-(--ui-accent)'
                 : 'border-(--ui-stroke-secondary) text-(--ui-text-tertiary)'),
-            children: PACK_TITLES[pack] + ' ' + packTotals[pack]
+            children: (enabledPacks.includes(pack) ? '✓ ' : '') + packTitle(pack) + ' ' + packTotals[pack]
           })),
           hiddenByPacks
             ? jsx('span', {
@@ -4986,7 +4997,10 @@ function ThemePicker() {
         className: 'min-h-0 flex-1 p-2',
         children: jsx(SkinBoundary, {
           children:
-            groups.length === 0
+            // Group builders always return their shelves, so groups.length is
+            // never zero. The honest test is whether any skin survived the
+            // search AND the pack filter.
+            visibleSkins.length === 0
               ? jsx(EmptyState, {
                   title: 'No skins found',
                   description: hiddenByPacks

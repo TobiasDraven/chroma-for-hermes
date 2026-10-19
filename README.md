@@ -35,8 +35,8 @@ device connected to your gateway — including the CLI.
   and a font choice of its own. The swatch preview shows both at once as a 2 x 6
   matrix: the light variant over the dark one. There are no single-mode skins.
 - **Thirty core skins, six packs** — the picker opens on thirty core skins.
-  Turn on Earth, Cyberpunk, Zen, Retro, Noir or Studio to see the rest; your
-  choice sticks per profile.
+  Turn on Earth, Cyberpunk, Zen, Retro, Noir or Studio to see the rest; the
+  choice is remembered on this machine.
 - **Two ways to browse** — group by skin, or switch the dropdown to group by
   color family: Persimmon, Apricot, Amber, Gold, Lemon, Fern, Teal, Cobalt,
   Indigo, Violet, Rose and Neutral. The family is measured from the accent in
@@ -241,7 +241,8 @@ the rebuilt `desktop/plugin.js` into Hermes Desktop and reload plugins.
 
 ```text
 desktop/                      Desktop plugin and source template
-skins/                         Bundled source palettes
+skins-v2/                      The catalogue: one file per skin, both palettes
+skins/                         Retired v1 pair table (migration record only)
 gateway-skins/                 Mode-locked gateway transport palettes
 scripts/regenerate.py          Catalog generator
 install/                       Desktop and gateway installers
@@ -301,8 +302,8 @@ picker after that, not before. See [Add your own skins](#add-your-own-skins) abo
 
 Chroma is a hard fork of [Hermes Theme Picker](https://github.com/jdtimothy/hermes-theme-picker)
 by Joshua Timothy, used under the MIT License. The skin editor, the theme packs,
-the colour taxonomy and the current catalogue are this fork's work. It bundles
-MIT-licensed palettes from:
+the colour taxonomy and the skin format are this fork's work; the palettes
+below are the upstream authors' work. It bundles MIT-licensed palettes from:
 
 - [BChop's Hermes Skins Pack](https://github.com/bchop-studio/hermes-skins-pack)
 - [CliffWade's Hermes Desktop Theme Pack](https://github.com/CliffWade/hermes-desktop-theme-pack),

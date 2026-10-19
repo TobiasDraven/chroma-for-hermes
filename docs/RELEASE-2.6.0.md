@@ -34,27 +34,35 @@ them in Appearance. Dropping them removed the entire missing-role defect class.
 
 | Gate | Result |
 |---|---|
-| JS suite | 224 / 224, exit 0 |
+| JS suite | 227 / 227, exit 0 |
 | Backend suite | 163 passed |
 | Generator suite | 16 passed, 4 skipped |
 | `scripts/check-packs.py` | OK: contract holds |
 | `hermes plugins validate .` | Validation passed |
-| `rigour check --ci` | **23 violations, 28/100 — red** |
+| `rigour check --ci` | **24 violations, 28/100 — red** |
 
 ## Accepted, not silenced
 
-`rigour check --ci` is red and this release does not claim otherwise. Every
-HIGH and CRITICAL finding has been previously proven a false positive with
-evidence:
+`rigour check --ci` is red and this release does not claim otherwise. The
+findings, and what each one actually is:
 
-- **hallucinated-imports** — the plugin imports `@hermes/plugin-sdk`, a host
-  module resolved at runtime, not an npm dependency. The host's own reference
-  plugins do the same.
-- **promise-safety** — the findings sit on host-API calls (`host.request`,
-  `host.rest`) whose callers guard failures; the plugin never awaits an
-  unguarded rejection into the render path.
-- **file-size** — `desktop/plugin.js` is generated and is not hand-maintained.
-- **phantom-apis** — the reported `os.fdopen` site is a false positive.
+- **hallucinated-imports (CRITICAL, 2)** — the plugin imports
+  `@hermes/plugin-sdk`, a host module resolved at runtime, not an npm
+  dependency. The host's own reference plugins do the same.
+- **promise-safety (HIGH, 7)** — the findings sit on host-API calls
+  (`host.request`, `host.rest`) whose callers guard failures; no unguarded
+  rejection reaches the render path.
+- **file-guard (HIGH, 4)** — "Protected file was modified". This release edits
+  `docs/**` on purpose. It is the guard working, not a defect.
+- **phantom-apis (HIGH, 1)** — the reported `os.fdopen` site is a false positive.
+- **inconsistent-error-handling (HIGH, 1)** — real but pre-existing in
+  `dashboard/plugin_api.py`; not touched by this cutover.
+- **context-window-artifacts (HIGH, 1)** — a doc-comment length rule firing on
+  `scripts/analyse-palettes.py`.
+
+The genuinely real code item is `stripJsonNoise` (cyclomatic complexity 16) in
+`desktop/plugin.template.js`. It is pre-existing, self-contained, and belongs in
+its own change rather than this submission.
 
 The genuinely real item is `stripJsonNoise` (cyclomatic complexity 16) in
 `desktop/plugin.template.js`. It is pre-existing, self-contained, and belongs in

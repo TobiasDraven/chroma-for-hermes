@@ -95,7 +95,7 @@ another device.
 
 `scripts/regenerate.py`:
 
-- parses every `skins/*.yaml` file;
+- parses every `skins-v2/*.yaml` file;
 - collapses the 50 declared light/dark pairs;
 - adds the eight canonical Desktop scenes;
 - loads the nine canonical backend built-ins from the pinned
@@ -109,14 +109,16 @@ installed plugin.
 
 ## Bundled skins and provenance
 
-`skins/` contains 150 unique YAML files:
+`skins-v2/` contains 94 skin files, each carrying both palettes:
 
 - 50 designs from [BChop's Hermes Skins Pack](https://github.com/bchop-studio/hermes-skins-pack);
 - all 100 themes from [CliffWade's Hermes Desktop Theme Pack](https://github.com/CliffWade/hermes-desktop-theme-pack) v1.1.0.
 
 The two sources do not overlap: 50 BChop designs plus all 100 CliffWade v1.1.0
-themes make 150 unique names. Both sources are MIT licensed; see
-`THIRD_PARTY_NOTICES.md`.
+themes made 150 unique names in the retired v1 table. Those 150 collapse into the
+94 shipped skins (a pair becomes one skin; a single becomes one skin with a
+generated second half), and every shipped palette is the upstream work. Both
+sources are MIT licensed; see `THIRD_PARTY_NOTICES.md`.
 
 ## Responsive cards
 

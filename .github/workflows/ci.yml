@@ -27,15 +27,19 @@ jobs:
       - name: Run JS tests
         run: node --test tests/*.test.mjs
 
-      - name: The catalogue obeys its own contract
-        run: python scripts/check-packs.py
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Install backend dependencies
         run: pip install fastapi PyYAML
+
+      # check-packs.py imports PyYAML at module scope, so it runs after the
+      # interpreter and its dependency exist. The data contract is a gate: a
+      # skin that loses a palette, a pack that loses every member, or a
+      # duplicate label fails here instead of shipping.
+      - name: The catalogue obeys its own contract
+        run: python scripts/check-packs.py
 
       - name: Backend tests (plugin API)
         run: python -m unittest tests.test_plugin_api
@@ -58,14 +62,12 @@ jobs:
       - name: Install backend dependencies
         run: pip install fastapi PyYAML
 
+      - name: The catalogue obeys its own contract
+        run: python scripts/check-packs.py
+
       - name: Rebuild the shipped plugin
         run: python scripts/regenerate.py
 
       - name: The committed build must match its template
         run: git diff --exit-code -- desktop/plugin.js gateway-skins docs/DERIVED-PALETTES.md
 
-      # The data contract is a gate, not a convention: a skin that loses a
-      # palette, a pack that loses every member, or a duplicate label fails here
-      # instead of shipping.
-      - name: The catalogue obeys its own contract
-        run: python scripts/check-packs.py

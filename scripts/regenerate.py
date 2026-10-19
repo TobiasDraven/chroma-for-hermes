@@ -762,32 +762,21 @@ def main() -> int:
     default_out = repo_out if (script_dir.parent / "desktop").is_dir() else home / "desktop-plugins" / "theme-picker" / "plugin.js"
     out_path = Path(argv[1]) if len(argv) > 1 else (out_override or default_out)
 
-    # Schema v2 lives beside the v1 bundle: one file per skin, both palettes.
-    # When it is present it is the catalogue; the v1 pair table is retired.
+    # The catalogue is skins-v2: one file per skin, both palettes. The v1 pair
+    # table is retired and there is no fallback to it - rebuilding 109 singles
+    # from it looked like a successful build and quietly downgraded the plugin.
     v2_dir = script_dir.parent / "skins-v2"
-    user_skins = []
-    builtins: list[dict] = []
-    if (argv[0] if argv else None) is None and not v2_dir.is_dir():
-        # Refuse to fall back: the v1 pair table is retired, and quietly
-        # rebuilding 109 scenes from it would look like a successful build.
-        print(f"ERROR: {v2_dir} is missing; refusing to fall back to the retired v1 bundle.",
-              file=sys.stderr)
+    catalogue_dir = Path(argv[0]) if argv else v2_dir
+    if not catalogue_dir.is_dir():
+        print(f"ERROR: {catalogue_dir} is missing; refusing to build.", file=sys.stderr)
         return 1
-    if v2_dir.is_dir() and (argv[0] if argv else None) is None:
-        try:
-            user_skins = _load_v2_skins(v2_dir)
-        except ValueError as exc:
-            print(f"ERROR: {exc}; refusing to replace {out_path}.", file=sys.stderr)
-            return 1
-        catalog = user_skins
-    else:
-        for p in sorted(skins_dir.glob("*.yaml")):
-            if not p.is_file() or p.is_symlink():
-                continue
-            parsed = _parse_skin_file(p)
-            if parsed and parsed.get("colors"):
-                user_skins.append(parsed)
-        catalog = None
+    try:
+        user_skins = _load_v2_skins(catalogue_dir)
+    except ValueError as exc:
+        print(f"ERROR: {exc}; refusing to replace {out_path}.", file=sys.stderr)
+        return 1
+    catalog = user_skins
+    builtins: list[dict] = []
 
     # Backend built-ins are supplemental. Never let them turn an empty,
     # malformed, or non-regular supplied bundle into a destructive partial
@@ -796,13 +785,6 @@ def main() -> int:
         print(f"ERROR: no valid bundled skins found in {skins_dir}; refusing to replace {out_path}.", file=sys.stderr)
         return 1
 
-    if catalog is None:
-        try:
-            builtins = _backend_builtins()
-        except RuntimeError as exc:
-            print(f"ERROR: {exc}; refusing to replace {out_path}.", file=sys.stderr)
-            return 1
-        catalog = _build_catalog(user_skins, builtins)
     derived_count = _write_derivation_report(catalog, Path(__file__).resolve().parent.parent / "docs" / "DERIVED-PALETTES.md")
     repo_gateway_skins = script_dir.parent / "gateway-skins"
     transport_count = _write_gateway_transport_skins(catalog, repo_gateway_skins)
