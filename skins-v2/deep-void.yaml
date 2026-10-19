@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: deep-void
 label: Deep Void
 description: True AMOLED black with barely-there violet undertones — the darkest readable theme possible

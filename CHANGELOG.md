@@ -3,6 +3,25 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.7.0] - 2026-10-19
+
+**The skin specification.** A skin is now written against a contract that can be
+read, followed, and checked — not against a palette that happens to render.
+
+### Added
+
+- **`docs/THEME-PACK-CREATION.md`** — the guiding document. All 43 colour surfaces
+  with what each one paints and whether the Desktop window reads it; the ten
+  surfaces a v2 skin must decide; the derivation rules for the other 33; the colour
+  science (OKLCH ramps, dark elevation, contrast, colour-vision-safe signals,
+  typography); the build recipe and the acceptance gates.
+- **`design_spec`** on every skin. `v1` is a hand-authored palette, grandfathered;
+  `v2` is ten named surfaces plus both fonts. All 94 shipped skins are marked v1 so
+  each can be reviewed and revised on its own.
+- **The gate enforces v2.** `scripts/check-packs.py` rejects a v2 skin that omits any
+  of the ten surfaces in either mode, and rejects an unknown spec outright.
+  `tests/test_skin_contract.py` proves the rejection names the missing surface.
+
 ## [2.6.0] - 2026-10-19
 
 The catalogue is rebuilt. This is the release prepared for the public directory.

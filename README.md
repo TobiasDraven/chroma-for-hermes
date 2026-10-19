@@ -206,6 +206,13 @@ hermes config set display.skin <theme-name>
 
 ## Add your own skins
 
+Start with **`docs/THEME-PACK-CREATION.md`** — it maps all 43 colour surfaces, states
+which ten a new skin must decide (`design_spec: v2`), gives the derivation rules for
+the other 33, and covers the colour science (OKLCH ramps, contrast, signals) and
+typography. Every skin shipped before 2.7.0 is marked `design_spec: v1` and stays
+valid as-is.
+
+
 Hermes skins are YAML files containing a name, description, and colors.
 
 - **Try one immediately:** place it in the gateway's `~/.hermes/skins/`
@@ -274,6 +281,7 @@ gateway-skins/                 Mode-locked gateway transport palettes
 scripts/regenerate.py          Catalog generator
 install/                       Desktop and gateway installers
 docs/ARCH.md                   Implementation details
+docs/THEME-PACK-CREATION.md    The skin spec: 43 surfaces, ten for v2, colour science
 THIRD_PARTY_NOTICES.md         Licenses for bundled palettes
 ```
 

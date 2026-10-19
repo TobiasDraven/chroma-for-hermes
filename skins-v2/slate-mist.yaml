@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: slate-mist
 label: Slate Mist
 description: Fogged window — soft blue-gray monochrome with barely-there contrast, calm and quiet

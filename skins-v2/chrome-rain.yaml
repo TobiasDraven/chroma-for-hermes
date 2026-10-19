@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: chrome-rain
 label: Chrome Rain
 description: Wet chrome streets at midnight — electric blue, hot pink, and acid yellow on deep indigo

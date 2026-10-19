@@ -3,7 +3,7 @@
   "label": "Chroma",
   "description": "Browse, import, and apply Hermes themes — including TweakCN imports that mint real gateway skins.",
   "icon": "Paintbrush",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "tab": {
     "path": "/chroma",
     "position": "end",

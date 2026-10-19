@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: peach-fuzz
 label: Peach Fuzz
 description: Pantone Color of the Year 2024 — soft peach, warm coral, and gentle cream on dark taupe

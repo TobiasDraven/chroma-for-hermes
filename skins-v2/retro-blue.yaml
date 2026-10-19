@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: retro-blue
 label: Retro Blue
 description: Commodore-style bright blue

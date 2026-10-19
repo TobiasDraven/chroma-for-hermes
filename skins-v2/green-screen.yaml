@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: green-screen
 label: Green Screen
 description: Vintage IBM monochrome — phosphor green on dark tube glass, with a slight glow bloom

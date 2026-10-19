@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: eclipse
 label: Eclipse
 description: Total solar eclipse — charcoal field with a corona ring of soft lilac and electric white

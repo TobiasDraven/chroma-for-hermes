@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: commodore-64
 label: Commodore 64
 description: 1980s home computer — that specific washed-out blue background with purple-magenta titles

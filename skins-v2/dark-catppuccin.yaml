@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: dark-catppuccin
 label: Catppuccin
 description: Catppuccin Mocha, creamy pastel dark

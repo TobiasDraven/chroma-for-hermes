@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: glitch-punk
 label: Glitch Punk
 description: Broken signal aesthetic — toxic green on corrupted black with flickering red accents

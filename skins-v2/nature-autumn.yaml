@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: nature-autumn
 label: Nature Autumn
 description: Rust and burnt orange on warm earth

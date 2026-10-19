@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: brutalist-concrete
 label: Brutalist Concrete
 description: Raw architectural concrete — unflinching gray on gray with one fluorescent orange signal

@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: midnight-studio
 label: Midnight Studio
 description: Late-night coding den — dark indigo, warm gold accents, and soft amber glow

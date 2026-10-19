@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: stained-glass
 label: Stained Glass
 description: Cathedral window — jewel tones of sapphire, ruby, emerald, and amber on dark lead

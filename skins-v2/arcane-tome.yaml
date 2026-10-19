@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: arcane-tome
 label: Arcane Tome
 description: Wizard's spellbook — deep violet leather, glowing arcane blue, and aged gold foil

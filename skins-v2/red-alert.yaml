@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: red-alert
 label: Red Alert
 description: Klaxon warning — deep crimson, hazard orange, and cold white on near-black, urgent but clean

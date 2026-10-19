@@ -29,6 +29,22 @@ CORE_TARGET = 30
 PACK_RANGE = (10, 20)
 ALL_PACKS = ("core", "earth", "cyberpunk", "zen", "retro", "noir", "studio")
 ENERGIES = {"quiet", "balanced", "vivid"}
+# The design spec a skin was authored against. v1 = the 43-key palette as found.
+# v2 = ten surfaces plus fonts (docs/THEME-PACK-CREATION.md); the other keys
+# derive, so a v2 skin is not finished if one of the ten is missing.
+DESIGN_SPECS = {"v1", "v2"}
+V2_SURFACES = (
+    "background",    # canvas
+    "status_bar_bg",  # panel surface
+    "ui_text",        # primary ink
+    "banner_dim",     # secondary ink
+    "ui_accent",      # signature
+    "ui_border",      # hairline
+    "ui_ok",          # positive signal
+    "ui_warn",        # caution signal
+    "ui_error",       # failure signal
+    "selection_bg",   # selection
+)
 
 
 def main() -> int:
@@ -104,6 +120,17 @@ def main() -> int:
 
         if data.get("schema_version") != 2:
             failures.append(f"{name}: schema_version is {data.get('schema_version')!r}, expected 2")
+
+        spec = data.get("design_spec")
+        if spec not in DESIGN_SPECS:
+            failures.append(f"{name}: design_spec is {spec!r}, expected one of {sorted(DESIGN_SPECS)}")
+        elif spec == "v2":
+            for mode in ("light_colors", "dark_colors"):
+                palette = data.get(mode) or {}
+                missing = [key for key in V2_SURFACES if not palette.get(key)]
+                if missing:
+                    failures.append(f"{name}: v2 {mode} omits {missing}")
+            # v2 is ten surfaces and fonts: both stacks are already required above.
 
     if pack_counts.get("core") != CORE_TARGET:
         failures.append(f"core holds {pack_counts.get('core')} skins, expected {CORE_TARGET}")

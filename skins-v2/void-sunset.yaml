@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: void-sunset
 label: Void Sunset
 description: Neon sunset bleeding into a dead channel — violet, tangerine, and seafoam on bruised plum

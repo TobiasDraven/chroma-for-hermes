@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: black-canary
 label: Black Canary
 description: Aviation cockpit — bright yellow on matte black with crisp white signals, zero ambiguity

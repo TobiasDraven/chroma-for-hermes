@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: aurora-boreal
 label: Aurora Boreal
 description: Northern lights over frozen tundra — emerald, violet, and ice blue shimmer on darkest teal

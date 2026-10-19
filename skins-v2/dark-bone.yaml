@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: dark-bone
 label: Bone
 description: Dark bone, warm charcoal with stone

@@ -1,4 +1,5 @@
 schema_version: 2
+design_spec: v1
 name: dark-github
 label: Github
 description: GitHub Dark, official GitHub theme

@@ -7,7 +7,7 @@ mint real gateway skins so the CLI and every connected Desktop follow a change.
 A hard fork of "Hermes Theme Picker" by Joshua Timothy (`jdtimothy/hermes-theme-picker`,
 MIT) — see `THIRD_PARTY_NOTICES.md`.
 
-`plugin.yaml`: name `chroma`, version `2.6.0` (matching `VERSION`). The repo root IS the plugin package.
+`plugin.yaml`: name `chroma`, version `2.7.0` (matching `VERSION`). The repo root IS the plugin package.
 
 ## Surfaces it registers
 
@@ -57,6 +57,21 @@ channel the pane has back to the backend.
 Route order is load-bearing: `POST /skins/rename` is declared above any
 path-parameter route, because FastAPI matches in registration order and
 `/skins/{name}` would otherwise swallow it.
+
+## Skin specification
+
+A skin is one file in `skins-v2/`. `schema_version` describes the file format;
+`design_spec` describes how much of the skin was decided.
+
+- `design_spec: v1` — a hand-authored 43-key palette, grandfathered. Every skin
+  shipped before 2.7.0 carries this.
+- `design_spec: v2` — **ten named surfaces plus two fonts**. The remaining 33 keys
+  derive by the rules in `docs/THEME-PACK-CREATION.md` §5, or are overridden with a
+  written reason.
+
+The contract, the 43-key surface map, the colour science and the build recipe live in
+**`docs/THEME-PACK-CREATION.md`**. `python scripts/check-packs.py` enforces it;
+`tests/test_skin_contract.py` proves the gate rejects a v2 skin that omits a surface.
 
 ## Import
 

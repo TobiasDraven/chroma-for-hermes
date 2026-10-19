@@ -1,0 +1,10279 @@
+{
+ "stats": {
+  "light:background": {
+   "L": {
+    "n": 94,
+    "min": 0.913,
+    "p25": 0.965,
+    "median": 0.974,
+    "p75": 0.976,
+    "max": 1.0
+   },
+   "C": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.006,
+    "median": 0.007,
+    "p75": 0.013,
+    "max": 0.063
+   }
+  },
+  "light:status_bar_bg": {
+   "L": {
+    "n": 94,
+    "min": 0.87,
+    "p25": 0.93,
+    "median": 0.945,
+    "p75": 0.946,
+    "max": 0.979
+   },
+   "C": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.01,
+    "median": 0.012,
+    "p75": 0.017,
+    "max": 0.062
+   }
+  },
+  "light:ui_text": {
+   "L": {
+    "n": 94,
+    "min": 0.15,
+    "p25": 0.26,
+    "median": 0.272,
+    "p75": 0.315,
+    "max": 0.481
+   },
+   "C": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.012,
+    "median": 0.013,
+    "p75": 0.033,
+    "max": 0.067
+   }
+  },
+  "light:banner_dim": {
+   "L": {
+    "n": 94,
+    "min": 0.452,
+    "p25": 0.5,
+    "median": 0.502,
+    "p75": 0.533,
+    "max": 0.757
+   },
+   "C": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.012,
+    "median": 0.018,
+    "p75": 0.041,
+    "max": 0.098
+   }
+  },
+  "light:ui_accent": {
+   "L": {
+    "n": 94,
+    "min": 0.4,
+    "p25": 0.5,
+    "median": 0.504,
+    "p75": 0.536,
+    "max": 0.874
+   },
+   "C": {
+    "n": 94,
+    "min": 0.009,
+    "p25": 0.08,
+    "median": 0.102,
+    "p75": 0.134,
+    "max": 0.218
+   }
+  },
+  "light:ui_border": {
+   "L": {
+    "n": 94,
+    "min": 0.449,
+    "p25": 0.859,
+    "median": 0.861,
+    "p75": 0.885,
+    "max": 0.939
+   },
+   "C": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.014,
+    "median": 0.015,
+    "p75": 0.03,
+    "max": 0.153
+   }
+  },
+  "light:ui_ok": {
+   "L": {
+    "n": 94,
+    "min": 0.449,
+    "p25": 0.48,
+    "median": 0.53,
+    "p75": 0.557,
+    "max": 0.71
+   },
+   "C": {
+    "n": 94,
+    "min": 0.056,
+    "p25": 0.095,
+    "median": 0.1,
+    "p75": 0.127,
+    "max": 0.164
+   }
+  },
+  "light:ui_warn": {
+   "L": {
+    "n": 94,
+    "min": 0.426,
+    "p25": 0.52,
+    "median": 0.557,
+    "p75": 0.61,
+    "max": 0.675
+   },
+   "C": {
+    "n": 94,
+    "min": 0.059,
+    "p25": 0.099,
+    "median": 0.111,
+    "p75": 0.116,
+    "max": 0.132
+   }
+  },
+  "light:ui_error": {
+   "L": {
+    "n": 94,
+    "min": 0.439,
+    "p25": 0.48,
+    "median": 0.517,
+    "p75": 0.553,
+    "max": 0.637
+   },
+   "C": {
+    "n": 94,
+    "min": 0.059,
+    "p25": 0.123,
+    "median": 0.153,
+    "p75": 0.162,
+    "max": 0.199
+   }
+  },
+  "light:selection_bg": {
+   "L": {
+    "n": 6,
+    "min": 0.823,
+    "p25": 0.838,
+    "median": 0.871,
+    "p75": 0.904,
+    "max": 0.904
+   },
+   "C": {
+    "n": 6,
+    "min": 0.011,
+    "p25": 0.011,
+    "median": 0.024,
+    "p75": 0.043,
+    "max": 0.047
+   }
+  },
+  "light:text_contrast": {
+   "n": 94,
+   "min": 6.04,
+   "p25": 11.47,
+   "median": 13.64,
+   "p75": 14.48,
+   "max": 17.3
+  },
+  "light:dim_contrast": {
+   "n": 94,
+   "min": 1.98,
+   "p25": 4.71,
+   "median": 5.385,
+   "p75": 5.59,
+   "max": 6.4
+  },
+  "light:border_contrast": {
+   "n": 94,
+   "min": 1.1,
+   "p25": 1.28,
+   "median": 1.4,
+   "p75": 1.43,
+   "max": 6.87
+  },
+  "dark:background": {
+   "L": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.176,
+    "median": 0.209,
+    "p75": 0.23,
+    "max": 0.335
+   },
+   "C": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.008,
+    "median": 0.016,
+    "p75": 0.025,
+    "max": 0.067
+   }
+  },
+  "dark:status_bar_bg": {
+   "L": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.161,
+    "median": 0.188,
+    "p75": 0.217,
+    "max": 0.319
+   },
+   "C": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.008,
+    "median": 0.015,
+    "p75": 0.024,
+    "max": 0.061
+   }
+  },
+  "dark:ui_text": {
+   "L": {
+    "n": 94,
+    "min": 0.725,
+    "p25": 0.865,
+    "median": 0.909,
+    "p75": 0.941,
+    "max": 1.0
+   },
+   "C": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.011,
+    "median": 0.021,
+    "p75": 0.033,
+    "max": 0.105
+   }
+  },
+  "dark:banner_dim": {
+   "L": {
+    "n": 94,
+    "min": 0.272,
+    "p25": 0.418,
+    "median": 0.627,
+    "p75": 0.678,
+    "max": 0.793
+   },
+   "C": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.016,
+    "median": 0.04,
+    "p75": 0.059,
+    "max": 0.153
+   }
+  },
+  "dark:ui_accent": {
+   "L": {
+    "n": 94,
+    "min": 0.532,
+    "p25": 0.649,
+    "median": 0.721,
+    "p75": 0.809,
+    "max": 0.968
+   },
+   "C": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.069,
+    "median": 0.112,
+    "p75": 0.148,
+    "max": 0.322
+   }
+  },
+  "dark:ui_border": {
+   "L": {
+    "n": 94,
+    "min": 0.253,
+    "p25": 0.318,
+    "median": 0.395,
+    "p75": 0.573,
+    "max": 1.0
+   },
+   "C": {
+    "n": 94,
+    "min": 0.0,
+    "p25": 0.024,
+    "median": 0.045,
+    "p75": 0.087,
+    "max": 0.322
+   }
+  },
+  "dark:ui_ok": {
+   "L": {
+    "n": 94,
+    "min": 0.552,
+    "p25": 0.72,
+    "median": 0.78,
+    "p75": 0.8,
+    "max": 0.894
+   },
+   "C": {
+    "n": 94,
+    "min": 0.041,
+    "p25": 0.091,
+    "median": 0.136,
+    "p75": 0.182,
+    "max": 0.295
+   }
+  },
+  "dark:ui_warn": {
+   "L": {
+    "n": 94,
+    "min": 0.598,
+    "p25": 0.747,
+    "median": 0.806,
+    "p75": 0.837,
+    "max": 0.968
+   },
+   "C": {
+    "n": 94,
+    "min": 0.036,
+    "p25": 0.095,
+    "median": 0.13,
+    "p75": 0.164,
+    "max": 0.211
+   }
+  },
+  "dark:ui_error": {
+   "L": {
+    "n": 94,
+    "min": 0.477,
+    "p25": 0.618,
+    "median": 0.678,
+    "p75": 0.711,
+    "max": 0.772
+   },
+   "C": {
+    "n": 94,
+    "min": 0.027,
+    "p25": 0.111,
+    "median": 0.164,
+    "p75": 0.166,
+    "max": 0.258
+   }
+  },
+  "dark:selection_bg": {
+   "L": {
+    "n": 34,
+    "min": 0.184,
+    "p25": 0.242,
+    "median": 0.266,
+    "p75": 0.285,
+    "max": 0.321
+   },
+   "C": {
+    "n": 34,
+    "min": 0.0,
+    "p25": 0.022,
+    "median": 0.033,
+    "p75": 0.046,
+    "max": 0.094
+   }
+  },
+  "dark:text_contrast": {
+   "n": 94,
+   "min": 6.19,
+   "p25": 11.34,
+   "median": 13.485,
+   "p75": 15.55,
+   "max": 21.0
+  },
+  "dark:dim_contrast": {
+   "n": 94,
+   "min": 1.3,
+   "p25": 2.0,
+   "median": 4.845,
+   "p75": 5.88,
+   "max": 7.39
+  },
+  "dark:border_contrast": {
+   "n": 94,
+   "min": 1.15,
+   "p25": 1.38,
+   "median": 1.6,
+   "p75": 3.84,
+   "max": 21.0
+  },
+  "missing_surfaces": {
+   "light:background": 0,
+   "light:status_bar_bg": 0,
+   "light:ui_text": 0,
+   "light:banner_dim": 0,
+   "light:ui_accent": 0,
+   "light:ui_border": 0,
+   "light:ui_ok": 0,
+   "light:ui_warn": 0,
+   "light:ui_error": 0,
+   "light:selection_bg": 88,
+   "dark:background": 0,
+   "dark:status_bar_bg": 0,
+   "dark:ui_text": 0,
+   "dark:banner_dim": 0,
+   "dark:ui_accent": 0,
+   "dark:ui_border": 0,
+   "dark:ui_ok": 0,
+   "dark:ui_warn": 0,
+   "dark:ui_error": 0,
+   "dark:selection_bg": 60
+  },
+  "skins": 94
+ },
+ "rows": [
+  {
+   "name": "alabaster",
+   "pack": "earth",
+   "category": "indigo",
+   "light:background": {
+    "L": 0.993,
+    "C": 0.004,
+    "h": 106.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.953,
+    "C": 0.011,
+    "h": 106.6
+   },
+   "light:ui_text": {
+    "L": 0.218,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:banner_dim": {
+    "L": 0.757,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_accent": {
+    "L": 0.485,
+    "C": 0.145,
+    "h": 266.1
+   },
+   "light:ui_border": {
+    "L": 0.653,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_ok": {
+    "L": 0.538,
+    "C": 0.121,
+    "h": 145.8
+   },
+   "light:ui_warn": {
+    "L": 0.632,
+    "C": 0.121,
+    "h": 79.5
+   },
+   "light:ui_error": {
+    "L": 0.517,
+    "C": 0.156,
+    "h": 24.4
+   },
+   "light:selection_bg": {
+    "L": 0.904,
+    "C": 0.011,
+    "h": 106.6
+   },
+   "light:text_contrast": 17.08,
+   "light:dim_contrast": 2.13,
+   "light:border_contrast": 3.13,
+   "dark:background": {
+    "L": 0.17,
+    "C": 0.014,
+    "h": 107.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.224,
+    "C": 0.02,
+    "h": 103.5
+   },
+   "dark:ui_text": {
+    "L": 0.94,
+    "C": 0.012,
+    "h": 91.5
+   },
+   "dark:banner_dim": {
+    "L": 0.699,
+    "C": 0.012,
+    "h": 89.8
+   },
+   "dark:ui_accent": {
+    "L": 0.72,
+    "C": 0.137,
+    "h": 266.0
+   },
+   "dark:ui_border": {
+    "L": 0.33,
+    "C": 0.014,
+    "h": 107.1
+   },
+   "dark:ui_ok": {
+    "L": 0.72,
+    "C": 0.122,
+    "h": 145.7
+   },
+   "dark:ui_warn": {
+    "L": 0.761,
+    "C": 0.121,
+    "h": 79.6
+   },
+   "dark:ui_error": {
+    "L": 0.7,
+    "C": 0.157,
+    "h": 24.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 16.01,
+   "dark:dim_contrast": 7.13,
+   "dark:border_contrast": 1.57
+  },
+  {
+   "name": "amber-terminal",
+   "pack": "retro",
+   "category": "amber",
+   "light:background": {
+    "L": 0.974,
+    "C": 0.006,
+    "h": 75.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.013,
+    "h": 75.4
+   },
+   "light:ui_text": {
+    "L": 0.261,
+    "C": 0.012,
+    "h": 84.6
+   },
+   "light:banner_dim": {
+    "L": 0.501,
+    "C": 0.012,
+    "h": 81.8
+   },
+   "light:ui_accent": {
+    "L": 0.499,
+    "C": 0.099,
+    "h": 76.0
+   },
+   "light:ui_border": {
+    "L": 0.861,
+    "C": 0.015,
+    "h": 74.4
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.097,
+    "h": 101.1
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.1,
+    "h": 84.8
+   },
+   "light:ui_error": {
+    "L": 0.481,
+    "C": 0.164,
+    "h": 34.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.36,
+   "light:dim_contrast": 5.54,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.138,
+    "C": 0.013,
+    "h": 74.2
+   },
+   "dark:status_bar_bg": {
+    "L": 0.109,
+    "C": 0.011,
+    "h": 74.9
+   },
+   "dark:ui_text": {
+    "L": 0.822,
+    "C": 0.081,
+    "h": 81.1
+   },
+   "dark:banner_dim": {
+    "L": 0.418,
+    "C": 0.072,
+    "h": 81.6
+   },
+   "dark:ui_accent": {
+    "L": 0.692,
+    "C": 0.127,
+    "h": 76.6
+   },
+   "dark:ui_border": {
+    "L": 0.632,
+    "C": 0.121,
+    "h": 79.5
+   },
+   "dark:ui_ok": {
+    "L": 0.75,
+    "C": 0.131,
+    "h": 101.1
+   },
+   "dark:ui_warn": {
+    "L": 0.781,
+    "C": 0.137,
+    "h": 84.8
+   },
+   "dark:ui_error": {
+    "L": 0.623,
+    "C": 0.186,
+    "h": 34.0
+   },
+   "dark:selection_bg": {
+    "L": 0.184,
+    "C": 0.023,
+    "h": 59.8
+   },
+   "dark:text_contrast": 11.47,
+   "dark:dim_contrast": 2.32,
+   "dark:border_contrast": 5.66
+  },
+  {
+   "name": "arcane-tome",
+   "pack": "retro",
+   "category": "gold",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.005,
+    "h": 297.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.012,
+    "h": 301.3
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.011,
+    "h": 293.3
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.011,
+    "h": 299.0
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.099,
+    "h": 90.2
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 299.8
+   },
+   "light:ui_ok": {
+    "L": 0.48,
+    "C": 0.115,
+    "h": 155.5
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.105,
+    "h": 90.2
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.144,
+    "h": 14.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.48,
+   "light:dim_contrast": 5.59,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.191,
+    "C": 0.036,
+    "h": 298.2
+   },
+   "dark:status_bar_bg": {
+    "L": 0.148,
+    "C": 0.03,
+    "h": 296.0
+   },
+   "dark:ui_text": {
+    "L": 0.824,
+    "C": 0.045,
+    "h": 296.8
+   },
+   "dark:banner_dim": {
+    "L": 0.323,
+    "C": 0.084,
+    "h": 298.9
+   },
+   "dark:ui_accent": {
+    "L": 0.717,
+    "C": 0.119,
+    "h": 90.5
+   },
+   "dark:ui_border": {
+    "L": 0.531,
+    "C": 0.126,
+    "h": 301.9
+   },
+   "dark:ui_ok": {
+    "L": 0.727,
+    "C": 0.139,
+    "h": 155.4
+   },
+   "dark:ui_warn": {
+    "L": 0.717,
+    "C": 0.119,
+    "h": 90.5
+   },
+   "dark:ui_error": {
+    "L": 0.58,
+    "C": 0.144,
+    "h": 14.0
+   },
+   "dark:selection_bg": {
+    "L": 0.24,
+    "C": 0.06,
+    "h": 296.0
+   },
+   "dark:text_contrast": 10.67,
+   "dark:dim_contrast": 1.44,
+   "dark:border_contrast": 3.35
+  },
+  {
+   "name": "aurora-boreal",
+   "pack": "noir",
+   "category": "cobalt",
+   "light:background": {
+    "L": 0.974,
+    "C": 0.006,
+    "h": 239.8
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.012,
+    "h": 239.9
+   },
+   "light:ui_text": {
+    "L": 0.262,
+    "C": 0.012,
+    "h": 214.6
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 212.6
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.109,
+    "h": 255.8
+   },
+   "light:ui_border": {
+    "L": 0.861,
+    "C": 0.014,
+    "h": 233.8
+   },
+   "light:ui_ok": {
+    "L": 0.479,
+    "C": 0.107,
+    "h": 158.7
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.1,
+    "h": 84.8
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.16,
+    "h": 15.2
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.3,
+   "light:dim_contrast": 5.55,
+   "light:border_contrast": 1.41,
+   "dark:background": {
+    "L": 0.201,
+    "C": 0.025,
+    "h": 235.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.165,
+    "C": 0.018,
+    "h": 224.1
+   },
+   "dark:ui_text": {
+    "L": 0.91,
+    "C": 0.035,
+    "h": 214.5
+   },
+   "dark:banner_dim": {
+    "L": 0.388,
+    "C": 0.056,
+    "h": 242.5
+   },
+   "dark:ui_accent": {
+    "L": 0.646,
+    "C": 0.11,
+    "h": 256.0
+   },
+   "dark:ui_border": {
+    "L": 0.685,
+    "C": 0.112,
+    "h": 170.7
+   },
+   "dark:ui_ok": {
+    "L": 0.818,
+    "C": 0.147,
+    "h": 158.8
+   },
+   "dark:ui_warn": {
+    "L": 0.781,
+    "C": 0.137,
+    "h": 84.8
+   },
+   "dark:ui_error": {
+    "L": 0.653,
+    "C": 0.16,
+    "h": 15.0
+   },
+   "dark:selection_bg": {
+    "L": 0.266,
+    "C": 0.042,
+    "h": 240.2
+   },
+   "dark:text_contrast": 13.96,
+   "dark:dim_contrast": 1.88,
+   "dark:border_contrast": 6.73
+  },
+  {
+   "name": "baby-blue",
+   "pack": "zen",
+   "category": "cobalt",
+   "light:background": {
+    "L": 0.976,
+    "C": 0.006,
+    "h": 264.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.012,
+    "h": 264.5
+   },
+   "light:ui_text": {
+    "L": 0.262,
+    "C": 0.012,
+    "h": 248.3
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 248.1
+   },
+   "light:ui_accent": {
+    "L": 0.499,
+    "C": 0.06,
+    "h": 249.1
+   },
+   "light:ui_border": {
+    "L": 0.859,
+    "C": 0.014,
+    "h": 262.4
+   },
+   "light:ui_ok": {
+    "L": 0.48,
+    "C": 0.082,
+    "h": 153.0
+   },
+   "light:ui_warn": {
+    "L": 0.521,
+    "C": 0.104,
+    "h": 93.0
+   },
+   "light:ui_error": {
+    "L": 0.479,
+    "C": 0.079,
+    "h": 18.2
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.4,
+   "light:dim_contrast": 5.58,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.226,
+    "C": 0.017,
+    "h": 264.2
+   },
+   "dark:status_bar_bg": {
+    "L": 0.181,
+    "C": 0.014,
+    "h": 258.4
+   },
+   "dark:ui_text": {
+    "L": 0.889,
+    "C": 0.021,
+    "h": 248.1
+   },
+   "dark:banner_dim": {
+    "L": 0.395,
+    "C": 0.034,
+    "h": 248.7
+   },
+   "dark:ui_accent": {
+    "L": 0.693,
+    "C": 0.059,
+    "h": 248.7
+   },
+   "dark:ui_border": {
+    "L": 0.615,
+    "C": 0.061,
+    "h": 248.8
+   },
+   "dark:ui_ok": {
+    "L": 0.758,
+    "C": 0.082,
+    "h": 153.1
+   },
+   "dark:ui_warn": {
+    "L": 0.761,
+    "C": 0.104,
+    "h": 93.1
+   },
+   "dark:ui_error": {
+    "L": 0.691,
+    "C": 0.079,
+    "h": 19.3
+   },
+   "dark:selection_bg": {
+    "L": 0.282,
+    "C": 0.029,
+    "h": 256.8
+   },
+   "dark:text_contrast": 12.26,
+   "dark:dim_contrast": 1.82,
+   "dark:border_contrast": 4.61
+  },
+  {
+   "name": "black-canary",
+   "pack": "noir",
+   "category": "lemon",
+   "light:background": {
+    "L": 0.976,
+    "C": 0.007,
+    "h": 97.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 91.5
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.013,
+    "h": 93.9
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 87.5
+   },
+   "light:ui_accent": {
+    "L": 0.499,
+    "C": 0.098,
+    "h": 95.7
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 93.0
+   },
+   "light:ui_ok": {
+    "L": 0.479,
+    "C": 0.123,
+    "h": 151.4
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.103,
+    "h": 95.9
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.188,
+    "h": 27.2
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.48,
+   "light:dim_contrast": 5.59,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.173,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.134,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_text": {
+    "L": 0.955,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:banner_dim": {
+    "L": 0.489,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_accent": {
+    "L": 0.887,
+    "C": 0.182,
+    "h": 95.3
+   },
+   "dark:ui_border": {
+    "L": 0.887,
+    "C": 0.182,
+    "h": 95.3
+   },
+   "dark:ui_ok": {
+    "L": 0.793,
+    "C": 0.212,
+    "h": 151.3
+   },
+   "dark:ui_warn": {
+    "L": 0.887,
+    "C": 0.182,
+    "h": 95.3
+   },
+   "dark:ui_error": {
+    "L": 0.647,
+    "C": 0.239,
+    "h": 27.2
+   },
+   "dark:selection_bg": {
+    "L": 0.277,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:text_contrast": 16.7,
+   "dark:dim_contrast": 3.03,
+   "dark:border_contrast": 13.57
+  },
+  {
+   "name": "blueprint",
+   "pack": "core",
+   "category": "indigo",
+   "light:background": {
+    "L": 0.913,
+    "C": 0.021,
+    "h": 248.1
+   },
+   "light:status_bar_bg": {
+    "L": 0.875,
+    "C": 0.028,
+    "h": 248.1
+   },
+   "light:ui_text": {
+    "L": 0.277,
+    "C": 0.067,
+    "h": 256.4
+   },
+   "light:banner_dim": {
+    "L": 0.673,
+    "C": 0.055,
+    "h": 255.7
+   },
+   "light:ui_accent": {
+    "L": 0.467,
+    "C": 0.128,
+    "h": 258.5
+   },
+   "light:ui_border": {
+    "L": 0.483,
+    "C": 0.089,
+    "h": 255.0
+   },
+   "light:ui_ok": {
+    "L": 0.494,
+    "C": 0.084,
+    "h": 159.2
+   },
+   "light:ui_warn": {
+    "L": 0.529,
+    "C": 0.1,
+    "h": 69.7
+   },
+   "light:ui_error": {
+    "L": 0.439,
+    "C": 0.141,
+    "h": 28.6
+   },
+   "light:selection_bg": {
+    "L": 0.823,
+    "C": 0.043,
+    "h": 248.3
+   },
+   "light:text_contrast": 11.47,
+   "light:dim_contrast": 2.29,
+   "light:border_contrast": 5.0,
+   "dark:background": {
+    "L": 0.17,
+    "C": 0.013,
+    "h": 248.6
+   },
+   "dark:status_bar_bg": {
+    "L": 0.226,
+    "C": 0.02,
+    "h": 245.7
+   },
+   "dark:ui_text": {
+    "L": 0.941,
+    "C": 0.011,
+    "h": 252.1
+   },
+   "dark:banner_dim": {
+    "L": 0.701,
+    "C": 0.012,
+    "h": 256.7
+   },
+   "dark:ui_accent": {
+    "L": 0.719,
+    "C": 0.128,
+    "h": 258.9
+   },
+   "dark:ui_border": {
+    "L": 0.33,
+    "C": 0.013,
+    "h": 248.2
+   },
+   "dark:ui_ok": {
+    "L": 0.72,
+    "C": 0.084,
+    "h": 159.4
+   },
+   "dark:ui_warn": {
+    "L": 0.76,
+    "C": 0.099,
+    "h": 69.8
+   },
+   "dark:ui_error": {
+    "L": 0.7,
+    "C": 0.141,
+    "h": 28.5
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 16.06,
+   "dark:dim_contrast": 7.17,
+   "dark:border_contrast": 1.56
+  },
+  {
+   "name": "bone-white",
+   "pack": "core",
+   "category": "neutral",
+   "light:background": {
+    "L": 0.976,
+    "C": 0.007,
+    "h": 97.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 91.5
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.013,
+    "h": 93.9
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 87.5
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.06,
+    "h": 215.7
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 93.0
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.061,
+    "h": 152.1
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.059,
+    "h": 92.1
+   },
+   "light:ui_error": {
+    "L": 0.481,
+    "C": 0.059,
+    "h": 18.0
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.48,
+   "light:dim_contrast": 5.59,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.218,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.173,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_text": {
+    "L": 0.882,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:banner_dim": {
+    "L": 0.341,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_accent": {
+    "L": 0.578,
+    "C": 0.038,
+    "h": 214.8
+   },
+   "dark:ui_border": {
+    "L": 0.406,
+    "C": 0.013,
+    "h": 248.1
+   },
+   "dark:ui_ok": {
+    "L": 0.648,
+    "C": 0.05,
+    "h": 152.5
+   },
+   "dark:ui_warn": {
+    "L": 0.654,
+    "C": 0.036,
+    "h": 91.8
+   },
+   "dark:ui_error": {
+    "L": 0.603,
+    "C": 0.04,
+    "h": 18.3
+   },
+   "dark:selection_bg": {
+    "L": 0.277,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:text_contrast": 12.21,
+   "dark:dim_contrast": 1.48,
+   "dark:border_contrast": 1.94
+  },
+  {
+   "name": "brutalist-concrete",
+   "pack": "cyberpunk",
+   "category": "persimmon",
+   "light:background": {
+    "L": 0.976,
+    "C": 0.007,
+    "h": 97.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 91.5
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.013,
+    "h": 93.9
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 87.5
+   },
+   "light:ui_accent": {
+    "L": 0.499,
+    "C": 0.16,
+    "h": 38.6
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 93.0
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.115,
+    "h": 144.1
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.125,
+    "h": 56.1
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.188,
+    "h": 29.6
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.48,
+   "light:dim_contrast": 5.59,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.244,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.191,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_text": {
+    "L": 0.808,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:banner_dim": {
+    "L": 0.341,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_accent": {
+    "L": 0.676,
+    "C": 0.217,
+    "h": 38.8
+   },
+   "dark:ui_border": {
+    "L": 0.431,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_ok": {
+    "L": 0.646,
+    "C": 0.114,
+    "h": 144.1
+   },
+   "dark:ui_warn": {
+    "L": 0.744,
+    "C": 0.181,
+    "h": 56.5
+   },
+   "dark:ui_error": {
+    "L": 0.605,
+    "C": 0.199,
+    "h": 29.7
+   },
+   "dark:selection_bg": {
+    "L": 0.285,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:text_contrast": 8.96,
+   "dark:dim_contrast": 1.39,
+   "dark:border_contrast": 2.02
+  },
+  {
+   "name": "chrome-rain",
+   "pack": "cyberpunk",
+   "category": "rose",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.007,
+    "h": 286.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 286.2
+   },
+   "light:ui_text": {
+    "L": 0.261,
+    "C": 0.011,
+    "h": 300.8
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.011,
+    "h": 299.0
+   },
+   "light:ui_accent": {
+    "L": 0.501,
+    "C": 0.16,
+    "h": 356.8
+   },
+   "light:ui_border": {
+    "L": 0.861,
+    "C": 0.014,
+    "h": 286.1
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.124,
+    "h": 152.4
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.103,
+    "h": 94.3
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.194,
+    "h": 29.5
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.43,
+   "light:dim_contrast": 5.58,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.187,
+    "C": 0.065,
+    "h": 286.3
+   },
+   "dark:status_bar_bg": {
+    "L": 0.151,
+    "C": 0.042,
+    "h": 285.0
+   },
+   "dark:ui_text": {
+    "L": 0.916,
+    "C": 0.037,
+    "h": 303.1
+   },
+   "dark:banner_dim": {
+    "L": 0.525,
+    "C": 0.101,
+    "h": 291.0
+   },
+   "dark:ui_accent": {
+    "L": 0.629,
+    "C": 0.218,
+    "h": 356.5
+   },
+   "dark:ui_border": {
+    "L": 0.785,
+    "C": 0.125,
+    "h": 226.0
+   },
+   "dark:ui_ok": {
+    "L": 0.746,
+    "C": 0.181,
+    "h": 152.3
+   },
+   "dark:ui_warn": {
+    "L": 0.864,
+    "C": 0.159,
+    "h": 94.5
+   },
+   "dark:ui_error": {
+    "L": 0.631,
+    "C": 0.194,
+    "h": 29.4
+   },
+   "dark:selection_bg": {
+    "L": 0.272,
+    "C": 0.094,
+    "h": 292.7
+   },
+   "dark:text_contrast": 14.52,
+   "dark:dim_contrast": 3.37,
+   "dark:border_contrast": 9.84
+  },
+  {
+   "name": "commodore-64",
+   "pack": "core",
+   "category": "violet",
+   "light:background": {
+    "L": 0.976,
+    "C": 0.006,
+    "h": 264.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.012,
+    "h": 264.5
+   },
+   "light:ui_text": {
+    "L": 0.259,
+    "C": 0.013,
+    "h": 285.5
+   },
+   "light:banner_dim": {
+    "L": 0.499,
+    "C": 0.013,
+    "h": 285.9
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.143,
+    "h": 297.6
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.013,
+    "h": 266.7
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.151,
+    "h": 143.9
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.104,
+    "h": 101.1
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.142,
+    "h": 22.2
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.55,
+   "light:dim_contrast": 5.64,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.281,
+    "C": 0.046,
+    "h": 269.3
+   },
+   "dark:status_bar_bg": {
+    "L": 0.213,
+    "C": 0.032,
+    "h": 272.7
+   },
+   "dark:ui_text": {
+    "L": 0.843,
+    "C": 0.044,
+    "h": 285.4
+   },
+   "dark:banner_dim": {
+    "L": 0.381,
+    "C": 0.081,
+    "h": 297.8
+   },
+   "dark:ui_accent": {
+    "L": 0.618,
+    "C": 0.143,
+    "h": 297.4
+   },
+   "dark:ui_border": {
+    "L": 0.58,
+    "C": 0.133,
+    "h": 294.5
+   },
+   "dark:ui_ok": {
+    "L": 0.776,
+    "C": 0.161,
+    "h": 143.8
+   },
+   "dark:ui_warn": {
+    "L": 0.8,
+    "C": 0.133,
+    "h": 101.2
+   },
+   "dark:ui_error": {
+    "L": 0.626,
+    "C": 0.142,
+    "h": 22.0
+   },
+   "dark:selection_bg": {
+    "L": 0.318,
+    "C": 0.058,
+    "h": 272.1
+   },
+   "dark:text_contrast": 8.95,
+   "dark:dim_contrast": 1.42,
+   "dark:border_contrast": 3.24
+  },
+  {
+   "name": "dark-aubergine",
+   "pack": "cyberpunk",
+   "category": "violet",
+   "light:background": {
+    "L": 0.969,
+    "C": 0.011,
+    "h": 303.1
+   },
+   "light:status_bar_bg": {
+    "L": 0.971,
+    "C": 0.01,
+    "h": 305.4
+   },
+   "light:ui_text": {
+    "L": 0.276,
+    "C": 0.037,
+    "h": 297.7
+   },
+   "light:banner_dim": {
+    "L": 0.533,
+    "C": 0.067,
+    "h": 294.7
+   },
+   "light:ui_accent": {
+    "L": 0.558,
+    "C": 0.146,
+    "h": 294.0
+   },
+   "light:ui_border": {
+    "L": 0.886,
+    "C": 0.032,
+    "h": 301.5
+   },
+   "light:ui_ok": {
+    "L": 0.576,
+    "C": 0.127,
+    "h": 152.1
+   },
+   "light:ui_warn": {
+    "L": 0.602,
+    "C": 0.117,
+    "h": 84.6
+   },
+   "light:ui_error": {
+    "L": 0.602,
+    "C": 0.139,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 13.59,
+   "light:dim_contrast": 4.86,
+   "light:border_contrast": 1.29,
+   "dark:background": {
+    "L": 0.182,
+    "C": 0.043,
+    "h": 299.7
+   },
+   "dark:status_bar_bg": {
+    "L": 0.175,
+    "C": 0.039,
+    "h": 299.3
+   },
+   "dark:ui_text": {
+    "L": 0.946,
+    "C": 0.033,
+    "h": 307.2
+   },
+   "dark:banner_dim": {
+    "L": 0.619,
+    "C": 0.083,
+    "h": 301.9
+   },
+   "dark:ui_accent": {
+    "L": 0.722,
+    "C": 0.177,
+    "h": 305.5
+   },
+   "dark:ui_border": {
+    "L": 0.327,
+    "C": 0.076,
+    "h": 301.7
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 16.0,
+   "dark:dim_contrast": 5.01,
+   "dark:border_contrast": 1.49
+  },
+  {
+   "name": "dark-ayu",
+   "pack": "studio",
+   "category": "cobalt",
+   "light:background": {
+    "L": 0.985,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.955,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_text": {
+    "L": 0.481,
+    "C": 0.022,
+    "h": 250.8
+   },
+   "light:banner_dim": {
+    "L": 0.554,
+    "C": 0.012,
+    "h": 261.8
+   },
+   "light:ui_accent": {
+    "L": 0.558,
+    "C": 0.11,
+    "h": 58.5
+   },
+   "light:ui_border": {
+    "L": 0.931,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_ok": {
+    "L": 0.604,
+    "C": 0.119,
+    "h": 127.0
+   },
+   "light:ui_warn": {
+    "L": 0.554,
+    "C": 0.112,
+    "h": 82.0
+   },
+   "light:ui_error": {
+    "L": 0.553,
+    "C": 0.155,
+    "h": 28.0
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 6.23,
+   "light:dim_contrast": 4.56,
+   "light:border_contrast": 1.17,
+   "dark:background": {
+    "L": 0.163,
+    "C": 0.014,
+    "h": 264.1
+   },
+   "dark:status_bar_bg": {
+    "L": 0.158,
+    "C": 0.012,
+    "h": 260.6
+   },
+   "dark:ui_text": {
+    "L": 0.761,
+    "C": 0.006,
+    "h": 84.6
+   },
+   "dark:banner_dim": {
+    "L": 0.579,
+    "C": 0.007,
+    "h": 137.8
+   },
+   "dark:ui_accent": {
+    "L": 0.777,
+    "C": 0.13,
+    "h": 237.3
+   },
+   "dark:ui_border": {
+    "L": 0.261,
+    "C": 0.024,
+    "h": 267.1
+   },
+   "dark:ui_ok": {
+    "L": 0.797,
+    "C": 0.127,
+    "h": 127.4
+   },
+   "dark:ui_warn": {
+    "L": 0.797,
+    "C": 0.13,
+    "h": 82.2
+   },
+   "dark:ui_error": {
+    "L": 0.701,
+    "C": 0.157,
+    "h": 18.6
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 9.02,
+   "dark:dim_contrast": 4.51,
+   "dark:border_contrast": 1.24
+  },
+  {
+   "name": "dark-bone",
+   "pack": "noir",
+   "category": "neutral",
+   "light:background": {
+    "L": 0.925,
+    "C": 0.014,
+    "h": 88.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.932,
+    "C": 0.013,
+    "h": 86.8
+   },
+   "light:ui_text": {
+    "L": 0.29,
+    "C": 0.013,
+    "h": 87.6
+   },
+   "light:banner_dim": {
+    "L": 0.512,
+    "C": 0.017,
+    "h": 84.6
+   },
+   "light:ui_accent": {
+    "L": 0.504,
+    "C": 0.02,
+    "h": 88.1
+   },
+   "light:ui_border": {
+    "L": 0.852,
+    "C": 0.021,
+    "h": 88.7
+   },
+   "light:ui_ok": {
+    "L": 0.549,
+    "C": 0.121,
+    "h": 152.2
+   },
+   "light:ui_warn": {
+    "L": 0.576,
+    "C": 0.111,
+    "h": 85.1
+   },
+   "light:ui_error": {
+    "L": 0.581,
+    "C": 0.132,
+    "h": 22.0
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 11.33,
+   "light:dim_contrast": 4.58,
+   "light:border_contrast": 1.26,
+   "dark:background": {
+    "L": 0.21,
+    "C": 0.008,
+    "h": 84.6
+   },
+   "dark:status_bar_bg": {
+    "L": 0.201,
+    "C": 0.008,
+    "h": 84.6
+   },
+   "dark:ui_text": {
+    "L": 0.962,
+    "C": 0.009,
+    "h": 84.6
+   },
+   "dark:banner_dim": {
+    "L": 0.635,
+    "C": 0.016,
+    "h": 84.6
+   },
+   "dark:ui_accent": {
+    "L": 0.816,
+    "C": 0.021,
+    "h": 84.6
+   },
+   "dark:ui_border": {
+    "L": 0.311,
+    "C": 0.012,
+    "h": 78.1
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 15.86,
+   "dark:dim_contrast": 5.16,
+   "dark:border_contrast": 1.35
+  },
+  {
+   "name": "dark-catppuccin",
+   "pack": "studio",
+   "category": "indigo",
+   "light:background": {
+    "L": 0.958,
+    "C": 0.006,
+    "h": 264.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.928,
+    "C": 0.006,
+    "h": 264.5
+   },
+   "light:ui_text": {
+    "L": 0.435,
+    "C": 0.043,
+    "h": 279.3
+   },
+   "light:banner_dim": {
+    "L": 0.531,
+    "C": 0.025,
+    "h": 277.1
+   },
+   "light:ui_accent": {
+    "L": 0.542,
+    "C": 0.218,
+    "h": 262.1
+   },
+   "light:ui_border": {
+    "L": 0.857,
+    "C": 0.014,
+    "h": 268.5
+   },
+   "light:ui_ok": {
+    "L": 0.579,
+    "C": 0.163,
+    "h": 140.4
+   },
+   "light:ui_warn": {
+    "L": 0.606,
+    "C": 0.125,
+    "h": 68.7
+   },
+   "light:ui_error": {
+    "L": 0.509,
+    "C": 0.199,
+    "h": 19.7
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 7.06,
+   "light:dim_contrast": 4.67,
+   "light:border_contrast": 1.37,
+   "dark:background": {
+    "L": 0.243,
+    "C": 0.03,
+    "h": 283.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.233,
+    "C": 0.027,
+    "h": 284.1
+   },
+   "dark:ui_text": {
+    "L": 0.879,
+    "C": 0.043,
+    "h": 272.3
+   },
+   "dark:banner_dim": {
+    "L": 0.634,
+    "C": 0.035,
+    "h": 275.7
+   },
+   "dark:ui_accent": {
+    "L": 0.766,
+    "C": 0.111,
+    "h": 259.9
+   },
+   "dark:ui_border": {
+    "L": 0.324,
+    "C": 0.032,
+    "h": 282.0
+   },
+   "dark:ui_ok": {
+    "L": 0.858,
+    "C": 0.109,
+    "h": 142.7
+   },
+   "dark:ui_warn": {
+    "L": 0.919,
+    "C": 0.07,
+    "h": 86.5
+   },
+   "dark:ui_error": {
+    "L": 0.756,
+    "C": 0.13,
+    "h": 2.8
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 11.34,
+   "dark:dim_contrast": 4.74,
+   "dark:border_contrast": 1.3
+  },
+  {
+   "name": "dark-charcoal",
+   "pack": "core",
+   "category": "cobalt",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.005,
+    "h": 258.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.978,
+    "C": 0.003,
+    "h": 247.9
+   },
+   "light:ui_text": {
+    "L": 0.258,
+    "C": 0.025,
+    "h": 258.3
+   },
+   "light:banner_dim": {
+    "L": 0.522,
+    "C": 0.034,
+    "h": 253.1
+   },
+   "light:ui_accent": {
+    "L": 0.53,
+    "C": 0.107,
+    "h": 253.1
+   },
+   "light:ui_border": {
+    "L": 0.904,
+    "C": 0.013,
+    "h": 251.6
+   },
+   "light:ui_ok": {
+    "L": 0.576,
+    "C": 0.127,
+    "h": 152.1
+   },
+   "light:ui_warn": {
+    "L": 0.602,
+    "C": 0.117,
+    "h": 84.6
+   },
+   "light:ui_error": {
+    "L": 0.625,
+    "C": 0.144,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.55,
+   "light:dim_contrast": 5.08,
+   "light:border_contrast": 1.24,
+   "dark:background": {
+    "L": 0.209,
+    "C": 0.01,
+    "h": 268.2
+   },
+   "dark:status_bar_bg": {
+    "L": 0.2,
+    "C": 0.009,
+    "h": 264.4
+   },
+   "dark:ui_text": {
+    "L": 0.933,
+    "C": 0.009,
+    "h": 264.5
+   },
+   "dark:banner_dim": {
+    "L": 0.655,
+    "C": 0.018,
+    "h": 262.7
+   },
+   "dark:ui_accent": {
+    "L": 0.807,
+    "C": 0.101,
+    "h": 250.4
+   },
+   "dark:ui_border": {
+    "L": 0.285,
+    "C": 0.018,
+    "h": 266.3
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.6,
+   "dark:dim_contrast": 5.61,
+   "dark:border_contrast": 1.24
+  },
+  {
+   "name": "dark-cozy-paper",
+   "pack": "zen",
+   "category": "amber",
+   "light:background": {
+    "L": 0.967,
+    "C": 0.011,
+    "h": 89.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.971,
+    "C": 0.01,
+    "h": 87.5
+   },
+   "light:ui_text": {
+    "L": 0.272,
+    "C": 0.013,
+    "h": 72.3
+   },
+   "light:banner_dim": {
+    "L": 0.518,
+    "C": 0.02,
+    "h": 76.0
+   },
+   "light:ui_accent": {
+    "L": 0.534,
+    "C": 0.08,
+    "h": 62.1
+   },
+   "light:ui_border": {
+    "L": 0.881,
+    "C": 0.02,
+    "h": 84.6
+   },
+   "light:ui_ok": {
+    "L": 0.576,
+    "C": 0.127,
+    "h": 152.1
+   },
+   "light:ui_warn": {
+    "L": 0.602,
+    "C": 0.117,
+    "h": 84.6
+   },
+   "light:ui_error": {
+    "L": 0.602,
+    "C": 0.139,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 13.64,
+   "light:dim_contrast": 5.07,
+   "light:border_contrast": 1.3,
+   "dark:background": {
+    "L": 0.256,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.244,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_text": {
+    "L": 0.88,
+    "C": 0.02,
+    "h": 87.5
+   },
+   "dark:banner_dim": {
+    "L": 0.669,
+    "C": 0.016,
+    "h": 80.7
+   },
+   "dark:ui_accent": {
+    "L": 0.75,
+    "C": 0.07,
+    "h": 74.4
+   },
+   "dark:ui_border": {
+    "L": 0.348,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_ok": {
+    "L": 0.748,
+    "C": 0.081,
+    "h": 118.5
+   },
+   "dark:ui_warn": {
+    "L": 0.782,
+    "C": 0.101,
+    "h": 82.3
+   },
+   "dark:ui_error": {
+    "L": 0.666,
+    "C": 0.098,
+    "h": 20.0
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 10.96,
+   "dark:dim_contrast": 5.22,
+   "dark:border_contrast": 1.38
+  },
+  {
+   "name": "dark-crimson",
+   "pack": "retro",
+   "category": "gold",
+   "light:background": {
+    "L": 0.972,
+    "C": 0.007,
+    "h": 5.6
+   },
+   "light:status_bar_bg": {
+    "L": 0.974,
+    "C": 0.005,
+    "h": 3.3
+   },
+   "light:ui_text": {
+    "L": 0.286,
+    "C": 0.021,
+    "h": 353.5
+   },
+   "light:banner_dim": {
+    "L": 0.531,
+    "C": 0.035,
+    "h": 354.8
+   },
+   "light:ui_accent": {
+    "L": 0.548,
+    "C": 0.105,
+    "h": 1.3
+   },
+   "light:ui_border": {
+    "L": 0.896,
+    "C": 0.022,
+    "h": 359.7
+   },
+   "light:ui_ok": {
+    "L": 0.576,
+    "C": 0.127,
+    "h": 152.1
+   },
+   "light:ui_warn": {
+    "L": 0.602,
+    "C": 0.117,
+    "h": 84.6
+   },
+   "light:ui_error": {
+    "L": 0.625,
+    "C": 0.144,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 13.3,
+   "light:dim_contrast": 4.93,
+   "light:border_contrast": 1.27,
+   "dark:background": {
+    "L": 0.171,
+    "C": 0.046,
+    "h": 17.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.148,
+    "C": 0.039,
+    "h": 14.8
+   },
+   "dark:ui_text": {
+    "L": 0.908,
+    "C": 0.031,
+    "h": 17.7
+   },
+   "dark:banner_dim": {
+    "L": 0.699,
+    "C": 0.058,
+    "h": 18.7
+   },
+   "dark:ui_accent": {
+    "L": 0.806,
+    "C": 0.136,
+    "h": 84.9
+   },
+   "dark:ui_border": {
+    "L": 0.253,
+    "C": 0.068,
+    "h": 20.6
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.49,
+   "dark:dim_contrast": 7.0,
+   "dark:border_contrast": 1.19
+  },
+  {
+   "name": "dark-dracula",
+   "pack": "core",
+   "category": "violet",
+   "light:background": {
+    "L": 0.977,
+    "C": 0.008,
+    "h": 106.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.939,
+    "C": 0.009,
+    "h": 100.0
+   },
+   "light:ui_text": {
+    "L": 0.288,
+    "C": 0.022,
+    "h": 277.5
+   },
+   "light:banner_dim": {
+    "L": 0.493,
+    "C": 0.098,
+    "h": 270.5
+   },
+   "light:ui_accent": {
+    "L": 0.527,
+    "C": 0.161,
+    "h": 300.3
+   },
+   "light:ui_border": {
+    "L": 0.885,
+    "C": 0.013,
+    "h": 91.5
+   },
+   "light:ui_ok": {
+    "L": 0.526,
+    "C": 0.135,
+    "h": 148.6
+   },
+   "light:ui_warn": {
+    "L": 0.595,
+    "C": 0.122,
+    "h": 105.0
+   },
+   "light:ui_error": {
+    "L": 0.538,
+    "C": 0.184,
+    "h": 26.0
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 13.36,
+   "light:dim_contrast": 5.91,
+   "light:border_contrast": 1.32,
+   "dark:background": {
+    "L": 0.288,
+    "C": 0.022,
+    "h": 277.5
+   },
+   "dark:status_bar_bg": {
+    "L": 0.255,
+    "C": 0.019,
+    "h": 280.5
+   },
+   "dark:ui_text": {
+    "L": 0.977,
+    "C": 0.008,
+    "h": 106.5
+   },
+   "dark:banner_dim": {
+    "L": 0.69,
+    "C": 0.073,
+    "h": 271.8
+   },
+   "dark:ui_accent": {
+    "L": 0.742,
+    "C": 0.149,
+    "h": 301.9
+   },
+   "dark:ui_border": {
+    "L": 0.403,
+    "C": 0.032,
+    "h": 277.8
+   },
+   "dark:ui_ok": {
+    "L": 0.871,
+    "C": 0.22,
+    "h": 148.0
+   },
+   "dark:ui_warn": {
+    "L": 0.955,
+    "C": 0.134,
+    "h": 112.8
+   },
+   "dark:ui_error": {
+    "L": 0.682,
+    "C": 0.206,
+    "h": 24.4
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 13.36,
+   "dark:dim_contrast": 5.08,
+   "dark:border_contrast": 1.56
+  },
+  {
+   "name": "dark-everforest",
+   "pack": "studio",
+   "category": "fern",
+   "light:background": {
+    "L": 0.974,
+    "C": 0.026,
+    "h": 90.1
+   },
+   "light:status_bar_bg": {
+    "L": 0.944,
+    "C": 0.025,
+    "h": 89.2
+   },
+   "light:ui_text": {
+    "L": 0.471,
+    "C": 0.019,
+    "h": 233.4
+   },
+   "light:banner_dim": {
+    "L": 0.542,
+    "C": 0.018,
+    "h": 139.4
+   },
+   "light:ui_accent": {
+    "L": 0.527,
+    "C": 0.072,
+    "h": 123.0
+   },
+   "light:ui_border": {
+    "L": 0.919,
+    "C": 0.025,
+    "h": 91.6
+   },
+   "light:ui_ok": {
+    "L": 0.477,
+    "C": 0.071,
+    "h": 125.6
+   },
+   "light:ui_warn": {
+    "L": 0.512,
+    "C": 0.076,
+    "h": 81.1
+   },
+   "light:ui_error": {
+    "L": 0.512,
+    "C": 0.116,
+    "h": 32.9
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 6.28,
+   "light:dim_contrast": 4.61,
+   "light:border_contrast": 1.18,
+   "dark:background": {
+    "L": 0.335,
+    "C": 0.016,
+    "h": 237.2
+   },
+   "dark:status_bar_bg": {
+    "L": 0.319,
+    "C": 0.015,
+    "h": 232.2
+   },
+   "dark:ui_text": {
+    "L": 0.83,
+    "C": 0.041,
+    "h": 86.1
+   },
+   "dark:banner_dim": {
+    "L": 0.705,
+    "C": 0.015,
+    "h": 155.5
+   },
+   "dark:ui_accent": {
+    "L": 0.773,
+    "C": 0.091,
+    "h": 125.8
+   },
+   "dark:ui_border": {
+    "L": 0.431,
+    "C": 0.017,
+    "h": 231.6
+   },
+   "dark:ui_ok": {
+    "L": 0.773,
+    "C": 0.091,
+    "h": 125.8
+   },
+   "dark:ui_warn": {
+    "L": 0.808,
+    "C": 0.086,
+    "h": 83.7
+   },
+   "dark:ui_error": {
+    "L": 0.709,
+    "C": 0.128,
+    "h": 19.6
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 7.08,
+   "dark:dim_contrast": 4.6,
+   "dark:border_contrast": 1.49
+  },
+  {
+   "name": "dark-github",
+   "pack": "studio",
+   "category": "indigo",
+   "light:background": {
+    "L": 1.0,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.97,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_text": {
+    "L": 0.254,
+    "C": 0.011,
+    "h": 254.0
+   },
+   "light:banner_dim": {
+    "L": 0.495,
+    "C": 0.022,
+    "h": 250.8
+   },
+   "light:ui_accent": {
+    "L": 0.54,
+    "C": 0.191,
+    "h": 257.5
+   },
+   "light:ui_border": {
+    "L": 0.881,
+    "C": 0.013,
+    "h": 244.3
+   },
+   "light:ui_ok": {
+    "L": 0.486,
+    "C": 0.128,
+    "h": 148.4
+   },
+   "light:ui_warn": {
+    "L": 0.472,
+    "C": 0.099,
+    "h": 75.6
+   },
+   "light:ui_error": {
+    "L": 0.51,
+    "C": 0.188,
+    "h": 24.5
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 15.8,
+   "light:dim_contrast": 6.11,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.176,
+    "C": 0.014,
+    "h": 258.4
+   },
+   "dark:status_bar_bg": {
+    "L": 0.171,
+    "C": 0.012,
+    "h": 254.2
+   },
+   "dark:ui_text": {
+    "L": 0.943,
+    "C": 0.011,
+    "h": 243.7
+   },
+   "dark:banner_dim": {
+    "L": 0.677,
+    "C": 0.016,
+    "h": 254.6
+   },
+   "dark:ui_accent": {
+    "L": 0.618,
+    "C": 0.193,
+    "h": 258.3
+   },
+   "dark:ui_border": {
+    "L": 0.33,
+    "C": 0.015,
+    "h": 252.3
+   },
+   "dark:ui_ok": {
+    "L": 0.695,
+    "C": 0.181,
+    "h": 145.6
+   },
+   "dark:ui_warn": {
+    "L": 0.72,
+    "C": 0.14,
+    "h": 79.9
+   },
+   "dark:ui_error": {
+    "L": 0.665,
+    "C": 0.205,
+    "h": 27.0
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 16.02,
+   "dark:dim_contrast": 6.5,
+   "dark:border_contrast": 1.55
+  },
+  {
+   "name": "dark-gruvbox",
+   "pack": "studio",
+   "category": "gold",
+   "light:background": {
+    "L": 0.956,
+    "C": 0.055,
+    "h": 96.2
+   },
+   "light:status_bar_bg": {
+    "L": 0.926,
+    "C": 0.053,
+    "h": 95.6
+   },
+   "light:ui_text": {
+    "L": 0.344,
+    "C": 0.007,
+    "h": 48.5
+   },
+   "light:banner_dim": {
+    "L": 0.536,
+    "C": 0.023,
+    "h": 64.8
+   },
+   "light:ui_accent": {
+    "L": 0.525,
+    "C": 0.108,
+    "h": 70.7
+   },
+   "light:ui_border": {
+    "L": 0.825,
+    "C": 0.051,
+    "h": 85.1
+   },
+   "light:ui_ok": {
+    "L": 0.49,
+    "C": 0.102,
+    "h": 110.3
+   },
+   "light:ui_warn": {
+    "L": 0.496,
+    "C": 0.097,
+    "h": 85.3
+   },
+   "light:ui_error": {
+    "L": 0.491,
+    "C": 0.151,
+    "h": 29.9
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 10.22,
+   "light:dim_contrast": 4.56,
+   "light:border_contrast": 1.51,
+   "dark:background": {
+    "L": 0.277,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.264,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_text": {
+    "L": 0.894,
+    "C": 0.057,
+    "h": 89.2
+   },
+   "dark:banner_dim": {
+    "L": 0.652,
+    "C": 0.026,
+    "h": 67.3
+   },
+   "dark:ui_accent": {
+    "L": 0.832,
+    "C": 0.159,
+    "h": 83.0
+   },
+   "dark:ui_border": {
+    "L": 0.411,
+    "C": 0.012,
+    "h": 51.9
+   },
+   "dark:ui_ok": {
+    "L": 0.765,
+    "C": 0.158,
+    "h": 110.8
+   },
+   "dark:ui_warn": {
+    "L": 0.832,
+    "C": 0.159,
+    "h": 83.0
+   },
+   "dark:ui_error": {
+    "L": 0.66,
+    "C": 0.218,
+    "h": 30.4
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 10.75,
+   "dark:dim_contrast": 4.57,
+   "dark:border_contrast": 1.67
+  },
+  {
+   "name": "dark-kanagawa",
+   "pack": "studio",
+   "category": "indigo",
+   "light:background": {
+    "L": 0.936,
+    "C": 0.063,
+    "h": 101.6
+   },
+   "light:status_bar_bg": {
+    "L": 0.908,
+    "C": 0.062,
+    "h": 102.5
+   },
+   "light:ui_text": {
+    "L": 0.452,
+    "C": 0.026,
+    "h": 285.3
+   },
+   "light:banner_dim": {
+    "L": 0.524,
+    "C": 0.019,
+    "h": 91.7
+   },
+   "light:ui_accent": {
+    "L": 0.509,
+    "C": 0.073,
+    "h": 253.3
+   },
+   "light:ui_border": {
+    "L": 0.856,
+    "C": 0.044,
+    "h": 95.5
+   },
+   "light:ui_ok": {
+    "L": 0.551,
+    "C": 0.081,
+    "h": 128.0
+   },
+   "light:ui_warn": {
+    "L": 0.512,
+    "C": 0.076,
+    "h": 81.1
+   },
+   "light:ui_error": {
+    "L": 0.512,
+    "C": 0.155,
+    "h": 14.5
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 6.19,
+   "light:dim_contrast": 4.5,
+   "light:border_contrast": 1.29,
+   "dark:background": {
+    "L": 0.243,
+    "C": 0.017,
+    "h": 285.1
+   },
+   "dark:status_bar_bg": {
+    "L": 0.234,
+    "C": 0.015,
+    "h": 285.2
+   },
+   "dark:ui_text": {
+    "L": 0.876,
+    "C": 0.039,
+    "h": 99.1
+   },
+   "dark:banner_dim": {
+    "L": 0.625,
+    "C": 0.01,
+    "h": 100.1
+   },
+   "dark:ui_accent": {
+    "L": 0.694,
+    "C": 0.095,
+    "h": 263.7
+   },
+   "dark:ui_border": {
+    "L": 0.34,
+    "C": 0.028,
+    "h": 284.8
+   },
+   "dark:ui_ok": {
+    "L": 0.748,
+    "C": 0.112,
+    "h": 128.4
+   },
+   "dark:ui_warn": {
+    "L": 0.833,
+    "C": 0.09,
+    "h": 81.6
+   },
+   "dark:ui_error": {
+    "L": 0.671,
+    "C": 0.154,
+    "h": 15.3
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 11.26,
+   "dark:dim_contrast": 4.59,
+   "dark:border_contrast": 1.38
+  },
+  {
+   "name": "dark-lcars",
+   "pack": "retro",
+   "category": "amber",
+   "light:background": {
+    "L": 0.956,
+    "C": 0.006,
+    "h": 84.6
+   },
+   "light:status_bar_bg": {
+    "L": 0.916,
+    "C": 0.01,
+    "h": 87.5
+   },
+   "light:ui_text": {
+    "L": 0.15,
+    "C": 0.021,
+    "h": 283.5
+   },
+   "light:banner_dim": {
+    "L": 0.471,
+    "C": 0.016,
+    "h": 285.8
+   },
+   "light:ui_accent": {
+    "L": 0.458,
+    "C": 0.099,
+    "h": 70.2
+   },
+   "light:ui_border": {
+    "L": 0.449,
+    "C": 0.153,
+    "h": 261.4
+   },
+   "light:ui_ok": {
+    "L": 0.526,
+    "C": 0.135,
+    "h": 148.6
+   },
+   "light:ui_warn": {
+    "L": 0.549,
+    "C": 0.103,
+    "h": 88.1
+   },
+   "light:ui_error": {
+    "L": 0.538,
+    "C": 0.184,
+    "h": 26.0
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 17.3,
+   "light:dim_contrast": 5.99,
+   "light:border_contrast": 6.73,
+   "dark:background": {
+    "L": 0.123,
+    "C": 0.027,
+    "h": 281.7
+   },
+   "dark:status_bar_bg": {
+    "L": 0.155,
+    "C": 0.034,
+    "h": 281.7
+   },
+   "dark:ui_text": {
+    "L": 1.0,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:banner_dim": {
+    "L": 0.683,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_accent": {
+    "L": 0.777,
+    "C": 0.173,
+    "h": 66.1
+   },
+   "dark:ui_border": {
+    "L": 0.573,
+    "C": 0.234,
+    "h": 265.3
+   },
+   "dark:ui_ok": {
+    "L": 0.894,
+    "C": 0.192,
+    "h": 151.4
+   },
+   "dark:ui_warn": {
+    "L": 0.871,
+    "C": 0.133,
+    "h": 82.7
+   },
+   "dark:ui_error": {
+    "L": 0.682,
+    "C": 0.206,
+    "h": 24.4
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 20.28,
+   "dark:dim_contrast": 7.12,
+   "dark:border_contrast": 4.33
+  },
+  {
+   "name": "dark-lemon",
+   "pack": "core",
+   "category": "lemon",
+   "light:background": {
+    "L": 0.972,
+    "C": 0.027,
+    "h": 95.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.927,
+    "C": 0.053,
+    "h": 97.9
+   },
+   "light:ui_text": {
+    "L": 0.321,
+    "C": 0.049,
+    "h": 97.1
+   },
+   "light:banner_dim": {
+    "L": 0.54,
+    "C": 0.069,
+    "h": 101.2
+   },
+   "light:ui_accent": {
+    "L": 0.54,
+    "C": 0.104,
+    "h": 94.5
+   },
+   "light:ui_border": {
+    "L": 0.888,
+    "C": 0.068,
+    "h": 100.3
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 11.66,
+   "light:dim_contrast": 4.64,
+   "light:border_contrast": 1.28,
+   "dark:background": {
+    "L": 0.209,
+    "C": 0.015,
+    "h": 95.7
+   },
+   "dark:status_bar_bg": {
+    "L": 0.2,
+    "C": 0.014,
+    "h": 94.0
+   },
+   "dark:ui_text": {
+    "L": 0.962,
+    "C": 0.009,
+    "h": 84.6
+   },
+   "dark:banner_dim": {
+    "L": 0.659,
+    "C": 0.071,
+    "h": 102.5
+   },
+   "dark:ui_accent": {
+    "L": 0.82,
+    "C": 0.145,
+    "h": 103.9
+   },
+   "dark:ui_border": {
+    "L": 0.31,
+    "C": 0.032,
+    "h": 102.9
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 15.9,
+   "dark:dim_contrast": 5.73,
+   "dark:border_contrast": 1.35
+  },
+  {
+   "name": "dark-mac",
+   "pack": "core",
+   "category": "cobalt",
+   "light:background": {
+    "L": 0.919,
+    "C": 0.014,
+    "h": 88.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.87,
+    "C": 0.016,
+    "h": 90.2
+   },
+   "light:ui_text": {
+    "L": 0.241,
+    "C": 0.009,
+    "h": 285.7
+   },
+   "light:banner_dim": {
+    "L": 0.491,
+    "C": 0.015,
+    "h": 82.4
+   },
+   "light:ui_accent": {
+    "L": 0.458,
+    "C": 0.102,
+    "h": 250.4
+   },
+   "light:ui_border": {
+    "L": 0.768,
+    "C": 0.016,
+    "h": 86.4
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 12.93,
+   "light:dim_contrast": 4.92,
+   "light:border_contrast": 1.65,
+   "dark:background": {
+    "L": 0.219,
+    "C": 0.008,
+    "h": 84.6
+   },
+   "dark:status_bar_bg": {
+    "L": 0.21,
+    "C": 0.008,
+    "h": 84.6
+   },
+   "dark:ui_text": {
+    "L": 0.962,
+    "C": 0.009,
+    "h": 84.6
+   },
+   "dark:banner_dim": {
+    "L": 0.671,
+    "C": 0.017,
+    "h": 86.4
+   },
+   "dark:ui_accent": {
+    "L": 0.71,
+    "C": 0.091,
+    "h": 243.5
+   },
+   "dark:ui_border": {
+    "L": 0.315,
+    "C": 0.012,
+    "h": 78.1
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 15.55,
+   "dark:dim_contrast": 5.82,
+   "dark:border_contrast": 1.34
+  },
+  {
+   "name": "dark-material",
+   "pack": "core",
+   "category": "indigo",
+   "light:background": {
+    "L": 0.985,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.955,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_text": {
+    "L": 0.309,
+    "C": 0.019,
+    "h": 229.8
+   },
+   "light:banner_dim": {
+    "L": 0.544,
+    "C": 0.027,
+    "h": 230.9
+   },
+   "light:ui_accent": {
+    "L": 0.532,
+    "C": 0.095,
+    "h": 182.4
+   },
+   "light:ui_border": {
+    "L": 0.907,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_ok": {
+    "L": 0.484,
+    "C": 0.123,
+    "h": 144.3
+   },
+   "light:ui_warn": {
+    "L": 0.554,
+    "C": 0.112,
+    "h": 82.0
+   },
+   "light:ui_error": {
+    "L": 0.498,
+    "C": 0.178,
+    "h": 26.6
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 12.61,
+   "light:dim_contrast": 4.74,
+   "light:border_contrast": 1.26,
+   "dark:background": {
+    "L": 0.309,
+    "C": 0.019,
+    "h": 229.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.294,
+    "C": 0.019,
+    "h": 232.1
+   },
+   "dark:ui_text": {
+    "L": 0.95,
+    "C": 0.004,
+    "h": 236.5
+   },
+   "dark:banner_dim": {
+    "L": 0.793,
+    "C": 0.018,
+    "h": 229.1
+   },
+   "dark:ui_accent": {
+    "L": 0.744,
+    "C": 0.131,
+    "h": 264.3
+   },
+   "dark:ui_border": {
+    "L": 0.387,
+    "C": 0.025,
+    "h": 229.8
+   },
+   "dark:ui_ok": {
+    "L": 0.829,
+    "C": 0.083,
+    "h": 145.8
+   },
+   "dark:ui_warn": {
+    "L": 0.913,
+    "C": 0.119,
+    "h": 91.7
+   },
+   "dark:ui_error": {
+    "L": 0.772,
+    "C": 0.102,
+    "h": 19.7
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 11.39,
+   "dark:dim_contrast": 6.9,
+   "dark:border_contrast": 1.36
+  },
+  {
+   "name": "dark-navy",
+   "pack": "core",
+   "category": "cobalt",
+   "light:background": {
+    "L": 0.961,
+    "C": 0.018,
+    "h": 240.0
+   },
+   "light:status_bar_bg": {
+    "L": 0.93,
+    "C": 0.026,
+    "h": 235.4
+   },
+   "light:ui_text": {
+    "L": 0.308,
+    "C": 0.055,
+    "h": 246.7
+   },
+   "light:banner_dim": {
+    "L": 0.513,
+    "C": 0.056,
+    "h": 242.9
+   },
+   "light:ui_accent": {
+    "L": 0.53,
+    "C": 0.134,
+    "h": 249.1
+   },
+   "light:ui_border": {
+    "L": 0.856,
+    "C": 0.041,
+    "h": 239.1
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 11.82,
+   "light:dim_contrast": 5.03,
+   "light:border_contrast": 1.38,
+   "dark:background": {
+    "L": 0.183,
+    "C": 0.031,
+    "h": 263.4
+   },
+   "dark:status_bar_bg": {
+    "L": 0.174,
+    "C": 0.029,
+    "h": 264.7
+   },
+   "dark:ui_text": {
+    "L": 0.929,
+    "C": 0.013,
+    "h": 255.5
+   },
+   "dark:banner_dim": {
+    "L": 0.632,
+    "C": 0.044,
+    "h": 263.5
+   },
+   "dark:ui_accent": {
+    "L": 0.809,
+    "C": 0.096,
+    "h": 251.8
+   },
+   "dark:ui_border": {
+    "L": 0.282,
+    "C": 0.05,
+    "h": 262.7
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 15.19,
+   "dark:dim_contrast": 5.38,
+   "dark:border_contrast": 1.29
+  },
+  {
+   "name": "dark-nord",
+   "pack": "studio",
+   "category": "teal",
+   "light:background": {
+    "L": 0.951,
+    "C": 0.007,
+    "h": 260.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.922,
+    "C": 0.007,
+    "h": 268.5
+   },
+   "light:ui_text": {
+    "L": 0.324,
+    "C": 0.023,
+    "h": 264.2
+   },
+   "light:banner_dim": {
+    "L": 0.452,
+    "C": 0.035,
+    "h": 264.1
+   },
+   "light:ui_accent": {
+    "L": 0.524,
+    "C": 0.067,
+    "h": 254.2
+   },
+   "light:ui_border": {
+    "L": 0.899,
+    "C": 0.016,
+    "h": 262.7
+   },
+   "light:ui_ok": {
+    "L": 0.523,
+    "C": 0.058,
+    "h": 146.3
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.075,
+    "h": 87.6
+   },
+   "light:ui_error": {
+    "L": 0.492,
+    "C": 0.104,
+    "h": 21.6
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 10.84,
+   "light:dim_contrast": 6.4,
+   "light:border_contrast": 1.17,
+   "dark:background": {
+    "L": 0.324,
+    "C": 0.023,
+    "h": 264.2
+   },
+   "dark:status_bar_bg": {
+    "L": 0.308,
+    "C": 0.022,
+    "h": 262.5
+   },
+   "dark:ui_text": {
+    "L": 0.933,
+    "C": 0.01,
+    "h": 261.8
+   },
+   "dark:banner_dim": {
+    "L": 0.697,
+    "C": 0.059,
+    "h": 248.7
+   },
+   "dark:ui_accent": {
+    "L": 0.775,
+    "C": 0.062,
+    "h": 217.5
+   },
+   "dark:ui_border": {
+    "L": 0.452,
+    "C": 0.035,
+    "h": 264.1
+   },
+   "dark:ui_ok": {
+    "L": 0.768,
+    "C": 0.075,
+    "h": 131.1
+   },
+   "dark:ui_warn": {
+    "L": 0.855,
+    "C": 0.089,
+    "h": 84.1
+   },
+   "dark:ui_error": {
+    "L": 0.606,
+    "C": 0.121,
+    "h": 15.3
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 10.26,
+   "dark:dim_contrast": 4.64,
+   "dark:border_contrast": 1.69
+  },
+  {
+   "name": "dark-obsidian",
+   "pack": "core",
+   "category": "violet",
+   "light:background": {
+    "L": 0.982,
+    "C": 0.002,
+    "h": 247.8
+   },
+   "light:status_bar_bg": {
+    "L": 0.936,
+    "C": 0.005,
+    "h": 258.3
+   },
+   "light:ui_text": {
+    "L": 0.254,
+    "C": 0.011,
+    "h": 254.0
+   },
+   "light:banner_dim": {
+    "L": 0.494,
+    "C": 0.025,
+    "h": 261.7
+   },
+   "light:ui_accent": {
+    "L": 0.528,
+    "C": 0.103,
+    "h": 251.9
+   },
+   "light:ui_border": {
+    "L": 0.847,
+    "C": 0.011,
+    "h": 256.7
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.99,
+   "light:dim_contrast": 5.83,
+   "light:border_contrast": 1.52,
+   "dark:background": {
+    "L": 0.162,
+    "C": 0.01,
+    "h": 285.2
+   },
+   "dark:status_bar_bg": {
+    "L": 0.156,
+    "C": 0.008,
+    "h": 285.4
+   },
+   "dark:ui_text": {
+    "L": 0.93,
+    "C": 0.016,
+    "h": 293.7
+   },
+   "dark:banner_dim": {
+    "L": 0.63,
+    "C": 0.029,
+    "h": 295.2
+   },
+   "dark:ui_accent": {
+    "L": 0.77,
+    "C": 0.126,
+    "h": 289.8
+   },
+   "dark:ui_border": {
+    "L": 0.262,
+    "C": 0.024,
+    "h": 284.6
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 15.72,
+   "dark:dim_contrast": 5.49,
+   "dark:border_contrast": 1.25
+  },
+  {
+   "name": "dark-one",
+   "pack": "studio",
+   "category": "cobalt",
+   "light:background": {
+    "L": 0.985,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.955,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_text": {
+    "L": 0.35,
+    "C": 0.014,
+    "h": 274.5
+   },
+   "light:banner_dim": {
+    "L": 0.536,
+    "C": 0.008,
+    "h": 286.1
+   },
+   "light:ui_accent": {
+    "L": 0.549,
+    "C": 0.174,
+    "h": 263.1
+   },
+   "light:ui_border": {
+    "L": 0.922,
+    "C": 0.001,
+    "h": 286.4
+   },
+   "light:ui_ok": {
+    "L": 0.591,
+    "C": 0.131,
+    "h": 143.5
+   },
+   "light:ui_warn": {
+    "L": 0.56,
+    "C": 0.117,
+    "h": 77.4
+   },
+   "light:ui_error": {
+    "L": 0.591,
+    "C": 0.165,
+    "h": 28.0
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 10.86,
+   "light:dim_contrast": 4.93,
+   "light:border_contrast": 1.21,
+   "dark:background": {
+    "L": 0.293,
+    "C": 0.016,
+    "h": 264.3
+   },
+   "dark:status_bar_bg": {
+    "L": 0.277,
+    "C": 0.015,
+    "h": 269.1
+   },
+   "dark:ui_text": {
+    "L": 0.762,
+    "C": 0.02,
+    "h": 263.0
+   },
+   "dark:banner_dim": {
+    "L": 0.669,
+    "C": 0.014,
+    "h": 262.4
+   },
+   "dark:ui_accent": {
+    "L": 0.73,
+    "C": 0.121,
+    "h": 245.3
+   },
+   "dark:ui_border": {
+    "L": 0.386,
+    "C": 0.024,
+    "h": 265.7
+   },
+   "dark:ui_ok": {
+    "L": 0.768,
+    "C": 0.11,
+    "h": 133.0
+   },
+   "dark:ui_warn": {
+    "L": 0.825,
+    "C": 0.097,
+    "h": 82.3
+   },
+   "dark:ui_error": {
+    "L": 0.671,
+    "C": 0.145,
+    "h": 17.0
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 6.57,
+   "dark:dim_contrast": 4.65,
+   "dark:border_contrast": 1.43
+  },
+  {
+   "name": "dark-pastel-buttercup",
+   "pack": "retro",
+   "category": "gold",
+   "light:background": {
+    "L": 0.985,
+    "C": 0.014,
+    "h": 88.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.962,
+    "C": 0.026,
+    "h": 87.9
+   },
+   "light:ui_text": {
+    "L": 0.375,
+    "C": 0.04,
+    "h": 87.8
+   },
+   "light:banner_dim": {
+    "L": 0.593,
+    "C": 0.05,
+    "h": 89.0
+   },
+   "light:ui_accent": {
+    "L": 0.874,
+    "C": 0.088,
+    "h": 86.2
+   },
+   "light:ui_border": {
+    "L": 0.919,
+    "C": 0.041,
+    "h": 86.7
+   },
+   "light:ui_ok": {
+    "L": 0.6,
+    "C": 0.071,
+    "h": 135.0
+   },
+   "light:ui_warn": {
+    "L": 0.642,
+    "C": 0.108,
+    "h": 72.1
+   },
+   "light:ui_error": {
+    "L": 0.614,
+    "C": 0.102,
+    "h": 25.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 9.8,
+   "light:dim_contrast": 3.9,
+   "light:border_contrast": 1.22,
+   "dark:background": {
+    "L": 0.228,
+    "C": 0.019,
+    "h": 88.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.266,
+    "C": 0.025,
+    "h": 90.7
+   },
+   "dark:ui_text": {
+    "L": 0.956,
+    "C": 0.024,
+    "h": 88.2
+   },
+   "dark:banner_dim": {
+    "L": 0.714,
+    "C": 0.041,
+    "h": 89.1
+   },
+   "dark:ui_accent": {
+    "L": 0.898,
+    "C": 0.075,
+    "h": 90.7
+   },
+   "dark:ui_border": {
+    "L": 0.362,
+    "C": 0.038,
+    "h": 91.1
+   },
+   "dark:ui_ok": {
+    "L": 0.787,
+    "C": 0.061,
+    "h": 135.2
+   },
+   "dark:ui_warn": {
+    "L": 0.82,
+    "C": 0.095,
+    "h": 80.6
+   },
+   "dark:ui_error": {
+    "L": 0.734,
+    "C": 0.096,
+    "h": 24.5
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.95,
+   "dark:dim_contrast": 6.71,
+   "dark:border_contrast": 1.58
+  },
+  {
+   "name": "dark-pastel-cotton-candy",
+   "pack": "earth",
+   "category": "rose",
+   "light:background": {
+    "L": 0.973,
+    "C": 0.013,
+    "h": 345.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.944,
+    "C": 0.022,
+    "h": 344.2
+   },
+   "light:ui_text": {
+    "L": 0.353,
+    "C": 0.04,
+    "h": 342.2
+   },
+   "light:banner_dim": {
+    "L": 0.564,
+    "C": 0.045,
+    "h": 346.3
+   },
+   "light:ui_accent": {
+    "L": 0.764,
+    "C": 0.111,
+    "h": 348.7
+   },
+   "light:ui_border": {
+    "L": 0.896,
+    "C": 0.039,
+    "h": 344.5
+   },
+   "light:ui_ok": {
+    "L": 0.627,
+    "C": 0.075,
+    "h": 141.1
+   },
+   "light:ui_warn": {
+    "L": 0.67,
+    "C": 0.102,
+    "h": 70.7
+   },
+   "light:ui_error": {
+    "L": 0.626,
+    "C": 0.102,
+    "h": 21.9
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 10.51,
+   "light:dim_contrast": 4.33,
+   "light:border_contrast": 1.28,
+   "dark:background": {
+    "L": 0.231,
+    "C": 0.017,
+    "h": 344.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.264,
+    "C": 0.021,
+    "h": 340.2
+   },
+   "dark:ui_text": {
+    "L": 0.94,
+    "C": 0.02,
+    "h": 345.7
+   },
+   "dark:banner_dim": {
+    "L": 0.677,
+    "C": 0.041,
+    "h": 338.4
+   },
+   "dark:ui_accent": {
+    "L": 0.819,
+    "C": 0.089,
+    "h": 352.7
+   },
+   "dark:ui_border": {
+    "L": 0.344,
+    "C": 0.035,
+    "h": 342.4
+   },
+   "dark:ui_ok": {
+    "L": 0.796,
+    "C": 0.055,
+    "h": 143.4
+   },
+   "dark:ui_warn": {
+    "L": 0.805,
+    "C": 0.089,
+    "h": 73.8
+   },
+   "dark:ui_error": {
+    "L": 0.742,
+    "C": 0.098,
+    "h": 18.9
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.1,
+   "dark:dim_contrast": 5.7,
+   "dark:border_contrast": 1.44
+  },
+  {
+   "name": "dark-pastel-mint-sorbet",
+   "pack": "zen",
+   "category": "teal",
+   "light:background": {
+    "L": 0.978,
+    "C": 0.01,
+    "h": 164.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.956,
+    "C": 0.016,
+    "h": 166.7
+   },
+   "light:ui_text": {
+    "L": 0.372,
+    "C": 0.033,
+    "h": 168.3
+   },
+   "light:banner_dim": {
+    "L": 0.609,
+    "C": 0.035,
+    "h": 171.3
+   },
+   "light:ui_accent": {
+    "L": 0.822,
+    "C": 0.067,
+    "h": 165.1
+   },
+   "light:ui_border": {
+    "L": 0.921,
+    "C": 0.023,
+    "h": 164.5
+   },
+   "light:ui_ok": {
+    "L": 0.625,
+    "C": 0.079,
+    "h": 148.4
+   },
+   "light:ui_warn": {
+    "L": 0.671,
+    "C": 0.095,
+    "h": 72.9
+   },
+   "light:ui_error": {
+    "L": 0.637,
+    "C": 0.09,
+    "h": 23.4
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 9.58,
+   "light:dim_contrast": 3.53,
+   "light:border_contrast": 1.18,
+   "dark:background": {
+    "L": 0.23,
+    "C": 0.02,
+    "h": 167.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.269,
+    "C": 0.023,
+    "h": 167.9
+   },
+   "dark:ui_text": {
+    "L": 0.954,
+    "C": 0.015,
+    "h": 164.7
+   },
+   "dark:banner_dim": {
+    "L": 0.712,
+    "C": 0.032,
+    "h": 172.4
+   },
+   "dark:ui_accent": {
+    "L": 0.862,
+    "C": 0.067,
+    "h": 164.3
+   },
+   "dark:ui_border": {
+    "L": 0.368,
+    "C": 0.033,
+    "h": 168.2
+   },
+   "dark:ui_ok": {
+    "L": 0.792,
+    "C": 0.061,
+    "h": 145.7
+   },
+   "dark:ui_warn": {
+    "L": 0.81,
+    "C": 0.082,
+    "h": 75.4
+   },
+   "dark:ui_error": {
+    "L": 0.739,
+    "C": 0.094,
+    "h": 23.7
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.73,
+   "dark:dim_contrast": 6.67,
+   "dark:border_contrast": 1.62
+  },
+  {
+   "name": "dark-pastel-peach-blossom",
+   "pack": "zen",
+   "category": "apricot",
+   "light:background": {
+    "L": 0.979,
+    "C": 0.012,
+    "h": 51.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.948,
+    "C": 0.024,
+    "h": 55.3
+   },
+   "light:ui_text": {
+    "L": 0.352,
+    "C": 0.033,
+    "h": 47.8
+   },
+   "light:banner_dim": {
+    "L": 0.565,
+    "C": 0.042,
+    "h": 49.7
+   },
+   "light:ui_accent": {
+    "L": 0.821,
+    "C": 0.082,
+    "h": 51.6
+   },
+   "light:ui_border": {
+    "L": 0.916,
+    "C": 0.028,
+    "h": 55.3
+   },
+   "light:ui_ok": {
+    "L": 0.6,
+    "C": 0.069,
+    "h": 135.5
+   },
+   "light:ui_warn": {
+    "L": 0.671,
+    "C": 0.095,
+    "h": 72.9
+   },
+   "light:ui_error": {
+    "L": 0.612,
+    "C": 0.103,
+    "h": 25.8
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 10.62,
+   "light:dim_contrast": 4.34,
+   "light:border_contrast": 1.21,
+   "dark:background": {
+    "L": 0.227,
+    "C": 0.017,
+    "h": 50.6
+   },
+   "dark:status_bar_bg": {
+    "L": 0.261,
+    "C": 0.02,
+    "h": 56.7
+   },
+   "dark:ui_text": {
+    "L": 0.945,
+    "C": 0.019,
+    "h": 57.2
+   },
+   "dark:banner_dim": {
+    "L": 0.684,
+    "C": 0.039,
+    "h": 50.8
+   },
+   "dark:ui_accent": {
+    "L": 0.854,
+    "C": 0.069,
+    "h": 55.9
+   },
+   "dark:ui_border": {
+    "L": 0.342,
+    "C": 0.031,
+    "h": 50.4
+   },
+   "dark:ui_ok": {
+    "L": 0.783,
+    "C": 0.063,
+    "h": 135.5
+   },
+   "dark:ui_warn": {
+    "L": 0.806,
+    "C": 0.091,
+    "h": 75.8
+   },
+   "dark:ui_error": {
+    "L": 0.735,
+    "C": 0.097,
+    "h": 26.0
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.48,
+   "dark:dim_contrast": 5.94,
+   "dark:border_contrast": 1.45
+  },
+  {
+   "name": "dark-pastel-powder-blue",
+   "pack": "zen",
+   "category": "cobalt",
+   "light:background": {
+    "L": 0.977,
+    "C": 0.009,
+    "h": 247.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.954,
+    "C": 0.015,
+    "h": 248.0
+   },
+   "light:ui_text": {
+    "L": 0.353,
+    "C": 0.038,
+    "h": 250.4
+   },
+   "light:banner_dim": {
+    "L": 0.595,
+    "C": 0.044,
+    "h": 252.0
+   },
+   "light:ui_accent": {
+    "L": 0.816,
+    "C": 0.055,
+    "h": 251.0
+   },
+   "light:ui_border": {
+    "L": 0.922,
+    "C": 0.021,
+    "h": 245.9
+   },
+   "light:ui_ok": {
+    "L": 0.621,
+    "C": 0.056,
+    "h": 157.3
+   },
+   "light:ui_warn": {
+    "L": 0.671,
+    "C": 0.095,
+    "h": 72.9
+   },
+   "light:ui_error": {
+    "L": 0.633,
+    "C": 0.094,
+    "h": 16.6
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 10.41,
+   "light:dim_contrast": 3.75,
+   "light:border_contrast": 1.18,
+   "dark:background": {
+    "L": 0.231,
+    "C": 0.022,
+    "h": 248.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.271,
+    "C": 0.026,
+    "h": 246.6
+   },
+   "dark:ui_text": {
+    "L": 0.948,
+    "C": 0.014,
+    "h": 248.0
+   },
+   "dark:banner_dim": {
+    "L": 0.719,
+    "C": 0.036,
+    "h": 246.9
+   },
+   "dark:ui_accent": {
+    "L": 0.846,
+    "C": 0.049,
+    "h": 248.4
+   },
+   "dark:ui_border": {
+    "L": 0.352,
+    "C": 0.034,
+    "h": 245.6
+   },
+   "dark:ui_ok": {
+    "L": 0.785,
+    "C": 0.045,
+    "h": 157.8
+   },
+   "dark:ui_warn": {
+    "L": 0.807,
+    "C": 0.085,
+    "h": 76.1
+   },
+   "dark:ui_error": {
+    "L": 0.746,
+    "C": 0.091,
+    "h": 15.1
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.51,
+   "dark:dim_contrast": 6.8,
+   "dark:border_contrast": 1.51
+  },
+  {
+   "name": "dark-plum",
+   "pack": "cyberpunk",
+   "category": "violet",
+   "light:background": {
+    "L": 0.96,
+    "C": 0.013,
+    "h": 321.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.919,
+    "C": 0.022,
+    "h": 316.5
+   },
+   "light:ui_text": {
+    "L": 0.282,
+    "C": 0.06,
+    "h": 311.3
+   },
+   "light:banner_dim": {
+    "L": 0.485,
+    "C": 0.078,
+    "h": 310.5
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.128,
+    "h": 313.6
+   },
+   "light:ui_border": {
+    "L": 0.865,
+    "C": 0.035,
+    "h": 316.9
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 13.11,
+   "light:dim_contrast": 5.87,
+   "light:border_contrast": 1.35,
+   "dark:background": {
+    "L": 0.203,
+    "C": 0.06,
+    "h": 297.1
+   },
+   "dark:status_bar_bg": {
+    "L": 0.183,
+    "C": 0.052,
+    "h": 297.0
+   },
+   "dark:ui_text": {
+    "L": 0.942,
+    "C": 0.023,
+    "h": 308.2
+   },
+   "dark:banner_dim": {
+    "L": 0.663,
+    "C": 0.065,
+    "h": 301.7
+   },
+   "dark:ui_accent": {
+    "L": 0.638,
+    "C": 0.177,
+    "h": 305.0
+   },
+   "dark:ui_border": {
+    "L": 0.283,
+    "C": 0.077,
+    "h": 298.5
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 15.28,
+   "dark:dim_contrast": 5.8,
+   "dark:border_contrast": 1.23
+  },
+  {
+   "name": "dark-rosepine",
+   "pack": "zen",
+   "category": "persimmon",
+   "light:background": {
+    "L": 0.97,
+    "C": 0.011,
+    "h": 71.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.94,
+    "C": 0.01,
+    "h": 67.7
+   },
+   "light:ui_text": {
+    "L": 0.46,
+    "C": 0.063,
+    "h": 289.6
+   },
+   "light:banner_dim": {
+    "L": 0.544,
+    "C": 0.042,
+    "h": 290.0
+   },
+   "light:ui_accent": {
+    "L": 0.549,
+    "C": 0.08,
+    "h": 23.1
+   },
+   "light:ui_border": {
+    "L": 0.939,
+    "C": 0.015,
+    "h": 64.3
+   },
+   "light:ui_ok": {
+    "L": 0.582,
+    "C": 0.061,
+    "h": 210.2
+   },
+   "light:ui_warn": {
+    "L": 0.591,
+    "C": 0.088,
+    "h": 22.8
+   },
+   "light:ui_error": {
+    "L": 0.555,
+    "C": 0.099,
+    "h": 2.4
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 6.66,
+   "light:dim_contrast": 4.61,
+   "light:border_contrast": 1.1,
+   "dark:background": {
+    "L": 0.213,
+    "C": 0.025,
+    "h": 291.1
+   },
+   "dark:status_bar_bg": {
+    "L": 0.204,
+    "C": 0.024,
+    "h": 291.8
+   },
+   "dark:ui_text": {
+    "L": 0.909,
+    "C": 0.03,
+    "h": 290.0
+   },
+   "dark:banner_dim": {
+    "L": 0.654,
+    "C": 0.044,
+    "h": 291.2
+   },
+   "dark:ui_accent": {
+    "L": 0.836,
+    "C": 0.054,
+    "h": 21.1
+   },
+   "dark:ui_border": {
+    "L": 0.271,
+    "C": 0.042,
+    "h": 289.2
+   },
+   "dark:ui_ok": {
+    "L": 0.822,
+    "C": 0.054,
+    "h": 209.6
+   },
+   "dark:ui_warn": {
+    "L": 0.843,
+    "C": 0.11,
+    "h": 74.6
+   },
+   "dark:ui_error": {
+    "L": 0.698,
+    "C": 0.156,
+    "h": 4.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 13.39,
+   "dark:dim_contrast": 5.48,
+   "dark:border_contrast": 1.16
+  },
+  {
+   "name": "dark-sage",
+   "pack": "core",
+   "category": "fern",
+   "light:background": {
+    "L": 0.961,
+    "C": 0.014,
+    "h": 124.6
+   },
+   "light:status_bar_bg": {
+    "L": 0.924,
+    "C": 0.024,
+    "h": 125.2
+   },
+   "light:ui_text": {
+    "L": 0.33,
+    "C": 0.039,
+    "h": 136.5
+   },
+   "light:banner_dim": {
+    "L": 0.525,
+    "C": 0.046,
+    "h": 129.5
+   },
+   "light:ui_accent": {
+    "L": 0.508,
+    "C": 0.087,
+    "h": 132.6
+   },
+   "light:ui_border": {
+    "L": 0.88,
+    "C": 0.034,
+    "h": 125.6
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 10.82,
+   "light:dim_contrast": 4.75,
+   "light:border_contrast": 1.27,
+   "dark:background": {
+    "L": 0.202,
+    "C": 0.013,
+    "h": 135.2
+   },
+   "dark:status_bar_bg": {
+    "L": 0.194,
+    "C": 0.012,
+    "h": 139.4
+   },
+   "dark:ui_text": {
+    "L": 0.962,
+    "C": 0.009,
+    "h": 84.6
+   },
+   "dark:banner_dim": {
+    "L": 0.615,
+    "C": 0.041,
+    "h": 129.2
+   },
+   "dark:ui_accent": {
+    "L": 0.711,
+    "C": 0.099,
+    "h": 128.6
+   },
+   "dark:ui_border": {
+    "L": 0.305,
+    "C": 0.028,
+    "h": 130.8
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 16.08,
+   "dark:dim_contrast": 4.91,
+   "dark:border_contrast": 1.35
+  },
+  {
+   "name": "dark-solarized",
+   "pack": "studio",
+   "category": "cobalt",
+   "light:background": {
+    "L": 0.974,
+    "C": 0.026,
+    "h": 90.1
+   },
+   "light:status_bar_bg": {
+    "L": 0.944,
+    "C": 0.025,
+    "h": 89.2
+   },
+   "light:ui_text": {
+    "L": 0.478,
+    "C": 0.026,
+    "h": 218.0
+   },
+   "light:banner_dim": {
+    "L": 0.536,
+    "C": 0.015,
+    "h": 208.7
+   },
+   "light:ui_accent": {
+    "L": 0.542,
+    "C": 0.121,
+    "h": 244.4
+   },
+   "light:ui_border": {
+    "L": 0.931,
+    "C": 0.026,
+    "h": 92.4
+   },
+   "light:ui_ok": {
+    "L": 0.495,
+    "C": 0.127,
+    "h": 126.5
+   },
+   "light:ui_warn": {
+    "L": 0.469,
+    "C": 0.096,
+    "h": 91.9
+   },
+   "light:ui_error": {
+    "L": 0.481,
+    "C": 0.144,
+    "h": 29.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 6.04,
+   "light:dim_contrast": 4.75,
+   "light:border_contrast": 1.14,
+   "dark:background": {
+    "L": 0.267,
+    "C": 0.049,
+    "h": 219.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.256,
+    "C": 0.046,
+    "h": 218.9
+   },
+   "dark:ui_text": {
+    "L": 0.725,
+    "C": 0.015,
+    "h": 196.8
+   },
+   "dark:banner_dim": {
+    "L": 0.641,
+    "C": 0.023,
+    "h": 223.2
+   },
+   "dark:ui_accent": {
+    "L": 0.642,
+    "C": 0.131,
+    "h": 243.7
+   },
+   "dark:ui_border": {
+    "L": 0.309,
+    "C": 0.052,
+    "h": 219.7
+   },
+   "dark:ui_ok": {
+    "L": 0.644,
+    "C": 0.151,
+    "h": 118.6
+   },
+   "dark:ui_warn": {
+    "L": 0.654,
+    "C": 0.134,
+    "h": 85.7
+   },
+   "dark:ui_error": {
+    "L": 0.586,
+    "C": 0.206,
+    "h": 27.1
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 6.19,
+   "dark:dim_contrast": 4.52,
+   "dark:border_contrast": 1.15
+  },
+  {
+   "name": "dark-tokyo-night",
+   "pack": "core",
+   "category": "indigo",
+   "light:background": {
+    "L": 0.913,
+    "C": 0.007,
+    "h": 277.2
+   },
+   "light:status_bar_bg": {
+    "L": 0.886,
+    "C": 0.007,
+    "h": 277.2
+   },
+   "light:ui_text": {
+    "L": 0.359,
+    "C": 0.051,
+    "h": 273.2
+   },
+   "light:banner_dim": {
+    "L": 0.472,
+    "C": 0.033,
+    "h": 276.2
+   },
+   "light:ui_accent": {
+    "L": 0.493,
+    "C": 0.144,
+    "h": 257.4
+   },
+   "light:ui_border": {
+    "L": 0.835,
+    "C": 0.025,
+    "h": 275.8
+   },
+   "light:ui_ok": {
+    "L": 0.449,
+    "C": 0.096,
+    "h": 147.4
+   },
+   "light:ui_warn": {
+    "L": 0.48,
+    "C": 0.089,
+    "h": 74.3
+   },
+   "light:ui_error": {
+    "L": 0.52,
+    "C": 0.152,
+    "h": 18.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 8.49,
+   "light:dim_contrast": 5.27,
+   "light:border_contrast": 1.29,
+   "dark:background": {
+    "L": 0.226,
+    "C": 0.021,
+    "h": 280.5
+   },
+   "dark:status_bar_bg": {
+    "L": 0.217,
+    "C": 0.02,
+    "h": 280.2
+   },
+   "dark:ui_text": {
+    "L": 0.846,
+    "C": 0.061,
+    "h": 274.8
+   },
+   "dark:banner_dim": {
+    "L": 0.623,
+    "C": 0.049,
+    "h": 276.6
+   },
+   "dark:ui_accent": {
+    "L": 0.719,
+    "C": 0.132,
+    "h": 264.2
+   },
+   "dark:ui_border": {
+    "L": 0.329,
+    "C": 0.046,
+    "h": 276.8
+   },
+   "dark:ui_ok": {
+    "L": 0.795,
+    "C": 0.139,
+    "h": 130.1
+   },
+   "dark:ui_warn": {
+    "L": 0.784,
+    "C": 0.106,
+    "h": 75.4
+   },
+   "dark:ui_error": {
+    "L": 0.723,
+    "C": 0.159,
+    "h": 10.3
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 10.59,
+   "dark:dim_contrast": 4.72,
+   "dark:border_contrast": 1.38
+  },
+  {
+   "name": "dark-vanilla",
+   "pack": "core",
+   "category": "gold",
+   "light:background": {
+    "L": 0.971,
+    "C": 0.015,
+    "h": 86.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.931,
+    "C": 0.03,
+    "h": 90.3
+   },
+   "light:ui_text": {
+    "L": 0.326,
+    "C": 0.029,
+    "h": 81.7
+   },
+   "light:banner_dim": {
+    "L": 0.545,
+    "C": 0.037,
+    "h": 85.4
+   },
+   "light:ui_accent": {
+    "L": 0.544,
+    "C": 0.087,
+    "h": 80.4
+   },
+   "light:ui_border": {
+    "L": 0.887,
+    "C": 0.033,
+    "h": 87.3
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 11.43,
+   "light:dim_contrast": 4.55,
+   "light:border_contrast": 1.29,
+   "dark:background": {
+    "L": 0.208,
+    "C": 0.014,
+    "h": 72.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.2,
+    "C": 0.013,
+    "h": 67.0
+   },
+   "dark:ui_text": {
+    "L": 0.962,
+    "C": 0.009,
+    "h": 84.6
+   },
+   "dark:banner_dim": {
+    "L": 0.639,
+    "C": 0.049,
+    "h": 84.4
+   },
+   "dark:ui_accent": {
+    "L": 0.758,
+    "C": 0.134,
+    "h": 83.4
+   },
+   "dark:ui_border": {
+    "L": 0.296,
+    "C": 0.029,
+    "h": 77.4
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 15.93,
+   "dark:dim_contrast": 5.27,
+   "dark:border_contrast": 1.28
+  },
+  {
+   "name": "dark-vscode",
+   "pack": "studio",
+   "category": "cobalt",
+   "light:background": {
+    "L": 1.0,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.97,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_text": {
+    "L": 0.321,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:banner_dim": {
+    "L": 0.524,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_accent": {
+    "L": 0.507,
+    "C": 0.151,
+    "h": 251.9
+   },
+   "light:ui_border": {
+    "L": 0.922,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.164,
+    "h": 142.5
+   },
+   "light:ui_warn": {
+    "L": 0.426,
+    "C": 0.068,
+    "h": 82.8
+   },
+   "light:ui_error": {
+    "L": 0.517,
+    "C": 0.177,
+    "h": 26.0
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 12.63,
+   "light:dim_contrast": 5.41,
+   "light:border_contrast": 1.26,
+   "dark:background": {
+    "L": 0.235,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.226,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_text": {
+    "L": 0.87,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:banner_dim": {
+    "L": 0.633,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_accent": {
+    "L": 0.626,
+    "C": 0.137,
+    "h": 243.8
+   },
+   "dark:ui_border": {
+    "L": 0.348,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_ok": {
+    "L": 0.76,
+    "C": 0.115,
+    "h": 177.2
+   },
+   "dark:ui_warn": {
+    "L": 0.882,
+    "C": 0.066,
+    "h": 107.7
+   },
+   "dark:ui_error": {
+    "L": 0.738,
+    "C": 0.138,
+    "h": 32.5
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 11.25,
+   "dark:dim_contrast": 4.83,
+   "dark:border_contrast": 1.47
+  },
+  {
+   "name": "deep-ocean",
+   "pack": "core",
+   "category": "teal",
+   "light:background": {
+    "L": 0.976,
+    "C": 0.006,
+    "h": 223.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 223.5
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.013,
+    "h": 196.4
+   },
+   "light:banner_dim": {
+    "L": 0.499,
+    "C": 0.011,
+    "h": 196.8
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.084,
+    "h": 209.2
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 226.6
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.098,
+    "h": 165.0
+   },
+   "light:ui_warn": {
+    "L": 0.521,
+    "C": 0.1,
+    "h": 88.1
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.162,
+    "h": 16.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.45,
+   "light:dim_contrast": 5.6,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.207,
+    "C": 0.025,
+    "h": 224.5
+   },
+   "dark:status_bar_bg": {
+    "L": 0.165,
+    "C": 0.018,
+    "h": 224.1
+   },
+   "dark:ui_text": {
+    "L": 0.903,
+    "C": 0.042,
+    "h": 196.4
+   },
+   "dark:banner_dim": {
+    "L": 0.378,
+    "C": 0.056,
+    "h": 224.3
+   },
+   "dark:ui_accent": {
+    "L": 0.628,
+    "C": 0.095,
+    "h": 209.8
+   },
+   "dark:ui_border": {
+    "L": 0.484,
+    "C": 0.079,
+    "h": 224.5
+   },
+   "dark:ui_ok": {
+    "L": 0.774,
+    "C": 0.133,
+    "h": 164.9
+   },
+   "dark:ui_warn": {
+    "L": 0.749,
+    "C": 0.128,
+    "h": 87.5
+   },
+   "dark:ui_error": {
+    "L": 0.605,
+    "C": 0.162,
+    "h": 15.9
+   },
+   "dark:selection_bg": {
+    "L": 0.263,
+    "C": 0.046,
+    "h": 235.8
+   },
+   "dark:text_contrast": 13.5,
+   "dark:dim_contrast": 1.79,
+   "dark:border_contrast": 2.84
+  },
+  {
+   "name": "deep-void",
+   "pack": "noir",
+   "category": "violet",
+   "light:background": {
+    "L": 0.974,
+    "C": 0.005,
+    "h": 3.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.011,
+    "h": 3.5
+   },
+   "light:ui_text": {
+    "L": 0.262,
+    "C": 0.012,
+    "h": 308.0
+   },
+   "light:banner_dim": {
+    "L": 0.499,
+    "C": 0.013,
+    "h": 308.2
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.099,
+    "h": 294.2
+   },
+   "light:ui_border": {
+    "L": 0.859,
+    "C": 0.014,
+    "h": 0.3
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.091,
+    "h": 144.4
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.069,
+    "h": 92.5
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.109,
+    "h": 22.0
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.36,
+   "light:dim_contrast": 5.61,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.0,
+    "C": 0.0,
+    "h": 0.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.0,
+    "C": 0.0,
+    "h": 0.0
+   },
+   "dark:ui_text": {
+    "L": 0.73,
+    "C": 0.049,
+    "h": 307.7
+   },
+   "dark:banner_dim": {
+    "L": 0.272,
+    "C": 0.059,
+    "h": 296.7
+   },
+   "dark:ui_accent": {
+    "L": 0.532,
+    "C": 0.099,
+    "h": 294.3
+   },
+   "dark:ui_border": {
+    "L": 0.335,
+    "C": 0.056,
+    "h": 297.7
+   },
+   "dark:ui_ok": {
+    "L": 0.552,
+    "C": 0.09,
+    "h": 144.2
+   },
+   "dark:ui_warn": {
+    "L": 0.603,
+    "C": 0.069,
+    "h": 91.7
+   },
+   "dark:ui_error": {
+    "L": 0.477,
+    "C": 0.109,
+    "h": 22.1
+   },
+   "dark:selection_bg": {
+    "L": 0.201,
+    "C": 0.051,
+    "h": 299.5
+   },
+   "dark:text_contrast": 8.64,
+   "dark:dim_contrast": 1.38,
+   "dark:border_contrast": 1.72
+  },
+  {
+   "name": "desert-neon",
+   "pack": "cyberpunk",
+   "category": "gold",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.006,
+    "h": 59.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.944,
+    "C": 0.011,
+    "h": 63.4
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.012,
+    "h": 67.3
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 67.5
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.098,
+    "h": 80.1
+   },
+   "light:ui_border": {
+    "L": 0.859,
+    "C": 0.013,
+    "h": 63.9
+   },
+   "light:ui_ok": {
+    "L": 0.479,
+    "C": 0.124,
+    "h": 151.5
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.104,
+    "h": 80.1
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.188,
+    "h": 3.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.48,
+   "light:dim_contrast": 5.6,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.177,
+    "C": 0.01,
+    "h": 67.1
+   },
+   "dark:status_bar_bg": {
+    "L": 0.135,
+    "C": 0.012,
+    "h": 89.3
+   },
+   "dark:ui_text": {
+    "L": 0.891,
+    "C": 0.028,
+    "h": 67.5
+   },
+   "dark:banner_dim": {
+    "L": 0.328,
+    "C": 0.039,
+    "h": 59.5
+   },
+   "dark:ui_accent": {
+    "L": 0.827,
+    "C": 0.171,
+    "h": 80.5
+   },
+   "dark:ui_border": {
+    "L": 0.674,
+    "C": 0.23,
+    "h": 3.3
+   },
+   "dark:ui_ok": {
+    "L": 0.823,
+    "C": 0.198,
+    "h": 151.4
+   },
+   "dark:ui_warn": {
+    "L": 0.827,
+    "C": 0.171,
+    "h": 80.5
+   },
+   "dark:ui_error": {
+    "L": 0.674,
+    "C": 0.23,
+    "h": 3.3
+   },
+   "dark:selection_bg": {
+    "L": 0.228,
+    "C": 0.03,
+    "h": 47.3
+   },
+   "dark:text_contrast": 13.6,
+   "dark:dim_contrast": 1.52,
+   "dark:border_contrast": 5.72
+  },
+  {
+   "name": "dragon-blood",
+   "pack": "core",
+   "category": "persimmon",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.006,
+    "h": 17.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 17.4
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.012,
+    "h": 67.3
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 67.5
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.161,
+    "h": 24.7
+   },
+   "light:ui_border": {
+    "L": 0.859,
+    "C": 0.014,
+    "h": 17.4
+   },
+   "light:ui_ok": {
+    "L": 0.479,
+    "C": 0.139,
+    "h": 143.8
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.105,
+    "h": 91.7
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.188,
+    "h": 26.6
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.44,
+   "light:dim_contrast": 5.58,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.178,
+    "C": 0.007,
+    "h": 17.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.137,
+    "C": 0.004,
+    "h": 17.6
+   },
+   "dark:ui_text": {
+    "L": 0.866,
+    "C": 0.028,
+    "h": 67.4
+   },
+   "dark:banner_dim": {
+    "L": 0.343,
+    "C": 0.071,
+    "h": 21.5
+   },
+   "dark:ui_accent": {
+    "L": 0.581,
+    "C": 0.181,
+    "h": 24.8
+   },
+   "dark:ui_border": {
+    "L": 0.521,
+    "C": 0.173,
+    "h": 25.6
+   },
+   "dark:ui_ok": {
+    "L": 0.636,
+    "C": 0.14,
+    "h": 143.7
+   },
+   "dark:ui_warn": {
+    "L": 0.845,
+    "C": 0.153,
+    "h": 91.9
+   },
+   "dark:ui_error": {
+    "L": 0.592,
+    "C": 0.211,
+    "h": 26.6
+   },
+   "dark:selection_bg": {
+    "L": 0.21,
+    "C": 0.04,
+    "h": 21.1
+   },
+   "dark:text_contrast": 12.56,
+   "dark:dim_contrast": 1.57,
+   "dark:border_contrast": 3.15
+  },
+  {
+   "name": "dusty-rose",
+   "pack": "earth",
+   "category": "rose",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.007,
+    "h": 340.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.011,
+    "h": 348.4
+   },
+   "light:ui_text": {
+    "L": 0.261,
+    "C": 0.012,
+    "h": 350.2
+   },
+   "light:banner_dim": {
+    "L": 0.501,
+    "C": 0.012,
+    "h": 345.8
+   },
+   "light:ui_accent": {
+    "L": 0.499,
+    "C": 0.062,
+    "h": 356.1
+   },
+   "light:ui_border": {
+    "L": 0.859,
+    "C": 0.015,
+    "h": 343.3
+   },
+   "light:ui_ok": {
+    "L": 0.48,
+    "C": 0.068,
+    "h": 155.5
+   },
+   "light:ui_warn": {
+    "L": 0.521,
+    "C": 0.082,
+    "h": 81.6
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.111,
+    "h": 20.7
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.43,
+   "light:dim_contrast": 5.57,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.215,
+    "C": 0.007,
+    "h": 346.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.17,
+    "C": 0.008,
+    "h": 346.3
+   },
+   "dark:ui_text": {
+    "L": 0.865,
+    "C": 0.01,
+    "h": 345.5
+   },
+   "dark:banner_dim": {
+    "L": 0.361,
+    "C": 0.026,
+    "h": 346.9
+   },
+   "dark:ui_accent": {
+    "L": 0.678,
+    "C": 0.062,
+    "h": 357.1
+   },
+   "dark:ui_border": {
+    "L": 0.611,
+    "C": 0.077,
+    "h": 352.3
+   },
+   "dark:ui_ok": {
+    "L": 0.739,
+    "C": 0.069,
+    "h": 155.2
+   },
+   "dark:ui_warn": {
+    "L": 0.747,
+    "C": 0.082,
+    "h": 80.9
+   },
+   "dark:ui_error": {
+    "L": 0.644,
+    "C": 0.111,
+    "h": 20.6
+   },
+   "dark:selection_bg": {
+    "L": 0.249,
+    "C": 0.019,
+    "h": 341.9
+   },
+   "dark:text_contrast": 11.63,
+   "dark:dim_contrast": 1.6,
+   "dark:border_contrast": 4.47
+  },
+  {
+   "name": "eclipse",
+   "pack": "noir",
+   "category": "violet",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.007,
+    "h": 286.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 286.2
+   },
+   "light:ui_text": {
+    "L": 0.259,
+    "C": 0.013,
+    "h": 285.5
+   },
+   "light:banner_dim": {
+    "L": 0.499,
+    "C": 0.013,
+    "h": 285.9
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.083,
+    "h": 299.3
+   },
+   "light:ui_border": {
+    "L": 0.861,
+    "C": 0.014,
+    "h": 286.1
+   },
+   "light:ui_ok": {
+    "L": 0.48,
+    "C": 0.085,
+    "h": 144.6
+   },
+   "light:ui_warn": {
+    "L": 0.521,
+    "C": 0.082,
+    "h": 81.6
+   },
+   "light:ui_error": {
+    "L": 0.481,
+    "C": 0.103,
+    "h": 20.9
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.49,
+   "light:dim_contrast": 5.61,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.21,
+    "C": 0.004,
+    "h": 286.1
+   },
+   "dark:status_bar_bg": {
+    "L": 0.174,
+    "C": 0.004,
+    "h": 286.0
+   },
+   "dark:ui_text": {
+    "L": 0.86,
+    "C": 0.011,
+    "h": 286.2
+   },
+   "dark:banner_dim": {
+    "L": 0.335,
+    "C": 0.056,
+    "h": 297.7
+   },
+   "dark:ui_accent": {
+    "L": 0.664,
+    "C": 0.084,
+    "h": 298.9
+   },
+   "dark:ui_border": {
+    "L": 0.503,
+    "C": 0.077,
+    "h": 298.9
+   },
+   "dark:ui_ok": {
+    "L": 0.684,
+    "C": 0.086,
+    "h": 144.6
+   },
+   "dark:ui_warn": {
+    "L": 0.747,
+    "C": 0.082,
+    "h": 80.9
+   },
+   "dark:ui_error": {
+    "L": 0.607,
+    "C": 0.103,
+    "h": 20.5
+   },
+   "dark:selection_bg": {
+    "L": 0.284,
+    "C": 0.029,
+    "h": 284.4
+   },
+   "dark:text_contrast": 11.56,
+   "dark:dim_contrast": 1.45,
+   "dark:border_contrast": 2.91
+  },
+  {
+   "name": "enchanted-forest",
+   "pack": "earth",
+   "category": "lemon",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.006,
+    "h": 170.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.013,
+    "h": 164.8
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.012,
+    "h": 160.4
+   },
+   "light:banner_dim": {
+    "L": 0.498,
+    "C": 0.012,
+    "h": 164.5
+   },
+   "light:ui_accent": {
+    "L": 0.501,
+    "C": 0.103,
+    "h": 97.3
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 167.1
+   },
+   "light:ui_ok": {
+    "L": 0.479,
+    "C": 0.106,
+    "h": 160.8
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.103,
+    "h": 96.5
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.142,
+    "h": 22.2
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.4,
+   "light:dim_contrast": 5.59,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.198,
+    "C": 0.017,
+    "h": 167.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.163,
+    "C": 0.015,
+    "h": 162.8
+   },
+   "dark:ui_text": {
+    "L": 0.879,
+    "C": 0.04,
+    "h": 163.9
+   },
+   "dark:banner_dim": {
+    "L": 0.372,
+    "C": 0.047,
+    "h": 161.1
+   },
+   "dark:ui_accent": {
+    "L": 0.758,
+    "C": 0.132,
+    "h": 97.0
+   },
+   "dark:ui_border": {
+    "L": 0.544,
+    "C": 0.089,
+    "h": 162.1
+   },
+   "dark:ui_ok": {
+    "L": 0.799,
+    "C": 0.136,
+    "h": 160.7
+   },
+   "dark:ui_warn": {
+    "L": 0.758,
+    "C": 0.132,
+    "h": 97.0
+   },
+   "dark:ui_error": {
+    "L": 0.626,
+    "C": 0.142,
+    "h": 22.0
+   },
+   "dark:selection_bg": {
+    "L": 0.254,
+    "C": 0.04,
+    "h": 149.3
+   },
+   "dark:text_contrast": 12.78,
+   "dark:dim_contrast": 1.79,
+   "dark:border_contrast": 3.82
+  },
+  {
+   "name": "forge-master",
+   "pack": "earth",
+   "category": "cobalt",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.006,
+    "h": 59.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.944,
+    "C": 0.011,
+    "h": 63.4
+   },
+   "light:ui_text": {
+    "L": 0.261,
+    "C": 0.012,
+    "h": 84.6
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 87.5
+   },
+   "light:ui_accent": {
+    "L": 0.499,
+    "C": 0.062,
+    "h": 249.2
+   },
+   "light:ui_border": {
+    "L": 0.859,
+    "C": 0.013,
+    "h": 63.9
+   },
+   "light:ui_ok": {
+    "L": 0.48,
+    "C": 0.127,
+    "h": 143.9
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.112,
+    "h": 62.9
+   },
+   "light:ui_error": {
+    "L": 0.479,
+    "C": 0.183,
+    "h": 29.9
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.4,
+   "light:dim_contrast": 5.58,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.184,
+    "C": 0.005,
+    "h": 67.5
+   },
+   "dark:status_bar_bg": {
+    "L": 0.137,
+    "C": 0.004,
+    "h": 17.6
+   },
+   "dark:ui_text": {
+    "L": 0.835,
+    "C": 0.024,
+    "h": 84.6
+   },
+   "dark:banner_dim": {
+    "L": 0.333,
+    "C": 0.044,
+    "h": 54.3
+   },
+   "dark:ui_accent": {
+    "L": 0.615,
+    "C": 0.061,
+    "h": 248.8
+   },
+   "dark:ui_border": {
+    "L": 0.607,
+    "C": 0.146,
+    "h": 43.5
+   },
+   "dark:ui_ok": {
+    "L": 0.666,
+    "C": 0.127,
+    "h": 144.0
+   },
+   "dark:ui_warn": {
+    "L": 0.77,
+    "C": 0.135,
+    "h": 63.3
+   },
+   "dark:ui_error": {
+    "L": 0.578,
+    "C": 0.183,
+    "h": 29.9
+   },
+   "dark:selection_bg": {
+    "L": 0.228,
+    "C": 0.03,
+    "h": 47.3
+   },
+   "dark:text_contrast": 11.24,
+   "dark:dim_contrast": 1.53,
+   "dark:border_contrast": 4.6
+  },
+  {
+   "name": "glitch-punk",
+   "pack": "cyberpunk",
+   "category": "persimmon",
+   "light:background": {
+    "L": 0.976,
+    "C": 0.007,
+    "h": 97.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 91.5
+   },
+   "light:ui_text": {
+    "L": 0.261,
+    "C": 0.013,
+    "h": 140.5
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 145.4
+   },
+   "light:ui_accent": {
+    "L": 0.501,
+    "C": 0.16,
+    "h": 21.7
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 93.0
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.159,
+    "h": 141.5
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.125,
+    "h": 56.1
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.188,
+    "h": 22.0
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.37,
+   "light:dim_contrast": 5.57,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.159,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.115,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_text": {
+    "L": 0.942,
+    "C": 0.105,
+    "h": 144.7
+   },
+   "dark:banner_dim": {
+    "L": 0.52,
+    "C": 0.126,
+    "h": 141.1
+   },
+   "dark:ui_accent": {
+    "L": 0.632,
+    "C": 0.254,
+    "h": 21.8
+   },
+   "dark:ui_border": {
+    "L": 0.871,
+    "C": 0.286,
+    "h": 141.5
+   },
+   "dark:ui_ok": {
+    "L": 0.871,
+    "C": 0.286,
+    "h": 141.5
+   },
+   "dark:ui_warn": {
+    "L": 0.744,
+    "C": 0.181,
+    "h": 56.5
+   },
+   "dark:ui_error": {
+    "L": 0.632,
+    "C": 0.254,
+    "h": 21.8
+   },
+   "dark:selection_bg": {
+    "L": 0.265,
+    "C": 0.036,
+    "h": 144.5
+   },
+   "dark:text_contrast": 16.94,
+   "dark:dim_contrast": 3.71,
+   "dark:border_contrast": 14.33
+  },
+  {
+   "name": "graphite",
+   "pack": "core",
+   "category": "neutral",
+   "light:background": {
+    "L": 0.976,
+    "C": 0.007,
+    "h": 97.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 91.5
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.013,
+    "h": 93.9
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 87.5
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.06,
+    "h": 195.4
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 93.0
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.076,
+    "h": 144.3
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.06,
+    "h": 96.1
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.06,
+    "h": 19.5
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.48,
+   "light:dim_contrast": 5.59,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.235,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.191,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_text": {
+    "L": 0.833,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:banner_dim": {
+    "L": 0.348,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_accent": {
+    "L": 0.575,
+    "C": 0.036,
+    "h": 196.2
+   },
+   "dark:ui_border": {
+    "L": 0.409,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_ok": {
+    "L": 0.586,
+    "C": 0.075,
+    "h": 144.5
+   },
+   "dark:ui_warn": {
+    "L": 0.598,
+    "C": 0.047,
+    "h": 95.7
+   },
+   "dark:ui_error": {
+    "L": 0.531,
+    "C": 0.052,
+    "h": 19.0
+   },
+   "dark:selection_bg": {
+    "L": 0.285,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:text_contrast": 9.96,
+   "dark:dim_contrast": 1.47,
+   "dark:border_contrast": 1.88
+  },
+  {
+   "name": "green-screen",
+   "pack": "retro",
+   "category": "fern",
+   "light:background": {
+    "L": 0.976,
+    "C": 0.006,
+    "h": 137.8
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.012,
+    "h": 137.8
+   },
+   "light:ui_text": {
+    "L": 0.261,
+    "C": 0.013,
+    "h": 140.5
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 145.4
+   },
+   "light:ui_accent": {
+    "L": 0.499,
+    "C": 0.16,
+    "h": 143.2
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 134.9
+   },
+   "light:ui_ok": {
+    "L": 0.479,
+    "C": 0.159,
+    "h": 143.1
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.111,
+    "h": 109.1
+   },
+   "light:ui_error": {
+    "L": 0.479,
+    "C": 0.18,
+    "h": 23.7
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.39,
+   "light:dim_contrast": 5.58,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.157,
+    "C": 0.014,
+    "h": 134.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.128,
+    "C": 0.014,
+    "h": 136.7
+   },
+   "dark:ui_text": {
+    "L": 0.878,
+    "C": 0.095,
+    "h": 144.7
+   },
+   "dark:banner_dim": {
+    "L": 0.382,
+    "C": 0.104,
+    "h": 142.7
+   },
+   "dark:ui_accent": {
+    "L": 0.691,
+    "C": 0.192,
+    "h": 143.1
+   },
+   "dark:ui_border": {
+    "L": 0.555,
+    "C": 0.15,
+    "h": 143.2
+   },
+   "dark:ui_ok": {
+    "L": 0.801,
+    "C": 0.222,
+    "h": 143.1
+   },
+   "dark:ui_warn": {
+    "L": 0.881,
+    "C": 0.162,
+    "h": 109.3
+   },
+   "dark:ui_error": {
+    "L": 0.627,
+    "C": 0.18,
+    "h": 23.9
+   },
+   "dark:selection_bg": {
+    "L": 0.191,
+    "C": 0.037,
+    "h": 141.1
+   },
+   "dark:text_contrast": 13.91,
+   "dark:dim_contrast": 2.04,
+   "dark:border_contrast": 4.35
+  },
+  {
+   "name": "high-noon",
+   "pack": "noir",
+   "category": "indigo",
+   "light:background": {
+    "L": 0.969,
+    "C": 0.007,
+    "h": 106.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.929,
+    "C": 0.011,
+    "h": 106.6
+   },
+   "light:ui_text": {
+    "L": 0.285,
+    "C": 0.053,
+    "h": 259.7
+   },
+   "light:banner_dim": {
+    "L": 0.672,
+    "C": 0.03,
+    "h": 248.3
+   },
+   "light:ui_accent": {
+    "L": 0.509,
+    "C": 0.122,
+    "h": 256.4
+   },
+   "light:ui_border": {
+    "L": 0.449,
+    "C": 0.093,
+    "h": 258.3
+   },
+   "light:ui_ok": {
+    "L": 0.506,
+    "C": 0.114,
+    "h": 152.8
+   },
+   "light:ui_warn": {
+    "L": 0.574,
+    "C": 0.118,
+    "h": 60.8
+   },
+   "light:ui_error": {
+    "L": 0.482,
+    "C": 0.172,
+    "h": 26.6
+   },
+   "light:selection_bg": {
+    "L": 0.881,
+    "C": 0.024,
+    "h": 264.4
+   },
+   "light:text_contrast": 13.16,
+   "light:dim_contrast": 2.7,
+   "light:border_contrast": 6.87,
+   "dark:background": {
+    "L": 0.17,
+    "C": 0.014,
+    "h": 107.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.224,
+    "C": 0.02,
+    "h": 103.5
+   },
+   "dark:ui_text": {
+    "L": 0.939,
+    "C": 0.012,
+    "h": 259.8
+   },
+   "dark:banner_dim": {
+    "L": 0.701,
+    "C": 0.012,
+    "h": 256.7
+   },
+   "dark:ui_accent": {
+    "L": 0.721,
+    "C": 0.122,
+    "h": 256.2
+   },
+   "dark:ui_border": {
+    "L": 0.33,
+    "C": 0.014,
+    "h": 107.1
+   },
+   "dark:ui_ok": {
+    "L": 0.72,
+    "C": 0.113,
+    "h": 152.7
+   },
+   "dark:ui_warn": {
+    "L": 0.76,
+    "C": 0.118,
+    "h": 61.2
+   },
+   "dark:ui_error": {
+    "L": 0.7,
+    "C": 0.173,
+    "h": 26.6
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 15.95,
+   "dark:dim_contrast": 7.17,
+   "dark:border_contrast": 1.57
+  },
+  {
+   "name": "lavender-dream",
+   "pack": "earth",
+   "category": "violet",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.005,
+    "h": 297.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.944,
+    "C": 0.012,
+    "h": 296.3
+   },
+   "light:ui_text": {
+    "L": 0.261,
+    "C": 0.011,
+    "h": 300.8
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.011,
+    "h": 299.0
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.096,
+    "h": 301.4
+   },
+   "light:ui_border": {
+    "L": 0.859,
+    "C": 0.014,
+    "h": 295.3
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.095,
+    "h": 151.6
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.074,
+    "h": 76.6
+   },
+   "light:ui_error": {
+    "L": 0.479,
+    "C": 0.111,
+    "h": 14.8
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.45,
+   "light:dim_contrast": 5.59,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.23,
+    "C": 0.031,
+    "h": 295.3
+   },
+   "dark:status_bar_bg": {
+    "L": 0.187,
+    "C": 0.032,
+    "h": 294.5
+   },
+   "dark:ui_text": {
+    "L": 0.871,
+    "C": 0.034,
+    "h": 300.9
+   },
+   "dark:banner_dim": {
+    "L": 0.372,
+    "C": 0.057,
+    "h": 306.7
+   },
+   "dark:ui_accent": {
+    "L": 0.672,
+    "C": 0.096,
+    "h": 301.1
+   },
+   "dark:ui_border": {
+    "L": 0.59,
+    "C": 0.088,
+    "h": 303.5
+   },
+   "dark:ui_ok": {
+    "L": 0.777,
+    "C": 0.095,
+    "h": 151.6
+   },
+   "dark:ui_warn": {
+    "L": 0.749,
+    "C": 0.074,
+    "h": 77.4
+   },
+   "dark:ui_error": {
+    "L": 0.646,
+    "C": 0.111,
+    "h": 14.9
+   },
+   "dark:selection_bg": {
+    "L": 0.267,
+    "C": 0.046,
+    "h": 302.6
+   },
+   "dark:text_contrast": 11.41,
+   "dark:dim_contrast": 1.6,
+   "dark:border_contrast": 3.99
+  },
+  {
+   "name": "linen-sage",
+   "pack": "zen",
+   "category": "fern",
+   "light:background": {
+    "L": 0.956,
+    "C": 0.011,
+    "h": 84.6
+   },
+   "light:status_bar_bg": {
+    "L": 0.919,
+    "C": 0.017,
+    "h": 91.6
+   },
+   "light:ui_text": {
+    "L": 0.38,
+    "C": 0.044,
+    "h": 135.5
+   },
+   "light:banner_dim": {
+    "L": 0.744,
+    "C": 0.035,
+    "h": 122.3
+   },
+   "light:ui_accent": {
+    "L": 0.55,
+    "C": 0.052,
+    "h": 129.6
+   },
+   "light:ui_border": {
+    "L": 0.658,
+    "C": 0.05,
+    "h": 129.3
+   },
+   "light:ui_ok": {
+    "L": 0.557,
+    "C": 0.085,
+    "h": 140.3
+   },
+   "light:ui_warn": {
+    "L": 0.567,
+    "C": 0.069,
+    "h": 71.9
+   },
+   "light:ui_error": {
+    "L": 0.505,
+    "C": 0.087,
+    "h": 28.1
+   },
+   "light:selection_bg": {
+    "L": 0.86,
+    "C": 0.023,
+    "h": 84.6
+   },
+   "light:text_contrast": 8.64,
+   "light:dim_contrast": 1.98,
+   "light:border_contrast": 2.71,
+   "dark:background": {
+    "L": 0.17,
+    "C": 0.015,
+    "h": 87.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.225,
+    "C": 0.02,
+    "h": 84.3
+   },
+   "dark:ui_text": {
+    "L": 0.94,
+    "C": 0.012,
+    "h": 133.4
+   },
+   "dark:banner_dim": {
+    "L": 0.7,
+    "C": 0.012,
+    "h": 136.6
+   },
+   "dark:ui_accent": {
+    "L": 0.721,
+    "C": 0.06,
+    "h": 129.4
+   },
+   "dark:ui_border": {
+    "L": 0.33,
+    "C": 0.015,
+    "h": 84.6
+   },
+   "dark:ui_ok": {
+    "L": 0.72,
+    "C": 0.084,
+    "h": 140.6
+   },
+   "dark:ui_warn": {
+    "L": 0.759,
+    "C": 0.069,
+    "h": 70.9
+   },
+   "dark:ui_error": {
+    "L": 0.699,
+    "C": 0.088,
+    "h": 27.6
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 16.11,
+   "dark:dim_contrast": 7.18,
+   "dark:border_contrast": 1.57
+  },
+  {
+   "name": "liquid-silver",
+   "pack": "retro",
+   "category": "neutral",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.007,
+    "h": 286.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 286.2
+   },
+   "light:ui_text": {
+    "L": 0.259,
+    "C": 0.013,
+    "h": 285.5
+   },
+   "light:banner_dim": {
+    "L": 0.499,
+    "C": 0.013,
+    "h": 285.9
+   },
+   "light:ui_accent": {
+    "L": 0.499,
+    "C": 0.06,
+    "h": 286.4
+   },
+   "light:ui_border": {
+    "L": 0.861,
+    "C": 0.014,
+    "h": 286.1
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.076,
+    "h": 158.7
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.068,
+    "h": 92.2
+   },
+   "light:ui_error": {
+    "L": 0.479,
+    "C": 0.084,
+    "h": 3.6
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.49,
+   "light:dim_contrast": 5.61,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.184,
+    "C": 0.008,
+    "h": 285.6
+   },
+   "dark:status_bar_bg": {
+    "L": 0.137,
+    "C": 0.009,
+    "h": 285.1
+   },
+   "dark:ui_text": {
+    "L": 0.86,
+    "C": 0.011,
+    "h": 286.2
+   },
+   "dark:banner_dim": {
+    "L": 0.344,
+    "C": 0.014,
+    "h": 285.6
+   },
+   "dark:ui_accent": {
+    "L": 0.661,
+    "C": 0.035,
+    "h": 285.4
+   },
+   "dark:ui_border": {
+    "L": 0.551,
+    "C": 0.025,
+    "h": 285.6
+   },
+   "dark:ui_ok": {
+    "L": 0.709,
+    "C": 0.075,
+    "h": 158.7
+   },
+   "dark:ui_warn": {
+    "L": 0.708,
+    "C": 0.068,
+    "h": 91.8
+   },
+   "dark:ui_error": {
+    "L": 0.618,
+    "C": 0.083,
+    "h": 3.5
+   },
+   "dark:selection_bg": {
+    "L": 0.258,
+    "C": 0.026,
+    "h": 284.4
+   },
+   "dark:text_contrast": 12.19,
+   "dark:dim_contrast": 1.61,
+   "dark:border_contrast": 3.84
+  },
+  {
+   "name": "midnight-studio",
+   "pack": "core",
+   "category": "gold",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.007,
+    "h": 286.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.012,
+    "h": 281.1
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.012,
+    "h": 67.3
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 67.5
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.102,
+    "h": 83.5
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 281.5
+   },
+   "light:ui_ok": {
+    "L": 0.479,
+    "C": 0.091,
+    "h": 136.9
+   },
+   "light:ui_warn": {
+    "L": 0.521,
+    "C": 0.107,
+    "h": 77.6
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.116,
+    "h": 26.4
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.45,
+   "light:dim_contrast": 5.59,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.228,
+    "C": 0.038,
+    "h": 282.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.193,
+    "C": 0.036,
+    "h": 282.5
+   },
+   "dark:ui_text": {
+    "L": 0.862,
+    "C": 0.014,
+    "h": 67.6
+   },
+   "dark:banner_dim": {
+    "L": 0.423,
+    "C": 0.053,
+    "h": 295.5
+   },
+   "dark:ui_accent": {
+    "L": 0.726,
+    "C": 0.109,
+    "h": 82.8
+   },
+   "dark:ui_border": {
+    "L": 0.423,
+    "C": 0.053,
+    "h": 295.5
+   },
+   "dark:ui_ok": {
+    "L": 0.688,
+    "C": 0.091,
+    "h": 137.0
+   },
+   "dark:ui_warn": {
+    "L": 0.742,
+    "C": 0.129,
+    "h": 77.6
+   },
+   "dark:ui_error": {
+    "L": 0.565,
+    "C": 0.116,
+    "h": 26.7
+   },
+   "dark:selection_bg": {
+    "L": 0.289,
+    "C": 0.044,
+    "h": 283.3
+   },
+   "dark:text_contrast": 11.19,
+   "dark:dim_contrast": 2.0,
+   "dark:border_contrast": 2.0
+  },
+  {
+   "name": "minimal-graphite",
+   "pack": "core",
+   "category": "neutral",
+   "light:background": {
+    "L": 0.97,
+    "C": 0.003,
+    "h": 264.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.93,
+    "C": 0.005,
+    "h": 258.3
+   },
+   "light:ui_text": {
+    "L": 0.308,
+    "C": 0.006,
+    "h": 258.4
+   },
+   "light:banner_dim": {
+    "L": 0.475,
+    "C": 0.017,
+    "h": 254.7
+   },
+   "light:ui_accent": {
+    "L": 0.503,
+    "C": 0.024,
+    "h": 255.0
+   },
+   "light:ui_border": {
+    "L": 0.847,
+    "C": 0.009,
+    "h": 258.3
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 12.13,
+   "light:dim_contrast": 6.1,
+   "light:border_contrast": 1.46,
+   "dark:background": {
+    "L": 0.209,
+    "C": 0.004,
+    "h": 264.5
+   },
+   "dark:status_bar_bg": {
+    "L": 0.2,
+    "C": 0.003,
+    "h": 248.0
+   },
+   "dark:ui_text": {
+    "L": 0.936,
+    "C": 0.003,
+    "h": 247.9
+   },
+   "dark:banner_dim": {
+    "L": 0.667,
+    "C": 0.012,
+    "h": 252.1
+   },
+   "dark:ui_accent": {
+    "L": 0.836,
+    "C": 0.014,
+    "h": 251.6
+   },
+   "dark:ui_border": {
+    "L": 0.273,
+    "C": 0.007,
+    "h": 274.7
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.73,
+   "dark:dim_contrast": 5.88,
+   "dark:border_contrast": 1.19
+  },
+  {
+   "name": "moss-stone",
+   "pack": "earth",
+   "category": "fern",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.007,
+    "h": 132.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.944,
+    "C": 0.011,
+    "h": 128.6
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.011,
+    "h": 122.2
+   },
+   "light:banner_dim": {
+    "L": 0.499,
+    "C": 0.011,
+    "h": 119.8
+   },
+   "light:ui_accent": {
+    "L": 0.501,
+    "C": 0.061,
+    "h": 125.6
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.015,
+    "h": 128.7
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.117,
+    "h": 138.8
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.096,
+    "h": 91.3
+   },
+   "light:ui_error": {
+    "L": 0.481,
+    "C": 0.095,
+    "h": 33.7
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.46,
+   "light:dim_contrast": 5.6,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.236,
+    "C": 0.016,
+    "h": 129.2
+   },
+   "dark:status_bar_bg": {
+    "L": 0.194,
+    "C": 0.013,
+    "h": 135.2
+   },
+   "dark:ui_text": {
+    "L": 0.845,
+    "C": 0.034,
+    "h": 122.1
+   },
+   "dark:banner_dim": {
+    "L": 0.371,
+    "C": 0.035,
+    "h": 129.6
+   },
+   "dark:ui_accent": {
+    "L": 0.603,
+    "C": 0.061,
+    "h": 125.9
+   },
+   "dark:ui_border": {
+    "L": 0.557,
+    "C": 0.051,
+    "h": 129.5
+   },
+   "dark:ui_ok": {
+    "L": 0.726,
+    "C": 0.116,
+    "h": 138.9
+   },
+   "dark:ui_warn": {
+    "L": 0.737,
+    "C": 0.096,
+    "h": 91.5
+   },
+   "dark:ui_error": {
+    "L": 0.619,
+    "C": 0.095,
+    "h": 33.3
+   },
+   "dark:selection_bg": {
+    "L": 0.296,
+    "C": 0.03,
+    "h": 129.7
+   },
+   "dark:text_contrast": 10.38,
+   "dark:dim_contrast": 1.61,
+   "dark:border_contrast": 3.58
+  },
+  {
+   "name": "nature-autumn",
+   "pack": "earth",
+   "category": "apricot",
+   "light:background": {
+    "L": 0.965,
+    "C": 0.02,
+    "h": 65.1
+   },
+   "light:status_bar_bg": {
+    "L": 0.923,
+    "C": 0.037,
+    "h": 70.0
+   },
+   "light:ui_text": {
+    "L": 0.308,
+    "C": 0.046,
+    "h": 44.6
+   },
+   "light:banner_dim": {
+    "L": 0.532,
+    "C": 0.063,
+    "h": 51.9
+   },
+   "light:ui_accent": {
+    "L": 0.544,
+    "C": 0.139,
+    "h": 43.0
+   },
+   "light:ui_border": {
+    "L": 0.879,
+    "C": 0.045,
+    "h": 67.2
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 12.12,
+   "light:dim_contrast": 4.81,
+   "light:border_contrast": 1.31,
+   "dark:background": {
+    "L": 0.214,
+    "C": 0.027,
+    "h": 39.2
+   },
+   "dark:status_bar_bg": {
+    "L": 0.192,
+    "C": 0.023,
+    "h": 43.5
+   },
+   "dark:ui_text": {
+    "L": 0.937,
+    "C": 0.026,
+    "h": 73.2
+   },
+   "dark:banner_dim": {
+    "L": 0.703,
+    "C": 0.051,
+    "h": 58.7
+   },
+   "dark:ui_accent": {
+    "L": 0.685,
+    "C": 0.148,
+    "h": 50.8
+   },
+   "dark:ui_border": {
+    "L": 0.289,
+    "C": 0.044,
+    "h": 46.2
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.64,
+   "dark:dim_contrast": 6.59,
+   "dark:border_contrast": 1.23
+  },
+  {
+   "name": "nature-desert",
+   "pack": "core",
+   "category": "amber",
+   "light:background": {
+    "L": 0.958,
+    "C": 0.018,
+    "h": 89.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.962,
+    "C": 0.017,
+    "h": 88.0
+   },
+   "light:ui_text": {
+    "L": 0.285,
+    "C": 0.022,
+    "h": 91.8
+   },
+   "light:banner_dim": {
+    "L": 0.527,
+    "C": 0.035,
+    "h": 95.2
+   },
+   "light:ui_accent": {
+    "L": 0.532,
+    "C": 0.091,
+    "h": 119.7
+   },
+   "light:ui_border": {
+    "L": 0.882,
+    "C": 0.035,
+    "h": 92.3
+   },
+   "light:ui_ok": {
+    "L": 0.576,
+    "C": 0.127,
+    "h": 152.1
+   },
+   "light:ui_warn": {
+    "L": 0.602,
+    "C": 0.117,
+    "h": 84.6
+   },
+   "light:ui_error": {
+    "L": 0.602,
+    "C": 0.139,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 12.7,
+   "light:dim_contrast": 4.73,
+   "light:border_contrast": 1.26,
+   "dark:background": {
+    "L": 0.209,
+    "C": 0.016,
+    "h": 71.1
+   },
+   "dark:status_bar_bg": {
+    "L": 0.199,
+    "C": 0.016,
+    "h": 76.0
+   },
+   "dark:ui_text": {
+    "L": 0.929,
+    "C": 0.022,
+    "h": 76.5
+   },
+   "dark:banner_dim": {
+    "L": 0.667,
+    "C": 0.051,
+    "h": 73.0
+   },
+   "dark:ui_accent": {
+    "L": 0.835,
+    "C": 0.104,
+    "h": 76.0
+   },
+   "dark:ui_border": {
+    "L": 0.305,
+    "C": 0.034,
+    "h": 69.8
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.39,
+   "dark:dim_contrast": 5.83,
+   "dark:border_contrast": 1.32
+  },
+  {
+   "name": "nature-forest",
+   "pack": "core",
+   "category": "fern",
+   "light:background": {
+    "L": 0.963,
+    "C": 0.013,
+    "h": 134.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.92,
+    "C": 0.023,
+    "h": 131.2
+   },
+   "light:ui_text": {
+    "L": 0.323,
+    "C": 0.046,
+    "h": 147.7
+   },
+   "light:banner_dim": {
+    "L": 0.536,
+    "C": 0.041,
+    "h": 145.0
+   },
+   "light:ui_accent": {
+    "L": 0.525,
+    "C": 0.103,
+    "h": 146.1
+   },
+   "light:ui_border": {
+    "L": 0.88,
+    "C": 0.03,
+    "h": 132.6
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 11.11,
+   "light:dim_contrast": 4.56,
+   "light:border_contrast": 1.28,
+   "dark:background": {
+    "L": 0.204,
+    "C": 0.022,
+    "h": 152.6
+   },
+   "dark:status_bar_bg": {
+    "L": 0.193,
+    "C": 0.019,
+    "h": 151.1
+   },
+   "dark:ui_text": {
+    "L": 0.92,
+    "C": 0.029,
+    "h": 145.3
+   },
+   "dark:banner_dim": {
+    "L": 0.678,
+    "C": 0.048,
+    "h": 145.0
+   },
+   "dark:ui_accent": {
+    "L": 0.835,
+    "C": 0.137,
+    "h": 144.2
+   },
+   "dark:ui_border": {
+    "L": 0.319,
+    "C": 0.036,
+    "h": 153.5
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.21,
+   "dark:dim_contrast": 6.28,
+   "dark:border_contrast": 1.42
+  },
+  {
+   "name": "nature-nordic",
+   "pack": "zen",
+   "category": "teal",
+   "light:background": {
+    "L": 0.964,
+    "C": 0.008,
+    "h": 236.6
+   },
+   "light:status_bar_bg": {
+    "L": 0.967,
+    "C": 0.008,
+    "h": 236.6
+   },
+   "light:ui_text": {
+    "L": 0.302,
+    "C": 0.027,
+    "h": 242.4
+   },
+   "light:banner_dim": {
+    "L": 0.532,
+    "C": 0.036,
+    "h": 244.2
+   },
+   "light:ui_accent": {
+    "L": 0.523,
+    "C": 0.1,
+    "h": 244.2
+   },
+   "light:ui_border": {
+    "L": 0.9,
+    "C": 0.02,
+    "h": 240.8
+   },
+   "light:ui_ok": {
+    "L": 0.576,
+    "C": 0.127,
+    "h": 152.1
+   },
+   "light:ui_warn": {
+    "L": 0.602,
+    "C": 0.117,
+    "h": 84.6
+   },
+   "light:ui_error": {
+    "L": 0.602,
+    "C": 0.139,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 12.18,
+   "light:dim_contrast": 4.7,
+   "light:border_contrast": 1.21,
+   "dark:background": {
+    "L": 0.213,
+    "C": 0.017,
+    "h": 241.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.2,
+    "C": 0.016,
+    "h": 244.6
+   },
+   "dark:ui_text": {
+    "L": 0.926,
+    "C": 0.013,
+    "h": 236.6
+   },
+   "dark:banner_dim": {
+    "L": 0.694,
+    "C": 0.03,
+    "h": 235.1
+   },
+   "dark:ui_accent": {
+    "L": 0.87,
+    "C": 0.042,
+    "h": 221.7
+   },
+   "dark:ui_border": {
+    "L": 0.317,
+    "C": 0.026,
+    "h": 239.7
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.16,
+   "dark:dim_contrast": 6.47,
+   "dark:border_contrast": 1.38
+  },
+  {
+   "name": "nature-ocean",
+   "pack": "core",
+   "category": "teal",
+   "light:background": {
+    "L": 0.96,
+    "C": 0.013,
+    "h": 179.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.915,
+    "C": 0.022,
+    "h": 182.5
+   },
+   "light:ui_text": {
+    "L": 0.315,
+    "C": 0.041,
+    "h": 195.3
+   },
+   "light:banner_dim": {
+    "L": 0.481,
+    "C": 0.044,
+    "h": 195.8
+   },
+   "light:ui_accent": {
+    "L": 0.527,
+    "C": 0.086,
+    "h": 194.9
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.03,
+    "h": 186.2
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 11.38,
+   "light:dim_contrast": 5.69,
+   "light:border_contrast": 1.35,
+   "dark:background": {
+    "L": 0.209,
+    "C": 0.029,
+    "h": 237.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.19,
+    "C": 0.029,
+    "h": 245.4
+   },
+   "dark:ui_text": {
+    "L": 0.939,
+    "C": 0.026,
+    "h": 211.6
+   },
+   "dark:banner_dim": {
+    "L": 0.706,
+    "C": 0.048,
+    "h": 219.3
+   },
+   "dark:ui_accent": {
+    "L": 0.809,
+    "C": 0.118,
+    "h": 195.1
+   },
+   "dark:ui_border": {
+    "L": 0.295,
+    "C": 0.043,
+    "h": 234.3
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.92,
+   "dark:dim_contrast": 6.89,
+   "dark:border_contrast": 1.29
+  },
+  {
+   "name": "neon-ghost",
+   "pack": "cyberpunk",
+   "category": "rose",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.007,
+    "h": 286.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 286.2
+   },
+   "light:ui_text": {
+    "L": 0.259,
+    "C": 0.013,
+    "h": 285.5
+   },
+   "light:banner_dim": {
+    "L": 0.499,
+    "C": 0.013,
+    "h": 285.9
+   },
+   "light:ui_accent": {
+    "L": 0.499,
+    "C": 0.16,
+    "h": 328.1
+   },
+   "light:ui_border": {
+    "L": 0.861,
+    "C": 0.014,
+    "h": 286.1
+   },
+   "light:ui_ok": {
+    "L": 0.481,
+    "C": 0.124,
+    "h": 152.5
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.111,
+    "h": 72.9
+   },
+   "light:ui_error": {
+    "L": 0.481,
+    "C": 0.188,
+    "h": 13.6
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.49,
+   "light:dim_contrast": 5.61,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.147,
+    "C": 0.011,
+    "h": 285.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.118,
+    "C": 0.014,
+    "h": 284.1
+   },
+   "dark:ui_text": {
+    "L": 0.916,
+    "C": 0.042,
+    "h": 285.5
+   },
+   "dark:banner_dim": {
+    "L": 0.481,
+    "C": 0.153,
+    "h": 314.8
+   },
+   "dark:ui_accent": {
+    "L": 0.702,
+    "C": 0.322,
+    "h": 328.4
+   },
+   "dark:ui_border": {
+    "L": 0.702,
+    "C": 0.322,
+    "h": 328.4
+   },
+   "dark:ui_ok": {
+    "L": 0.876,
+    "C": 0.228,
+    "h": 152.5
+   },
+   "dark:ui_warn": {
+    "L": 0.802,
+    "C": 0.171,
+    "h": 73.3
+   },
+   "dark:ui_error": {
+    "L": 0.656,
+    "C": 0.235,
+    "h": 13.3
+   },
+   "dark:selection_bg": {
+    "L": 0.242,
+    "C": 0.088,
+    "h": 305.6
+   },
+   "dark:text_contrast": 15.31,
+   "dark:dim_contrast": 2.8,
+   "dark:border_contrast": 6.3
+  },
+  {
+   "name": "netrunner",
+   "pack": "cyberpunk",
+   "category": "amber",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.006,
+    "h": 255.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.012,
+    "h": 259.8
+   },
+   "light:ui_text": {
+    "L": 0.262,
+    "C": 0.012,
+    "h": 248.3
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 248.1
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.104,
+    "h": 76.9
+   },
+   "light:ui_border": {
+    "L": 0.859,
+    "C": 0.014,
+    "h": 258.3
+   },
+   "light:ui_ok": {
+    "L": 0.48,
+    "C": 0.092,
+    "h": 171.4
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.104,
+    "h": 76.2
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.188,
+    "h": 23.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.38,
+   "light:dim_contrast": 5.57,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.2,
+    "C": 0.04,
+    "h": 258.3
+   },
+   "dark:status_bar_bg": {
+    "L": 0.161,
+    "C": 0.03,
+    "h": 253.9
+   },
+   "dark:ui_text": {
+    "L": 0.9,
+    "C": 0.028,
+    "h": 248.1
+   },
+   "dark:banner_dim": {
+    "L": 0.513,
+    "C": 0.063,
+    "h": 249.1
+   },
+   "dark:ui_accent": {
+    "L": 0.812,
+    "C": 0.17,
+    "h": 76.4
+   },
+   "dark:ui_border": {
+    "L": 0.812,
+    "C": 0.17,
+    "h": 76.4
+   },
+   "dark:ui_ok": {
+    "L": 0.775,
+    "C": 0.151,
+    "h": 171.7
+   },
+   "dark:ui_warn": {
+    "L": 0.812,
+    "C": 0.17,
+    "h": 76.4
+   },
+   "dark:ui_error": {
+    "L": 0.651,
+    "C": 0.235,
+    "h": 23.2
+   },
+   "dark:selection_bg": {
+    "L": 0.282,
+    "C": 0.046,
+    "h": 256.6
+   },
+   "dark:text_contrast": 13.47,
+   "dark:dim_contrast": 3.21,
+   "dark:border_contrast": 9.9
+  },
+  {
+   "name": "newsprint-noir",
+   "pack": "noir",
+   "category": "neutral",
+   "light:background": {
+    "L": 0.967,
+    "C": 0.011,
+    "h": 89.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.971,
+    "C": 0.01,
+    "h": 87.5
+   },
+   "light:ui_text": {
+    "L": 0.272,
+    "C": 0.013,
+    "h": 72.3
+   },
+   "light:banner_dim": {
+    "L": 0.518,
+    "C": 0.02,
+    "h": 76.0
+   },
+   "light:ui_accent": {
+    "L": 0.534,
+    "C": 0.08,
+    "h": 62.1
+   },
+   "light:ui_border": {
+    "L": 0.881,
+    "C": 0.02,
+    "h": 84.6
+   },
+   "light:ui_ok": {
+    "L": 0.576,
+    "C": 0.127,
+    "h": 152.1
+   },
+   "light:ui_warn": {
+    "L": 0.602,
+    "C": 0.117,
+    "h": 84.6
+   },
+   "light:ui_error": {
+    "L": 0.602,
+    "C": 0.139,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 13.64,
+   "light:dim_contrast": 5.07,
+   "light:border_contrast": 1.3,
+   "dark:background": {
+    "L": 0.174,
+    "C": 0.004,
+    "h": 286.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.135,
+    "C": 0.005,
+    "h": 285.8
+   },
+   "dark:ui_text": {
+    "L": 0.885,
+    "C": 0.011,
+    "h": 286.2
+   },
+   "dark:banner_dim": {
+    "L": 0.605,
+    "C": 0.024,
+    "h": 285.7
+   },
+   "dark:ui_accent": {
+    "L": 0.622,
+    "C": 0.036,
+    "h": 285.3
+   },
+   "dark:ui_border": {
+    "L": 0.463,
+    "C": 0.04,
+    "h": 270.4
+   },
+   "dark:ui_ok": {
+    "L": 0.649,
+    "C": 0.098,
+    "h": 150.9
+   },
+   "dark:ui_warn": {
+    "L": 0.737,
+    "C": 0.096,
+    "h": 91.5
+   },
+   "dark:ui_error": {
+    "L": 0.565,
+    "C": 0.116,
+    "h": 26.7
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 13.41,
+   "dark:dim_contrast": 4.89,
+   "dark:border_contrast": 2.69
+  },
+  {
+   "name": "obsidian",
+   "pack": "noir",
+   "category": "neutral",
+   "light:background": {
+    "L": 0.976,
+    "C": 0.007,
+    "h": 97.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 91.5
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.013,
+    "h": 93.9
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 87.5
+   },
+   "light:ui_accent": {
+    "L": 0.501,
+    "C": 0.06,
+    "h": 89.6
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 93.0
+   },
+   "light:ui_ok": {
+    "L": 0.48,
+    "C": 0.12,
+    "h": 142.2
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.103,
+    "h": 82.1
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.144,
+    "h": 22.9
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.48,
+   "light:dim_contrast": 5.59,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.168,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.134,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_text": {
+    "L": 0.858,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:banner_dim": {
+    "L": 0.387,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_accent": {
+    "L": 0.573,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_border": {
+    "L": 0.45,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_ok": {
+    "L": 0.677,
+    "C": 0.12,
+    "h": 142.2
+   },
+   "dark:ui_warn": {
+    "L": 0.726,
+    "C": 0.109,
+    "h": 82.8
+   },
+   "dark:ui_error": {
+    "L": 0.577,
+    "C": 0.145,
+    "h": 22.7
+   },
+   "dark:selection_bg": {
+    "L": 0.252,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:text_contrast": 12.43,
+   "dark:dim_contrast": 1.97,
+   "dark:border_contrast": 2.57
+  },
+  {
+   "name": "peach-fuzz",
+   "pack": "retro",
+   "category": "apricot",
+   "light:background": {
+    "L": 0.966,
+    "C": 0.016,
+    "h": 52.6
+   },
+   "light:status_bar_bg": {
+    "L": 0.933,
+    "C": 0.026,
+    "h": 58.3
+   },
+   "light:ui_text": {
+    "L": 0.309,
+    "C": 0.061,
+    "h": 38.2
+   },
+   "light:banner_dim": {
+    "L": 0.527,
+    "C": 0.062,
+    "h": 42.4
+   },
+   "light:ui_accent": {
+    "L": 0.553,
+    "C": 0.15,
+    "h": 39.5
+   },
+   "light:ui_border": {
+    "L": 0.867,
+    "C": 0.037,
+    "h": 52.6
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 12.17,
+   "light:dim_contrast": 4.95,
+   "light:border_contrast": 1.36,
+   "dark:background": {
+    "L": 0.23,
+    "C": 0.01,
+    "h": 67.3
+   },
+   "dark:status_bar_bg": {
+    "L": 0.184,
+    "C": 0.005,
+    "h": 67.5
+   },
+   "dark:ui_text": {
+    "L": 0.891,
+    "C": 0.028,
+    "h": 67.5
+   },
+   "dark:banner_dim": {
+    "L": 0.623,
+    "C": 0.03,
+    "h": 67.2
+   },
+   "dark:ui_accent": {
+    "L": 0.76,
+    "C": 0.088,
+    "h": 47.5
+   },
+   "dark:ui_border": {
+    "L": 0.718,
+    "C": 0.099,
+    "h": 44.7
+   },
+   "dark:ui_ok": {
+    "L": 0.761,
+    "C": 0.085,
+    "h": 144.7
+   },
+   "dark:ui_warn": {
+    "L": 0.803,
+    "C": 0.102,
+    "h": 81.2
+   },
+   "dark:ui_error": {
+    "L": 0.652,
+    "C": 0.122,
+    "h": 25.9
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 12.16,
+   "dark:dim_contrast": 4.68,
+   "dark:border_contrast": 6.56
+  },
+  {
+   "name": "red-alert",
+   "pack": "cyberpunk",
+   "category": "persimmon",
+   "light:background": {
+    "L": 0.976,
+    "C": 0.007,
+    "h": 97.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 91.5
+   },
+   "light:ui_text": {
+    "L": 0.261,
+    "C": 0.012,
+    "h": 18.0
+   },
+   "light:banner_dim": {
+    "L": 0.501,
+    "C": 0.012,
+    "h": 17.5
+   },
+   "light:ui_accent": {
+    "L": 0.501,
+    "C": 0.16,
+    "h": 35.5
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 93.0
+   },
+   "light:ui_ok": {
+    "L": 0.479,
+    "C": 0.159,
+    "h": 143.1
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.125,
+    "h": 56.1
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.188,
+    "h": 28.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.5,
+   "light:dim_contrast": 5.6,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.145,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.115,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_text": {
+    "L": 0.913,
+    "C": 0.009,
+    "h": 17.3
+   },
+   "dark:banner_dim": {
+    "L": 0.356,
+    "C": 0.098,
+    "h": 23.5
+   },
+   "dark:ui_accent": {
+    "L": 0.659,
+    "C": 0.23,
+    "h": 35.2
+   },
+   "dark:ui_border": {
+    "L": 0.545,
+    "C": 0.204,
+    "h": 27.4
+   },
+   "dark:ui_ok": {
+    "L": 0.745,
+    "C": 0.211,
+    "h": 143.1
+   },
+   "dark:ui_warn": {
+    "L": 0.744,
+    "C": 0.181,
+    "h": 56.5
+   },
+   "dark:ui_error": {
+    "L": 0.638,
+    "C": 0.247,
+    "h": 28.0
+   },
+   "dark:selection_bg": {
+    "L": 0.213,
+    "C": 0.043,
+    "h": 21.4
+   },
+   "dark:text_contrast": 15.24,
+   "dark:dim_contrast": 1.71,
+   "dark:border_contrast": 3.6
+  },
+  {
+   "name": "redwood",
+   "pack": "earth",
+   "category": "amber",
+   "light:background": {
+    "L": 0.974,
+    "C": 0.01,
+    "h": 81.8
+   },
+   "light:status_bar_bg": {
+    "L": 0.977,
+    "C": 0.01,
+    "h": 87.5
+   },
+   "light:ui_text": {
+    "L": 0.289,
+    "C": 0.023,
+    "h": 66.7
+   },
+   "light:banner_dim": {
+    "L": 0.55,
+    "C": 0.031,
+    "h": 72.5
+   },
+   "light:ui_accent": {
+    "L": 0.556,
+    "C": 0.13,
+    "h": 38.8
+   },
+   "light:ui_border": {
+    "L": 0.897,
+    "C": 0.025,
+    "h": 83.4
+   },
+   "light:ui_ok": {
+    "L": 0.576,
+    "C": 0.127,
+    "h": 152.1
+   },
+   "light:ui_warn": {
+    "L": 0.602,
+    "C": 0.117,
+    "h": 84.6
+   },
+   "light:ui_error": {
+    "L": 0.625,
+    "C": 0.144,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 13.19,
+   "light:dim_contrast": 4.53,
+   "light:border_contrast": 1.26,
+   "dark:background": {
+    "L": 0.215,
+    "C": 0.012,
+    "h": 55.6
+   },
+   "dark:status_bar_bg": {
+    "L": 0.177,
+    "C": 0.01,
+    "h": 67.1
+   },
+   "dark:ui_text": {
+    "L": 0.86,
+    "C": 0.023,
+    "h": 84.6
+   },
+   "dark:banner_dim": {
+    "L": 0.612,
+    "C": 0.032,
+    "h": 63.8
+   },
+   "dark:ui_accent": {
+    "L": 0.643,
+    "C": 0.055,
+    "h": 72.4
+   },
+   "dark:ui_border": {
+    "L": 0.597,
+    "C": 0.078,
+    "h": 134.9
+   },
+   "dark:ui_ok": {
+    "L": 0.736,
+    "C": 0.107,
+    "h": 132.2
+   },
+   "dark:ui_warn": {
+    "L": 0.726,
+    "C": 0.109,
+    "h": 82.8
+   },
+   "dark:ui_error": {
+    "L": 0.616,
+    "C": 0.102,
+    "h": 44.4
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 11.46,
+   "dark:dim_contrast": 4.64,
+   "dark:border_contrast": 4.52
+  },
+  {
+   "name": "retro-amber",
+   "pack": "core",
+   "category": "amber",
+   "light:background": {
+    "L": 0.97,
+    "C": 0.018,
+    "h": 89.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.931,
+    "C": 0.03,
+    "h": 90.3
+   },
+   "light:ui_text": {
+    "L": 0.359,
+    "C": 0.048,
+    "h": 80.3
+   },
+   "light:banner_dim": {
+    "L": 0.531,
+    "C": 0.051,
+    "h": 84.2
+   },
+   "light:ui_accent": {
+    "L": 0.518,
+    "C": 0.105,
+    "h": 76.6
+   },
+   "light:ui_border": {
+    "L": 0.861,
+    "C": 0.04,
+    "h": 86.1
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 10.07,
+   "light:dim_contrast": 4.84,
+   "light:border_contrast": 1.4,
+   "dark:background": {
+    "L": 0.167,
+    "C": 0.024,
+    "h": 72.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.161,
+    "C": 0.022,
+    "h": 74.0
+   },
+   "dark:ui_text": {
+    "L": 0.941,
+    "C": 0.049,
+    "h": 76.1
+   },
+   "dark:banner_dim": {
+    "L": 0.609,
+    "C": 0.085,
+    "h": 76.6
+   },
+   "dark:ui_accent": {
+    "L": 0.857,
+    "C": 0.111,
+    "h": 69.7
+   },
+   "dark:ui_border": {
+    "L": 0.293,
+    "C": 0.046,
+    "h": 72.2
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 16.16,
+   "dark:dim_contrast": 5.01,
+   "dark:border_contrast": 1.37
+  },
+  {
+   "name": "retro-blue",
+   "pack": "core",
+   "category": "cobalt",
+   "light:background": {
+    "L": 0.944,
+    "C": 0.013,
+    "h": 255.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.903,
+    "C": 0.02,
+    "h": 252.9
+   },
+   "light:ui_text": {
+    "L": 0.303,
+    "C": 0.049,
+    "h": 257.1
+   },
+   "light:banner_dim": {
+    "L": 0.495,
+    "C": 0.042,
+    "h": 256.1
+   },
+   "light:ui_accent": {
+    "L": 0.478,
+    "C": 0.082,
+    "h": 253.1
+   },
+   "light:ui_border": {
+    "L": 0.851,
+    "C": 0.025,
+    "h": 248.1
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 11.48,
+   "light:dim_contrast": 5.21,
+   "light:border_contrast": 1.33,
+   "dark:background": {
+    "L": 0.142,
+    "C": 0.04,
+    "h": 268.2
+   },
+   "dark:status_bar_bg": {
+    "L": 0.136,
+    "C": 0.037,
+    "h": 269.9
+   },
+   "dark:ui_text": {
+    "L": 0.921,
+    "C": 0.038,
+    "h": 259.3
+   },
+   "dark:banner_dim": {
+    "L": 0.615,
+    "C": 0.072,
+    "h": 258.3
+   },
+   "dark:ui_accent": {
+    "L": 0.817,
+    "C": 0.098,
+    "h": 245.2
+   },
+   "dark:ui_border": {
+    "L": 0.275,
+    "C": 0.087,
+    "h": 265.0
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 15.76,
+   "dark:dim_contrast": 5.36,
+   "dark:border_contrast": 1.33
+  },
+  {
+   "name": "retro-terminal",
+   "pack": "retro",
+   "category": "fern",
+   "light:background": {
+    "L": 0.978,
+    "C": 0.011,
+    "h": 158.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.979,
+    "C": 0.009,
+    "h": 161.4
+   },
+   "light:ui_text": {
+    "L": 0.275,
+    "C": 0.021,
+    "h": 164.9
+   },
+   "light:banner_dim": {
+    "L": 0.538,
+    "C": 0.036,
+    "h": 165.2
+   },
+   "light:ui_accent": {
+    "L": 0.531,
+    "C": 0.103,
+    "h": 160.7
+   },
+   "light:ui_border": {
+    "L": 0.912,
+    "C": 0.027,
+    "h": 163.2
+   },
+   "light:ui_ok": {
+    "L": 0.576,
+    "C": 0.127,
+    "h": 152.1
+   },
+   "light:ui_warn": {
+    "L": 0.602,
+    "C": 0.117,
+    "h": 84.6
+   },
+   "light:ui_error": {
+    "L": 0.625,
+    "C": 0.144,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 13.85,
+   "light:dim_contrast": 4.71,
+   "light:border_contrast": 1.21,
+   "dark:background": {
+    "L": 0.17,
+    "C": 0.024,
+    "h": 139.2
+   },
+   "dark:status_bar_bg": {
+    "L": 0.162,
+    "C": 0.022,
+    "h": 138.2
+   },
+   "dark:ui_text": {
+    "L": 0.951,
+    "C": 0.079,
+    "h": 151.9
+   },
+   "dark:banner_dim": {
+    "L": 0.605,
+    "C": 0.077,
+    "h": 150.8
+   },
+   "dark:ui_accent": {
+    "L": 0.904,
+    "C": 0.167,
+    "h": 152.4
+   },
+   "dark:ui_border": {
+    "L": 0.292,
+    "C": 0.054,
+    "h": 148.2
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 16.97,
+   "dark:dim_contrast": 5.1,
+   "dark:border_contrast": 1.38
+  },
+  {
+   "name": "rice-paper",
+   "pack": "core",
+   "category": "persimmon",
+   "light:background": {
+    "L": 0.984,
+    "C": 0.007,
+    "h": 106.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.95,
+    "C": 0.009,
+    "h": 106.6
+   },
+   "light:ui_text": {
+    "L": 0.218,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:banner_dim": {
+    "L": 0.738,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_accent": {
+    "L": 0.559,
+    "C": 0.19,
+    "h": 25.9
+   },
+   "light:ui_border": {
+    "L": 0.627,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:ui_ok": {
+    "L": 0.541,
+    "C": 0.117,
+    "h": 143.8
+   },
+   "light:ui_warn": {
+    "L": 0.574,
+    "C": 0.118,
+    "h": 60.8
+   },
+   "light:ui_error": {
+    "L": 0.559,
+    "C": 0.19,
+    "h": 25.9
+   },
+   "light:selection_bg": {
+    "L": 0.904,
+    "C": 0.011,
+    "h": 106.6
+   },
+   "light:text_contrast": 16.62,
+   "light:dim_contrast": 2.22,
+   "light:border_contrast": 3.39,
+   "dark:background": {
+    "L": 0.17,
+    "C": 0.014,
+    "h": 107.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.224,
+    "C": 0.02,
+    "h": 103.5
+   },
+   "dark:ui_text": {
+    "L": 0.94,
+    "C": 0.012,
+    "h": 91.5
+   },
+   "dark:banner_dim": {
+    "L": 0.699,
+    "C": 0.012,
+    "h": 89.8
+   },
+   "dark:ui_accent": {
+    "L": 0.72,
+    "C": 0.161,
+    "h": 25.9
+   },
+   "dark:ui_border": {
+    "L": 0.33,
+    "C": 0.014,
+    "h": 107.1
+   },
+   "dark:ui_ok": {
+    "L": 0.721,
+    "C": 0.117,
+    "h": 143.9
+   },
+   "dark:ui_warn": {
+    "L": 0.76,
+    "C": 0.118,
+    "h": 61.2
+   },
+   "dark:ui_error": {
+    "L": 0.7,
+    "C": 0.19,
+    "h": 25.8
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 16.01,
+   "dark:dim_contrast": 7.13,
+   "dark:border_contrast": 1.57
+  },
+  {
+   "name": "sandstone",
+   "pack": "core",
+   "category": "apricot",
+   "light:background": {
+    "L": 0.974,
+    "C": 0.006,
+    "h": 75.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.012,
+    "h": 79.8
+   },
+   "light:ui_text": {
+    "L": 0.259,
+    "C": 0.011,
+    "h": 73.4
+   },
+   "light:banner_dim": {
+    "L": 0.501,
+    "C": 0.012,
+    "h": 81.8
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.122,
+    "h": 54.0
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 78.3
+   },
+   "light:ui_ok": {
+    "L": 0.48,
+    "C": 0.108,
+    "h": 132.6
+   },
+   "light:ui_warn": {
+    "L": 0.521,
+    "C": 0.107,
+    "h": 77.6
+   },
+   "light:ui_error": {
+    "L": 0.479,
+    "C": 0.123,
+    "h": 40.4
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.49,
+   "light:dim_contrast": 5.54,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.22,
+    "C": 0.013,
+    "h": 78.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.177,
+    "C": 0.01,
+    "h": 67.1
+   },
+   "dark:ui_text": {
+    "L": 0.899,
+    "C": 0.03,
+    "h": 80.7
+   },
+   "dark:banner_dim": {
+    "L": 0.396,
+    "C": 0.045,
+    "h": 52.6
+   },
+   "dark:ui_accent": {
+    "L": 0.649,
+    "C": 0.123,
+    "h": 53.6
+   },
+   "dark:ui_border": {
+    "L": 0.68,
+    "C": 0.08,
+    "h": 70.9
+   },
+   "dark:ui_ok": {
+    "L": 0.685,
+    "C": 0.109,
+    "h": 132.4
+   },
+   "dark:ui_warn": {
+    "L": 0.742,
+    "C": 0.129,
+    "h": 77.6
+   },
+   "dark:ui_error": {
+    "L": 0.561,
+    "C": 0.124,
+    "h": 40.2
+   },
+   "dark:selection_bg": {
+    "L": 0.253,
+    "C": 0.021,
+    "h": 60.3
+   },
+   "dark:text_contrast": 12.78,
+   "dark:dim_contrast": 1.82,
+   "dark:border_contrast": 5.93
+  },
+  {
+   "name": "seafoam-silk",
+   "pack": "earth",
+   "category": "teal",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.006,
+    "h": 170.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.013,
+    "h": 172.4
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.013,
+    "h": 170.6
+   },
+   "light:banner_dim": {
+    "L": 0.502,
+    "C": 0.012,
+    "h": 173.9
+   },
+   "light:ui_accent": {
+    "L": 0.501,
+    "C": 0.081,
+    "h": 161.7
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.014,
+    "h": 174.1
+   },
+   "light:ui_ok": {
+    "L": 0.479,
+    "C": 0.093,
+    "h": 151.8
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.079,
+    "h": 87.6
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.09,
+    "h": 26.4
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.42,
+   "light:dim_contrast": 5.52,
+   "light:border_contrast": 1.42,
+   "dark:background": {
+    "L": 0.237,
+    "C": 0.01,
+    "h": 173.4
+   },
+   "dark:status_bar_bg": {
+    "L": 0.193,
+    "C": 0.01,
+    "h": 173.0
+   },
+   "dark:ui_text": {
+    "L": 0.887,
+    "C": 0.028,
+    "h": 173.6
+   },
+   "dark:banner_dim": {
+    "L": 0.43,
+    "C": 0.046,
+    "h": 161.9
+   },
+   "dark:ui_accent": {
+    "L": 0.73,
+    "C": 0.081,
+    "h": 161.8
+   },
+   "dark:ui_border": {
+    "L": 0.681,
+    "C": 0.075,
+    "h": 168.3
+   },
+   "dark:ui_ok": {
+    "L": 0.801,
+    "C": 0.094,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.79,
+    "C": 0.078,
+    "h": 87.3
+   },
+   "dark:ui_error": {
+    "L": 0.698,
+    "C": 0.09,
+    "h": 26.5
+   },
+   "dark:selection_bg": {
+    "L": 0.295,
+    "C": 0.022,
+    "h": 155.7
+   },
+   "dark:text_contrast": 11.9,
+   "dark:dim_contrast": 2.09,
+   "dark:border_contrast": 5.98
+  },
+  {
+   "name": "single-malt",
+   "pack": "earth",
+   "category": "amber",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.006,
+    "h": 59.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.013,
+    "h": 56.2
+   },
+   "light:ui_text": {
+    "L": 0.261,
+    "C": 0.012,
+    "h": 84.6
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 87.5
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.076,
+    "h": 76.4
+   },
+   "light:ui_border": {
+    "L": 0.861,
+    "C": 0.015,
+    "h": 57.6
+   },
+   "light:ui_ok": {
+    "L": 0.48,
+    "C": 0.095,
+    "h": 130.2
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.088,
+    "h": 75.3
+   },
+   "light:ui_error": {
+    "L": 0.481,
+    "C": 0.096,
+    "h": 46.7
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.4,
+   "light:dim_contrast": 5.58,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.197,
+    "C": 0.013,
+    "h": 55.5
+   },
+   "dark:status_bar_bg": {
+    "L": 0.149,
+    "C": 0.008,
+    "h": 49.8
+   },
+   "dark:ui_text": {
+    "L": 0.813,
+    "C": 0.047,
+    "h": 84.5
+   },
+   "dark:banner_dim": {
+    "L": 0.294,
+    "C": 0.038,
+    "h": 62.2
+   },
+   "dark:ui_accent": {
+    "L": 0.566,
+    "C": 0.077,
+    "h": 76.3
+   },
+   "dark:ui_border": {
+    "L": 0.476,
+    "C": 0.065,
+    "h": 79.0
+   },
+   "dark:ui_ok": {
+    "L": 0.666,
+    "C": 0.096,
+    "h": 130.3
+   },
+   "dark:ui_warn": {
+    "L": 0.704,
+    "C": 0.088,
+    "h": 74.9
+   },
+   "dark:ui_error": {
+    "L": 0.554,
+    "C": 0.095,
+    "h": 46.7
+   },
+   "dark:selection_bg": {
+    "L": 0.246,
+    "C": 0.03,
+    "h": 69.9
+   },
+   "dark:text_contrast": 10.19,
+   "dark:dim_contrast": 1.3,
+   "dark:border_contrast": 2.72
+  },
+  {
+   "name": "slate-mist",
+   "pack": "zen",
+   "category": "neutral",
+   "light:background": {
+    "L": 0.959,
+    "C": 0.007,
+    "h": 247.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.909,
+    "C": 0.011,
+    "h": 243.7
+   },
+   "light:ui_text": {
+    "L": 0.307,
+    "C": 0.028,
+    "h": 246.7
+   },
+   "light:banner_dim": {
+    "L": 0.517,
+    "C": 0.032,
+    "h": 248.4
+   },
+   "light:ui_accent": {
+    "L": 0.511,
+    "C": 0.057,
+    "h": 244.7
+   },
+   "light:ui_border": {
+    "L": 0.871,
+    "C": 0.016,
+    "h": 241.8
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 11.8,
+   "light:dim_contrast": 4.94,
+   "light:border_contrast": 1.31,
+   "dark:background": {
+    "L": 0.235,
+    "C": 0.008,
+    "h": 264.4
+   },
+   "dark:status_bar_bg": {
+    "L": 0.191,
+    "C": 0.009,
+    "h": 264.3
+   },
+   "dark:ui_text": {
+    "L": 0.82,
+    "C": 0.012,
+    "h": 264.5
+   },
+   "dark:banner_dim": {
+    "L": 0.645,
+    "C": 0.016,
+    "h": 260.7
+   },
+   "dark:ui_accent": {
+    "L": 0.637,
+    "C": 0.033,
+    "h": 260.7
+   },
+   "dark:ui_border": {
+    "L": 0.407,
+    "C": 0.019,
+    "h": 260.7
+   },
+   "dark:ui_ok": {
+    "L": 0.63,
+    "C": 0.041,
+    "h": 145.1
+   },
+   "dark:ui_warn": {
+    "L": 0.631,
+    "C": 0.038,
+    "h": 96.5
+   },
+   "dark:ui_error": {
+    "L": 0.6,
+    "C": 0.027,
+    "h": 17.9
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 9.54,
+   "dark:dim_contrast": 5.06,
+   "dark:border_contrast": 1.87
+  },
+  {
+   "name": "solar-flare",
+   "pack": "core",
+   "category": "persimmon",
+   "light:background": {
+    "L": 0.976,
+    "C": 0.006,
+    "h": 223.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.011,
+    "h": 217.5
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.011,
+    "h": 91.7
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 87.5
+   },
+   "light:ui_accent": {
+    "L": 0.499,
+    "C": 0.15,
+    "h": 39.5
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.013,
+    "h": 221.4
+   },
+   "light:ui_ok": {
+    "L": 0.479,
+    "C": 0.11,
+    "h": 118.2
+   },
+   "light:ui_warn": {
+    "L": 0.519,
+    "C": 0.104,
+    "h": 85.2
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.188,
+    "h": 27.2
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.49,
+   "light:dim_contrast": 5.6,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.267,
+    "C": 0.049,
+    "h": 219.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.206,
+    "C": 0.038,
+    "h": 222.7
+   },
+   "dark:ui_text": {
+    "L": 0.931,
+    "C": 0.026,
+    "h": 92.4
+   },
+   "dark:banner_dim": {
+    "L": 0.523,
+    "C": 0.028,
+    "h": 219.1
+   },
+   "dark:ui_accent": {
+    "L": 0.581,
+    "C": 0.173,
+    "h": 39.5
+   },
+   "dark:ui_border": {
+    "L": 0.654,
+    "C": 0.134,
+    "h": 85.7
+   },
+   "dark:ui_ok": {
+    "L": 0.644,
+    "C": 0.151,
+    "h": 118.6
+   },
+   "dark:ui_warn": {
+    "L": 0.654,
+    "C": 0.134,
+    "h": 85.7
+   },
+   "dark:ui_error": {
+    "L": 0.586,
+    "C": 0.206,
+    "h": 27.1
+   },
+   "dark:selection_bg": {
+    "L": 0.309,
+    "C": 0.052,
+    "h": 219.7
+   },
+   "dark:text_contrast": 12.25,
+   "dark:dim_contrast": 2.79,
+   "dark:border_contrast": 4.68
+  },
+  {
+   "name": "stained-glass",
+   "pack": "noir",
+   "category": "cobalt",
+   "light:background": {
+    "L": 0.966,
+    "C": 0.008,
+    "h": 73.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.936,
+    "C": 0.008,
+    "h": 73.7
+   },
+   "light:ui_text": {
+    "L": 0.191,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:banner_dim": {
+    "L": 0.532,
+    "C": 0.02,
+    "h": 285.7
+   },
+   "light:ui_accent": {
+    "L": 0.484,
+    "C": 0.132,
+    "h": 258.2
+   },
+   "light:ui_border": {
+    "L": 0.861,
+    "C": 0.019,
+    "h": 78.2
+   },
+   "light:ui_ok": {
+    "L": 0.71,
+    "C": 0.16,
+    "h": 151.8
+   },
+   "light:ui_warn": {
+    "L": 0.675,
+    "C": 0.132,
+    "h": 84.7
+   },
+   "light:ui_error": {
+    "L": 0.631,
+    "C": 0.146,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 16.68,
+   "light:dim_contrast": 4.75,
+   "light:border_contrast": 1.38,
+   "dark:background": {
+    "L": 0.197,
+    "C": 0.024,
+    "h": 284.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.15,
+    "C": 0.021,
+    "h": 283.5
+   },
+   "dark:ui_text": {
+    "L": 0.862,
+    "C": 0.014,
+    "h": 67.6
+   },
+   "dark:banner_dim": {
+    "L": 0.605,
+    "C": 0.024,
+    "h": 285.7
+   },
+   "dark:ui_accent": {
+    "L": 0.675,
+    "C": 0.106,
+    "h": 237.5
+   },
+   "dark:ui_border": {
+    "L": 0.718,
+    "C": 0.106,
+    "h": 87.7
+   },
+   "dark:ui_ok": {
+    "L": 0.709,
+    "C": 0.135,
+    "h": 148.1
+   },
+   "dark:ui_warn": {
+    "L": 0.718,
+    "C": 0.106,
+    "h": 87.7
+   },
+   "dark:ui_error": {
+    "L": 0.577,
+    "C": 0.145,
+    "h": 22.7
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 11.97,
+   "dark:dim_contrast": 4.7,
+   "dark:border_contrast": 7.29
+  },
+  {
+   "name": "steel-thread",
+   "pack": "retro",
+   "category": "neutral",
+   "light:background": {
+    "L": 0.961,
+    "C": 0.003,
+    "h": 106.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.911,
+    "C": 0.008,
+    "h": 106.6
+   },
+   "light:ui_text": {
+    "L": 0.292,
+    "C": 0.004,
+    "h": 106.6
+   },
+   "light:banner_dim": {
+    "L": 0.484,
+    "C": 0.008,
+    "h": 106.7
+   },
+   "light:ui_accent": {
+    "L": 0.536,
+    "C": 0.009,
+    "h": 106.7
+   },
+   "light:ui_border": {
+    "L": 0.862,
+    "C": 0.008,
+    "h": 106.6
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 12.48,
+   "light:dim_contrast": 5.73,
+   "light:border_contrast": 1.35,
+   "dark:background": {
+    "L": 0.21,
+    "C": 0.004,
+    "h": 286.1
+   },
+   "dark:status_bar_bg": {
+    "L": 0.165,
+    "C": 0.004,
+    "h": 285.9
+   },
+   "dark:ui_text": {
+    "L": 0.81,
+    "C": 0.011,
+    "h": 286.1
+   },
+   "dark:banner_dim": {
+    "L": 0.628,
+    "C": 0.006,
+    "h": 286.2
+   },
+   "dark:ui_accent": {
+    "L": 0.629,
+    "C": 0.012,
+    "h": 286.1
+   },
+   "dark:ui_border": {
+    "L": 0.411,
+    "C": 0.01,
+    "h": 286.0
+   },
+   "dark:ui_ok": {
+    "L": 0.665,
+    "C": 0.073,
+    "h": 144.7
+   },
+   "dark:ui_warn": {
+    "L": 0.673,
+    "C": 0.076,
+    "h": 101.2
+   },
+   "dark:ui_error": {
+    "L": 0.594,
+    "C": 0.061,
+    "h": 19.0
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 9.81,
+   "dark:dim_contrast": 5.02,
+   "dark:border_contrast": 2.01
+  },
+  {
+   "name": "typewriter-cream",
+   "pack": "retro",
+   "category": "gold",
+   "light:background": {
+    "L": 0.974,
+    "C": 0.006,
+    "h": 75.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.012,
+    "h": 79.8
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.011,
+    "h": 91.7
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 87.5
+   },
+   "light:ui_accent": {
+    "L": 0.499,
+    "C": 0.063,
+    "h": 79.8
+   },
+   "light:ui_border": {
+    "L": 0.859,
+    "C": 0.013,
+    "h": 82.4
+   },
+   "light:ui_ok": {
+    "L": 0.48,
+    "C": 0.095,
+    "h": 130.2
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.106,
+    "h": 87.2
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.121,
+    "h": 36.6
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.4,
+   "light:dim_contrast": 5.56,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.263,
+    "C": 0.023,
+    "h": 84.3
+   },
+   "dark:status_bar_bg": {
+    "L": 0.209,
+    "C": 0.015,
+    "h": 95.7
+   },
+   "dark:ui_text": {
+    "L": 0.882,
+    "C": 0.033,
+    "h": 91.7
+   },
+   "dark:banner_dim": {
+    "L": 0.419,
+    "C": 0.045,
+    "h": 79.2
+   },
+   "dark:ui_accent": {
+    "L": 0.639,
+    "C": 0.063,
+    "h": 80.0
+   },
+   "dark:ui_border": {
+    "L": 0.579,
+    "C": 0.06,
+    "h": 86.3
+   },
+   "dark:ui_ok": {
+    "L": 0.666,
+    "C": 0.096,
+    "h": 130.3
+   },
+   "dark:ui_warn": {
+    "L": 0.718,
+    "C": 0.106,
+    "h": 87.7
+   },
+   "dark:ui_error": {
+    "L": 0.562,
+    "C": 0.121,
+    "h": 36.2
+   },
+   "dark:selection_bg": {
+    "L": 0.291,
+    "C": 0.036,
+    "h": 65.6
+   },
+   "dark:text_contrast": 10.82,
+   "dark:dim_contrast": 1.8,
+   "dark:border_contrast": 3.58
+  },
+  {
+   "name": "vaporwave-mall",
+   "pack": "core",
+   "category": "rose",
+   "light:background": {
+    "L": 0.963,
+    "C": 0.017,
+    "h": 183.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.929,
+    "C": 0.028,
+    "h": 185.6
+   },
+   "light:ui_text": {
+    "L": 0.327,
+    "C": 0.046,
+    "h": 195.2
+   },
+   "light:banner_dim": {
+    "L": 0.496,
+    "C": 0.049,
+    "h": 195.7
+   },
+   "light:ui_accent": {
+    "L": 0.498,
+    "C": 0.083,
+    "h": 194.8
+   },
+   "light:ui_border": {
+    "L": 0.872,
+    "C": 0.041,
+    "h": 184.8
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 10.94,
+   "light:dim_contrast": 5.39,
+   "light:border_contrast": 1.31,
+   "dark:background": {
+    "L": 0.225,
+    "C": 0.027,
+    "h": 284.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.177,
+    "C": 0.016,
+    "h": 284.6
+   },
+   "dark:ui_text": {
+    "L": 0.89,
+    "C": 0.033,
+    "h": 285.7
+   },
+   "dark:banner_dim": {
+    "L": 0.652,
+    "C": 0.072,
+    "h": 299.7
+   },
+   "dark:ui_accent": {
+    "L": 0.734,
+    "C": 0.202,
+    "h": 347.1
+   },
+   "dark:ui_border": {
+    "L": 0.734,
+    "C": 0.202,
+    "h": 347.1
+   },
+   "dark:ui_ok": {
+    "L": 0.841,
+    "C": 0.204,
+    "h": 127.3
+   },
+   "dark:ui_warn": {
+    "L": 0.879,
+    "C": 0.125,
+    "h": 103.2
+   },
+   "dark:ui_error": {
+    "L": 0.642,
+    "C": 0.24,
+    "h": 7.5
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 12.27,
+   "dark:dim_contrast": 5.22,
+   "dark:border_contrast": 6.61
+  },
+  {
+   "name": "vibrant-neon",
+   "pack": "cyberpunk",
+   "category": "teal",
+   "light:background": {
+    "L": 0.977,
+    "C": 0.012,
+    "h": 170.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.946,
+    "C": 0.012,
+    "h": 170.3
+   },
+   "light:ui_text": {
+    "L": 0.191,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:banner_dim": {
+    "L": 0.491,
+    "C": 0.055,
+    "h": 170.2
+   },
+   "light:ui_accent": {
+    "L": 0.512,
+    "C": 0.114,
+    "h": 158.9
+   },
+   "light:ui_border": {
+    "L": 0.91,
+    "C": 0.03,
+    "h": 167.4
+   },
+   "light:ui_ok": {
+    "L": 0.71,
+    "C": 0.16,
+    "h": 151.8
+   },
+   "light:ui_warn": {
+    "L": 0.675,
+    "C": 0.132,
+    "h": 84.7
+   },
+   "light:ui_error": {
+    "L": 0.631,
+    "C": 0.146,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 17.29,
+   "light:dim_contrast": 5.68,
+   "light:border_contrast": 1.21,
+   "dark:background": {
+    "L": 0.187,
+    "C": 0.03,
+    "h": 249.5
+   },
+   "dark:status_bar_bg": {
+    "L": 0.178,
+    "C": 0.028,
+    "h": 249.0
+   },
+   "dark:ui_text": {
+    "L": 0.957,
+    "C": 0.026,
+    "h": 172.9
+   },
+   "dark:banner_dim": {
+    "L": 0.703,
+    "C": 0.069,
+    "h": 250.2
+   },
+   "dark:ui_accent": {
+    "L": 0.907,
+    "C": 0.144,
+    "h": 168.0
+   },
+   "dark:ui_border": {
+    "L": 0.297,
+    "C": 0.051,
+    "h": 240.7
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 16.55,
+   "dark:dim_contrast": 7.06,
+   "dark:border_contrast": 1.35
+  },
+  {
+   "name": "vibrant-pacific",
+   "pack": "core",
+   "category": "teal",
+   "light:background": {
+    "L": 0.975,
+    "C": 0.013,
+    "h": 221.4
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.013,
+    "h": 221.4
+   },
+   "light:ui_text": {
+    "L": 0.191,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:banner_dim": {
+    "L": 0.517,
+    "C": 0.057,
+    "h": 220.1
+   },
+   "light:ui_accent": {
+    "L": 0.503,
+    "C": 0.096,
+    "h": 228.2
+   },
+   "light:ui_border": {
+    "L": 0.902,
+    "C": 0.032,
+    "h": 224.3
+   },
+   "light:ui_ok": {
+    "L": 0.71,
+    "C": 0.16,
+    "h": 151.8
+   },
+   "light:ui_warn": {
+    "L": 0.675,
+    "C": 0.132,
+    "h": 84.7
+   },
+   "light:ui_error": {
+    "L": 0.631,
+    "C": 0.146,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 17.2,
+   "light:dim_contrast": 5.1,
+   "light:border_contrast": 1.24,
+   "dark:background": {
+    "L": 0.23,
+    "C": 0.038,
+    "h": 229.4
+   },
+   "dark:status_bar_bg": {
+    "L": 0.217,
+    "C": 0.036,
+    "h": 228.6
+   },
+   "dark:ui_text": {
+    "L": 0.951,
+    "C": 0.032,
+    "h": 224.2
+   },
+   "dark:banner_dim": {
+    "L": 0.739,
+    "C": 0.06,
+    "h": 218.6
+   },
+   "dark:ui_accent": {
+    "L": 0.849,
+    "C": 0.116,
+    "h": 217.1
+   },
+   "dark:ui_border": {
+    "L": 0.327,
+    "C": 0.054,
+    "h": 227.0
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 14.68,
+   "dark:dim_contrast": 7.39,
+   "dark:border_contrast": 1.38
+  },
+  {
+   "name": "vibrant-sunset",
+   "pack": "core",
+   "category": "apricot",
+   "light:background": {
+    "L": 0.966,
+    "C": 0.014,
+    "h": 6.7
+   },
+   "light:status_bar_bg": {
+    "L": 0.93,
+    "C": 0.023,
+    "h": 0.5
+   },
+   "light:ui_text": {
+    "L": 0.305,
+    "C": 0.056,
+    "h": 3.2
+   },
+   "light:banner_dim": {
+    "L": 0.524,
+    "C": 0.066,
+    "h": 0.6
+   },
+   "light:ui_accent": {
+    "L": 0.549,
+    "C": 0.135,
+    "h": 8.0
+   },
+   "light:ui_border": {
+    "L": 0.86,
+    "C": 0.035,
+    "h": 2.1
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 12.4,
+   "light:dim_contrast": 5.06,
+   "light:border_contrast": 1.4,
+   "dark:background": {
+    "L": 0.197,
+    "C": 0.038,
+    "h": 324.7
+   },
+   "dark:status_bar_bg": {
+    "L": 0.189,
+    "C": 0.034,
+    "h": 324.3
+   },
+   "dark:ui_text": {
+    "L": 0.949,
+    "C": 0.027,
+    "h": 43.7
+   },
+   "dark:banner_dim": {
+    "L": 0.686,
+    "C": 0.066,
+    "h": 18.9
+   },
+   "dark:ui_accent": {
+    "L": 0.827,
+    "C": 0.113,
+    "h": 55.9
+   },
+   "dark:ui_border": {
+    "L": 0.318,
+    "C": 0.049,
+    "h": 340.2
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 15.73,
+   "dark:dim_contrast": 6.34,
+   "dark:border_contrast": 1.4
+  },
+  {
+   "name": "vibrant-synthwave",
+   "pack": "core",
+   "category": "rose",
+   "light:background": {
+    "L": 0.972,
+    "C": 0.015,
+    "h": 338.9
+   },
+   "light:status_bar_bg": {
+    "L": 0.942,
+    "C": 0.015,
+    "h": 338.9
+   },
+   "light:ui_text": {
+    "L": 0.191,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:banner_dim": {
+    "L": 0.512,
+    "C": 0.057,
+    "h": 338.5
+   },
+   "light:ui_accent": {
+    "L": 0.541,
+    "C": 0.169,
+    "h": 349.8
+   },
+   "light:ui_border": {
+    "L": 0.87,
+    "C": 0.042,
+    "h": 339.7
+   },
+   "light:ui_ok": {
+    "L": 0.71,
+    "C": 0.16,
+    "h": 151.8
+   },
+   "light:ui_warn": {
+    "L": 0.675,
+    "C": 0.132,
+    "h": 84.7
+   },
+   "light:ui_error": {
+    "L": 0.631,
+    "C": 0.146,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 16.88,
+   "light:dim_contrast": 5.38,
+   "light:border_contrast": 1.38,
+   "dark:background": {
+    "L": 0.195,
+    "C": 0.067,
+    "h": 299.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.184,
+    "C": 0.061,
+    "h": 299.7
+   },
+   "dark:ui_text": {
+    "L": 0.95,
+    "C": 0.032,
+    "h": 309.9
+   },
+   "dark:banner_dim": {
+    "L": 0.712,
+    "C": 0.107,
+    "h": 310.3
+   },
+   "dark:ui_accent": {
+    "L": 0.776,
+    "C": 0.153,
+    "h": 352.2
+   },
+   "dark:ui_border": {
+    "L": 0.312,
+    "C": 0.106,
+    "h": 302.6
+   },
+   "dark:ui_ok": {
+    "L": 0.8,
+    "C": 0.182,
+    "h": 151.7
+   },
+   "dark:ui_warn": {
+    "L": 0.837,
+    "C": 0.164,
+    "h": 84.4
+   },
+   "dark:ui_error": {
+    "L": 0.711,
+    "C": 0.166,
+    "h": 22.2
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 15.9,
+   "dark:dim_contrast": 6.98,
+   "dark:border_contrast": 1.36
+  },
+  {
+   "name": "void-sunset",
+   "pack": "noir",
+   "category": "rose",
+   "light:background": {
+    "L": 0.973,
+    "C": 0.013,
+    "h": 56.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.942,
+    "C": 0.013,
+    "h": 56.2
+   },
+   "light:ui_text": {
+    "L": 0.191,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "light:banner_dim": {
+    "L": 0.505,
+    "C": 0.046,
+    "h": 15.0
+   },
+   "light:ui_accent": {
+    "L": 0.545,
+    "C": 0.136,
+    "h": 39.7
+   },
+   "light:ui_border": {
+    "L": 0.877,
+    "C": 0.026,
+    "h": 48.4
+   },
+   "light:ui_ok": {
+    "L": 0.71,
+    "C": 0.16,
+    "h": 151.8
+   },
+   "light:ui_warn": {
+    "L": 0.675,
+    "C": 0.132,
+    "h": 84.7
+   },
+   "light:ui_error": {
+    "L": 0.631,
+    "C": 0.146,
+    "h": 22.1
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 16.98,
+   "light:dim_contrast": 5.55,
+   "light:border_contrast": 1.34,
+   "dark:background": {
+    "L": 0.206,
+    "C": 0.061,
+    "h": 294.9
+   },
+   "dark:status_bar_bg": {
+    "L": 0.161,
+    "C": 0.049,
+    "h": 293.8
+   },
+   "dark:ui_text": {
+    "L": 0.901,
+    "C": 0.036,
+    "h": 311.4
+   },
+   "dark:banner_dim": {
+    "L": 0.62,
+    "C": 0.1,
+    "h": 302.7
+   },
+   "dark:ui_accent": {
+    "L": 0.729,
+    "C": 0.228,
+    "h": 340.5
+   },
+   "dark:ui_border": {
+    "L": 0.834,
+    "C": 0.121,
+    "h": 65.2
+   },
+   "dark:ui_ok": {
+    "L": 0.876,
+    "C": 0.166,
+    "h": 160.1
+   },
+   "dark:ui_warn": {
+    "L": 0.834,
+    "C": 0.121,
+    "h": 65.2
+   },
+   "dark:ui_error": {
+    "L": 0.729,
+    "C": 0.228,
+    "h": 340.5
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 13.31,
+   "dark:dim_contrast": 4.78,
+   "dark:border_contrast": 10.63
+  },
+  {
+   "name": "warm-ash",
+   "pack": "zen",
+   "category": "neutral",
+   "light:background": {
+    "L": 0.959,
+    "C": 0.01,
+    "h": 87.5
+   },
+   "light:status_bar_bg": {
+    "L": 0.908,
+    "C": 0.02,
+    "h": 87.5
+   },
+   "light:ui_text": {
+    "L": 0.307,
+    "C": 0.013,
+    "h": 81.7
+   },
+   "light:banner_dim": {
+    "L": 0.516,
+    "C": 0.018,
+    "h": 82.8
+   },
+   "light:ui_accent": {
+    "L": 0.502,
+    "C": 0.031,
+    "h": 77.9
+   },
+   "light:ui_border": {
+    "L": 0.864,
+    "C": 0.023,
+    "h": 89.8
+   },
+   "light:ui_ok": {
+    "L": 0.535,
+    "C": 0.098,
+    "h": 149.9
+   },
+   "light:ui_warn": {
+    "L": 0.61,
+    "C": 0.116,
+    "h": 79.4
+   },
+   "light:ui_error": {
+    "L": 0.523,
+    "C": 0.156,
+    "h": 24.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 11.8,
+   "light:dim_contrast": 4.97,
+   "light:border_contrast": 1.34,
+   "dark:background": {
+    "L": 0.227,
+    "C": 0.008,
+    "h": 84.6
+   },
+   "dark:status_bar_bg": {
+    "L": 0.184,
+    "C": 0.005,
+    "h": 67.5
+   },
+   "dark:ui_text": {
+    "L": 0.812,
+    "C": 0.014,
+    "h": 67.6
+   },
+   "dark:banner_dim": {
+    "L": 0.631,
+    "C": 0.009,
+    "h": 56.2
+   },
+   "dark:ui_accent": {
+    "L": 0.65,
+    "C": 0.03,
+    "h": 67.3
+   },
+   "dark:ui_border": {
+    "L": 0.407,
+    "C": 0.017,
+    "h": 67.3
+   },
+   "dark:ui_ok": {
+    "L": 0.648,
+    "C": 0.074,
+    "h": 129.8
+   },
+   "dark:ui_warn": {
+    "L": 0.628,
+    "C": 0.078,
+    "h": 93.9
+   },
+   "dark:ui_error": {
+    "L": 0.581,
+    "C": 0.057,
+    "h": 42.8
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 9.47,
+   "dark:dim_contrast": 4.86,
+   "dark:border_contrast": 1.9
+  },
+  {
+   "name": "warm-parchment",
+   "pack": "zen",
+   "category": "persimmon",
+   "light:background": {
+    "L": 0.957,
+    "C": 0.023,
+    "h": 84.6
+   },
+   "light:status_bar_bg": {
+    "L": 0.922,
+    "C": 0.029,
+    "h": 82.6
+   },
+   "light:ui_text": {
+    "L": 0.294,
+    "C": 0.038,
+    "h": 62.2
+   },
+   "light:banner_dim": {
+    "L": 0.687,
+    "C": 0.039,
+    "h": 78.0
+   },
+   "light:ui_accent": {
+    "L": 0.4,
+    "C": 0.036,
+    "h": 18.8
+   },
+   "light:ui_border": {
+    "L": 0.564,
+    "C": 0.048,
+    "h": 64.3
+   },
+   "light:ui_ok": {
+    "L": 0.476,
+    "C": 0.078,
+    "h": 144.2
+   },
+   "light:ui_warn": {
+    "L": 0.539,
+    "C": 0.077,
+    "h": 76.0
+   },
+   "light:ui_error": {
+    "L": 0.45,
+    "C": 0.11,
+    "h": 22.5
+   },
+   "light:selection_bg": {
+    "L": 0.838,
+    "C": 0.047,
+    "h": 84.5
+   },
+   "light:text_contrast": 12.38,
+   "light:dim_contrast": 2.48,
+   "light:border_contrast": 4.08,
+   "dark:background": {
+    "L": 0.17,
+    "C": 0.015,
+    "h": 87.8
+   },
+   "dark:status_bar_bg": {
+    "L": 0.225,
+    "C": 0.02,
+    "h": 84.3
+   },
+   "dark:ui_text": {
+    "L": 0.941,
+    "C": 0.012,
+    "h": 67.7
+   },
+   "dark:banner_dim": {
+    "L": 0.7,
+    "C": 0.012,
+    "h": 63.3
+   },
+   "dark:ui_accent": {
+    "L": 0.72,
+    "C": 0.06,
+    "h": 18.7
+   },
+   "dark:ui_border": {
+    "L": 0.33,
+    "C": 0.015,
+    "h": 84.6
+   },
+   "dark:ui_ok": {
+    "L": 0.721,
+    "C": 0.078,
+    "h": 144.2
+   },
+   "dark:ui_warn": {
+    "L": 0.76,
+    "C": 0.077,
+    "h": 76.8
+   },
+   "dark:ui_error": {
+    "L": 0.701,
+    "C": 0.11,
+    "h": 22.3
+   },
+   "dark:selection_bg:missing": true,
+   "dark:text_contrast": 16.05,
+   "dark:dim_contrast": 7.15,
+   "dark:border_contrast": 1.57
+  },
+  {
+   "name": "white-flash",
+   "pack": "cyberpunk",
+   "category": "lemon",
+   "light:background": {
+    "L": 0.974,
+    "C": 0.005,
+    "h": 3.3
+   },
+   "light:status_bar_bg": {
+    "L": 0.945,
+    "C": 0.011,
+    "h": 3.5
+   },
+   "light:ui_text": {
+    "L": 0.26,
+    "C": 0.013,
+    "h": 93.9
+   },
+   "light:banner_dim": {
+    "L": 0.5,
+    "C": 0.012,
+    "h": 87.5
+   },
+   "light:ui_accent": {
+    "L": 0.5,
+    "C": 0.104,
+    "h": 110.3
+   },
+   "light:ui_border": {
+    "L": 0.859,
+    "C": 0.014,
+    "h": 0.3
+   },
+   "light:ui_ok": {
+    "L": 0.48,
+    "C": 0.159,
+    "h": 142.5
+   },
+   "light:ui_warn": {
+    "L": 0.52,
+    "C": 0.11,
+    "h": 110.3
+   },
+   "light:ui_error": {
+    "L": 0.48,
+    "C": 0.188,
+    "h": 29.3
+   },
+   "light:selection_bg:missing": true,
+   "light:text_contrast": 14.39,
+   "light:dim_contrast": 5.55,
+   "light:border_contrast": 1.43,
+   "dark:background": {
+    "L": 0.0,
+    "C": 0.0,
+    "h": 0.0
+   },
+   "dark:status_bar_bg": {
+    "L": 0.0,
+    "C": 0.0,
+    "h": 0.0
+   },
+   "dark:ui_text": {
+    "L": 1.0,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:banner_dim": {
+    "L": 0.627,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_accent": {
+    "L": 0.968,
+    "C": 0.211,
+    "h": 109.8
+   },
+   "dark:ui_border": {
+    "L": 1.0,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:ui_ok": {
+    "L": 0.866,
+    "C": 0.295,
+    "h": 142.5
+   },
+   "dark:ui_warn": {
+    "L": 0.968,
+    "C": 0.211,
+    "h": 109.8
+   },
+   "dark:ui_error": {
+    "L": 0.628,
+    "C": 0.258,
+    "h": 29.2
+   },
+   "dark:selection_bg": {
+    "L": 0.321,
+    "C": 0.0,
+    "h": 89.9
+   },
+   "dark:text_contrast": 21.0,
+   "dark:dim_contrast": 5.92,
+   "dark:border_contrast": 21.0
+  }
+ ]
+}
