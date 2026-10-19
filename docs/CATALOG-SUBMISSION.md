@@ -22,7 +22,7 @@ The entry we will open a PR with:
 ```yaml
 name: chroma
 repo: https://github.com/TobiasDraven/chroma-for-hermes
-sha: 4462d0513f9daad83ef2dbdf91a21d19f60b681a
+sha: df327d8c6f3211615b3310467329962e6345dc5a
 description: >-
   Browse, import and apply Hermes skins from the Desktop, including TweakCN
   imports that mint real gateway skins so the CLI and every connected Desktop
@@ -30,7 +30,7 @@ description: >-
 maintainer: TobiasDraven
 tier: community
 category: desktop
-version: "2.8.0"
+version: "2.8.1"
 requires_hermes: ">=0.22.0"
 readme: true
 capabilities:
@@ -82,7 +82,7 @@ Rules that shape those values:
 | 11 | Credentials come through Hermes | the plugin reads no credential store and declares no `requires_env` |
 | 12 | Approvals and unattended runs respected | the plugin spawns no shell and no child process |
 | 13 | Risky behaviour is disclosed | README §"What it touches" — one HTTPS GET to tweakcn.com on import; local-storage keys; skin YAML writes under the Hermes home |
-| 14 | Compatibility metadata is truthful | `version` 2.8.0 in five places; `requires_hermes: ">=0.22.0"` |
+| 14 | Compatibility metadata is truthful | `version` 2.8.1 in five places; `requires_hermes: ">=0.22.0"` |
 | 15 | No skins or forks of bundled plugins | Chroma is a standalone plugin, not a restyled bundled one; the 94 skins were scrubbed of the host's own built-ins in 2.6.0 |
 | 16 | One listing per plugin lineage | checked all 690 catalog entries: no `theme-picker`, no `chroma`. The upstream fork is **not** listed, so we do not compete with a listed entry — the PR will still say "Derived from jdtimothy/hermes-theme-picker (MIT)" |
 | 17 | No unscannable executable payloads | plain source only: `.js`, `.py`, `.yaml`, `.md`. No binaries, no `.pyc`, no archives |
