@@ -427,11 +427,15 @@ test('the grouping lens persists, and defaults to the scene view', async () => {
   const plugin = await loadPlugin(storage, true)
   const { readGroupMode, writeGroupMode, GROUP_MODES } = plugin.__test
 
-  assert.deepEqual(Array.from(GROUP_MODES), ['scene', 'theme'])
+  assert.deepEqual(Array.from(GROUP_MODES), ['scene', 'theme', 'pack'])
   assert.equal(readGroupMode(), 'scene', 'default lens is the scene grouping')
   assert.equal(writeGroupMode('theme'), true)
   assert.equal(storage.get('chroma-group-mode-v1'), 'theme')
   assert.equal(readGroupMode(), 'theme', 'the choice survives a remount')
+  assert.equal(writeGroupMode('pack'), true)
+  assert.equal(storage.get('chroma-group-mode-v1'), 'pack')
+  assert.equal(readGroupMode(), 'pack', 'the pack lens survives a remount')
+  assert.equal(writeGroupMode('theme'), true)
   assert.equal(writeGroupMode('nonsense'), false, 'an unknown lens is refused')
   assert.equal(readGroupMode(), 'theme', 'a refused write leaves the stored value alone')
   storage.set('chroma-group-mode-v1', 'garbage')

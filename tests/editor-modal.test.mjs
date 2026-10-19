@@ -92,7 +92,11 @@ test('the gear is on every card the pane renders, and only the eye cannot see it
   for (const token of ['opacity-0', 'group-hover:opacity-100', 'focus-visible:opacity-100', 'pointer-coarse:opacity-100']) {
     assert.ok(classes.includes(token), 'the gear must carry ' + token)
   }
-  assert.ok(findAll(gear, el => String(at(el, 'className')).includes('codicon-settings-gear')).length, 'the gear paints a codicon')
+  // An SVG, not the host's icon font: a codicon the app does not load renders
+  // as an empty square, and an invisible control is not a control.
+  // The tree keeps the element type on the node, not in props.
+  assert.ok(findAll(gear, el => (el.type || at(el, 'type')) === 'svg').length, 'the gear paints an svg')
+  assert.equal(findAll(gear, el => String(at(el, 'className')).includes('codicon')).length, 0, 'and no icon font')
 
   // Pressing it opens the editor on THIS scene.
   let opened = null

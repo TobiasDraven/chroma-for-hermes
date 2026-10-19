@@ -7,7 +7,24 @@ Notable changes to Chroma are documented here. This project uses
 
 The catalogue is rebuilt. This is the release prepared for the public directory.
 
+### Changed
+
+- **The pack chips and the category manager moved into modals.** Two buttons in
+  the settings row — *Theme packs* and *Categories* — open them, so the gallery
+  keeps its height for skins. The rule is unchanged: core is always on, a pack
+  adds its own skins, nothing is deleted.
+- **A third lens: By theme pack.** The gallery can now group by skin, by colour
+  family, or by the six packs, core first.
+
 ### Fixed
+
+- **The edit and fork buttons were white squares.** They shipped as `codicon-*`
+  spans, and a Desktop that does not load the codicon face painted an empty box —
+  an invisible control whatever its tooltip said. Both are inline SVG now, along
+  with the status-bar lightbulb. No icon font is required anywhere.
+- **The editor was see-through.** Its sheet sat on a token that resolves to
+  nothing in the overlay's context, so the gallery read through the dialog. The
+  sheet is opaque (`--card`), and the two new modals share it.
 
 - **The editor's Text and Surface controls were cosmetic.** Both wrote a key the
   palette engine never read first, so the card preview and the saved override

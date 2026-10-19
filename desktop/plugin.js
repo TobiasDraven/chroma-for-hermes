@@ -94,7 +94,7 @@ const CARD_SIZES = ['sm', 'md', 'lg']
 // Which lens the gallery groups by: the scene grouping that shipped first, or
 // the broad style categories. Plugin-owned and per profile, like the rest.
 const GROUP_MODE_KEY = 'chroma-group-mode-v1'
-const GROUP_MODES = ['scene', 'theme']
+const GROUP_MODES = ['scene', 'theme', 'pack']
 /** The twelve style categories, in display order. A scene lands in exactly one:
  *  see sceneCategory() for the rule that decides which.
  *
@@ -2481,10 +2481,27 @@ function buildCategoryGroups(scenes, userCategories) {
 }
 
 /** One entry point for both lenses, so the caller never branches on the mode. */
+/** Sort by theme pack: the six shelves a skin can belong to, core first. Every
+ *  skin carries exactly one pack, so the shelves partition the catalogue and
+ *  never overlap. An unknown pack still gets a shelf rather than vanishing. */
+function buildPackGroups(scenes) {
+  const order = ['core'].concat(Object.keys(PACK_TITLES))
+  const seen = Array.from(new Set(scenes.map(scene => (scene && scene.pack) || 'core')))
+  const ids = seen.sort((a, b) => {
+    const ia = order.indexOf(a); const ib = order.indexOf(b)
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b)
+  })
+  return ids.map(id => ({
+    id: id,
+    title: id === 'core' ? 'Core' : (PACK_TITLES[id] || (id.charAt(0).toUpperCase() + id.slice(1))),
+    scenes: scenes.filter(scene => ((scene && scene.pack) || 'core') === id)
+  }))
+}
+
 function buildGroups(scenes, groupMode, userCategories) {
-  return groupMode === 'theme'
-    ? buildCategoryGroups(scenes, userCategories)
-    : buildThemeGroups(scenes)
+  if (groupMode === 'theme') return buildCategoryGroups(scenes, userCategories)
+  if (groupMode === 'pack') return buildPackGroups(scenes)
+  return buildThemeGroups(scenes)
 }
 
 // ---------------------------------------------------------------------------
@@ -2889,6 +2906,46 @@ function ThemeCardPreviewPill({ scene, previewing, previewUntil, onPreview, onSt
 // the centre of the card belongs to the preview pill.
 const EDIT_GEAR_CLASS = 'absolute bottom-1 left-1/2 z-10 -translate-x-1/2 rounded border border-white/25 bg-black/45 px-1 text-[0.625rem] leading-4 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100'
 
+// Inline SVGs, not the host's icon font. Two card actions shipped as
+// `codicon-*` spans and rendered as empty white squares on a Desktop that does
+// not load the codicon face — a control you cannot see is a control that does
+// not exist, whatever its title says.
+function IconPencil() {
+  return jsx('svg', {
+    viewBox: '0 0 16 16', width: '10', height: '10', fill: 'none',
+    stroke: 'currentColor', strokeWidth: '1.5', strokeLinecap: 'round',
+    strokeLinejoin: 'round', 'aria-hidden': 'true',
+    children: [
+      jsx('path', { key: 'body', d: 'M10.9 2.3 13.7 5.1 5.7 13.1 2.3 13.7 2.9 10.3z' }),
+      jsx('path', { key: 'tip', d: 'M9.5 3.7 12.3 6.5' })
+    ]
+  })
+}
+
+function IconFork() {
+  return jsx('svg', {
+    viewBox: '0 0 16 16', width: '10', height: '10', fill: 'none',
+    stroke: 'currentColor', strokeWidth: '1.5', strokeLinecap: 'round',
+    strokeLinejoin: 'round', 'aria-hidden': 'true',
+    children: [
+      jsx('rect', { key: 'back', x: '5.5', y: '1.5', width: '9', height: '9', rx: '1.5' }),
+      jsx('rect', { key: 'front', x: '1.5', y: '5.5', width: '9', height: '9', rx: '1.5' })
+    ]
+  })
+}
+
+function IconBulb() {
+  return jsx('svg', {
+    viewBox: '0 0 16 16', width: '11', height: '11', fill: 'none',
+    stroke: 'currentColor', strokeWidth: '1.4', strokeLinecap: 'round',
+    strokeLinejoin: 'round', 'aria-hidden': 'true',
+    children: [
+      jsx('path', { key: 'bulb', d: 'M8 1.8a3.9 3.9 0 0 0-2.2 7.1v1.6h4.4V8.9A3.9 3.9 0 0 0 8 1.8z' }),
+      jsx('path', { key: 'base', d: 'M6.3 13.2h3.4' })
+    ]
+  })
+}
+
 function ThemeCardEditGear({ scene, onEdit }) {
   return jsx('button', {
     type: 'button',
@@ -2896,7 +2953,7 @@ function ThemeCardEditGear({ scene, onEdit }) {
     title: 'Edit this skin: recolour it and save your own override',
     'aria-label': 'Edit ' + (scene.label || scene.name),
     className: EDIT_GEAR_CLASS,
-    children: jsx('span', { className: 'codicon codicon-settings-gear', 'aria-hidden': 'true' })
+    children: IconPencil()
   })
 }
 
@@ -2913,10 +2970,10 @@ function ThemeCardDuplicate({ scene, onDuplicate }) {
   return jsx('button', {
     type: 'button',
     onClick: () => onDuplicate(scene),
-    title: 'Fork this theme into a new skin you own — the source file is untouched',
+    title: 'Fork this skin into a new skin you own — the source file is untouched',
     'aria-label': 'Duplicate ' + (scene.label || scene.name),
     className: EDIT_DUPLICATE_CLASS,
-    children: jsx('span', { className: 'codicon codicon-copy', 'aria-hidden': 'true' })
+    children: IconFork()
   })
 }
 
@@ -3310,7 +3367,11 @@ function ContrastChip({ ratio, target, label }) {
 }
 
 const EDITOR_OVERLAY_CLASS = 'fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4'
-const EDITOR_SHEET_CLASS = 'mt-6 flex max-h-[80vh] w-full max-w-2xl flex-col gap-2 overflow-hidden rounded-lg border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) p-3 shadow-xl'
+// The sheet must be OPAQUE. It shipped on `bg-(--ui-bg-secondary)`, a token that
+// resolves to nothing in the overlay's context, so the editor read through to
+// the gallery behind it. `--card` is part of the app's guaranteed surface.
+const EDITOR_SHEET_STYLE = { backgroundColor: 'var(--card, #1b1f27)' }
+const EDITOR_SHEET_CLASS = 'mt-6 flex max-h-[80vh] w-full max-w-2xl flex-col gap-2 overflow-hidden rounded-lg border border-(--ui-stroke-secondary) p-3 shadow-xl'
 const EDITOR_PREVIEW_CLASS = 'flex h-14 w-full shrink-0 overflow-hidden rounded-[4px]'
 const EDITOR_ROW_CLASS = 'flex items-start gap-2'
 const EDITOR_ACTION_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-2 py-0.5 text-[0.625rem] hover:border-(--ui-stroke-strong) disabled:opacity-50'
@@ -3374,6 +3435,145 @@ function EditorRoleRow({ role, draft, onChange, shells, texts }) {
  *  the overrides) and cannot be cleared by a FAILED one — nothing about the
  *  draft is touched unless the write actually landed. The picker re-seeds the
  *  fields after a Reset by remounting this element under a new key. */
+/** The pack's display name, with the same fallback the pane uses. */
+function packTitleOf(id) {
+  return PACK_TITLES[id] || (id.charAt(0).toUpperCase() + id.slice(1))
+}
+
+/** A modal shell: the same overlay and the same opaque sheet the editor uses, so
+ *  every dialog in the plugin looks and behaves alike. Escape and a click on the
+ *  backdrop close it; the header always carries a real Close button. */
+function ModalShell({ title, subtitle, onClose, children }) {
+  return jsx('div', {
+    className: EDITOR_OVERLAY_CLASS,
+    role: 'dialog',
+    'aria-modal': 'true',
+    'aria-label': title,
+    onClick: event => { if (event && event.target === event.currentTarget && onClose) onClose() },
+    onKeyDown: event => { if (event && event.key === 'Escape' && onClose) onClose() },
+    children: jsxs('div', {
+      className: EDITOR_SHEET_CLASS,
+      style: EDITOR_SHEET_STYLE,
+      children: [
+        jsxs('div', { key: 'head', className: 'flex items-start justify-between gap-2', children: [
+          jsxs('div', { className: 'min-w-0', children: [
+            jsx('div', { className: 'truncate text-sm font-semibold', children: title }),
+            subtitle ? jsx('div', { className: 'text-[0.625rem] text-(--ui-text-tertiary)', children: subtitle }) : null
+          ]}),
+          jsx('button', {
+            key: 'close',
+            type: 'button',
+            onClick: onClose,
+            title: 'Close (Escape)',
+            'aria-label': 'Close ' + title,
+            className: EDITOR_ACTION_CLASS,
+            children: '✕'
+          })
+        ]}),
+        jsx('div', { key: 'body', className: 'min-h-0 overflow-y-auto', children })
+      ]
+    })
+  })
+}
+
+/** Which packs the gallery shows. The chips lived in a strip under the search
+ *  field and ate the pane; the rule did not change, only where it is set. */
+function PackPickerModal({ packIds, packTotals, enabledPacks, hidden, onToggle, onClose }) {
+  return jsx(ModalShell, {
+    title: 'Theme packs',
+    subtitle: 'Core is always on. A pack adds its own skins; nothing is deleted.',
+    onClose,
+    children: jsxs('div', { className: 'flex flex-col gap-1.5', children: [
+      jsx('div', {
+        key: 'core',
+        className: 'flex items-center justify-between gap-2 rounded border border-(--ui-accent) px-2 py-1 text-[0.6875rem]',
+        children: [
+          jsx('span', { className: 'flex items-center gap-1', children: [
+            jsx('span', { children: '✓' }),
+            jsx('span', { className: 'font-medium', children: 'Core' })
+          ]}),
+          jsx('span', { className: 'text-(--ui-text-tertiary)', children: String(packTotals.core || 0) })
+        ]
+      }),
+      ...packIds.map(pack => {
+        const on = enabledPacks.includes(pack)
+        return jsx('button', {
+          key: pack,
+          type: 'button',
+          onClick: () => onToggle(pack),
+          'aria-pressed': on ? 'true' : 'false',
+          title: on ? packTitleOf(pack) + ' is on — click to hide it' : 'Show the ' + packTitleOf(pack) + ' pack',
+          className: 'flex items-center justify-between gap-2 rounded border px-2 py-1 text-left text-[0.6875rem] '
+            + (on ? 'border-(--ui-accent) text-(--ui-accent)' : 'border-(--ui-stroke-secondary) text-(--ui-text-secondary)'),
+          children: [
+            jsx('span', { key: 'name', className: 'flex items-center gap-1', children: [
+              jsx('span', { key: 'mark', children: on ? '✓' : '·' }),
+              jsx('span', { key: 't', className: 'font-medium', children: packTitleOf(pack) })
+            ]}),
+            jsx('span', { key: 'n', className: 'text-(--ui-text-tertiary)', children: String(packTotals[pack] || 0) })
+          ]
+        })
+      }),
+      hidden > 0 ? jsx('div', {
+        key: 'hidden',
+        className: 'pt-1 text-[0.625rem] text-(--ui-text-tertiary)',
+        children: hidden + (hidden === 1 ? ' skin hidden by these packs' : ' skins hidden by these packs')
+      }) : null
+    ]})
+  })
+}
+
+/** The user's own shelves. The twelve measured families are read-only and are
+ *  listed for orientation; the user's shelves can be created and dropped here. */
+function CategoryModal({ categories, busy, name, title, onName, onTitle, onCreate, onDelete, onClose }) {
+  const list = Array.isArray(categories) ? categories : []
+  return jsx(ModalShell, {
+    title: 'Categories',
+    subtitle: 'The twelve colour families are measured and fixed. These are your own shelves.',
+    onClose,
+    children: jsxs('div', { className: 'flex flex-col gap-2', children: [
+      jsx('div', { key: 'builtins', className: 'flex flex-wrap gap-1', children:
+        THEME_CATEGORIES.map(category => jsx('span', {
+          key: category.id,
+          className: 'rounded border border-(--ui-stroke-secondary) px-1.5 py-0.5 text-[0.625rem] text-(--ui-text-tertiary)',
+          children: category.title
+        }))
+      }),
+      list.length
+        ? jsx(CategoryList, { key: 'list', categories: list, busy, onDelete })
+        : jsx('div', { key: 'none', className: 'text-[0.6875rem] text-(--ui-text-tertiary)', children: 'No categories of your own yet.' }),
+      jsxs('div', { key: 'create', className: 'flex flex-wrap items-center gap-1 pt-1', children: [
+        jsx('input', {
+          key: 'id',
+          type: 'text',
+          value: name,
+          placeholder: 'category id',
+          title: 'A slug for the category (lowercase, dashes)',
+          onChange: e => onName(e && e.target ? e.target.value : ''),
+          className: 'h-7 w-28 rounded border border-(--ui-stroke-secondary) px-1 font-mono text-[0.625rem]'
+        }),
+        jsx('input', {
+          key: 'title',
+          type: 'text',
+          value: title,
+          placeholder: 'Display title',
+          title: 'The title shown on the shelf',
+          onChange: e => onTitle(e && e.target ? e.target.value : ''),
+          className: 'h-7 w-32 rounded border border-(--ui-stroke-secondary) px-1 text-[0.625rem]'
+        }),
+        jsx('button', {
+          key: 'go',
+          type: 'button',
+          disabled: Boolean(busy) || !String(name || '').trim(),
+          onClick: onCreate,
+          className: MANAGE_BUTTON_CLASS,
+          children: busy ? 'Working…' : 'Create category'
+        })
+      ]})
+    ]})
+  })
+}
+
 function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose, onSave, onReset, onDuplicate }) {
   const effective = applyOverride(scene, overrides)
   const overridden = !!(overrides && overrides[scene.name])
@@ -3451,6 +3651,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
     onKeyDown: event => { if (event && event.key === 'Escape' && onClose) onClose() },
     children: jsxs('div', {
       className: EDITOR_SHEET_CLASS,
+      style: EDITOR_SHEET_STYLE,
       children: [
         jsxs('div', { key: 'head', className: 'flex items-start justify-between gap-2', children: [
           jsxs('div', { className: 'min-w-0', children: [
@@ -3926,6 +4127,10 @@ function ThemePicker() {
     haptic('tap')
   }
   const [importRef, setImportRef] = useState('')
+  // The pack chips and the category manager moved off the pane: two buttons open
+  // them as modals, so the gallery keeps its height for the skins themselves.
+  const [packsOpen, setPacksOpen] = useState(false)
+  const [categoriesOpen, setCategoriesOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [exporting, setExporting] = useState(false)
   const [importedTick, setImportedTick] = useState(0)
@@ -4789,10 +4994,25 @@ function ThemePicker() {
                   jsxs(SelectContent, {
                     children: [
                       jsx(SelectItem, { value: 'scene', children: 'By skin' }),
-                      jsx(SelectItem, { value: 'theme', children: 'By colour family' })
+                      jsx(SelectItem, { value: 'theme', children: 'By colour family' }),
+                      jsx(SelectItem, { value: 'pack', children: 'By theme pack' })
                     ]
                   })
                 ]
+              }),
+              packsAvailable ? jsx('button', {
+                type: 'button',
+                onClick: () => setPacksOpen(true),
+                title: 'Choose which theme packs the gallery shows',
+                className: MANAGE_BUTTON_CLASS + ' h-7 px-2 text-[0.6875rem]',
+                children: 'Theme packs' + (enabledPacks.length ? ' · ' + enabledPacks.length : '')
+              }) : null,
+              jsx('button', {
+                type: 'button',
+                onClick: () => setCategoriesOpen(true),
+                title: 'Your own category shelves',
+                className: MANAGE_BUTTON_CLASS + ' h-7 px-2 text-[0.6875rem]',
+                children: 'Categories'
               }),
               jsx('div', {
                 title: 'Preview in dark or light mode',
@@ -4870,45 +5090,9 @@ function ThemePicker() {
           // shelves. Create takes a slug id + display title; delete removes
           // the record (skins filed under it fall back to their measured
           // shelf); per-skin assignment rides the card's own selector.
-          jsxs('div', { key: 'categories', className: PACK_SECTION_CLASS, children: [
-            jsxs('div', { key: 'head', className: 'flex flex-wrap items-center justify-between gap-2', children: [
-              jsxs('div', { className: 'flex items-center gap-2', children: [
-                jsx('span', { className: 'text-[0.6875rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)', children: 'Categories' }),
-                jsx(Badge, { variant: 'muted', children: String((categories || []).length) })
-              ]})
-            ]}),
-            jsx(CategoryList, {
-              categories,
-              busy: categoryBusy,
-              onDelete: handleDeleteCategory
-            }),
-            jsxs('div', { key: 'create', className: 'flex flex-wrap items-center gap-1', children: [
-              jsx('input', {
-                type: 'text',
-                value: categoryName,
-                placeholder: 'category id',
-                title: 'A slug for the category (lowercase, dashes)',
-                onChange: e => setCategoryName(e && e.target ? e.target.value : ''),
-                className: 'h-6 w-24 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 font-mono text-[0.625rem]'
-              }),
-              jsx('input', {
-                type: 'text',
-                value: categoryTitle,
-                placeholder: 'Display title',
-                title: 'The title shown on the shelf',
-                onChange: e => setCategoryTitle(e && e.target ? e.target.value : ''),
-                className: 'h-6 w-28 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 text-[0.625rem]'
-              }),
-              jsx('button', {
-                type: 'button',
-                disabled: categoryBusy || !categoryName.trim(),
-                onClick: handleCreateCategory,
-                title: 'Create a new user category',
-                className: MANAGE_BUTTON_CLASS,
-                children: categoryBusy ? 'Working…' : 'Create category'
-              })
-            ]})
-          ]}),
+          // The category manager lives in its own modal now (see the Categories
+          // button in the settings row); the manage panel keeps the pack
+          // scaffolding, which is a different job.
           jsxs('div', { key: 'packs', className: PACK_SECTION_CLASS, children: [
             jsxs('div', { key: 'head', className: 'flex flex-wrap items-center justify-between gap-2', children: [
               jsxs('div', { className: 'flex items-center gap-2', children: [
@@ -5008,35 +5192,6 @@ function ThemePicker() {
           ]})
         ]
       }),
-      packsAvailable ? jsxs('div', {
-        className: 'flex flex-wrap items-center gap-1 border-b border-(--ui-stroke-secondary) px-3 py-2',
-        children: [
-          jsx('span', {
-            className: 'mr-1 text-[0.5625rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)',
-            children: 'Theme packs'
-          }),
-          ...packIds.map(pack => jsx('button', {
-            key: pack,
-            type: 'button',
-            onClick: () => togglePack(pack),
-            'aria-pressed': enabledPacks.includes(pack) ? 'true' : 'false',
-            title: enabledPacks.includes(pack)
-              ? packTitle(pack) + ' is on — click to hide it'
-              : 'Show the ' + packTitle(pack) + ' pack (' + packTotals[pack] + ' skins)',
-            className: 'rounded border px-1.5 py-0.5 text-[0.625rem] '
-              + (enabledPacks.includes(pack)
-                ? 'border-(--ui-accent) text-(--ui-accent)'
-                : 'border-(--ui-stroke-secondary) text-(--ui-text-tertiary)'),
-            children: (enabledPacks.includes(pack) ? '✓ ' : '') + packTitle(pack) + ' ' + packTotals[pack]
-          })),
-          hiddenByPacks
-            ? jsx('span', {
-                className: 'ml-1 text-[0.5625rem] text-(--ui-text-tertiary)',
-                children: hiddenByPacks + (hiddenByPacks === 1 ? ' skin hidden' : ' skins hidden')
-              })
-            : null
-        ]
-      }) : null,
       jsx(ScrollArea, {
         className: 'min-h-0 flex-1 p-2',
         children: jsx(SkinBoundary, {
@@ -5100,6 +5255,33 @@ function ThemePicker() {
                 })
         })
       }),
+      // The two surfaces that used to sit inline: the pack chips and the category
+      // manager. Both are modals now, reached from the settings row.
+      packsOpen
+        ? jsx(PackPickerModal, {
+            key: 'chroma-packs-modal',
+            packIds,
+            packTotals,
+            enabledPacks,
+            hidden: hiddenByPacks,
+            onToggle: togglePack,
+            onClose: () => setPacksOpen(false)
+          })
+        : null,
+      categoriesOpen
+        ? jsx(CategoryModal, {
+            key: 'chroma-categories-modal',
+            categories,
+            busy: categoryBusy,
+            name: categoryName,
+            title: categoryTitle,
+            onName: setCategoryName,
+            onTitle: setCategoryTitle,
+            onCreate: handleCreateCategory,
+            onDelete: handleDeleteCategory,
+            onClose: () => setCategoriesOpen(false)
+          })
+        : null,
       // The editor's dialog, inside the pane's own tree as an overlay rather than
       // through the SDK's Radix Dialog (see the editor section). It is keyed by
       // the epoch so a Reset re-seeds the fields from the shipped palette.
@@ -5172,7 +5354,7 @@ function ThemeChip() {
         onClick: toggleMode,
         title: `Switch to ${mode === 'light' ? 'dark' : 'light'} mode`,
         className: 'flex h-full items-center px-1 text-[0.6875rem] text-(--ui-text-secondary) transition-colors hover:bg-(--chrome-action-hover) hover:text-foreground',
-        children: jsx('span', { className: 'codicon codicon-lightbulb' })
+        children: IconBulb()
       }) : null
     ]
   })
