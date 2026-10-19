@@ -2790,8 +2790,11 @@ function CliBadge({ scene, localScope }) {
     title,
     className: cn(
       'shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide',
-      reachesCli ? 'bg-(--ui-accent)/15 text-(--ui-accent)' : 'text-(--ui-text-tertiary)'
+      reachesCli ? 'text-(--ui-accent)' : 'text-(--ui-text-tertiary)'
     ),
+    // The 15% accent fill is an inline colour: `bg-(--ui-accent)/15` is an
+    // arbitrary-value utility the host's compiled stylesheet never generated.
+    style: reachesCli ? { backgroundColor: 'color-mix(in srgb, var(--ui-accent) 15%, transparent)' } : undefined,
     children: reachesCli ? 'CLI' : gateway ? 'cli off' : 'desktop'
   })
 }
@@ -2887,15 +2890,21 @@ function ThemeCardPalette({ lightStrip, darkStrip, shape }) {
     // the swatches paint nothing. The render harness cannot see layout — see
     // the flex-contract assertion in tests/theme-card.test.mjs.
     className: cn(
-      'flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15',
+      'flex flex-col min-h-0 w-full flex-1 overflow-hidden',
       shape === 'circle' ? 'rounded-full' : 'rounded-[4px]'
     ),
+    // The 1px hairline is a ring the host never generated (`ring-black/15`), so
+    // it is an inline box-shadow the build cannot drop.
+    style: { boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.15)' },
     children: rows.map((row, r) =>
       jsx('div', {
         key: r,
         // The hairline is the only chrome in the block: it separates light from
         // dark, so the pair reads as a pair and not as twelve loose swatches.
-        className: cn('flex flex-row min-h-0 w-full flex-1', r === 1 && 'border-t border-black/25'),
+        className: cn('flex flex-row min-h-0 w-full flex-1', r === 1 && 'border-t'),
+        // `border-black/25` has no rule in the host stylesheet; the colour is
+        // inline, and only the top edge carries a width.
+        style: r === 1 ? { borderColor: 'rgba(0, 0, 0, 0.25)' } : undefined,
         children: row.map((color, i) =>
           jsx('span', { key: i, className: 'min-w-0 flex-1', style: { backgroundColor: color } })
         )
@@ -2916,7 +2925,9 @@ function ThemeCardLabel({ scene, mode, active, localScope, showState, className,
   // card and pushed the name aside to say what the card already shows. Only a
   // single-mode skin carries a word now, because that is the exceptional case.
   const glyph = scene.modeSupport === 'dynamic' ? '' : (scene.modeSupport === 'dark' ? 'Dark' : 'Light')
-  const modeClass = mode === 'dark' ? 'text-(--ui-accent)' : 'text-(--ui-warn)'
+  // `text-(--ui-warn)` is not in the host's compiled stylesheet, so the glyph
+  // colour is inline: the one channel the build cannot drop.
+  const modeStyle = { color: mode === 'dark' ? 'var(--ui-accent)' : 'var(--ui-warn)' }
   const support = scene.modeSupport === 'dynamic' ? mode : scene.modeSupport
   const bit = isActive
     ? jsx(Badge, { variant: 'outline', className: 'shrink-0 px-1 text-[0.5625rem] text-(--ui-accent)', children: 'ACTIVE' })
@@ -2925,7 +2936,7 @@ function ThemeCardLabel({ scene, mode, active, localScope, showState, className,
   // edited card must add one element, and a card without an override must digest
   // byte-for-byte as it did before the editor existed.
   const parts = [
-    glyph ? jsx('span', { className: cn('shrink-0 text-[0.6875rem] leading-none', modeClass), children: glyph }) : null,
+    glyph ? jsx('span', { className: 'shrink-0 text-[0.6875rem] leading-none', style: modeStyle, children: glyph }) : null,
     jsx('span', { className: 'truncate text-[0.6875rem] font-medium', children: scene.label || scene.name.replace(/-/g, ' ') }),
     jsx(CliBadge, { scene, localScope })
   ]
@@ -2933,7 +2944,9 @@ function ThemeCardLabel({ scene, mode, active, localScope, showState, className,
     // Distinct from the future pack badge: this says what you are looking at is
     // not what shipped, which a user has to be able to see (§17.3.1).
     parts.push(jsx('span', {
-      className: 'shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-warn)',
+      className: 'shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide',
+      // `text-(--ui-warn)` has no host rule; the warning colour is inline.
+      style: { color: 'var(--ui-warn)' },
       title: 'Edited: this card paints your override, not the shipped palette',
       children: 'edited'
     }))
@@ -2949,7 +2962,11 @@ function ThemeCardLabel({ scene, mode, active, localScope, showState, className,
 // Centred inside the card, not anchored to its bottom edge: a circle's bottom edge
 // lies OUTSIDE the circle, so a bottom-anchored pill would poke out of the shape.
 // Centring also keeps it clear of the label row.
-const PREVIEW_PILL_CLASS = 'absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity'
+const PREVIEW_PILL_CLASS = 'absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity'
+// Centring (`m-auto`), the intrinsic height (`h-fit`) and the width cap
+// (`max-w-[calc(...)]`) are arbitrary values the host never generated; they are
+// inline so the build cannot drop them.
+const PREVIEW_PILL_STYLE = { margin: 'auto', height: 'fit-content', maxWidth: 'calc(100% - 0.5rem)' }
 const PREVIEW_PILL_LIVE = 'border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100'
 const PREVIEW_PILL_IDLE = 'border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100'
 
@@ -2959,6 +2976,7 @@ function ThemeCardPreviewPill({ scene, previewing, previewUntil, onPreview, onSt
     onClick: () => { if (previewing) onStopPreview(); else onPreview(scene) },
     title: previewing ? 'Stop the preview and go back to your theme' : 'Preview this theme for 10 seconds, then revert',
     className: cn(PREVIEW_PILL_CLASS, previewing ? PREVIEW_PILL_LIVE : PREVIEW_PILL_IDLE),
+    style: PREVIEW_PILL_STYLE,
     children: previewing
       ? jsx(PreviewCountdown, { until: previewUntil })
       : 'Preview 10s'
@@ -2989,7 +3007,7 @@ const CARD_ACTION_STYLE = {
   backdropFilter: 'blur(2px)',
   opacity: 0.9
 }
-const EDIT_GEAR_CLASS = 'rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm'
+const EDIT_GEAR_CLASS = 'rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm'
 
 // A starred pill reads as ON: the paint inverts. Same channel as the gear's own
 // paint (inline, so no host stylesheet can discard it) with the two colours
@@ -3001,7 +3019,7 @@ const CARD_ACTION_STYLE_ON = {
   boxShadow: '0 1px 2px rgba(0, 0, 0, 0.35)',
   opacity: 1
 }
-const FAVORITE_CLASS = 'rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm'
+const FAVORITE_CLASS = 'rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm'
 
 /** The star. A Unicode glyph, not an icon font: the codicon face and the inline
  *  SVG both reached the field as an empty control, and a text star cannot. */
@@ -3042,7 +3060,7 @@ function ThemeCardEditGear({ scene, onEdit }) {
 // shipped file (§17.1). It sits at the bottom-RIGHT so it never collides with
 // the centred gear, and it carries the same keyboard/touch reachability rule
 // (`focus-visible:` + `pointer-coarse:`) the gear carries.
-const EDIT_DUPLICATE_CLASS = 'rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm'
+const EDIT_DUPLICATE_CLASS = 'rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm'
 
 function ThemeCardDuplicate({ scene, onDuplicate }) {
   return jsx('button', {
@@ -3060,7 +3078,7 @@ function ThemeCardDuplicate({ scene, onDuplicate }) {
 // does. Only an owned skin has them, and only one mode shows at a time: renaming,
 // confirming a delete, or the three actions themselves.
 const MANAGE_ROW_CLASS = 'mt-1 flex items-center gap-1 text-[0.625rem]'
-const MANAGE_BUTTON_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100'
+const MANAGE_BUTTON_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2'
 
 function ThemeCardRename({ scene, draft, setDraft, managing, onRename, onCancel }) {
   return [
@@ -3094,7 +3112,9 @@ function ThemeCardDeleteConfirm({ scene, managing, onDelete, onCancel }) {
       type: 'button',
       disabled: managing,
       onClick: () => { onDelete(scene.name); onCancel() },
-      className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 text-(--ui-error) hover:border-(--ui-stroke-strong)',
+      className: 'shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5',
+      // The destructive colour is inline: `text-(--ui-error)` has no host rule.
+      style: { color: 'var(--ui-error)' },
       children: managing ? 'Deleting…' : 'Yes'
     }),
     jsx('button', {
@@ -3439,8 +3459,11 @@ function ColorField({ id, value, label, onChange }) {
           'aria-label': label
         }),
         jsx('span', {
-          className: cn('pointer-events-none h-5 w-5 rounded border', invalid ? 'border-(--ui-error)' : 'border-(--ui-stroke-secondary)'),
-          style: hex ? { backgroundColor: hex } : undefined
+          className: 'pointer-events-none h-5 w-5 rounded border border-(--ui-stroke-secondary)',
+          // The error border colour is inline: `border-(--ui-error)` has no host rule.
+          style: invalid
+            ? { borderColor: 'var(--ui-error)', backgroundColor: hex }
+            : (hex ? { backgroundColor: hex } : undefined)
         })
       ]
     }),
@@ -3456,10 +3479,9 @@ function ColorField({ id, value, label, onChange }) {
       onChange: event => change(event && event.target ? event.target.value : ''),
       onBlur: commit,
       onKeyDown: event => { if (event && event.key === 'Enter') commit() },
-      className: cn(
-        'min-w-0 w-full flex-1 rounded border bg-(--ui-bg-secondary) px-1 py-0.5 font-mono text-[0.625rem]',
-        invalid ? 'border-(--ui-error)' : 'border-(--ui-stroke-secondary)'
-      )
+      className: 'min-w-0 w-full flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 py-0.5 font-mono text-[0.625rem]',
+      // The error border colour is inline, not a utility the host must generate.
+      style: invalid ? { borderColor: 'var(--ui-error)' } : undefined
     })
   ]})
 }
@@ -3475,7 +3497,13 @@ function ContrastChip({ ratio, target, label }) {
     : label + ': not a colour that can be measured'
   return jsx('span', {
     title,
-    className: cn('shrink-0 rounded px-1 font-mono text-[0.5625rem] leading-4', below ? 'bg-(--ui-warn)/15 text-(--ui-warn)' : 'text-(--ui-text-tertiary)'),
+    className: cn('shrink-0 rounded px-1 font-mono text-[0.5625rem] leading-4', below ? null : 'text-(--ui-text-tertiary)'),
+    // Warning colour and its 15% fill are inline: neither utility is generated
+    // by the host's compiled stylesheet.
+    style: below ? {
+      color: 'var(--ui-warn)',
+      backgroundColor: 'color-mix(in srgb, var(--ui-warn) 15%, transparent)'
+    } : undefined,
     children: text
   })
 }
@@ -3509,10 +3537,15 @@ function sheetSurface(scene, mode) {
 // used those literals — so the cap silently did not apply and the dialog ran off the
 // viewport, unscrollable. scripts/check-host-classes.py reports the class of defect.
 const EDITOR_SHEET_CLASS = 'mt-4 flex max-w-none flex-col gap-3 rounded-xl border border-(--ui-stroke-secondary) p-4 shadow-2xl'
-const EDITOR_PREVIEW_CLASS = 'flex h-16 w-full shrink-0 overflow-hidden rounded-lg ring-1 ring-black/20'
-const EDITOR_ROW_CLASS = 'flex items-center gap-2 rounded px-1 py-[3px] transition-colors hover:bg-black/5'
-const EDITOR_ACTION_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-2 py-0.5 text-[0.625rem] hover:border-(--ui-stroke-strong) disabled:opacity-50'
-const EDITOR_SAVE_CLASS = 'shrink-0 rounded border border-(--ui-accent) bg-(--ui-accent)/15 px-2 py-0.5 text-[0.625rem] font-medium text-(--ui-accent) hover:border-(--ui-stroke-strong) disabled:opacity-50'
+const EDITOR_PREVIEW_CLASS = 'flex w-full shrink-0 overflow-hidden rounded-lg'
+const EDITOR_ROW_CLASS = 'flex items-center gap-2 rounded px-1 py-[3px] transition-colors'
+const EDITOR_ACTION_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-2 py-0.5 text-[0.625rem] disabled:opacity-50'
+const EDITOR_SAVE_CLASS = 'shrink-0 rounded border border-(--ui-accent) px-2 py-0.5 text-[0.625rem] font-medium text-(--ui-accent) disabled:opacity-50'
+/** The save button's 15% accent fill, and the preview's fixed height and 1px
+ *  hairline: arbitrary-value utilities (`bg-(--ui-accent)/15`, `h-16`,
+ *  `ring-black/20`) the host's stylesheet never generated, so they are inline. */
+const EDITOR_SAVE_STYLE = { backgroundColor: 'color-mix(in srgb, var(--ui-accent) 15%, transparent)' }
+const EDITOR_PREVIEW_STYLE = { height: '4rem', boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.2)' }
 // The fork affordance of §18.3 (`Update "<name>"` / separator / `Save as new`) is
 // OMITTED from E1, not rendered disabled: it needs POST /skins/duplicate, which
 // is E2 and is not mounted, and a disabled control for a route that cannot
@@ -3984,6 +4017,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
         jsx('div', {
           key: 'preview',
           className: EDITOR_PREVIEW_CLASS,
+          style: EDITOR_PREVIEW_STYLE,
           children: jsx(ThemeCardPalette, { lightStrip: paletteStrip(light), darkStrip: paletteStrip(dark), shape: 'square' })
         }),
         jsx('div', {
@@ -4059,7 +4093,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
               owned
                 ? 'Your own skin file. '
                 : (overridden ? 'An override exists for this skin. ' : 'No override yet. '),
-              dirty ? jsx('span', { className: 'text-(--ui-warn)', children: 'Unsaved changes.' }) : null
+              dirty ? jsx('span', { style: { color: 'var(--ui-warn)' }, children: 'Unsaved changes.' }) : null
             ]}),
             jsxs('div', { key: 'buttons', className: 'flex shrink-0 items-center gap-1', children: [
               forking
@@ -4074,8 +4108,10 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
                       title: forkError || 'The new skin\u2019s name (a slug)',
                       onChange: e => { setForkName(e && e.target ? e.target.value : ''); setForkError('') },
                       onKeyDown: e => { if (e && e.key === 'Enter') submitFork(); if (e && e.key === 'Escape') cancelFork() },
-                      className: 'min-w-0 w-32 rounded border px-1 py-0.5 font-mono text-[0.625rem] '
-                        + (forkError ? 'border-(--ui-error)' : 'border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)')
+                      className: 'min-w-0 w-32 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 font-mono text-[0.625rem]'
+                        + (forkError ? '' : ' bg-(--ui-bg-secondary)'),
+                      // The error border colour is inline, not a host utility.
+                      style: forkError ? { borderColor: 'var(--ui-error)' } : undefined
                     }),
                     jsx('button', {
                       key: 'forkgo',
@@ -4084,6 +4120,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
                       onClick: submitFork,
                       title: 'Write these colours as a brand-new skin you own',
                       className: EDITOR_SAVE_CLASS,
+                      style: EDITOR_SAVE_STYLE,
                       children: busy === 'fork' ? 'Saving…' : 'Save copy'
                     }),
                     jsx('button', {
@@ -4114,6 +4151,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
                 onClick: () => { if (onSave) onSave(scene.name, overridePayload(draft, modes)) },
                 title: owned ? OWNED_SAVE_REASON : 'Store your edit as an override of the shipped palette',
                 className: EDITOR_SAVE_CLASS,
+                style: EDITOR_SAVE_STYLE,
                 children: busy === 'save' ? 'Saving…' : 'Save'
               }),
               (!forking && typeof onDuplicate === 'function')
@@ -4150,7 +4188,7 @@ function FavoritesRail({ favorites, skins, mode, onApply, onRemove }) {
     const colors = (mode === 'dark' ? scene.darkColors : scene.lightColors) || scene.colors || {}
     rows.push(jsxs('div', {
       key: name,
-      className: 'flex items-center gap-1 rounded hover:bg-black/5',
+      className: 'flex items-center gap-1 rounded',
       children: [
         jsx('button', {
           type: 'button',
@@ -4170,7 +4208,7 @@ function FavoritesRail({ favorites, skins, mode, onApply, onRemove }) {
           onClick: () => onRemove(scene),
           title: 'Remove from favourites',
           'aria-label': 'Remove ' + (scene.label || name) + ' from favourites',
-          className: 'shrink-0 rounded px-1 text-[0.8125rem] leading-5 text-(--ui-text-tertiary) hover:text-(--ui-error)',
+          className: 'shrink-0 rounded px-1 text-[0.8125rem] leading-5 text-(--ui-text-tertiary)',
           children: '\u00d7'
         })
       ]
@@ -4265,7 +4303,7 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
       cardShapeClasses(shape),
       isActive
         ? 'border-(--ui-accent) bg-(--ui-bg-tertiary)'
-        : 'border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)'
+        : 'border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)'
     ),
     children: boxChildren
   })
@@ -4319,7 +4357,9 @@ function PackRow({ pack, busy, onExport, onDelete }) {
       ? jsx('span', {
           key: 'missing',
           title: 'The pack record names skins whose files are gone: ' + missing.join(', '),
-          className: 'shrink-0 rounded bg-(--ui-warn)/15 px-1 text-[0.5625rem] text-(--ui-warn)',
+          className: 'shrink-0 rounded px-1 text-[0.5625rem]',
+          // Warning colour and its 15% fill are inline, not host utilities.
+          style: { color: 'var(--ui-warn)', backgroundColor: 'color-mix(in srgb, var(--ui-warn) 15%, transparent)' },
           children: missing.length + ' missing'
         })
       : null,
@@ -4491,7 +4531,7 @@ class SkinBoundary extends Component {
           jsx('button', {
             type: 'button',
             onClick: this.reset,
-            className: 'rounded border border-(--ui-stroke-secondary) px-2 py-0.5 text-[0.6875rem] hover:border-(--ui-stroke-strong)',
+            className: 'rounded border border-(--ui-stroke-secondary) px-2 py-0.5 text-[0.6875rem]',
             children: 'Try again'
           })
         ]
@@ -5430,6 +5470,7 @@ function ThemePicker() {
                     disabled: packBusy,
                     onClick: confirmPackImport,
                     className: EDITOR_SAVE_CLASS,
+                    style: EDITOR_SAVE_STYLE,
                     children: packBusy ? 'Importing…' : 'Confirm import'
                   })
                 : null,
@@ -5447,8 +5488,8 @@ function ThemePicker() {
           ]})
         : null,
       packConfirm
-        ? jsxs('div', { key: 'confirm', className: 'flex flex-col gap-1 rounded border border-(--ui-error) p-2', children: [
-            jsx('div', { className: 'text-[0.625rem] text-(--ui-error)', children: packDeleteNotice(packConfirm.pack, packConfirm.withSkins).title }),
+        ? jsxs('div', { key: 'confirm', className: 'flex flex-col gap-1 rounded border p-2', style: { borderColor: 'var(--ui-error)' }, children: [
+            jsx('div', { className: 'text-[0.625rem]', style: { color: 'var(--ui-error)' }, children: packDeleteNotice(packConfirm.pack, packConfirm.withSkins).title }),
             jsx('div', { className: 'text-[0.5625rem] text-(--ui-text-tertiary)', children: packDeleteNotice(packConfirm.pack, packConfirm.withSkins).message }),
             jsxs('div', { className: 'flex flex-wrap items-center gap-2', children: [
               jsx('label', { className: 'flex items-center gap-1 text-[0.5625rem] text-(--ui-text-secondary)', children: [
@@ -5463,7 +5504,8 @@ function ThemePicker() {
                 type: 'button',
                 disabled: packBusy,
                 onClick: confirmDeletePack,
-                className: 'shrink-0 rounded border border-(--ui-error) px-1 py-0.5 text-[0.625rem] text-(--ui-error)',
+                className: 'shrink-0 rounded border px-1 py-0.5 text-[0.625rem]',
+                style: { borderColor: 'var(--ui-error)', color: 'var(--ui-error)' },
                 children: packBusy ? 'Deleting…' : packDeleteNotice(packConfirm.pack, packConfirm.withSkins).confirm
               }),
               jsx('button', { type: 'button', onClick: cancelDeletePack, className: MANAGE_BUTTON_CLASS, children: 'Cancel' })
@@ -5507,7 +5549,7 @@ function ThemePicker() {
                     onClick: exportAllSkins,
                     disabled: exporting || Object.keys(owned).length === 0,
                     title: 'Save every skin Chroma owns as one hand-editable bundle',
-                    className: 'rounded border border-(--ui-stroke-secondary) px-1.5 py-0.5 text-[0.625rem] hover:border-(--ui-stroke-strong) disabled:opacity-50',
+                    className: 'rounded border border-(--ui-stroke-secondary) px-1.5 py-0.5 text-[0.625rem] disabled:opacity-50',
                     children: exporting ? 'Exporting…' : 'Export all'
                   }),
                   jsx(Badge, { variant: 'muted', children: `${visibleSkins.length}` })
@@ -5531,7 +5573,9 @@ function ThemePicker() {
                 onValueChange: changeGroupMode,
                 children: [
                   jsx(SelectTrigger, {
-                    className: 'h-7 w-[7.5rem] text-[0.6875rem]',
+                    className: 'h-7 text-[0.6875rem]',
+                    // `w-[7.5rem]` is an arbitrary value the host never generated.
+                    style: { width: '7.5rem' },
                     title: 'Group the gallery by skin, or by colour family',
                     children: jsx(SelectValue, {})
                   }),
@@ -5616,7 +5660,7 @@ function ThemePicker() {
               }) }),
               importMode === 'url'
                 ? jsx(Input, { placeholder: 'TweakCN preset name or URL (e.g. catppuccin)', value: importRef, onChange: e => setImportRef(e && e.target ? e.target.value : '') })
-                : jsx('textarea', { className: 'flex-1 rounded-md border border-(--chrome-stroke) bg-(--chrome-surface) px-2 py-1 text-[0.75rem] font-mono text-(--chrome-text)', placeholder: 'Paste shadcn CSS, a Windows Terminal scheme, a Base16/24 scheme, or a VS Code color theme', value: importRef, rows: 3, onChange: e => setImportRef(e && e.target ? e.target.value : '') }),
+                : jsx('textarea', { className: 'flex-1 rounded-md border px-2 py-1 text-[0.75rem] font-mono', style: { borderColor: 'var(--chrome-stroke)', backgroundColor: 'var(--chrome-surface)', color: 'var(--chrome-text)' }, placeholder: 'Paste shadcn CSS, a Windows Terminal scheme, a Base16/24 scheme, or a VS Code color theme', value: importRef, rows: 3, onChange: e => setImportRef(e && e.target ? e.target.value : '') }),
               jsx(Button, { variant: 'secondary', disabled: busy || !importRef.trim(), onClick: importTweakcn, children: busy ? 'Importing…' : 'Import' })
             ]
           }),
@@ -5815,7 +5859,7 @@ function ThemeChip() {
             className: 'h-2 w-2 shrink-0 rounded-full',
             style: { backgroundColor: activeColors?.ui_accent || activeColors?.banner_accent || 'var(--ui-accent)' }
           }),
-          jsx('span', { className: 'max-w-24 truncate', children: activeLabel })
+          jsx('span', { className: 'truncate', style: { maxWidth: '6rem' }, children: activeLabel })
         ]
       }),
       supportsBoth ? jsx('button', {

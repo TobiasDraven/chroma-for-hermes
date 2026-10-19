@@ -181,12 +181,12 @@ test('a role below its advisory target is marked, never refused, and an unreadab
   const t = context.testHelpers
   const below = t.ContrastChip({ ratio: 2, target: 9, label: 'Text against the shell (light)' })
   assert.equal(at(below, 'children'), '2.00:1')
-  assert.ok(String(at(below, 'className')).includes('text-(--ui-warn)'), 'below target is marked')
+  assert.equal((at(below, 'style') || {}).color, 'var(--ui-warn)', 'below target is marked')
   assert.match(at(below, 'title'), /below the 9:1 advisory target/)
   assert.equal(below.type, 'span', 'marked, never refused: it is not a control')
   const meets = t.ContrastChip({ ratio: 12.5, target: 9, label: 'Text against the shell (dark)' })
   assert.equal(at(meets, 'children'), '12.50:1')
-  assert.ok(!String(at(meets, 'className')).includes('text-(--ui-warn)'), 'at or above target is not marked')
+  assert.ok(!((at(meets, 'style') || {}).color), 'at or above target is not marked')
   assert.match(at(meets, 'title'), /meets the 9:1 advisory target/)
   const dash = t.ContrastChip({ ratio: null, target: 9, label: 'Text against the shell (light)' })
   assert.equal(at(dash, 'children'), '—', 'never a fabricated ratio')
@@ -290,7 +290,7 @@ test('an override reaches the fields, offers Reset, and a read-only card says wh
   assert.ok(values.includes(RICH_SCENE.lightColors.background), 'a role the override omits keeps the authored value')
 
   // The preview paints the EFFECTIVE palette, not the authored one.
-  const preview = findAll(modal, el => String(at(el, 'className')).includes('h-16'))[0]
+  const preview = findAll(modal, el => at(el, 'style') && at(el, 'style').height === '4rem')[0]
   const rows = childrenOf(childrenOf(preview)[0])
   const lightRow = rows[0]
   const darkRow = rows[1]

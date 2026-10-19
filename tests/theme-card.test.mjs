@@ -74,7 +74,7 @@ test('the palette is a 2 x 6 matrix: a flex column of two flex rows of six swatc
   for (const overrides of [{}, { shape: 'rectangle' }, { shape: 'circle' }]) {
     const tree = render(overrides)
     let palette = null
-    walk(tree, (el) => { if (palette === null && String(el.className || '').includes('ring-black/15')) palette = el })
+    walk(tree, (el) => { if (palette === null && el.style && el.style.boxShadow === '0 0 0 1px rgba(0, 0, 0, 0.15)') palette = el })
     assert.ok(palette, `no palette container rendered for ${JSON.stringify(overrides)}`)
     // Match whole class TOKENS. `'flex-col'.includes('flex')` is true, so a
     // substring check would pass a build that has lost display:flex entirely.

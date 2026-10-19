@@ -6,7 +6,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -36,6 +36,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -50,12 +51,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -115,8 +120,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -180,8 +188,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -198,7 +211,7 @@
          "children": {
           "aria-label": "Add Ocean Skin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -220,7 +233,7 @@
          "children": [
           {
            "aria-label": "Edit Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -236,7 +249,7 @@
           },
           {
            "aria-label": "Duplicate Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -362,7 +375,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -371,7 +384,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -379,7 +392,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -393,7 +406,7 @@
    ]
   },
   "square unowned dark": {
-   "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+   "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
    "style": {
     "aspectRatio": "1"
    },
@@ -423,6 +436,7 @@
           },
           {
            "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+           "style": null,
            "title": "Desktop only — the CLI cannot use this theme",
            "type": "span",
            "children": "desktop"
@@ -437,12 +451,16 @@
        ]
       },
       {
-       "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+       "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+       "style": {
+        "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+       },
        "type": "div",
        "children": [
         {
          "className": "flex flex-row min-h-0 w-full flex-1",
          "key": 0,
+         "style": null,
          "type": "div",
          "children": [
           {
@@ -502,8 +520,11 @@
          ]
         },
         {
-         "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+         "className": "flex flex-row min-h-0 w-full flex-1 border-t",
          "key": 1,
+         "style": {
+          "borderColor": "rgba(0, 0, 0, 0.25)"
+         },
          "type": "div",
          "children": [
           {
@@ -567,8 +588,13 @@
      ]
     },
     {
-     "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+     "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
      "onClick": "[fn]",
+     "style": {
+      "height": "fit-content",
+      "margin": "auto",
+      "maxWidth": "calc(100% - 0.5rem)"
+     },
      "title": "Preview this theme for 10 seconds, then revert",
      "type": "button",
      "htmlType": "button",
@@ -585,7 +611,7 @@
        "children": {
         "aria-label": "Add Ocean Skin favourites",
         "aria-pressed": "false",
-        "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+        "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
         "onClick": "[fn]",
         "style": {
          "backdropFilter": "blur(2px)",
@@ -607,7 +633,7 @@
        "children": [
         {
          "aria-label": "Edit Ocean Skin",
-         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
          "onClick": "[fn]",
          "style": {
           "backdropFilter": "blur(2px)",
@@ -623,7 +649,7 @@
         },
         {
          "aria-label": "Duplicate Ocean Skin",
-         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
          "onClick": "[fn]",
          "style": {
           "backdropFilter": "blur(2px)",
@@ -648,7 +674,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -678,6 +704,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -692,12 +719,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -757,8 +788,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -822,8 +856,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -840,7 +879,7 @@
          "children": {
           "aria-label": "Add Ocean Skin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -862,7 +901,7 @@
          "children": [
           {
            "aria-label": "Edit Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -878,7 +917,7 @@
           },
           {
            "aria-label": "Duplicate Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -1004,7 +1043,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -1013,7 +1052,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -1021,7 +1060,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -1039,7 +1078,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "16 / 10"
      },
@@ -1069,6 +1108,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -1083,12 +1123,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -1148,8 +1192,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -1213,8 +1260,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -1231,7 +1283,7 @@
          "children": {
           "aria-label": "Add Ocean Skin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -1253,7 +1305,7 @@
          "children": [
           {
            "aria-label": "Edit Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -1269,7 +1321,7 @@
           },
           {
            "aria-label": "Duplicate Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -1395,7 +1447,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -1404,7 +1456,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -1412,7 +1464,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -1448,6 +1500,7 @@
          },
          {
           "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+          "style": null,
           "title": "Desktop only — the CLI cannot use this theme",
           "type": "span",
           "children": "desktop"
@@ -1456,7 +1509,7 @@
        }
       },
       {
-       "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
        "style": {
         "aspectRatio": "1"
        },
@@ -1471,12 +1524,16 @@
          "htmlType": "button",
          "children": [
           {
-           "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+           "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-full",
+           "style": {
+            "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+           },
            "type": "div",
            "children": [
             {
              "className": "flex flex-row min-h-0 w-full flex-1",
              "key": 0,
+             "style": null,
              "type": "div",
              "children": [
               {
@@ -1536,8 +1593,11 @@
              ]
             },
             {
-             "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+             "className": "flex flex-row min-h-0 w-full flex-1 border-t",
              "key": 1,
+             "style": {
+              "borderColor": "rgba(0, 0, 0, 0.25)"
+             },
              "type": "div",
              "children": [
               {
@@ -1601,8 +1661,13 @@
          ]
         },
         {
-         "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+         "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
          "onClick": "[fn]",
+         "style": {
+          "height": "fit-content",
+          "margin": "auto",
+          "maxWidth": "calc(100% - 0.5rem)"
+         },
          "title": "Preview this theme for 10 seconds, then revert",
          "type": "button",
          "htmlType": "button",
@@ -1619,7 +1684,7 @@
            "children": {
             "aria-label": "Add Ocean Skin favourites",
             "aria-pressed": "false",
-            "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+            "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
             "onClick": "[fn]",
             "style": {
              "backdropFilter": "blur(2px)",
@@ -1641,7 +1706,7 @@
            "children": [
             {
              "aria-label": "Edit Ocean Skin",
-             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
              "onClick": "[fn]",
              "style": {
               "backdropFilter": "blur(2px)",
@@ -1657,7 +1722,7 @@
             },
             {
              "aria-label": "Duplicate Ocean Skin",
-             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
              "onClick": "[fn]",
              "style": {
               "backdropFilter": "blur(2px)",
@@ -1785,7 +1850,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -1794,7 +1859,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -1802,7 +1867,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -1834,6 +1899,7 @@
        },
        {
         "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+        "style": null,
         "title": "Desktop only — the CLI cannot use this theme",
         "type": "span",
         "children": "desktop"
@@ -1842,7 +1908,7 @@
      }
     },
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -1857,12 +1923,16 @@
        "htmlType": "button",
        "children": [
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-full",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -1922,8 +1992,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -1987,8 +2060,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -2005,7 +2083,7 @@
          "children": {
           "aria-label": "Add Ocean Skin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -2027,7 +2105,7 @@
          "children": [
           {
            "aria-label": "Edit Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -2043,7 +2121,7 @@
           },
           {
            "aria-label": "Duplicate Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -2088,6 +2166,7 @@
          },
          {
           "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+          "style": null,
           "title": "Desktop only — the CLI cannot use this theme",
           "type": "span",
           "children": "desktop"
@@ -2096,7 +2175,7 @@
        }
       },
       {
-       "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
        "style": {
         "aspectRatio": "1"
        },
@@ -2111,12 +2190,16 @@
          "htmlType": "button",
          "children": [
           {
-           "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+           "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-full",
+           "style": {
+            "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+           },
            "type": "div",
            "children": [
             {
              "className": "flex flex-row min-h-0 w-full flex-1",
              "key": 0,
+             "style": null,
              "type": "div",
              "children": [
               {
@@ -2176,8 +2259,11 @@
              ]
             },
             {
-             "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+             "className": "flex flex-row min-h-0 w-full flex-1 border-t",
              "key": 1,
+             "style": {
+              "borderColor": "rgba(0, 0, 0, 0.25)"
+             },
              "type": "div",
              "children": [
               {
@@ -2241,8 +2327,13 @@
          ]
         },
         {
-         "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
+         "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
          "onClick": "[fn]",
+         "style": {
+          "height": "fit-content",
+          "margin": "auto",
+          "maxWidth": "calc(100% - 0.5rem)"
+         },
          "title": "Stop the preview and go back to your theme",
          "type": "button",
          "htmlType": "button",
@@ -2262,7 +2353,7 @@
            "children": {
             "aria-label": "Add Ocean Skin favourites",
             "aria-pressed": "false",
-            "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+            "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
             "onClick": "[fn]",
             "style": {
              "backdropFilter": "blur(2px)",
@@ -2284,7 +2375,7 @@
            "children": [
             {
              "aria-label": "Edit Ocean Skin",
-             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
              "onClick": "[fn]",
              "style": {
               "backdropFilter": "blur(2px)",
@@ -2300,7 +2391,7 @@
             },
             {
              "aria-label": "Duplicate Ocean Skin",
-             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
              "onClick": "[fn]",
              "style": {
               "backdropFilter": "blur(2px)",
@@ -2428,7 +2519,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -2437,7 +2528,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -2445,7 +2536,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -2463,7 +2554,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -2493,6 +2584,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -2507,12 +2599,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -2572,8 +2668,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -2637,8 +2736,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Stop the preview and go back to your theme",
        "type": "button",
        "htmlType": "button",
@@ -2658,7 +2762,7 @@
          "children": {
           "aria-label": "Add Ocean Skin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -2680,7 +2784,7 @@
          "children": [
           {
            "aria-label": "Edit Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -2696,7 +2800,7 @@
           },
           {
            "aria-label": "Duplicate Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -2822,7 +2926,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -2831,7 +2935,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -2839,7 +2943,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -2887,6 +2991,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -2897,12 +3002,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -2962,8 +3071,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -3027,8 +3139,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -3045,7 +3162,7 @@
          "children": {
           "aria-label": "Add Ocean Skin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -3067,7 +3184,7 @@
          "children": [
           {
            "aria-label": "Edit Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -3083,7 +3200,7 @@
           },
           {
            "aria-label": "Duplicate Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -3209,7 +3326,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -3218,7 +3335,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -3226,7 +3343,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -3244,7 +3361,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -3274,6 +3391,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -3288,12 +3406,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -3353,8 +3475,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -3418,8 +3543,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -3436,7 +3566,7 @@
          "children": {
           "aria-label": "Add Ocean Skin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -3458,7 +3588,7 @@
          "children": [
           {
            "aria-label": "Edit Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -3474,7 +3604,7 @@
           },
           {
            "aria-label": "Duplicate Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -3600,7 +3730,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -3609,7 +3739,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -3617,7 +3747,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -3665,6 +3795,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -3675,12 +3806,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -3740,8 +3875,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -3805,8 +3943,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -3823,7 +3966,7 @@
          "children": {
           "aria-label": "Add Ocean Skin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -3845,7 +3988,7 @@
          "children": [
           {
            "aria-label": "Edit Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -3861,7 +4004,7 @@
           },
           {
            "aria-label": "Duplicate Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -3987,7 +4130,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -3996,7 +4139,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -4004,7 +4147,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -4022,7 +4165,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -4045,7 +4188,10 @@
            "type": "span",
            "children": [
             {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
+             "className": "shrink-0 text-[0.6875rem] leading-none",
+             "style": {
+              "color": "var(--ui-accent)"
+             },
              "type": "span",
              "children": "Dark"
             },
@@ -4056,6 +4202,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -4070,12 +4217,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -4135,8 +4286,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -4200,8 +4354,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -4218,7 +4377,7 @@
          "children": {
           "aria-label": "Add no-label-skin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -4240,7 +4399,7 @@
          "children": [
           {
            "aria-label": "Edit no-label-skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -4256,7 +4415,7 @@
           },
           {
            "aria-label": "Duplicate no-label-skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -4382,7 +4541,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -4391,7 +4550,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -4399,7 +4558,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -4417,7 +4576,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -4440,7 +4599,10 @@
            "type": "span",
            "children": [
             {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
+             "className": "shrink-0 text-[0.6875rem] leading-none",
+             "style": {
+              "color": "var(--ui-accent)"
+             },
              "type": "span",
              "children": "Light"
             },
@@ -4451,6 +4613,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -4465,12 +4628,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -4530,8 +4697,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -4595,8 +4765,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -4613,7 +4788,7 @@
          "children": {
           "aria-label": "Add Thin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -4635,7 +4810,7 @@
          "children": [
           {
            "aria-label": "Edit Thin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -4651,7 +4826,7 @@
           },
           {
            "aria-label": "Duplicate Thin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -4777,7 +4952,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -4786,7 +4961,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -4794,7 +4969,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -4812,7 +4987,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -4835,7 +5010,10 @@
            "type": "span",
            "children": [
             {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
+             "className": "shrink-0 text-[0.6875rem] leading-none",
+             "style": {
+              "color": "var(--ui-accent)"
+             },
              "type": "span",
              "children": "Light"
             },
@@ -4846,6 +5024,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -4860,12 +5039,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -4925,8 +5108,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -4990,8 +5176,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -5008,7 +5199,7 @@
          "children": {
           "aria-label": "Add Alias favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -5030,7 +5221,7 @@
          "children": [
           {
            "aria-label": "Edit Alias",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -5046,7 +5237,7 @@
           },
           {
            "aria-label": "Duplicate Alias",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -5172,7 +5363,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -5181,7 +5372,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -5189,7 +5380,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -5207,7 +5398,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -5230,7 +5421,10 @@
            "type": "span",
            "children": [
             {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
+             "className": "shrink-0 text-[0.6875rem] leading-none",
+             "style": {
+              "color": "var(--ui-accent)"
+             },
              "type": "span",
              "children": "Dark"
             },
@@ -5241,6 +5435,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -5255,12 +5450,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -5320,8 +5519,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -5385,8 +5587,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -5403,7 +5610,7 @@
          "children": {
           "aria-label": "Add Bare favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -5425,7 +5632,7 @@
          "children": [
           {
            "aria-label": "Edit Bare",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -5441,7 +5648,7 @@
           },
           {
            "aria-label": "Duplicate Bare",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -5567,7 +5774,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -5576,7 +5783,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -5584,7 +5791,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -5613,7 +5820,10 @@
         "type": "span",
         "children": [
          {
-          "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
+          "className": "shrink-0 text-[0.6875rem] leading-none",
+          "style": {
+           "color": "var(--ui-accent)"
+          },
           "type": "span",
           "children": "Dark"
          },
@@ -5624,6 +5834,7 @@
          },
          {
           "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+          "style": null,
           "title": "Desktop only — the CLI cannot use this theme",
           "type": "span",
           "children": "desktop"
@@ -5632,7 +5843,7 @@
        }
       },
       {
-       "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+       "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-full border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
        "style": {
         "aspectRatio": "1"
        },
@@ -5647,12 +5858,16 @@
          "htmlType": "button",
          "children": [
           {
-           "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+           "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-full",
+           "style": {
+            "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+           },
            "type": "div",
            "children": [
             {
              "className": "flex flex-row min-h-0 w-full flex-1",
              "key": 0,
+             "style": null,
              "type": "div",
              "children": [
               {
@@ -5712,8 +5927,11 @@
              ]
             },
             {
-             "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+             "className": "flex flex-row min-h-0 w-full flex-1 border-t",
              "key": 1,
+             "style": {
+              "borderColor": "rgba(0, 0, 0, 0.25)"
+             },
              "type": "div",
              "children": [
               {
@@ -5777,8 +5995,13 @@
          ]
         },
         {
-         "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+         "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
          "onClick": "[fn]",
+         "style": {
+          "height": "fit-content",
+          "margin": "auto",
+          "maxWidth": "calc(100% - 0.5rem)"
+         },
          "title": "Preview this theme for 10 seconds, then revert",
          "type": "button",
          "htmlType": "button",
@@ -5795,7 +6018,7 @@
            "children": {
             "aria-label": "Add Bare favourites",
             "aria-pressed": "false",
-            "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+            "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
             "onClick": "[fn]",
             "style": {
              "backdropFilter": "blur(2px)",
@@ -5817,7 +6040,7 @@
            "children": [
             {
              "aria-label": "Edit Bare",
-             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
              "onClick": "[fn]",
              "style": {
               "backdropFilter": "blur(2px)",
@@ -5833,7 +6056,7 @@
             },
             {
              "aria-label": "Duplicate Bare",
-             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
              "onClick": "[fn]",
              "style": {
               "backdropFilter": "blur(2px)",
@@ -5961,7 +6184,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -5970,7 +6193,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -5978,7 +6201,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -6014,6 +6237,7 @@
          },
          {
           "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+          "style": null,
           "title": "Desktop only — the CLI cannot use this theme",
           "type": "span",
           "children": "desktop"
@@ -6037,12 +6261,16 @@
          "htmlType": "button",
          "children": [
           {
-           "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-full",
+           "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-full",
+           "style": {
+            "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+           },
            "type": "div",
            "children": [
             {
              "className": "flex flex-row min-h-0 w-full flex-1",
              "key": 0,
+             "style": null,
              "type": "div",
              "children": [
               {
@@ -6102,8 +6330,11 @@
              ]
             },
             {
-             "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+             "className": "flex flex-row min-h-0 w-full flex-1 border-t",
              "key": 1,
+             "style": {
+              "borderColor": "rgba(0, 0, 0, 0.25)"
+             },
              "type": "div",
              "children": [
               {
@@ -6167,8 +6398,13 @@
          ]
         },
         {
-         "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+         "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
          "onClick": "[fn]",
+         "style": {
+          "height": "fit-content",
+          "margin": "auto",
+          "maxWidth": "calc(100% - 0.5rem)"
+         },
          "title": "Preview this theme for 10 seconds, then revert",
          "type": "button",
          "htmlType": "button",
@@ -6185,7 +6421,7 @@
            "children": {
             "aria-label": "Add Ocean Skin favourites",
             "aria-pressed": "false",
-            "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+            "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
             "onClick": "[fn]",
             "style": {
              "backdropFilter": "blur(2px)",
@@ -6207,7 +6443,7 @@
            "children": [
             {
              "aria-label": "Edit Ocean Skin",
-             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
              "onClick": "[fn]",
              "style": {
               "backdropFilter": "blur(2px)",
@@ -6223,7 +6459,7 @@
             },
             {
              "aria-label": "Duplicate Ocean Skin",
-             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
              "onClick": "[fn]",
              "style": {
               "backdropFilter": "blur(2px)",
@@ -6351,7 +6587,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -6360,7 +6596,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -6368,7 +6604,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -6382,7 +6618,7 @@
    ]
   },
   "rectangle previewing unowned": {
-   "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+   "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
    "style": {
     "aspectRatio": "16 / 10"
    },
@@ -6412,6 +6648,7 @@
           },
           {
            "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+           "style": null,
            "title": "Desktop only — the CLI cannot use this theme",
            "type": "span",
            "children": "desktop"
@@ -6426,12 +6663,16 @@
        ]
       },
       {
-       "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+       "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+       "style": {
+        "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+       },
        "type": "div",
        "children": [
         {
          "className": "flex flex-row min-h-0 w-full flex-1",
          "key": 0,
+         "style": null,
          "type": "div",
          "children": [
           {
@@ -6491,8 +6732,11 @@
          ]
         },
         {
-         "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+         "className": "flex flex-row min-h-0 w-full flex-1 border-t",
          "key": 1,
+         "style": {
+          "borderColor": "rgba(0, 0, 0, 0.25)"
+         },
          "type": "div",
          "children": [
           {
@@ -6556,8 +6800,13 @@
      ]
     },
     {
-     "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
+     "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
      "onClick": "[fn]",
+     "style": {
+      "height": "fit-content",
+      "margin": "auto",
+      "maxWidth": "calc(100% - 0.5rem)"
+     },
      "title": "Stop the preview and go back to your theme",
      "type": "button",
      "htmlType": "button",
@@ -6577,7 +6826,7 @@
        "children": {
         "aria-label": "Add Ocean Skin favourites",
         "aria-pressed": "false",
-        "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+        "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
         "onClick": "[fn]",
         "style": {
          "backdropFilter": "blur(2px)",
@@ -6599,7 +6848,7 @@
        "children": [
         {
          "aria-label": "Edit Ocean Skin",
-         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
          "onClick": "[fn]",
          "style": {
           "backdropFilter": "blur(2px)",
@@ -6615,7 +6864,7 @@
         },
         {
          "aria-label": "Duplicate Ocean Skin",
-         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
          "onClick": "[fn]",
          "style": {
           "backdropFilter": "blur(2px)",
@@ -6640,7 +6889,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -6670,6 +6919,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Gateway skin, but scope is \"This profile\" — the CLI will NOT follow until you switch to Everywhere",
              "type": "span",
              "children": "cli off"
@@ -6684,12 +6934,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -6749,8 +7003,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -6814,8 +7071,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -6832,7 +7094,7 @@
          "children": {
           "aria-label": "Add Gateway favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -6854,7 +7116,7 @@
          "children": [
           {
            "aria-label": "Edit Gateway",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -6870,7 +7132,7 @@
           },
           {
            "aria-label": "Duplicate Gateway",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -6996,7 +7258,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -7005,7 +7267,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -7013,7 +7275,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -7031,7 +7293,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -7060,7 +7322,10 @@
              "children": "Gateway"
             },
             {
-             "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide bg-(--ui-accent)/15 text-(--ui-accent)",
+             "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-accent)",
+             "style": {
+              "backgroundColor": "color-mix(in srgb, var(--ui-accent) 15%, transparent)"
+             },
              "title": "Gateway skin — the CLI and every connected Desktop follow this theme",
              "type": "span",
              "children": "CLI"
@@ -7075,12 +7340,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -7140,8 +7409,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -7205,8 +7477,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -7223,7 +7500,7 @@
          "children": {
           "aria-label": "Add Gateway favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -7245,7 +7522,7 @@
          "children": [
           {
            "aria-label": "Edit Gateway",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -7261,7 +7538,7 @@
           },
           {
            "aria-label": "Duplicate Gateway",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -7387,7 +7664,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -7396,7 +7673,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -7404,7 +7681,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -7418,7 +7695,7 @@
    ]
   },
   "gateway unowned": {
-   "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+   "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
    "style": {
     "aspectRatio": "1"
    },
@@ -7447,7 +7724,10 @@
            "children": "Gateway"
           },
           {
-           "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide bg-(--ui-accent)/15 text-(--ui-accent)",
+           "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-accent)",
+           "style": {
+            "backgroundColor": "color-mix(in srgb, var(--ui-accent) 15%, transparent)"
+           },
            "title": "Gateway skin — the CLI and every connected Desktop follow this theme",
            "type": "span",
            "children": "CLI"
@@ -7462,12 +7742,16 @@
        ]
       },
       {
-       "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+       "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+       "style": {
+        "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+       },
        "type": "div",
        "children": [
         {
          "className": "flex flex-row min-h-0 w-full flex-1",
          "key": 0,
+         "style": null,
          "type": "div",
          "children": [
           {
@@ -7527,8 +7811,11 @@
          ]
         },
         {
-         "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+         "className": "flex flex-row min-h-0 w-full flex-1 border-t",
          "key": 1,
+         "style": {
+          "borderColor": "rgba(0, 0, 0, 0.25)"
+         },
          "type": "div",
          "children": [
           {
@@ -7592,8 +7879,13 @@
      ]
     },
     {
-     "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+     "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
      "onClick": "[fn]",
+     "style": {
+      "height": "fit-content",
+      "margin": "auto",
+      "maxWidth": "calc(100% - 0.5rem)"
+     },
      "title": "Preview this theme for 10 seconds, then revert",
      "type": "button",
      "htmlType": "button",
@@ -7610,7 +7902,7 @@
        "children": {
         "aria-label": "Add Gateway favourites",
         "aria-pressed": "false",
-        "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+        "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
         "onClick": "[fn]",
         "style": {
          "backdropFilter": "blur(2px)",
@@ -7632,7 +7924,7 @@
        "children": [
         {
          "aria-label": "Edit Gateway",
-         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
          "onClick": "[fn]",
          "style": {
           "backdropFilter": "blur(2px)",
@@ -7648,7 +7940,7 @@
         },
         {
          "aria-label": "Duplicate Gateway",
-         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
          "onClick": "[fn]",
          "style": {
           "backdropFilter": "blur(2px)",
@@ -7673,7 +7965,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -7703,6 +7995,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -7717,12 +8010,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -7782,8 +8079,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -7847,8 +8147,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -7865,7 +8170,7 @@
          "children": {
           "aria-label": "Add Colors Only favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -7887,7 +8192,7 @@
          "children": [
           {
            "aria-label": "Edit Colors Only",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -7903,7 +8208,7 @@
           },
           {
            "aria-label": "Duplicate Colors Only",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -8029,7 +8334,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -8038,7 +8343,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -8046,7 +8351,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -8064,7 +8369,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -8087,7 +8392,10 @@
            "type": "span",
            "children": [
             {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
+             "className": "shrink-0 text-[0.6875rem] leading-none",
+             "style": {
+              "color": "var(--ui-accent)"
+             },
              "type": "span",
              "children": "Dark"
             },
@@ -8098,6 +8406,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -8112,12 +8421,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -8177,8 +8490,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -8242,8 +8558,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -8260,7 +8581,7 @@
          "children": {
           "aria-label": "Add Third Alias favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -8282,7 +8603,7 @@
          "children": [
           {
            "aria-label": "Edit Third Alias",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -8298,7 +8619,7 @@
           },
           {
            "aria-label": "Duplicate Third Alias",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -8424,7 +8745,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -8433,7 +8754,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -8441,7 +8762,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -8489,6 +8810,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -8499,12 +8821,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -8564,8 +8890,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -8629,8 +8958,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-(--ui-accent) bg-(--ui-bg-tertiary) text-(--ui-accent) opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Stop the preview and go back to your theme",
        "type": "button",
        "htmlType": "button",
@@ -8650,7 +8984,7 @@
          "children": {
           "aria-label": "Add Ocean Skin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -8672,7 +9006,7 @@
          "children": [
           {
            "aria-label": "Edit Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -8688,7 +9022,7 @@
           },
           {
            "aria-label": "Duplicate Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -8814,7 +9148,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -8823,7 +9157,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -8831,7 +9165,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -8849,7 +9183,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -8879,6 +9213,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -8893,12 +9228,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -8958,8 +9297,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -9023,8 +9365,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -9041,7 +9388,7 @@
          "children": {
           "aria-label": "Add Ocean Skin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -9063,7 +9410,7 @@
          "children": [
           {
            "aria-label": "Edit Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -9079,7 +9426,7 @@
           },
           {
            "aria-label": "Duplicate Ocean Skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -9205,7 +9552,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -9214,7 +9561,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -9222,7 +9569,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -9240,7 +9587,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -9263,7 +9610,10 @@
            "type": "span",
            "children": [
             {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
+             "className": "shrink-0 text-[0.6875rem] leading-none",
+             "style": {
+              "color": "var(--ui-accent)"
+             },
              "type": "span",
              "children": "Dark"
             },
@@ -9274,6 +9624,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -9288,12 +9639,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -9353,8 +9708,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -9418,8 +9776,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -9436,7 +9799,7 @@
          "children": {
           "aria-label": "Add no-label-skin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -9458,7 +9821,7 @@
          "children": [
           {
            "aria-label": "Edit no-label-skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -9474,7 +9837,7 @@
           },
           {
            "aria-label": "Duplicate no-label-skin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -9600,7 +9963,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -9609,7 +9972,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -9617,7 +9980,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",
@@ -9635,7 +9998,7 @@
    "type": "div",
    "children": [
     {
-     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) hover:border-(--ui-stroke-strong)",
+     "className": "group relative flex w-full flex-col overflow-hidden border transition-colors rounded-lg border-(--ui-stroke-secondary) bg-(--ui-bg-secondary)",
      "style": {
       "aspectRatio": "1"
      },
@@ -9658,7 +10021,10 @@
            "type": "span",
            "children": [
             {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
+             "className": "shrink-0 text-[0.6875rem] leading-none",
+             "style": {
+              "color": "var(--ui-accent)"
+             },
              "type": "span",
              "children": "Light"
             },
@@ -9669,6 +10035,7 @@
             },
             {
              "className": "shrink-0 rounded px-1 text-[0.5rem] uppercase leading-4 tracking-wide text-(--ui-text-tertiary)",
+             "style": null,
              "title": "Desktop only — the CLI cannot use this theme",
              "type": "span",
              "children": "desktop"
@@ -9683,12 +10050,16 @@
          ]
         },
         {
-         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden ring-1 ring-black/15 rounded-[4px]",
+         "className": "flex flex-col min-h-0 w-full flex-1 overflow-hidden rounded-[4px]",
+         "style": {
+          "boxShadow": "0 0 0 1px rgba(0, 0, 0, 0.15)"
+         },
          "type": "div",
          "children": [
           {
            "className": "flex flex-row min-h-0 w-full flex-1",
            "key": 0,
+           "style": null,
            "type": "div",
            "children": [
             {
@@ -9748,8 +10119,11 @@
            ]
           },
           {
-           "className": "flex flex-row min-h-0 w-full flex-1 border-t border-black/25",
+           "className": "flex flex-row min-h-0 w-full flex-1 border-t",
            "key": 1,
+           "style": {
+            "borderColor": "rgba(0, 0, 0, 0.25)"
+           },
            "type": "div",
            "children": [
             {
@@ -9813,8 +10187,13 @@
        ]
       },
       {
-       "className": "absolute inset-0 z-10 m-auto h-fit w-fit max-w-[calc(100%-0.5rem)] rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+       "className": "absolute inset-0 z-10 w-fit rounded-full border px-1.5 py-0.5 text-center text-[0.5rem] font-medium leading-tight backdrop-blur transition-opacity border-white/30 bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
        "onClick": "[fn]",
+       "style": {
+        "height": "fit-content",
+        "margin": "auto",
+        "maxWidth": "calc(100% - 0.5rem)"
+       },
        "title": "Preview this theme for 10 seconds, then revert",
        "type": "button",
        "htmlType": "button",
@@ -9831,7 +10210,7 @@
          "children": {
           "aria-label": "Add Thin favourites",
           "aria-pressed": "false",
-          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform shadow-sm",
           "onClick": "[fn]",
           "style": {
            "backdropFilter": "blur(2px)",
@@ -9853,7 +10232,7 @@
          "children": [
           {
            "aria-label": "Edit Thin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -9869,7 +10248,7 @@
           },
           {
            "aria-label": "Duplicate Thin",
-           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all shadow-sm",
            "onClick": "[fn]",
            "style": {
             "backdropFilter": "blur(2px)",
@@ -9995,7 +10374,7 @@
          ]
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "export",
          "onClick": "[fn]",
          "title": "Save this skin as hand-editable YAML you can edit and re-import",
@@ -10004,7 +10383,7 @@
          "children": "Export"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "rename",
          "onClick": "[fn]",
          "type": "button",
@@ -10012,7 +10391,7 @@
          "children": "Rename"
         },
         {
-         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 hover:border-(--ui-stroke-strong) focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-(--ui-stroke-strong) pointer-coarse:opacity-100",
+         "className": "shrink-0 rounded border border-(--ui-stroke-secondary) px-1 py-0.5 focus-visible:outline focus-visible:outline-2",
          "key": "delete",
          "onClick": "[fn]",
          "type": "button",

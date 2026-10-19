@@ -46,6 +46,9 @@ ALLOW = {
     "system-ui,",
     "ui-monospace,",
     "-apple-system,",
+    # not a class: a value string the cn() extractor catches from
+    # `shape === 'circle' ? ... : ...` inside a className call
+    "circle",
 }
 
 CSS_CANDIDATES = (
