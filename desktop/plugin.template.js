@@ -348,7 +348,7 @@ function sceneToDesktopTheme(scene) {
   return {
     ...light,
     label: scene.label || light.label,
-    description: scene.description || 'Chroma scene',
+    description: scene.description || 'Chroma skin',
     colors: light.colors,
     darkColors: dark.colors,
     typography: safeMerge(SCENE_TYPOGRAPHY[scene.name], scene.typography || {}),
@@ -2331,26 +2331,31 @@ const TERMINAL_SCENE_NAMES = new Set([
   'green-screen', 'commodore-64', 'dark-lcars'
 ])
 
+/**
+ * The visible catalogue. Core is the default shelf: a fresh install shows the
+ * thirty core skins, and enabling a pack adds that pack. When no skin carries a
+ * pack the filter stays out of the way and every card shows.
+ */
+function filterByPacks(skins, enabledPacks) {
+  const packsAvailable = skins.some(scene => scene && scene.pack)
+  if (!packsAvailable) return skins
+  const allowed = new Set(['core', ...(Array.isArray(enabledPacks) ? enabledPacks : [])])
+  return skins.filter(scene => allowed.has(scene.pack || 'core'))
+}
+
 /** One broad category per scene - the "by theme" lens.
  *
- *  The rule, in order:
- *   1. A scene that can serve only one mode goes to Light or Dark. It has no
- *      second palette to describe, so a hue bin would hide what it is.
- *   2. A named retro/terminal scene goes to Terminal. The name outranks the
- *      measured accent, because "Commodore 64" is the point of the theme.
- *   3. Character before hue. The accent's chroma is read first: near-neutral
- *      (C < 0.03) is Minimal; a high-lightness, low-chroma tint is Pastels;
- *      loudly saturated (C >= 0.16) is Vibrant. What is left, faintly coloured,
- *      splits on warmth - warm low-chroma is Earth, cool low-chroma is Muted.
- *   4. Hue decides the rest, in the order a person names colours: green is
- *      Nature, then the warm wheel Warm -> Orange -> Gold, then Cool, then
- *      Violet.
+ *  The catalogue stores the measured family, so a shipped skin is filed by its
+ *  own `category`. This rule is the floor for a palette that arrives without one
+ *  (an import, or an older saved theme):
+ *   1. A scene that can serve only one mode goes to Light or Dark.
+ *   2. The accent's chroma is read first: below 0.04 there is no hue to file, so
+ *      the skin is Neutral.
+ *   3. Otherwise the accent's hue picks the family, using the same cut points the
+ *      catalogue was measured with (scripts/taxonomy.json).
  *
- *  Derived, not hand-listed (except Terminal, whose seven names are the whole
- *  list). The catalog's own `category` field is provenance ('Built-in' /
- *  'Dynamic' / 'Other'), not style. Deterministic, so the grid is stable
- *  between renders. Never throws on a partial palette: an unreadable accent
- *  falls back to the neutral Minimal rather than `undefined`. */
+ *  Deterministic, so the grid is stable between renders. Never throws on a
+ *  partial palette: an unreadable accent falls back to Neutral, not `undefined`. */
 function sceneCategory(scene) {
   if (scene.modeSupport === 'dark') return 'dark'
   if (scene.modeSupport === 'light') return 'light'
@@ -2977,7 +2982,7 @@ function ThemeCardActions({ scene, managing, onDelete, onRename, onExport, categ
 const ADVICE_TARGETS = [
   { id: 'text', label: 'Text', target: 9, hint: 'body text on its shell' },
   { id: 'interface', label: 'Interface', target: 3, hint: 'chrome, borders and signature surfaces' },
-  { id: 'signals', label: 'Signals', target: 4.5, hint: 'status colours: shipped per scene, not editable in E1' }
+  { id: 'signals', label: 'Signals', target: 4.5, hint: 'status colours: shipped per skin, not editable in E1' }
 ]
 
 /** A role's advisory target, from its kind. Same table as the strip above, so a
@@ -4352,7 +4357,7 @@ function ThemePicker() {
         kind: 'info',
         title: 'Override reset',
         message: (name.replace(/-/g, ' ')) + ' is back to the palette it shipped with',
-        detail: 'Nothing else about the scene changed.'
+        detail: 'Nothing else about the skin changed.'
       })
       return true
     } catch (e) {
@@ -4627,26 +4632,10 @@ function ThemePicker() {
   const cardMin = cardMinFor(shape, size)
   // Groups are cut from the AUTHORED list, then each card is handed its effective
   // palette (§17.3.2): the shelf must not move when a scene is recoloured.
-  const groupsRaw = groupCards(filtered, overrides, groupMode, categories)
-  // Theme Packs filter: when enabled packs set, keep scenes whose pack matches; core always visible.
-  const coreNames = new Set(['amber-terminal','commodore-64','dark-lcars','green-screen','retro-amber','retro-blue','retro-terminal','earth-brown','earth-green','earth-moss','minimal-white','minimal-black','vibrant-red','vibrant-blue','vibrant-green','vibrant-purple','pastels-pink','pastels-blue','pastels-green','pastels-cream','muted-ink','muted-paper','muted-stone','nature-forest','nature-ocean','warm-amber','warm-coral','orange-flame','orange-ember','gold-harvest','gold-morning'])
-  // Pack membership is a build-time property of the catalog: the generator stamps
-  // `pack` on every scene once the pack campaign is complete. Until then no scene
-  // carries one, and a filter would hide every card whose pack is unknown.
+  // Theme Packs filter. Core is the default shelf: the pane opens on the thirty
+  // core skins, and enabling a pack adds that pack (filterByPacks owns the rule).
   const packsAvailable = SKINS.some(scene => scene && scene.pack)
-  const allowedPacks = packsAvailable && enabledPacks && enabledPacks.length ? new Set(enabledPacks) : null
-  const groups = groupsRaw
-    .map(group => {
-      if (!allowedPacks) return group
-      const filteredScenes = group.scenes.filter(s => {
-        const name = s.name
-        const isCore = coreNames.has(name)
-        const packId = isCore ? 'core' : (s.pack || 'core')
-        return isCore || allowedPacks.has(packId)
-      })
-      return safeMerge(group, { scenes: filteredScenes })
-    })
-    .filter(group => group.scenes.length)
+  const groups = groupCards(filterByPacks(filtered, enabledPacks), overrides, groupMode, categories)
   const activeScene = applyOverride(allSkins.find(scene => scene.name === active) || null, overrides)
   const activeColors = activeScene && ((mode === 'dark' ? activeScene.darkColors : activeScene.lightColors) || activeScene.colors)
   const editingScene = editing ? (allSkins.find(scene => scene.name === editing.name) || null) : null
@@ -4706,12 +4695,12 @@ function ThemePicker() {
                 children: [
                   jsx(SelectTrigger, {
                     className: 'h-7 w-[7.5rem] text-[0.6875rem]',
-                    title: 'Group the gallery by scene, or by broad theme category',
+                    title: 'Group the gallery by skin, or by colour family',
                     children: jsx(SelectValue, {})
                   }),
                   jsxs(SelectContent, {
                     children: [
-                      jsx(SelectItem, { value: 'scene', children: 'By scene' }),
+                      jsx(SelectItem, { value: 'scene', children: 'By skin' }),
                       jsx(SelectItem, { value: 'theme', children: 'By theme' })
                     ]
                   })
@@ -4951,7 +4940,7 @@ function ThemePicker() {
         children: jsx(SkinBoundary, {
           children:
             filtered.length === 0
-              ? jsx(EmptyState, { title: 'No scenes found', description: 'Try a different search.' })
+              ? jsx(EmptyState, { title: 'No skins found', description: 'Try a different search.' })
               : jsx('div', {
                   className: 'flex flex-col gap-4',
                   children: groups.map((group, index) =>
