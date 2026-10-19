@@ -55,7 +55,7 @@ import { Component, useCallback, useEffect, useMemo, useRef, useState } from 're
 let _rest = null
 
 // Replaced with the real version at build time (scripts/regenerate.py).
-const BUILD_STAMP = '2.7.0'
+const BUILD_STAMP = '2.8.0'
 
 // The Python half is optional: the Desktop half applies and previews themes
 // with no backend at all. When it is absent every backend call throws this exact
@@ -2142,6 +2142,56 @@ function writeCardShape(shape) {
   }
 }
 
+// Favourites are the user's own shelf: the skin names they starred, in the order
+// they starred them, under Chroma's own key. Read is defensive in both
+// directions - a corrupt store and a hand-edited list of junk both degrade to
+// the list that survives, never to a thrown render.
+const FAVORITES_KEY = 'chroma-favorites-v1'
+
+function readFavorites() {
+  let raw = null
+  try {
+    raw = window.localStorage.getItem(FAVORITES_KEY)
+  } catch {
+    return []
+  }
+  let parsed = null
+  try {
+    parsed = JSON.parse(raw || '[]')
+  } catch {
+    return []
+  }
+  return cleanFavoriteNames(parsed)
+}
+
+function cleanFavoriteNames(list) {
+  const out = []
+  if (!Array.isArray(list)) return out
+  for (const name of list) {
+    if (typeof name === 'string' && name && out.indexOf(name) < 0) out.push(name)
+  }
+  return out
+}
+
+function writeFavorites(list) {
+  try {
+    window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(cleanFavoriteNames(list)))
+    return true
+  } catch {
+    return false
+  }
+}
+
+/** Star or unstar ONE name, without touching the order of the rest. */
+function toggleFavoriteName(list, name) {
+  const next = cleanFavoriteNames(list)
+  if (!name) return next
+  const at = next.indexOf(name)
+  if (at >= 0) next.splice(at, 1)
+  else next.push(name)
+  return next
+}
+
 /** Defaults to medium on anything unrecognised, including a storage failure:
  *  the gallery must always render. */
 function readCardSize() {
@@ -2940,6 +2990,35 @@ const CARD_ACTION_STYLE = {
   opacity: 0.9
 }
 const EDIT_GEAR_CLASS = 'rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm'
+
+// A starred pill reads as ON: the paint inverts. Same channel as the gear's own
+// paint (inline, so no host stylesheet can discard it) with the two colours
+// swapped, which is the one difference that survives any skin behind it.
+const CARD_ACTION_STYLE_ON = {
+  background: 'rgba(255, 255, 255, 0.92)',
+  color: '#111111',
+  border: '1px solid rgba(255, 255, 255, 0.55)',
+  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.35)',
+  opacity: 1
+}
+const FAVORITE_CLASS = 'rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm'
+
+/** The star. A Unicode glyph, not an icon font: the codicon face and the inline
+ *  SVG both reached the field as an empty control, and a text star cannot. */
+function ThemeCardFavorite({ scene, favorited, onToggleFavorite }) {
+  return jsx('button', {
+    type: 'button',
+    onClick: () => onToggleFavorite(scene),
+    title: favorited
+      ? 'Remove this skin from your favourites'
+      : 'Star this skin: it joins the favourites rail on the left',
+    'aria-label': (favorited ? 'Remove ' : 'Add ') + (scene.label || scene.name) + ' favourites',
+    'aria-pressed': favorited ? 'true' : 'false',
+    className: FAVORITE_CLASS,
+    style: favorited ? CARD_ACTION_STYLE_ON : CARD_ACTION_STYLE,
+    children: favorited ? '\u2605' : '\u2606'
+  })
+}
 
 function ThemeCardEditGear({ scene, onEdit }) {
   return jsx('button', {
@@ -4031,7 +4110,61 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
   })
 }
 
-function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, shape, localScope, onEdit, onDuplicate, edited, categories, onSetCategory }) {
+/** The favourites rail: a column on the LEFT of the gallery, scrolling on its
+ *  own so a long shelf cannot push the skins out of the pane. It is also the one
+ *  place a favourite is removed from, and it resolves every name against the
+ *  catalogue - a star that outlives its skin is dropped, never a ghost row. */
+function FavoritesRail({ favorites, skins, mode, onApply, onRemove }) {
+  const rows = []
+  for (const name of favorites) {
+    const scene = skins.find(candidate => candidate && candidate.name === name)
+    if (!scene) continue
+    const colors = (mode === 'dark' ? scene.darkColors : scene.lightColors) || scene.colors || {}
+    rows.push(jsxs('div', {
+      key: name,
+      className: 'flex items-center gap-1 rounded hover:bg-black/5',
+      children: [
+        jsx('button', {
+          type: 'button',
+          onClick: () => onApply(scene),
+          title: 'Apply ' + (scene.label || name),
+          className: 'flex min-w-0 flex-1 items-center gap-1 rounded px-1 py-1 text-left',
+          children: [
+            jsx('span', {
+              className: 'h-2.5 w-2.5 shrink-0 rounded-full',
+              style: { backgroundColor: colors.ui_accent || colors.banner_accent || 'var(--ui-accent)' }
+            }),
+            jsx('span', { className: 'truncate text-[0.6875rem]', children: scene.label || name.replace(/-/g, ' ') })
+          ]
+        }),
+        jsx('button', {
+          type: 'button',
+          onClick: () => onRemove(scene),
+          title: 'Remove from favourites',
+          'aria-label': 'Remove ' + (scene.label || name) + ' from favourites',
+          className: 'shrink-0 rounded px-1 text-[0.8125rem] leading-5 text-(--ui-text-tertiary) hover:text-(--ui-error)',
+          children: '\u00d7'
+        })
+      ]
+    }))
+  }
+  return jsxs('aside', {
+    className: 'flex w-36 shrink-0 flex-col gap-1 overflow-hidden rounded-lg border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) p-1.5',
+    'data-favorites': String(rows.length),
+    children: [
+      jsx('div', {
+        className: 'text-[0.625rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)',
+        children: 'Favourites (' + rows.length + ')'
+      }),
+      jsx('div', {
+        className: 'flex min-h-0 flex-1 flex-col overflow-y-auto',
+        children: rows
+      })
+    ]
+  })
+}
+
+function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, onDelete, onRename, onExport, previewing, previewUntil, onPreview, onStopPreview, shape, localScope, onEdit, onDuplicate, edited, categories, onSetCategory, favorited, onToggleFavorite }) {
   // Both halves of the pair, always: every scene ships both modes now, and the
   // card shows them side by side rather than only the mode that happens to be
   // live.
@@ -4066,20 +4199,33 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   // card's edge, because it is not positioned at all. It rides the palette's
   // bottom band (the card fills the frame behind it), and the row itself takes no
   // pointer, so a click in the gap still reaches the card while the pills do not.
-  const cardActions = []
-  if (typeof onEdit === 'function') cardActions.push(jsx(ThemeCardEditGear, { scene, onEdit }))
-  if (typeof onDuplicate === 'function') cardActions.push(jsx(ThemeCardDuplicate, { scene, onDuplicate }))
-  if (cardActions.length) {
+  // The star rides alone on the LEFT of the row; the manage actions stay
+  // together on the right, so the row reads as one shelf rather than a scatter.
+  const manageActions = []
+  if (typeof onEdit === 'function') manageActions.push(jsx(ThemeCardEditGear, { scene, onEdit }))
+  if (typeof onDuplicate === 'function') manageActions.push(jsx(ThemeCardDuplicate, { scene, onDuplicate }))
+  const rowChildren = []
+  if (typeof onToggleFavorite === 'function') {
+    rowChildren.push(jsx('span', {
+      key: 'star',
+      className: 'pointer-events-auto',
+      children: jsx(ThemeCardFavorite, { scene, favorited, onToggleFavorite })
+    }))
+  }
+  if (manageActions.length) {
+    rowChildren.push(jsx('div', {
+      key: 'manage',
+      className: 'pointer-events-auto flex items-center gap-1.5',
+      children: manageActions
+    }))
+  }
+  if (rowChildren.length) {
     boxChildren.push(jsx('div', {
       className: cn(
         'pointer-events-none relative z-20 mt-auto flex items-center gap-1.5',
         shape === 'circle' ? 'justify-center px-2 pb-2' : 'justify-between px-1.5 pb-1.5'
       ),
-      children: cardActions.map((action, index) => jsx('span', {
-        key: index,
-        className: 'pointer-events-auto',
-        children: action
-      }))
+      children: rowChildren
     }))
   }
   const cardBox = jsxs('div', {
@@ -4359,6 +4505,26 @@ function ThemePicker() {
     setSize(next)
     haptic('tap')
   }
+  // Favourites: one list, written once, and both surfaces read it - the star on
+  // the card and the rail beside the gallery. A refused write says so instead of
+  // showing a shelf the next mount would drop.
+  const [favorites, setFavorites] = useState(() => readFavorites())
+  const toggleFavorite = scene => {
+    if (!scene || !scene.name) return
+    const next = toggleFavoriteName(favorites, scene.name)
+    const starred = next.indexOf(scene.name) >= 0
+    if (!writeFavorites(next)) {
+      host.notify({ kind: 'error', message: 'Could not save your favourites' })
+      return
+    }
+    setFavorites(next)
+    haptic('tap')
+    host.notify({
+      kind: 'info',
+      message: (starred ? 'Starred ' : 'Unstarred ') + (scene.label || scene.name)
+    })
+  }
+  const removeFavorite = scene => toggleFavorite(scene)
   const [groupMode, setGroupMode] = useState(() => readGroupMode())
   const changeGroupMode = next => {
     if (GROUP_MODES.indexOf(next) < 0) return
@@ -5445,9 +5611,24 @@ function ThemePicker() {
           // scaffolding, which is a different job.
         ]
       }),
-      jsx(ScrollArea, {
-        className: 'min-h-0 flex-1 p-2',
-        children: jsx(SkinBoundary, {
+      // The gallery and the rail share one row. An empty rail is not rendered at
+      // all: the star on every card is the door, and an empty column is noise.
+      jsxs('div', {
+        className: 'flex min-h-0 flex-1 items-stretch gap-2 p-2',
+        children: [
+          favorites.length
+            ? jsx(FavoritesRail, {
+                key: 'favorites',
+                favorites,
+                skins: allSkins,
+                mode,
+                onApply,
+                onRemove: removeFavorite
+              })
+            : null,
+          jsx(ScrollArea, {
+            className: 'min-h-0 flex-1',
+            children: jsx(SkinBoundary, {
           children:
             // Group builders always return their shelves, so a group count is
             // never zero. The empty state is decided by emptyStateFor, which
@@ -5495,6 +5676,8 @@ function ThemePicker() {
                               // The marker reads from the override map, and the
                               // card already carries the resolved palette.
                               edited: !!overrides[scene.name],
+                              favorited: favorites.indexOf(scene.name) >= 0,
+                              onToggleFavorite: toggleFavorite,
                               shape,
                               localScope: scope === APPLY_SCOPE_LOCAL,
                               categories,
@@ -5506,7 +5689,9 @@ function ThemePicker() {
                     })
                   )
                 })
-        })
+            })
+          })
+        ]
       }),
       // The two surfaces that used to sit inline: the pack chips and the category
       // manager. Both are modals now, reached from the settings row.

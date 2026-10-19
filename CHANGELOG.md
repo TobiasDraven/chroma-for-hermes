@@ -3,6 +3,27 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [2.8.0] - 2026-10-19
+
+Favourites, and a card frame that the actions cannot leave.
+
+### Added
+- **A favourites rail.** A column on the left of the gallery, scrolling on its own, with a
+  star on every card. Starred skins are stored under `chroma-favorites-v1`; a name the
+  catalogue no longer carries is dropped on read rather than rendered as a ghost row. The
+  rail is the one place a favourite is removed from, and it is not rendered at all while
+  the shelf is empty.
+- `tests/favorites.test.mjs` (7 tests): the store survives corrupt JSON and junk entries, a
+  toggle moves exactly one name, the star paints both of its states, the row keeps its
+  order, and the rail resolves, applies and removes.
+
+### Fixed
+- **The card's action row can no longer leave the card.** The frame (border, radius,
+  aspect ratio, `overflow-hidden`) belongs to the box, not to the button beneath the row,
+  and the row is the frame's last child IN FLOW — so it is not positioned at all. Reported
+  from the pane three times; the third fix moved the row, this one removes the class of
+  defect. The card parity fixture is re-pinned with the row (27 cases).
+
 ## [2.7.0] - 2026-10-19
 
 **The skin specification.** A skin is now written against a contract that can be

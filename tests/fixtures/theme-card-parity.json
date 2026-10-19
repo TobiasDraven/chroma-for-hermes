@@ -186,6 +186,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Ocean Skin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -506,6 +573,73 @@
      "type": "button",
      "htmlType": "button",
      "children": "Preview 10s"
+    },
+    {
+     "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+     "type": "div",
+     "children": [
+      {
+       "className": "pointer-events-auto",
+       "key": "star",
+       "type": "span",
+       "children": {
+        "aria-label": "Add Ocean Skin favourites",
+        "aria-pressed": "false",
+        "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+        "onClick": "[fn]",
+        "style": {
+         "backdropFilter": "blur(2px)",
+         "background": "rgba(0, 0, 0, 0.55)",
+         "border": "1px solid rgba(255, 255, 255, 0.32)",
+         "color": "#ffffff",
+         "opacity": 0.9
+        },
+        "title": "Star this skin: it joins the favourites rail on the left",
+        "type": "button",
+        "htmlType": "button",
+        "children": "☆"
+       }
+      },
+      {
+       "className": "pointer-events-auto flex items-center gap-1.5",
+       "key": "manage",
+       "type": "div",
+       "children": [
+        {
+         "aria-label": "Edit Ocean Skin",
+         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+         "onClick": "[fn]",
+         "style": {
+          "backdropFilter": "blur(2px)",
+          "background": "rgba(0, 0, 0, 0.55)",
+          "border": "1px solid rgba(255, 255, 255, 0.32)",
+          "color": "#ffffff",
+          "opacity": 0.9
+         },
+         "title": "Edit this skin: recolour it and save your own override",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Edit"
+        },
+        {
+         "aria-label": "Duplicate Ocean Skin",
+         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+         "onClick": "[fn]",
+         "style": {
+          "backdropFilter": "blur(2px)",
+          "background": "rgba(0, 0, 0, 0.55)",
+          "border": "1px solid rgba(255, 255, 255, 0.32)",
+          "color": "#ffffff",
+          "opacity": 0.9
+         },
+         "title": "Fork this skin into a new skin you own — the source file is untouched",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Fork"
+        }
+       ]
+      }
+     ]
     }
    ]
   },
@@ -694,6 +828,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Ocean Skin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -1018,6 +1219,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Ocean Skin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -1339,6 +1607,73 @@
          "type": "button",
          "htmlType": "button",
          "children": "Preview 10s"
+        },
+        {
+         "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-center px-2 pb-2",
+         "type": "div",
+         "children": [
+          {
+           "className": "pointer-events-auto",
+           "key": "star",
+           "type": "span",
+           "children": {
+            "aria-label": "Add Ocean Skin favourites",
+            "aria-pressed": "false",
+            "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+            "onClick": "[fn]",
+            "style": {
+             "backdropFilter": "blur(2px)",
+             "background": "rgba(0, 0, 0, 0.55)",
+             "border": "1px solid rgba(255, 255, 255, 0.32)",
+             "color": "#ffffff",
+             "opacity": 0.9
+            },
+            "title": "Star this skin: it joins the favourites rail on the left",
+            "type": "button",
+            "htmlType": "button",
+            "children": "☆"
+           }
+          },
+          {
+           "className": "pointer-events-auto flex items-center gap-1.5",
+           "key": "manage",
+           "type": "div",
+           "children": [
+            {
+             "aria-label": "Edit Ocean Skin",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "onClick": "[fn]",
+             "style": {
+              "backdropFilter": "blur(2px)",
+              "background": "rgba(0, 0, 0, 0.55)",
+              "border": "1px solid rgba(255, 255, 255, 0.32)",
+              "color": "#ffffff",
+              "opacity": 0.9
+             },
+             "title": "Edit this skin: recolour it and save your own override",
+             "type": "button",
+             "htmlType": "button",
+             "children": "Edit"
+            },
+            {
+             "aria-label": "Duplicate Ocean Skin",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "onClick": "[fn]",
+             "style": {
+              "backdropFilter": "blur(2px)",
+              "background": "rgba(0, 0, 0, 0.55)",
+              "border": "1px solid rgba(255, 255, 255, 0.32)",
+              "color": "#ffffff",
+              "opacity": 0.9
+             },
+             "title": "Fork this skin into a new skin you own — the source file is untouched",
+             "type": "button",
+             "htmlType": "button",
+             "children": "Fork"
+            }
+           ]
+          }
+         ]
         }
        ]
       }
@@ -1658,6 +1993,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-center px-2 pb-2",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Ocean Skin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     }
@@ -1848,6 +2250,73 @@
           "type": "span",
           "children": "0s"
          }
+        },
+        {
+         "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-center px-2 pb-2",
+         "type": "div",
+         "children": [
+          {
+           "className": "pointer-events-auto",
+           "key": "star",
+           "type": "span",
+           "children": {
+            "aria-label": "Add Ocean Skin favourites",
+            "aria-pressed": "false",
+            "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+            "onClick": "[fn]",
+            "style": {
+             "backdropFilter": "blur(2px)",
+             "background": "rgba(0, 0, 0, 0.55)",
+             "border": "1px solid rgba(255, 255, 255, 0.32)",
+             "color": "#ffffff",
+             "opacity": 0.9
+            },
+            "title": "Star this skin: it joins the favourites rail on the left",
+            "type": "button",
+            "htmlType": "button",
+            "children": "☆"
+           }
+          },
+          {
+           "className": "pointer-events-auto flex items-center gap-1.5",
+           "key": "manage",
+           "type": "div",
+           "children": [
+            {
+             "aria-label": "Edit Ocean Skin",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "onClick": "[fn]",
+             "style": {
+              "backdropFilter": "blur(2px)",
+              "background": "rgba(0, 0, 0, 0.55)",
+              "border": "1px solid rgba(255, 255, 255, 0.32)",
+              "color": "#ffffff",
+              "opacity": 0.9
+             },
+             "title": "Edit this skin: recolour it and save your own override",
+             "type": "button",
+             "htmlType": "button",
+             "children": "Edit"
+            },
+            {
+             "aria-label": "Duplicate Ocean Skin",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "onClick": "[fn]",
+             "style": {
+              "backdropFilter": "blur(2px)",
+              "background": "rgba(0, 0, 0, 0.55)",
+              "border": "1px solid rgba(255, 255, 255, 0.32)",
+              "color": "#ffffff",
+              "opacity": 0.9
+             },
+             "title": "Fork this skin into a new skin you own — the source file is untouched",
+             "type": "button",
+             "htmlType": "button",
+             "children": "Fork"
+            }
+           ]
+          }
+         ]
         }
        ]
       }
@@ -2177,6 +2646,73 @@
         "type": "span",
         "children": "0s"
        }
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Ocean Skin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -2497,6 +3033,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Ocean Skin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -2821,6 +3424,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Ocean Skin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -3141,6 +3811,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Ocean Skin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -3469,6 +4206,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add no-label-skin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit no-label-skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate no-label-skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -3797,6 +4601,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Thin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Thin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Thin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -4125,6 +4996,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Alias favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Alias",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Alias",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -4453,6 +5391,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Bare favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Bare",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Bare",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -4778,6 +5783,73 @@
          "type": "button",
          "htmlType": "button",
          "children": "Preview 10s"
+        },
+        {
+         "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-center px-2 pb-2",
+         "type": "div",
+         "children": [
+          {
+           "className": "pointer-events-auto",
+           "key": "star",
+           "type": "span",
+           "children": {
+            "aria-label": "Add Bare favourites",
+            "aria-pressed": "false",
+            "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+            "onClick": "[fn]",
+            "style": {
+             "backdropFilter": "blur(2px)",
+             "background": "rgba(0, 0, 0, 0.55)",
+             "border": "1px solid rgba(255, 255, 255, 0.32)",
+             "color": "#ffffff",
+             "opacity": 0.9
+            },
+            "title": "Star this skin: it joins the favourites rail on the left",
+            "type": "button",
+            "htmlType": "button",
+            "children": "☆"
+           }
+          },
+          {
+           "className": "pointer-events-auto flex items-center gap-1.5",
+           "key": "manage",
+           "type": "div",
+           "children": [
+            {
+             "aria-label": "Edit Bare",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "onClick": "[fn]",
+             "style": {
+              "backdropFilter": "blur(2px)",
+              "background": "rgba(0, 0, 0, 0.55)",
+              "border": "1px solid rgba(255, 255, 255, 0.32)",
+              "color": "#ffffff",
+              "opacity": 0.9
+             },
+             "title": "Edit this skin: recolour it and save your own override",
+             "type": "button",
+             "htmlType": "button",
+             "children": "Edit"
+            },
+            {
+             "aria-label": "Duplicate Bare",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "onClick": "[fn]",
+             "style": {
+              "backdropFilter": "blur(2px)",
+              "background": "rgba(0, 0, 0, 0.55)",
+              "border": "1px solid rgba(255, 255, 255, 0.32)",
+              "color": "#ffffff",
+              "opacity": 0.9
+             },
+             "title": "Fork this skin into a new skin you own — the source file is untouched",
+             "type": "button",
+             "htmlType": "button",
+             "children": "Fork"
+            }
+           ]
+          }
+         ]
         }
        ]
       }
@@ -5101,6 +6173,73 @@
          "type": "button",
          "htmlType": "button",
          "children": "Preview 10s"
+        },
+        {
+         "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-center px-2 pb-2",
+         "type": "div",
+         "children": [
+          {
+           "className": "pointer-events-auto",
+           "key": "star",
+           "type": "span",
+           "children": {
+            "aria-label": "Add Ocean Skin favourites",
+            "aria-pressed": "false",
+            "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+            "onClick": "[fn]",
+            "style": {
+             "backdropFilter": "blur(2px)",
+             "background": "rgba(0, 0, 0, 0.55)",
+             "border": "1px solid rgba(255, 255, 255, 0.32)",
+             "color": "#ffffff",
+             "opacity": 0.9
+            },
+            "title": "Star this skin: it joins the favourites rail on the left",
+            "type": "button",
+            "htmlType": "button",
+            "children": "☆"
+           }
+          },
+          {
+           "className": "pointer-events-auto flex items-center gap-1.5",
+           "key": "manage",
+           "type": "div",
+           "children": [
+            {
+             "aria-label": "Edit Ocean Skin",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "onClick": "[fn]",
+             "style": {
+              "backdropFilter": "blur(2px)",
+              "background": "rgba(0, 0, 0, 0.55)",
+              "border": "1px solid rgba(255, 255, 255, 0.32)",
+              "color": "#ffffff",
+              "opacity": 0.9
+             },
+             "title": "Edit this skin: recolour it and save your own override",
+             "type": "button",
+             "htmlType": "button",
+             "children": "Edit"
+            },
+            {
+             "aria-label": "Duplicate Ocean Skin",
+             "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+             "onClick": "[fn]",
+             "style": {
+              "backdropFilter": "blur(2px)",
+              "background": "rgba(0, 0, 0, 0.55)",
+              "border": "1px solid rgba(255, 255, 255, 0.32)",
+              "color": "#ffffff",
+              "opacity": 0.9
+             },
+             "title": "Fork this skin into a new skin you own — the source file is untouched",
+             "type": "button",
+             "htmlType": "button",
+             "children": "Fork"
+            }
+           ]
+          }
+         ]
         }
        ]
       }
@@ -5426,6 +6565,73 @@
       "type": "span",
       "children": "0s"
      }
+    },
+    {
+     "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+     "type": "div",
+     "children": [
+      {
+       "className": "pointer-events-auto",
+       "key": "star",
+       "type": "span",
+       "children": {
+        "aria-label": "Add Ocean Skin favourites",
+        "aria-pressed": "false",
+        "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+        "onClick": "[fn]",
+        "style": {
+         "backdropFilter": "blur(2px)",
+         "background": "rgba(0, 0, 0, 0.55)",
+         "border": "1px solid rgba(255, 255, 255, 0.32)",
+         "color": "#ffffff",
+         "opacity": 0.9
+        },
+        "title": "Star this skin: it joins the favourites rail on the left",
+        "type": "button",
+        "htmlType": "button",
+        "children": "☆"
+       }
+      },
+      {
+       "className": "pointer-events-auto flex items-center gap-1.5",
+       "key": "manage",
+       "type": "div",
+       "children": [
+        {
+         "aria-label": "Edit Ocean Skin",
+         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+         "onClick": "[fn]",
+         "style": {
+          "backdropFilter": "blur(2px)",
+          "background": "rgba(0, 0, 0, 0.55)",
+          "border": "1px solid rgba(255, 255, 255, 0.32)",
+          "color": "#ffffff",
+          "opacity": 0.9
+         },
+         "title": "Edit this skin: recolour it and save your own override",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Edit"
+        },
+        {
+         "aria-label": "Duplicate Ocean Skin",
+         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+         "onClick": "[fn]",
+         "style": {
+          "backdropFilter": "blur(2px)",
+          "background": "rgba(0, 0, 0, 0.55)",
+          "border": "1px solid rgba(255, 255, 255, 0.32)",
+          "color": "#ffffff",
+          "opacity": 0.9
+         },
+         "title": "Fork this skin into a new skin you own — the source file is untouched",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Fork"
+        }
+       ]
+      }
+     ]
     }
    ]
   },
@@ -5614,6 +6820,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Gateway favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Gateway",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Gateway",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -5938,6 +7211,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Gateway favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Gateway",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Gateway",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -6258,6 +7598,73 @@
      "type": "button",
      "htmlType": "button",
      "children": "Preview 10s"
+    },
+    {
+     "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+     "type": "div",
+     "children": [
+      {
+       "className": "pointer-events-auto",
+       "key": "star",
+       "type": "span",
+       "children": {
+        "aria-label": "Add Gateway favourites",
+        "aria-pressed": "false",
+        "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+        "onClick": "[fn]",
+        "style": {
+         "backdropFilter": "blur(2px)",
+         "background": "rgba(0, 0, 0, 0.55)",
+         "border": "1px solid rgba(255, 255, 255, 0.32)",
+         "color": "#ffffff",
+         "opacity": 0.9
+        },
+        "title": "Star this skin: it joins the favourites rail on the left",
+        "type": "button",
+        "htmlType": "button",
+        "children": "☆"
+       }
+      },
+      {
+       "className": "pointer-events-auto flex items-center gap-1.5",
+       "key": "manage",
+       "type": "div",
+       "children": [
+        {
+         "aria-label": "Edit Gateway",
+         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+         "onClick": "[fn]",
+         "style": {
+          "backdropFilter": "blur(2px)",
+          "background": "rgba(0, 0, 0, 0.55)",
+          "border": "1px solid rgba(255, 255, 255, 0.32)",
+          "color": "#ffffff",
+          "opacity": 0.9
+         },
+         "title": "Edit this skin: recolour it and save your own override",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Edit"
+        },
+        {
+         "aria-label": "Duplicate Gateway",
+         "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+         "onClick": "[fn]",
+         "style": {
+          "backdropFilter": "blur(2px)",
+          "background": "rgba(0, 0, 0, 0.55)",
+          "border": "1px solid rgba(255, 255, 255, 0.32)",
+          "color": "#ffffff",
+          "opacity": 0.9
+         },
+         "title": "Fork this skin into a new skin you own — the source file is untouched",
+         "type": "button",
+         "htmlType": "button",
+         "children": "Fork"
+        }
+       ]
+      }
+     ]
     }
    ]
   },
@@ -6446,6 +7853,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Colors Only favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Colors Only",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Colors Only",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -6774,6 +8248,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Third Alias favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Third Alias",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Third Alias",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -7097,6 +8638,73 @@
         "type": "span",
         "children": "0s"
        }
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Ocean Skin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -7421,6 +9029,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Ocean Skin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Ocean Skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -7749,6 +9424,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add no-label-skin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit no-label-skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate no-label-skin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },
@@ -8077,6 +9819,73 @@
        "type": "button",
        "htmlType": "button",
        "children": "Preview 10s"
+      },
+      {
+       "className": "pointer-events-none relative z-20 mt-auto flex items-center gap-1.5 justify-between px-1.5 pb-1.5",
+       "type": "div",
+       "children": [
+        {
+         "className": "pointer-events-auto",
+         "key": "star",
+         "type": "span",
+         "children": {
+          "aria-label": "Add Thin favourites",
+          "aria-pressed": "false",
+          "className": "rounded px-1.5 py-0.5 text-[0.8125rem] leading-5 transition-transform hover:scale-[1.08] shadow-sm",
+          "onClick": "[fn]",
+          "style": {
+           "backdropFilter": "blur(2px)",
+           "background": "rgba(0, 0, 0, 0.55)",
+           "border": "1px solid rgba(255, 255, 255, 0.32)",
+           "color": "#ffffff",
+           "opacity": 0.9
+          },
+          "title": "Star this skin: it joins the favourites rail on the left",
+          "type": "button",
+          "htmlType": "button",
+          "children": "☆"
+         }
+        },
+        {
+         "className": "pointer-events-auto flex items-center gap-1.5",
+         "key": "manage",
+         "type": "div",
+         "children": [
+          {
+           "aria-label": "Edit Thin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Edit this skin: recolour it and save your own override",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Edit"
+          },
+          {
+           "aria-label": "Duplicate Thin",
+           "className": "rounded px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 transition-all hover:scale-[1.08] shadow-sm",
+           "onClick": "[fn]",
+           "style": {
+            "backdropFilter": "blur(2px)",
+            "background": "rgba(0, 0, 0, 0.55)",
+            "border": "1px solid rgba(255, 255, 255, 0.32)",
+            "color": "#ffffff",
+            "opacity": 0.9
+           },
+           "title": "Fork this skin into a new skin you own — the source file is untouched",
+           "type": "button",
+           "htmlType": "button",
+           "children": "Fork"
+          }
+         ]
+        }
+       ]
       }
      ]
     },

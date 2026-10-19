@@ -102,11 +102,14 @@ export const CARD_CASES = {
   'single-mode light title': { scene: thinScene, owned: true },
 }
 
-/** Handlers are recorded as present, never called, by the digest. */
+/** Handlers are recorded as present, never called, by the digest. The card's own
+ *  action row (star, Edit, Fork) is pinned here too: it is the row that has been
+ *  reported wrong from the field three times, so parity must watch it. */
 export function cardSpies() {
   return {
     onApply: () => {}, onDelete: () => {}, onRename: () => {},
-    onExport: () => {}, onPreview: () => {}, onStopPreview: () => {}
+    onExport: () => {}, onPreview: () => {}, onStopPreview: () => {},
+    onEdit: () => {}, onDuplicate: () => {}, onToggleFavorite: () => {}
   }
 }
 

@@ -815,9 +815,10 @@ def main() -> int:
     print(f"Rebuilt {out_path} with {len(catalog)} scenes from "
           f"{len(user_skins)} bundled skins + {len(builtins)} backend built-ins, "
           f"{derived_count} derived palettes and {transport_count} gateway transports.")
-    print("Next: this repo root IS the plugin package. Put (or link) it at "
-          "<hermes home>/plugins/chroma and restart Hermes Desktop once "
-          "(Capabilities -> Plugins -> Rescan after that).")
+    print("Next: this repo root IS the plugin package. Install it from Hermes "
+          "Desktop -> Capabilities -> Plugins -> Install, by pasting the repo "
+          "URL (https://github.com/TobiasDraven/chroma-for-hermes). The dialog "
+          "enables the plugin and its Desktop half in one step.")
     return 0
 
 

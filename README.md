@@ -31,6 +31,9 @@ device connected to your gateway — including the CLI.
   this Desktop.
 - **A visual gallery** — browse real color swatches, search 94 skins by name,
   and preview them in light or dark mode.
+- **Favourites** — star a skin from its card and it joins a scrollable rail on
+  the left of the gallery, one click from the styles you actually use.
+  Unstar it from the card or from the rail.
 - **Every skin is one file** — one skin carries its light and its dark palette
   and a font choice of its own. The swatch preview shows both at once as a 2 x 6
   matrix: the light variant over the dark one. There are no single-mode skins.
@@ -72,70 +75,45 @@ skins. A skin belongs to exactly one pack and exactly one color family. See
   generator calls `str.removeprefix`). They are not required to use the picker.
 
 The plugin is a package: the Desktop half (the UI) plus a Python half (the
-backend that mints gateway skins). Both land in your Hermes home's
-`plugins/chroma/` directory, and Desktop copies the UI half out to
-`desktop-plugins/chroma/` itself. **The Desktop half is opt-in, so installing
-the files is not enough — you must enable the plugin before it appears.**
+backend that mints gateway skins). Both live in one directory, `<hermes
+home>/plugins/chroma/`, and Desktop copies the UI half out to
+`desktop-plugins/chroma/` by itself.
 
-The easiest route is to install straight from this repository. In Hermes
-Desktop's plugin page, give it this URL:
+Open Hermes Desktop, go to **Capabilities -> Plugins -> Install**, and give it
+this URL:
 
 ```text
 https://github.com/TobiasDraven/chroma-for-hermes
 ```
 
-Or from a terminal:
+That is the whole install. The dialog installs the package with the plugin
+enabled and switches on its Desktop half in the same step, so **Chroma appears as
+an enabled row on the Plugins page and its pane joins the sidebar when the
+install finishes**: no file copying, no script, no second toggle. The dialog
+offers **Force reinstall** for replacing an install you already have.
+
+From a terminal, the same install is:
 
 ```bash
 hermes plugins install TobiasDraven/chroma-for-hermes
+hermes plugins enable chroma
 ```
 
-Then enable it: open **Capabilities → Plugins**, find **Chroma** and enable it
-(this adds `chroma` to `plugins.enabled` in `config.yaml`), and run **Rescan** if
-the row is not listed. A backend that is enabled but still not mounted needs a
-full Hermes **restart**, not just a plugin reload — the Python half is mounted at
-startup. Until the backend is enabled and Hermes restarted, the picker's themes
-still apply and preview, but an import cannot mint a gateway skin and the rename,
-export and delete actions are unavailable.
+The second line is needed on this route only: a non-interactive install cannot
+answer the "enable now?" prompt, so it installs the plugin disabled. The Desktop
+dialog answers it for you.
 
-Prefer doing it by hand? Clone or download this repository, then follow your
-platform below.
+A backend that is enabled but not yet mounted needs a full Hermes **restart** (the
+Python half mounts at startup). Until then the picker's themes still apply and
+preview, but an import cannot mint a gateway skin and rename, export and delete
+are unavailable.
 
-### Windows
+### Fallbacks: an offline copy, or the Desktop half alone
 
-Double-click `install\install-windows.cmd`, or run:
+Nothing below is needed for the install above. It exists for a machine that
+cannot reach GitHub, or that wants only the UI.
 
-```powershell
-.\install\install-windows.cmd
-```
-
-The installer places the whole package at `<hermes home>\plugins\chroma` (a
-junction to this checkout by default, or a copy with `-Copy`), and Desktop then
-copies the UI half into `desktop-plugins\chroma`. It uses `%HERMES_HOME%` when
-set, otherwise an existing `%LOCALAPPDATA%\hermes` Desktop home, and falls back
-to `%USERPROFILE%\.hermes`. The exact destination is printed when installation
-finishes. **Restart Hermes Desktop once so the Python backend mounts**, then
-enable the plugin if you have not already (see above).
-
-### macOS
-
-Double-click `install/install-macos.command`, or run:
-
-```bash
-./install/install-macos.command
-```
-
-If macOS blocks the downloaded script, right-click it and choose **Open**, or
-run `sh install/install-macos.command`. The installer uses `$HERMES_HOME` when
-set and otherwise installs under `~/.hermes`, with the same package layout as
-the Windows script.
-
-> The Windows installer has been walked end to end on Windows 11: both modes
-> install a directory that passes `hermes plugins validate`. The macOS script is
-> written against the same layout and checked for shell syntax, but it has not
-> been run on a Mac. If it fails, the manual layout below is the fallback.
-
-### Linux or manual installation (Desktop half only)
+#### Windows### Linux or manual installation (Desktop half only)
 
 This drops only the UI half — no gateway-skin backend. Copy `desktop/plugin.js`
 to the exact destination for your platform:

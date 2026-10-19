@@ -22,7 +22,7 @@ The entry we will open a PR with:
 ```yaml
 name: chroma
 repo: https://github.com/TobiasDraven/chroma-for-hermes
-sha: <40-character sha of the commit the reviewer reads>
+sha: 4375bbb
 description: >-
   Browse, import and apply Hermes skins from the Desktop, including TweakCN
   imports that mint real gateway skins so the CLI and every connected Desktop
@@ -30,7 +30,7 @@ description: >-
 maintainer: TobiasDraven
 tier: community
 category: desktop
-version: "2.6.0"
+version: "2.7.0"
 requires_hermes: ">=0.22.0"
 readme: true
 capabilities:

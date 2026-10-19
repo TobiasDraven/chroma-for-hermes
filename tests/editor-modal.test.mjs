@@ -81,7 +81,8 @@ function modalProps(extra = {}) {
 test('the gear is on every card the pane renders, and only the eye cannot see it', async () => {
   const { context } = await loadPlugin()
   const t = context.testHelpers
-  const withGear = t.ThemeCard(cardProps({ onEdit: () => {} }))
+  const lone = { onDuplicate: undefined, onToggleFavorite: undefined }
+  const withGear = t.ThemeCard(cardProps({ onEdit: () => {}, ...lone }))
   const box = childrenOf(withGear)
   assert.equal(box.length, 3, 'the box holds the card, the preview pill and the action row')
   // The actions sit INSIDE the card's frame: the row is the frame's last
@@ -92,9 +93,12 @@ test('the gear is on every card the pane renders, and only the eye cannot see it
   assert.equal(rowClass.includes('absolute'), false, 'the row does not float over the edge')
   const buttons = findAll(actionRow, el => el.type === 'button')
   assert.equal(buttons.length, 1, 'a card with only an editor offers only Edit')
-  const both = findAll(childrenOf(t.ThemeCard(cardProps({ onEdit: () => {}, onDuplicate: () => {} })))[2],
+  const both = findAll(childrenOf(t.ThemeCard(cardProps({ ...lone, onEdit: () => {}, onDuplicate: () => {} })))[2],
     el => el.type === 'button')
   assert.equal(both.length, 2, 'Edit and Fork travel together when both exist')
+  const withStar = findAll(childrenOf(t.ThemeCard(cardProps({ onEdit: () => {}, onDuplicate: () => {}, onToggleFavorite: () => {} })))[2],
+    el => el.type === 'button')
+  assert.equal(withStar.length, 3, 'and the star makes three, in one row')
   const gear = buttons[0]
   assert.equal(gear.type, 'button')
   assert.equal(at(gear, 'type'), 'button')
@@ -117,14 +121,15 @@ test('the gear is on every card the pane renders, and only the eye cannot see it
   // Pressing it opens the editor on THIS scene.
   let opened = null
   const wired = t.ThemeCard(cardProps({ onEdit: target => { opened = target } }))
-  const wiredGear = findAll(childrenOf(wired)[2], el => el.type === 'button')[0]
+  const wiredGear = findAll(childrenOf(wired)[2],
+    el => el.type === 'button' && /^Edit /.test(String(at(el, 'aria-label'))))[0]
   at(wiredGear, 'onClick')()
   assert.equal(opened, RICH_SCENE, 'the gear hands the scene to the editor')
 
   // A card with no editor behind it must not offer the affordance, and must
   // render as it did before the editor existed: the card parity fixture in
   // tests/fixtures renders exactly this prop set.
-  const plain = t.ThemeCard(cardProps())
+  const plain = t.ThemeCard(cardProps({ onEdit: undefined, onDuplicate: undefined, onToggleFavorite: undefined }))
   assert.equal(childrenOf(plain).length, 2, 'no handler, no gear: card + pill')
   assert.equal(countTag(plain, 'button'), 2, 'the card and its pill, as before')
 })
@@ -137,7 +142,8 @@ test('an overridden card carries the edited marker, and an authored one carries 
   assert.ok(textsOf(marked).includes('edited'), 'an override is visible on the card')
   const marker = findAll(marked, el => at(el, 'children') === 'edited')[0]
   assert.match(at(marker, 'title'), /not the shipped palette/, 'the marker says what it means')
-  assert.equal(countTag(marked, 'button'), 2, 'the marker adds no control')
+  assert.equal(countTag(marked, 'button'), countTag(t.ThemeCard(cardProps()), 'button'),
+    'the marker adds no control of its own')
 })
 
 test('the colour field is a swatch over a hidden native input, plus a hex field that validates', async () => {

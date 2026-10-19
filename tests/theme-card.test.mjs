@@ -102,18 +102,36 @@ test('the palette is a 2 x 6 matrix: a flex column of two flex rows of six swatc
 })
 
 test('an unowned card offers only itself and the preview pill; an owned one adds the three actions', () => {
-  const unowned = render({ owned: false })
+  // The pane hands in the star, Edit and Fork; this case is about what the card
+  // carries on its own, so the three card actions are withheld here.
+  const bare = { onEdit: undefined, onDuplicate: undefined, onToggleFavorite: undefined }
+  const unowned = render({ owned: false, ...bare })
   assert.equal(countType(unowned, 'button'), 2, 'card + preview pill only')
-  const owned = render({ owned: true })
+  const owned = render({ owned: true, ...bare })
   assert.equal(countType(owned, 'button'), 5, 'card + pill + export + rename + delete')
   const ownedText = textsIn(owned)
   for (const label of ['Export', 'Rename', 'Delete']) assert.ok(ownedText.includes(label), label)
   assert.equal(textsIn(unowned).includes('Delete'), false, 'an unowned card must not offer delete')
 })
 
+test('the star, Edit and Fork ride one row INSIDE the card frame', () => {
+  const starred = render({ owned: false, favorited: true })
+  assert.equal(countType(starred, 'button'), 5, 'card + pill + star + Edit + Fork')
+  assert.equal(starred.children.length, 3, 'the frame holds the card, the preview pill and the action row')
+  const row = starred.children[2]
+  assert.ok(String(row.className).includes('mt-auto'), 'the row is the frame last in-flow child')
+  assert.equal(String(row.className).includes('absolute'), false, 'so it cannot float over the card edge')
+  assert.equal(row.children.length, 2, 'the star, then the manage group')
+  assert.ok(textsIn(starred).includes('\u2605'), 'a favourited card shows the solid star')
+  assert.ok(textsIn(render({ owned: false })).includes('\u2606'), 'an unfavourited one shows the hollow star')
+  assert.ok(textsIn(starred).includes('Edit'), 'Edit rides the same row')
+  assert.ok(textsIn(starred).includes('Fork'), 'so does Fork')
+})
+
 test('a circle holds only its palette, and its label sits ABOVE the card', () => {
-  const square = render({ shape: 'square', owned: false })
-  const circle = render({ shape: 'circle', owned: false })
+  const bare = { onEdit: undefined, onDuplicate: undefined, onToggleFavorite: undefined }
+  const square = render({ shape: 'square', owned: false, ...bare })
+  const circle = render({ shape: 'circle', owned: false, ...bare })
   assert.equal(firstButton(square).children.length, 2, 'square card: palette + label row inside')
   assert.equal(firstButton(circle).children.length, 1, 'circle card: palette alone inside')
   assert.equal(square.children.length, 2, 'wrapper: card + pill')
