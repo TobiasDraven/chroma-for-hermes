@@ -22,8 +22,8 @@ desktop/plugin.template.js  ──(scripts/regenerate.py)──▶  desktop/plug
         + skins/ + gateway-skins/ + backend built-ins
 ```
 
-`regenerate.py` reports its own census, e.g. "109 scenes from 150 bundled skins
-+ 9 backend built-ins and 218 gateway transports". It also normalises newlines: an
+`regenerate.py` reports its own census, e.g. "94 scenes from 94 bundled skins
++ 0 backend built-ins, 40 derived palettes and 188 gateway transports". It also normalises newlines: an
 earlier build doubled every CRLF, which is why the template and the build must
 stay the same line count.
 

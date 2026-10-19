@@ -7,7 +7,7 @@ mint real gateway skins so the CLI and every connected Desktop follow a change.
 A hard fork of "Hermes Theme Picker" by Joshua Timothy (`jdtimothy/hermes-theme-picker`,
 MIT) — see `THIRD_PARTY_NOTICES.md`.
 
-`plugin.yaml`: name `chroma`, version `2.5.2` (matching `VERSION`). The repo root IS the plugin package.
+`plugin.yaml`: name `chroma`, version `2.6.0` (matching `VERSION`). The repo root IS the plugin package.
 
 ## Surfaces it registers
 
@@ -21,7 +21,7 @@ green:
 | Sidebar entry | `SIDEBAR_NAV_AREA` | path `/chroma` |
 | Status-bar chip | `STATUSBAR_AREAS` | renders the active skin |
 | Command palette | — | command id `chroma.open` |
-| Theme catalog | `THEMES_AREA` | one Desktop theme per scene (100+) |
+| Theme catalog | `THEMES_AREA` | two Desktop themes per skin (188 transports) |
 | Gateway sync | — | pushes a picked skin to the gateway |
 
 ## Features

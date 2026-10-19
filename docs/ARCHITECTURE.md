@@ -131,8 +131,9 @@ Desktop build.
 |---|---|
 | `desktop/plugin.js` | Generated deliverable copied into Desktop |
 | `desktop/plugin.template.js` | Source of truth for picker UI and behavior |
-| `skins/` | 150 vendored YAML palettes |
-| `gateway-skins/` | 218 mode-locked light/dark transports for all 109 two-mode scenes |
+| `skins-v2/` | 94 skin files - one per skin, both palettes, category, pack, energy, fonts |
+| `skins/` | The retired v1 pair table, kept for the migration record |
+| `gateway-skins/` | 188 mode-locked light/dark transports for all 94 skins |
 | `scripts/regenerate.py` | Builds scenes and regenerates `plugin.js` |
 | `scripts/backend-builtins.json` | Pinned backend palettes for environment-independent generation |
 | `scripts/cliffwade-v1.1.0-sha256.json` | Pinned byte-identity manifest for the 100 vendored CliffWade v1.1.0 YAML files |

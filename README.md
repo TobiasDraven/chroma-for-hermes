@@ -29,16 +29,18 @@ device connected to your gateway — including the CLI.
   then every connected Desktop and CLI receives the same palette. Pushing to the
   gateway needs the Python backend (see below); without it the repaint stays on
   this Desktop.
-- **A visual gallery** — browse real color swatches, search 109 scenes by name,
+- **A visual gallery** — browse real color swatches, search 94 skins by name,
   and preview them in light or dark mode.
-- **Every skin is a pair** — each scene ships a light and a dark palette, and
-  the swatch preview shows both at once as a 2 x 6 matrix: the light variant
-  over the dark one. There are no "dark only" or "light only" skins any more.
-- **Two ways to browse** — group by scene, or switch the dropdown to group by
-  broad theme category: Minimal, Pastels, Vibrant, Muted, Earth, Retro &
-  Terminal, Nature, Warm, Orange, Gold, Cool and Violet. The category is derived
-  from each palette in OKLCH, so it follows what the eye sees rather than a raw
-  saturation number, and your choice sticks per profile.
+- **Every skin is one file** — one skin carries its light and its dark palette
+  and a font choice of its own. The swatch preview shows both at once as a 2 x 6
+  matrix: the light variant over the dark one. There are no single-mode skins.
+- **Thirty core skins, six packs** — the picker opens on thirty core skins.
+  Turn on Earth, Cyberpunk, Zen, Retro, Noir or Studio to see the rest; your
+  choice sticks per profile.
+- **Two ways to browse** — group by skin, or switch the dropdown to group by
+  color family: Persimmon, Apricot, Amber, Gold, Lemon, Fern, Teal, Cobalt,
+  Indigo, Violet, Rose and Neutral. The family is measured from the accent in
+  OKLCH, so it follows the color rather than a raw saturation number.
 - **Built for comparison** — change themes without leaving the picker, closing
   your chat, or reloading Hermes.
 - **Works offline** — the catalog is embedded in the plugin, and themes are also
@@ -54,9 +56,9 @@ device connected to your gateway — including the CLI.
   apply the theme temporarily. A countdown shows the remaining time, and the
   theme reverts automatically when it reaches zero. Click again to stop early.
 
-The plugin bundles **150 skin palettes** and publishes them as **109 two-mode
-scenes** — every scene carries a coordinated light and dark palette, and there
-are no single-mode (dark-only or light-only) scenes. See
+The plugin ships **94 skins**. Each one is a single file carrying a coordinated
+light palette, a dark palette and its font choice, so there are no single-mode
+skins. A skin belongs to exactly one pack and exactly one color family. See
 [Third-Party Notices](THIRD_PARTY_NOTICES.md) for palette credits.
 
 ## Install
