@@ -35,11 +35,11 @@ them in Appearance. Dropping them removed the entire missing-role defect class.
 | Gate | Result |
 |---|---|
 | JS suite | 228 / 228, exit 0 |
-| Backend suite | 163 passed |
+| Backend suite | `test_plugin_api.py` 163 passed; `pytest tests/` 179 passed, 4 skipped |
 | Generator suite | 16 passed, 4 skipped |
 | `scripts/check-packs.py` | OK: contract holds |
 | `hermes plugins validate .` | Validation passed |
-| GitHub CI (`8e99e9e`) | success — 3-OS matrix + build-is-current |
+| GitHub CI (`8b9cadc`) | success — 3-OS matrix + build-is-current |
 | `rigour check --ci` | **24 violations, 28/100 — red** |
 
 ## Accepted, not silenced
