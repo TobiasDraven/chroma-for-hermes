@@ -226,7 +226,7 @@ test('the modal lays out header, preview, six role rows, the advisory strip and 
   assert.ok(actions.includes('Save'), 'Save is offered')
   assert.ok(!actions.includes('Reset'), 'Reset is not: only an override can be reset')
   const save = buttonsWith(zones[5], 'Save')[0]
-  assert.notEqual(at(save, 'disabled'), true, 'Save is ENABLED on a built-in scene')
+  assert.equal(at(save, 'disabled'), true, 'Save waits for a change: an untouched save pins the shipped palette')
   assert.match(at(save, 'title'), /override of the shipped palette/)
 })
 
@@ -257,7 +257,7 @@ test('an override reaches the fields, offers Reset, and a read-only card says wh
   // when a stray override record happens to share the name.
   const owned = t.EditorModal(modalProps({ owned: true, overrides: { 'ocean-skin': override } }))
   const ownedSave = buttonsWith(owned, 'Save')[0]
-  assert.notEqual(at(ownedSave, 'disabled'), true, 'an owned skin is editable in place')
+  assert.equal(at(ownedSave, 'disabled'), true, 'an owned skin also saves only when something changed')
   assert.match(at(ownedSave, 'title'), /in place/, 'Save names the in-place door')
   assert.ok(textsOf(owned).some(text => text.includes('rewrites its file in place')), 'and the header says so')
   assert.ok(!textsOf(owned).includes('Reset'), 'an owned skin has no authored palette to reset')
@@ -375,10 +375,12 @@ test('a draft becomes the override body the routes expect', async () => {
   const draft = t.draftForScene(RICH_SCENE, 'light')
   assert.equal(draft.shell, RICH_SCENE.lightColors.background)
   assert.equal(draft.signature, RICH_SCENE.lightColors.ui_accent)
-  assert.equal(draft.text, RICH_SCENE.lightColors.banner_text)
+  // ui_text is the key the palette engine reads first; banner_text is its alias.
+  // Writing the alias moved the preview and left the applied theme untouched.
+  assert.equal(draft.text, RICH_SCENE.lightColors.ui_text)
   assert.equal(draft.dim, '', 'a role the palette omits is empty, not invented')
   const payload = t.overridePayload({ light: draft, dark: t.draftForScene(EMPTY_SCENE, 'dark') })
-  assert.deepEqual(sortedKeys(payload.light), ['background', 'banner_text', 'status_bar_bg', 'ui_accent', 'ui_border'],
+  assert.deepEqual(sortedKeys(payload.light), ['background', 'status_bar_bg', 'ui_accent', 'ui_border', 'ui_text'],
     'the primary skin key per role, no aliases')
   assert.deepEqual(sortedKeys(payload.dark), [], 'a role with nothing in it is omitted, not sent as an empty string')
   assert.equal(payload.light.background, RICH_SCENE.lightColors.background)

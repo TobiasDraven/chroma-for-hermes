@@ -34,8 +34,9 @@ them in Appearance. Dropping them removed the entire missing-role defect class.
 
 | Gate | Result |
 |---|---|
-| JS suite | 228 / 228, exit 0 |
+| JS suite | 232 / 232, exit 0 |
 | Backend suite | `test_plugin_api.py` 163 passed; `pytest tests/` 179 passed, 4 skipped |
+| Editor roles | all six change the applied theme (new `tests/editor-role-application.test.mjs`) |
 | Generator suite | 16 passed, 4 skipped |
 | `scripts/check-packs.py` | OK: contract holds |
 | `hermes plugins validate .` | Validation passed |

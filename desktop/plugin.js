@@ -273,6 +273,15 @@ function skinSeeds(skin) {
 
 // The Desktop palette for a skin. No branching at all: every ratio comes from the
 // ramp, and every seed falls back through pickColor.
+// The raised-surface seed: an authored bar colour that is meaningfully apart from
+// the shell, else the ramp's own card step.
+function surfaceSurface(colors, background, foreground, ratio) {
+  const seed = pickColor(colors, ['status_bar_bg'], null)
+  if (!seed) return mix(background, foreground, ratio)
+  if (contrastRatio(seed, background) < 1.02) return mix(background, foreground, ratio)
+  return seed
+}
+
 function skinPalette({ colors, ramp, background, foreground }) {
   const ratios = ramp.mix
   const accentSeed = pickColor(colors, ['ui_accent', 'banner_accent', 'banner_title'], mix(foreground, background, 0.55))
@@ -284,7 +293,12 @@ function skinPalette({ colors, ramp, background, foreground }) {
   return {
     background,
     foreground,
-    card: mix(background, foreground, ratios.card),
+    // The raised surface a skin AUTHORED, when it carries one, instead of a mix
+    // that approximates it. Across the catalogue the two sit within 12% of each
+    // other in luminance, so this honours the data without designing anything.
+    // A bar indistinguishable from the shell falls back to the mix, or the card
+    // would vanish into the page it sits on.
+    card: surfaceSurface(colors, background, foreground, ratios.card),
     cardForeground: foreground,
     muted: mix(background, foreground, ratios.muted),
     mutedForeground,
@@ -2732,7 +2746,7 @@ const STRIP_BANDS = [
   ['background'],
   ['status_bar_bg', 'completion_menu_bg'],
   ['ui_accent', 'banner_accent', 'banner_title'],
-  ['banner_text', 'ui_text', 'status_bar_text'],
+  ['ui_text', 'banner_text', 'status_bar_text'],
   ['banner_dim'],
   ['ui_border', 'banner_border', 'session_border']
 ]
@@ -3052,6 +3066,12 @@ function adviceTarget(role) {
  *  alias chain paletteStrip() reads (STRIP_BANDS) so a row and the preview can
  *  never disagree about which key a role is.
  *
+ *  The chain's FIRST key must be the one the palette engine reads first
+ *  (skinSeeds / skinPalette). Two roles shipped with the order reversed: they
+ *  wrote `banner_text` and `status_bar_bg` while the engine reads `ui_text` and
+ *  `background`, so the row, the strip and the save all moved and the applied
+ *  theme did not. `tests/editor-role-application.test.mjs` now pins the seam.
+ *
  *  `kind` picks the advisory target. `against` names the colour the read-out is
  *  measured against: every role is read against the shell, and the shell itself
  *  against its own text — its contrast with itself is 1:1 by definition and
@@ -3060,7 +3080,7 @@ const EDITOR_ROLES = [
   { id: 'shell', label: 'Shell', hint: 'the base every other role is read against', keys: ['background'], kind: 'interface', against: 'text' },
   { id: 'surface', label: 'Surface', hint: 'raised bars, menus, cards', keys: ['status_bar_bg', 'completion_menu_bg'], kind: 'interface', against: 'shell' },
   { id: 'signature', label: 'Signature', hint: 'accent surfaces and highlights', keys: ['ui_accent', 'banner_accent', 'banner_title'], kind: 'interface', against: 'shell' },
-  { id: 'text', label: 'Text', hint: 'the reading colour', keys: ['banner_text', 'ui_text', 'status_bar_text'], kind: 'text', against: 'shell' },
+  { id: 'text', label: 'Text', hint: 'the reading colour', keys: ['ui_text', 'banner_text', 'status_bar_text'], kind: 'text', against: 'shell' },
   { id: 'dim', label: 'Dim text', hint: 'secondary and muted labels', keys: ['banner_dim'], kind: 'text', against: 'shell' },
   { id: 'structure', label: 'Structure', hint: 'borders and dividers', keys: ['ui_border', 'banner_border', 'session_border'], kind: 'interface', against: 'shell' }
 ]
@@ -3140,6 +3160,13 @@ function draftForScene(scene, modeKey) {
  *  draft as separate state, and a comparator that took the whole nested shape
  *  would answer "equal" for two flat drafts that disagree (nothing to look up,
  *  nothing to find). */
+/** Save is offered always, enabled only when the draft differs from what is
+ *  stored. Saving an untouched palette pins the shipped colours as an override,
+ *  so a later catalogue fix would never reach that skin. */
+function saveDisabled(dirty, busy) {
+  return Boolean(busy) || !dirty
+}
+
 function modeDraftEqual(a, b) {
   for (const role of EDITOR_ROLES) {
     const av = a ? a[role.id] : ''
@@ -3551,7 +3578,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
               jsx('button', {
                 key: 'save',
                 type: 'button',
-                disabled: !!busy,
+                disabled: saveDisabled(dirty, busy),
                 onClick: () => { if (onSave) onSave(scene.name, overridePayload(draft, modes)) },
                 title: owned ? OWNED_SAVE_REASON : 'Store your edit as an override of the shipped palette',
                 className: EDITOR_SAVE_CLASS,
@@ -3566,7 +3593,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
                     type: 'button',
                     disabled: !!busy,
                     onClick: startFork,
-                    title: 'Save these colours as a NEW skin you own — the source theme is left untouched',
+                    title: 'Save these colours as a NEW skin you own — the source skin is left untouched',
                     className: EDITOR_ACTION_CLASS,
                     children: 'Save as new'
                   })

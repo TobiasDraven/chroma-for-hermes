@@ -7,6 +7,16 @@ Notable changes to Chroma are documented here. This project uses
 
 The catalogue is rebuilt. This is the release prepared for the public directory.
 
+### Fixed
+
+- **The editor's Text and Surface controls were cosmetic.** Both wrote a key the
+  palette engine never read first, so the card preview and the saved override
+  moved while the applied theme did not. Text now writes `ui_text`; the palette
+  now uses a skin's authored `status_bar_bg` as its raised surface instead of a
+  mix that only approximated it (84 of 94 skins sit a shade differently; no other
+  role moved). Save is disabled until something changed, so opening a skin and
+  pressing Save no longer pins the shipped palette as an override.
+
 ### Changed
 
 - **One skin, one file.** `skins-v2/` holds 94 skin files. Each carries a light

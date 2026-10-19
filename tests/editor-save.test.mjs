@@ -73,13 +73,13 @@ test('the size caps are read from /schema, not re-declared', async () => {
 
 test('a role whose primary key is missing from paletteKeys raises a drift alarm', async () => {
   const t = (await loadPlugin()).context.testHelpers
-  const agreeing = ['background', 'status_bar_bg', 'ui_accent', 'banner_text', 'banner_dim', 'ui_border']
+  const agreeing = ['background', 'status_bar_bg', 'ui_accent', 'ui_text', 'banner_dim', 'ui_border']
   assert.equal(t.schemaDrift(t.EDITOR_ROLES, agreeing).length, 0, 'the two vocabularies agree today')
 
   const drifted = t.schemaDrift(t.EDITOR_ROLES, ['background', 'ui_accent'])
   assert.deepEqual(
     plain(drifted.map(item => item.role + ':' + item.key)),
-    ['surface:status_bar_bg', 'text:banner_text', 'dim:banner_dim', 'structure:ui_border']
+    ['surface:status_bar_bg', 'text:ui_text', 'dim:banner_dim', 'structure:ui_border']
   )
   const notice = t.schemaDriftNotice(drifted)
   assert.equal(notice.kind, 'warning')
