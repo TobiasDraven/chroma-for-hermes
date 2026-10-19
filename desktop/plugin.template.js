@@ -2922,13 +2922,17 @@ function ThemeCardPreviewPill({ scene, previewing, previewUntil, onPreview, onSt
 // empty white box: `bg-black/45` was never generated, so the button fell back to
 // the host's default paint (white) while the label stayed white. Inline styles
 // are the one channel the host cannot fail to apply, so the pill carries its own.
+// Legible over ANY skin, and never invisible when the host's stylesheet lacks one
+// of our utilities: inline paint, no build step in the way. Semi-transparent so
+// the swatch under it still reads, opaque on hover so it can be hit.
 const CARD_ACTION_STYLE = {
-  background: 'rgba(0, 0, 0, 0.78)',
+  background: 'rgba(0, 0, 0, 0.55)',
   color: '#ffffff',
-  border: '1px solid rgba(255, 255, 255, 0.55)',
-  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.45)'
+  border: '1px solid rgba(255, 255, 255, 0.32)',
+  backdropFilter: 'blur(2px)',
+  opacity: 0.9
 }
-const EDIT_GEAR_CLASS = 'absolute bottom-1 left-1/2 z-10 -translate-x-1/2 rounded px-1 text-[0.625rem] font-semibold leading-4 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100'
+const EDIT_GEAR_CLASS = 'rounded px-1.5 text-[0.5625rem] font-semibold leading-4 transition-opacity hover:opacity-100'
 
 function ThemeCardEditGear({ scene, onEdit }) {
   return jsx('button', {
@@ -2952,7 +2956,7 @@ function ThemeCardEditGear({ scene, onEdit }) {
 // shipped file (§17.1). It sits at the bottom-RIGHT so it never collides with
 // the centred gear, and it carries the same keyboard/touch reachability rule
 // (`focus-visible:` + `pointer-coarse:`) the gear carries.
-const EDIT_DUPLICATE_CLASS = 'absolute bottom-1 right-1 z-10 rounded px-1 text-[0.625rem] font-semibold leading-4 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100'
+const EDIT_DUPLICATE_CLASS = 'rounded px-1.5 text-[0.5625rem] font-semibold leading-4 transition-opacity hover:opacity-100'
 
 function ThemeCardDuplicate({ scene, onDuplicate }) {
   return jsx('button', {
@@ -3410,9 +3414,11 @@ function sheetSurface(scene, mode) {
   }
   return '#20232b'
 }
-const EDITOR_SHEET_CLASS = 'mt-6 flex max-h-[80vh] w-full max-w-2xl flex-col gap-2 overflow-hidden rounded-lg border border-(--ui-stroke-secondary) p-3 shadow-xl'
-const EDITOR_PREVIEW_CLASS = 'flex h-14 w-full shrink-0 overflow-hidden rounded-[4px]'
-const EDITOR_ROW_CLASS = 'flex items-start gap-2'
+// Wider than it is tall, on a 4px rhythm, so a 43-colour palette reads as a
+// list and not as a scroll bar with a clipboard attached.
+const EDITOR_SHEET_CLASS = 'mt-4 flex max-h-[87vh] w-[min(94vw,64rem)] max-w-none flex-col gap-3 overflow-hidden rounded-xl border border-(--ui-stroke-secondary) p-4 shadow-2xl'
+const EDITOR_PREVIEW_CLASS = 'flex h-16 w-full shrink-0 overflow-hidden rounded-lg ring-1 ring-black/20'
+const EDITOR_ROW_CLASS = 'flex items-center gap-2 rounded px-1 py-[3px] transition-colors hover:bg-black/5'
 const EDITOR_ACTION_CLASS = 'shrink-0 rounded border border-(--ui-stroke-secondary) px-2 py-0.5 text-[0.625rem] hover:border-(--ui-stroke-strong) disabled:opacity-50'
 const EDITOR_SAVE_CLASS = 'shrink-0 rounded border border-(--ui-accent) bg-(--ui-accent)/15 px-2 py-0.5 text-[0.625rem] font-medium text-(--ui-accent) hover:border-(--ui-stroke-strong) disabled:opacity-50'
 // The fork affordance of §18.3 (`Update "<name>"` / separator / `Save as new`) is
@@ -3425,35 +3431,78 @@ const OWNED_SAVE_REASON = 'Rewrite your own skin file in place — this is not a
 /** One role across both modes: the label, then a light and a dark cell, each
  *  with the colour input and its own contrast read-out against that mode's
  *  shell. */
-// A short list of stacks a skin can name without shipping a font file. The field
-// is free text beside them: the engine accepts any CSS stack, and refusing one the
-// list forgot would make the list the product instead of the skin.
-const FONT_PRESETS_SANS = ['Inter', 'Segoe UI', 'system-ui', 'Helvetica Neue', 'Georgia', 'Verdana']
-const FONT_PRESETS_MONO = ['JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', 'Courier New']
+// A font is a CHOICE, not a sentence to type. These are the stacks the engine can
+// name without shipping a font file; a skin that already carries something else
+// keeps it, listed as its own option under its family name.
+const FONT_CHOICES_SANS = [
+  { label: 'Skin default', value: 'default' },
+  { label: 'System UI', value: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif' },
+  { label: 'Inter', value: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif' },
+  { label: 'Segoe UI', value: '"Segoe UI", system-ui, Roboto, sans-serif' },
+  { label: 'Helvetica Neue', value: '"Helvetica Neue", Helvetica, Arial, sans-serif' },
+  { label: 'IBM Plex Sans', value: '"IBM Plex Sans", "Segoe UI", system-ui, sans-serif' },
+  { label: 'Space Grotesk', value: '"Space Grotesk", "Segoe UI", system-ui, sans-serif' },
+  { label: 'Georgia', value: 'Georgia, "Times New Roman", serif' },
+  { label: 'Verdana', value: 'Verdana, Geneva, Tahoma, sans-serif' }
+]
 
-function FontField({ label, hint, value, presets, onChange }) {
-  return jsxs('div', { className: 'flex flex-col gap-1', children: [
-    jsxs('div', { key: 'head', className: 'flex items-center gap-2', children: [
-      jsx('span', { key: 'l', title: hint, className: 'w-16 shrink-0 text-[0.625rem] text-(--ui-text-secondary)', children: label }),
-      jsx('input', {
-        key: 'v',
-        type: 'text',
-        value: typeof value === 'string' ? value : '',
-        placeholder: presets[0] + ', fallback, sans-serif',
-        title: 'Any CSS font stack. The engine uses it as written.',
-        onChange: event => onChange(event && event.target ? event.target.value : ''),
-        className: 'h-6 min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 font-mono text-[0.625rem]'
-      })
-    ]}),
-    jsxs('div', { key: 'presets', className: 'flex flex-wrap gap-1 pl-[4.5rem]', children:
-      presets.map(preset => jsx('button', {
-        key: preset,
-        type: 'button',
-        onClick: () => onChange(preset),
-        title: 'Use ' + preset,
-        className: 'rounded border border-(--ui-stroke-secondary) px-1 text-[0.5625rem] text-(--ui-text-tertiary) hover:border-(--ui-accent) hover:text-(--ui-accent)',
-        children: preset
-      }))
+const FONT_CHOICES_MONO = [
+  { label: 'Skin default', value: 'default' },
+  { label: 'JetBrains Mono', value: '"JetBrains Mono", ui-monospace, Consolas, monospace' },
+  { label: 'Cascadia Code', value: '"Cascadia Code", "Cascadia Mono", Consolas, monospace' },
+  { label: 'Fira Code', value: '"Fira Code", Consolas, ui-monospace, monospace' },
+  { label: 'IBM Plex Mono', value: '"IBM Plex Mono", Consolas, ui-monospace, monospace' },
+  { label: 'Consolas', value: 'Consolas, "Courier New", ui-monospace, monospace' },
+  { label: 'Courier New', value: '"Courier New", Courier, monospace' },
+  { label: 'System mono', value: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' }
+]
+
+/** The option list for a stack that is already set but not on the short list. */
+function fontChoicesWith(current, choices) {
+  const empty = !current || current === 'default'
+  if (empty || choices.some(choice => choice.value === current)) return choices
+  const family = String(current).split(',')[0].replace(/["']/g, '').trim()
+  return choices.concat([{ label: 'Custom: ' + family, value: current }])
+}
+
+function FontSelect({ label, hint, value, choices, onChange }) {
+  const current = value || 'default'
+  const options = fontChoicesWith(current, choices)
+  return jsxs('div', { className: 'flex items-center gap-2', children: [
+    jsx('span', {
+      key: 'l',
+      title: hint,
+      className: 'w-16 shrink-0 text-[0.625rem] text-(--ui-text-secondary)',
+      children: label
+    }),
+    jsx(Select, {
+      key: 's',
+      value: current,
+      onValueChange: next => onChange(next === 'default' ? '' : next),
+      children: [
+        jsx(SelectTrigger, {
+          key: 't',
+          className: 'h-7 min-w-0 flex-1 text-[0.625rem]',
+          'aria-label': label + ' font',
+          children: jsx(SelectValue, {})
+        }),
+        jsx(SelectContent, {
+          key: 'c',
+          children: options.map(option => jsx(SelectItem, {
+            key: option.value,
+            value: option.value,
+            children: option.label
+          }))
+        })
+      ]
+    }),
+    jsx('span', {
+      key: 'p',
+      'aria-hidden': 'true',
+      title: 'A sample in this font',
+      className: 'w-8 shrink-0 text-center text-[0.6875rem] text-(--ui-text-tertiary)',
+      style: { fontFamily: value || undefined },
+      children: 'Aa'
     })
   ]})
 }
@@ -3466,10 +3515,13 @@ function editorRoleNodes(draft, onChange, shells, texts) {
   for (const role of EDITOR_ROLES) {
     if (role.group !== group) {
       group = role.group
-      nodes.push(jsx('div', {
+      nodes.push(jsxs('div', {
         key: 'group-' + group,
-        className: 'pt-1 text-[0.5625rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)',
-        children: group
+        className: 'mt-2 flex items-center gap-2 pt-1 first:mt-0',
+        children: [
+          jsx('span', { key: 't', className: 'text-[0.5625rem] font-semibold uppercase tracking-[0.08em] text-(--ui-text-tertiary)', children: group }),
+          jsx('span', { key: 'r', className: 'h-px flex-1 bg-(--ui-stroke-secondary)' })
+        ]
       }))
     }
     nodes.push(jsx(EditorRoleRow, {
@@ -3565,7 +3617,7 @@ function ModalShell({ title, subtitle, surface, onClose, children }) {
       className: EDITOR_SHEET_CLASS,
       style: { backgroundColor: surface || '#20232b' },
       children: [
-        jsxs('div', { key: 'head', className: 'flex items-start justify-between gap-2', children: [
+        jsxs('div', { key: 'head', className: 'flex shrink-0 items-start justify-between gap-2 border-b border-(--ui-stroke-secondary) pb-2', children: [
           jsxs('div', { className: 'min-w-0', children: [
             jsx('div', { className: 'truncate text-sm font-semibold', children: title }),
             subtitle ? jsx('div', { className: 'text-[0.625rem] text-(--ui-text-tertiary)', children: subtitle }) : null
@@ -3808,6 +3860,13 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
             children: '✕'
           })
         ]}),
+        // One scroll container, between a pinned header and a pinned footer. The
+        // palette is 36 rows; scrolling the whole dialog would take the Save
+        // button away with it.
+        jsx('div', {
+          key: 'body',
+          className: 'flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1',
+          children: [
         jsx('div', {
           key: 'preview',
           className: EDITOR_PREVIEW_CLASS,
@@ -3832,7 +3891,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
               : null
           ]
         }),
-        jsxs('div', { key: 'roles', className: 'flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto pr-1', children: [
+        jsxs('div', { key: 'roles', className: 'flex flex-col gap-0.5', children: [
           jsxs('div', { key: 'columns', className: 'flex items-center gap-2 text-[0.5625rem] uppercase tracking-wide text-(--ui-text-tertiary)', children: [
             jsx('span', { className: 'w-24 shrink-0', children: 'Role' }),
             jsx('span', { className: 'flex-1', children: '☀ light' }),
@@ -3846,20 +3905,20 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
             jsx('span', { key: 't', className: 'text-[0.5625rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)', children: 'Typography' }),
             jsx('span', { key: 'h', className: 'text-[0.5625rem] text-(--ui-text-tertiary)', children: 'applies to both modes' })
           ]}),
-          jsx(FontField, {
+          jsx(FontSelect, {
             key: 'sans',
             label: 'Interface',
             hint: 'the reading font of the interface',
             value: fonts.fontSans,
-            presets: FONT_PRESETS_SANS,
+            choices: FONT_CHOICES_SANS,
             onChange: value => changeFont('fontSans', value)
           }),
-          jsx(FontField, {
+          jsx(FontSelect, {
             key: 'mono',
             label: 'Code',
             hint: 'the font of code, diffs and the prompt',
             value: fonts.fontMono,
-            presets: FONT_PRESETS_MONO,
+            choices: FONT_CHOICES_MONO,
             onChange: value => changeFont('fontMono', value)
           })
         ]}),
@@ -3877,9 +3936,10 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
             jsx('span', { key: 'note', children: 'Marked, never refused — it is your skin.' })
           ])
         }),
+        ]}),
         jsxs('div', {
           key: 'actions',
-          className: 'flex items-center justify-between gap-2 border-t border-(--ui-stroke-secondary) pt-2',
+          className: 'flex shrink-0 items-center justify-between gap-2 border-t border-(--ui-stroke-secondary) pt-2',
           children: [
             jsxs('span', { key: 'state', className: 'min-w-0 text-[0.625rem] text-(--ui-text-tertiary)', children: [
               owned
@@ -4002,11 +4062,21 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   // The gear appears only when the pane hands in an edit handler: a card with no
   // editor behind it must not offer the affordance.
   const boxChildren = [card, jsx(ThemeCardPreviewPill, { scene, previewing, previewUntil, onPreview, onStopPreview })]
-  if (typeof onEdit === 'function') {
-    boxChildren.push(jsx(ThemeCardEditGear, { scene, onEdit }))
-  }
-  if (typeof onDuplicate === 'function') {
-    boxChildren.push(jsx(ThemeCardDuplicate, { scene, onDuplicate }))
+  // The pill row sits INSIDE the card's own box: inset by the card's own corner
+  // radius, on the palette block, so the actions belong to the skin they act on
+  // instead of hanging off its edge.
+  const cardActions = []
+  if (typeof onEdit === 'function') cardActions.push(jsx(ThemeCardEditGear, { scene, onEdit }))
+  if (typeof onDuplicate === 'function') cardActions.push(jsx(ThemeCardDuplicate, { scene, onDuplicate }))
+  if (cardActions.length) {
+    boxChildren.push(jsx('div', {
+      className: 'pointer-events-none absolute inset-x-1 bottom-1 flex items-center justify-between gap-1',
+      children: cardActions.map((action, index) => jsx('span', {
+        key: index,
+        className: 'pointer-events-auto opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 pointer-coarse:opacity-100',
+        children: action
+      }))
+    }))
   }
   const cardBox = jsxs('div', {
     className: 'group relative w-full',

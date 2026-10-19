@@ -83,8 +83,16 @@ test('the gear is on every card the pane renders, and only the eye cannot see it
   const t = context.testHelpers
   const withGear = t.ThemeCard(cardProps({ onEdit: () => {} }))
   const box = childrenOf(withGear)
-  assert.equal(box.length, 3, 'the box holds the card, the pill and the gear')
-  const gear = box[2]
+  assert.equal(box.length, 3, 'the box holds the card, the preview pill and the action row')
+  // The actions sit INSIDE the card's box now, on the swatch, side by side.
+  const actionRow = box[2]
+  assert.equal(at(actionRow, 'className').includes('absolute'), true, 'the row is placed over the card')
+  const buttons = findAll(actionRow, el => el.type === 'button')
+  assert.equal(buttons.length, 1, 'a card with only an editor offers only Edit')
+  const both = findAll(childrenOf(t.ThemeCard(cardProps({ onEdit: () => {}, onDuplicate: () => {} })))[2],
+    el => el.type === 'button')
+  assert.equal(both.length, 2, 'Edit and Fork travel together when both exist')
+  const gear = buttons[0]
   assert.equal(gear.type, 'button')
   assert.equal(at(gear, 'type'), 'button')
   assert.equal(at(gear, 'aria-label'), 'Edit Ocean Skin')
@@ -105,10 +113,9 @@ test('the gear is on every card the pane renders, and only the eye cannot see it
 
   // Pressing it opens the editor on THIS scene.
   let opened = null
-  at(box[2], 'onClick')()
-  assert.equal(opened === null, true, 'the first card had no handler of its own')
   const wired = t.ThemeCard(cardProps({ onEdit: target => { opened = target } }))
-  at(childrenOf(wired)[2], 'onClick')()
+  const wiredGear = findAll(childrenOf(wired)[2], el => el.type === 'button')[0]
+  at(wiredGear, 'onClick')()
   assert.equal(opened, RICH_SCENE, 'the gear hands the scene to the editor')
 
   // A card with no editor behind it must not offer the affordance, and must
@@ -195,7 +202,10 @@ test('the modal lays out header, preview, six role rows, the advisory strip and 
 
   const sheet = childrenOf(modal)[0]
   const zones = childrenOf(sheet)
-  assert.equal(zones.length, 7, 'seven zones: header, preview, legend, roles, typography, advice, actions')
+  assert.equal(zones.length, 3, 'a pinned header, one scrolling body, a pinned footer')
+  const body = childrenOf(zones[1])
+  assert.equal(body.length, 5, 'the body carries preview, legend, roles, typography and the advisory strip')
+  zones.splice(1, 1, ...body)
   assert.ok(textsOf(zones[0]).some(text => text.startsWith('Edit ')), 'the header names the scene')
   assert.equal(countTag(zones[0], 'button'), 1, 'the header holds the Close button')
 
@@ -210,10 +220,16 @@ test('the modal lays out header, preview, six role rows, the advisory strip and 
 
   // Typography: a skin is colour AND the two font stacks the engine reads.
   const fontZone = zones[4]
-  const fontInputs = findAll(fontZone, el => at(el, 'type') === 'text')
-  assert.equal(fontInputs.length, 2, 'one field for the interface font and one for code')
-  const fontButtons = findAll(fontZone, el => el.type === 'button')
-  assert.ok(fontButtons.length >= 8, 'and presets to fill them without typing a stack')
+  // A font is chosen, never typed. The harness stubs the SDK's Select, so the
+  // assertion is on what the harness can see: both roles are named, nothing is
+  // typed, and no preset chips remain.
+  const fontText = textsOf(fontZone)
+  assert.ok(fontText.includes('Interface'), 'the interface font has a row')
+  assert.ok(fontText.includes('Code'), 'the code font has a row')
+  assert.equal(findAll(fontZone, el => at(el, 'type') === 'text').length, 0,
+    'no free-text field: a stack is not a sentence')
+  assert.equal(findAll(fontZone, el => el.type === 'button').length, 0,
+    'and no preset chips to click - the list lives in the picker')
 
   // Role rows, light and dark side by side, each with the missing primitive.
   const roleZone = zones[3]
@@ -263,9 +279,10 @@ test('an override reaches the fields, offers Reset, and a read-only card says wh
   assert.ok(values.includes(RICH_SCENE.lightColors.background), 'a role the override omits keeps the authored value')
 
   // The preview paints the EFFECTIVE palette, not the authored one.
-  const rows = childrenOf(childrenOf(childrenOf(modal)[0])[1])[0]
-  const lightRow = childrenOf(rows)[0]
-  const darkRow = childrenOf(rows)[1]
+  const preview = findAll(modal, el => String(at(el, 'className')).includes('h-16'))[0]
+  const rows = childrenOf(childrenOf(preview)[0])
+  const lightRow = rows[0]
+  const darkRow = rows[1]
   assert.equal(at(childrenOf(lightRow)[2], 'style').backgroundColor, '#ff00ff', 'light row: the accent is the override')
   assert.equal(at(childrenOf(darkRow)[0], 'style').backgroundColor, '#010203', 'dark row: the shell is the override')
 

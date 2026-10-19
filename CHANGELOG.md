@@ -9,6 +9,17 @@ The catalogue is rebuilt. This is the release prepared for the public directory.
 
 ### Changed
 
+- **The card actions live inside the card.** Edit and Fork sit on the swatch, inset
+  by the card's own corner, at 0.9 opacity so the colour under them still reads,
+  full on hover. They no longer hang off the bottom edge.
+- **The editor was rebuilt around one scroll.** A pinned header, one scrolling
+  body, a pinned footer with Save — the palette is 36 rows, so scrolling the whole
+  dialog used to take the Save button with it. Wider sheet (`min(94vw, 64rem)`),
+  taller preview, section rules between groups, hairline row hover.
+- **Fonts are chosen from a list, not typed.** Two pickers, Interface and Code,
+  each offering a short set of real stacks plus the skin's own current choice. A
+  font is a decision, not a sentence.
+
 - **The editor edits the whole skin.** It showed six roles wrapping ten keys; a
   full skin carries **43** named colours and a ported half carries 27. All of
   them are rows now, grouped (Core, Menus, Text, State, Syntax, Diffs, Framing),
