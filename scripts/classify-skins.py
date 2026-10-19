@@ -48,7 +48,7 @@ SKINS = ROOT / "skins-v2"
 TAXONOMY = json.loads((ROOT / "scripts" / "taxonomy.json").read_text(encoding="utf-8"))
 CORE_TARGET = 30
 
-PACKS = ("earth", "cyberpunk", "zen", "retro", "noir")
+PACKS = ("earth", "cyberpunk", "zen", "retro", "noir", "studio")
 
 
 def load() -> dict[str, dict]:
@@ -147,6 +147,71 @@ def semantics_conflicts(skins: dict, feats: dict, cats: dict) -> list[dict]:
     return out
 
 
+
+# ---------------------------------------------------------------- typography
+# Every skin carries an explicit font choice. Each stack ends in the plugin's
+# own default, so a machine without the named face degrades to the same
+# fallback it always had.
+MONO = {
+    "courier": '"Courier Prime", "Courier New", Courier, monospace',
+    "plex": '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace',
+    "jetbrains": '"JetBrains Mono", "Cascadia Mono", Consolas, monospace',
+    "cascadia": '"Cascadia Mono", Consolas, "SF Mono", monospace',
+    "fira": '"Fira Code", "Cascadia Mono", Consolas, monospace',
+    "source": '"Source Code Pro", "Cascadia Mono", Consolas, monospace',
+    "menlo": 'Menlo, Monaco, "SF Mono", Consolas, monospace',
+}
+SANS = {
+    "inter": '"Inter", "Segoe UI", system-ui, sans-serif',
+    "humanist": '"Source Sans 3", "Segoe UI", system-ui, sans-serif',
+    "grotesk": '"Space Grotesk", "Segoe UI", system-ui, sans-serif',
+    "system": '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif',
+}
+
+PACK_FONT = {
+    "retro": ("system", "courier"),
+    "studio": ("inter", "jetbrains"),
+    "cyberpunk": ("grotesk", "fira"),
+    "zen": ("inter", "plex"),
+    "noir": ("system", "source"),
+    "earth": ("humanist", "cascadia"),
+    "core": ("system", "plex"),
+}
+
+# Named identities override the pack default: these palettes have a face people
+# recognise them by.
+NAME_FONT = {
+    "dark-gruvbox": ("system", "jetbrains"),
+    "dark-dracula": ("system", "fira"),
+    "dark-github": ("system", "menlo"),
+    "dark-vscode": ("system", "cascadia"),
+    "dark-solarized": ("system", "plex"),
+    "dark-tokyo-night": ("system", "jetbrains"),
+    "dark-kanagawa": ("system", "plex"),
+    "dark-nord": ("inter", "plex"),
+    "dark-catppuccin": ("inter", "fira"),
+    "dark-everforest": ("humanist", "plex"),
+    "dark-rosepine": ("inter", "jetbrains"),
+    "commodore-64": ("system", "courier"),
+    "green-screen": ("system", "courier"),
+    "amber-terminal": ("system", "courier"),
+    "retro-terminal": ("system", "courier"),
+    "dark-lcars": ("grotesk", "menlo"),
+    "typewriter-cream": ("humanist", "courier"),
+    "newsprint-noir": ("humanist", "courier"),
+    "alabaster": ("inter", "plex"),
+    "rice-paper": ("humanist", "plex"),
+}
+
+
+def typography_for(name: str, pack: str) -> dict:
+    sans_key, mono_key = NAME_FONT.get(name, PACK_FONT.get(pack, PACK_FONT["core"]))
+    return {
+        "fontSans": SANS[sans_key] + ', "Apple Color Emoji", "Segoe UI Emoji", emoji',
+        "fontMono": MONO[mono_key] + ', "Apple Color Emoji", "Segoe UI Emoji", emoji',
+    }
+
+
 def _warm(h: float) -> bool:
     return h < 118 or h >= 322
 
@@ -192,6 +257,15 @@ def score_packs(f: dict) -> dict[str, float]:
                                "shadow", "midnight", "eclipse", "deep")):
         scores["noir"] += 1.8
 
+    # studio: a ported editor or terminal palette with a known identity
+    if any(k in name for k in ("github", "vscode", "material", "solarized", "ayu",
+                               "nord", "catppuccin", "tokyo", "kanagawa", "gruvbox",
+                               "dracula", "everforest", "rosepine", "one", "mac",
+                               "monokai", "atom", "sublime", "xcode")):
+        scores["studio"] += 3.0
+    if f["energy"] in ("balanced", "vivid") and not _warm(h):
+        scores["studio"] += 0.4
+
     # earth: warm, moderate chroma, material names
     if _warm(h) and 0.05 <= C < 0.20:
         scores["earth"] += 1.1
@@ -207,7 +281,8 @@ def pick_pack(f: dict) -> str:
     best = max(PACKS, key=lambda p: (scores[p], -PACKS.index(p)))
     if scores[best] <= 0:
         # no region claims it: send it to the pack whose accent hue band is nearest
-        centroids = {"earth": 70, "cyberpunk": 315, "zen": 90, "retro": 80, "noir": 250}
+        centroids = {"earth": 70, "cyberpunk": 315, "zen": 90, "retro": 80,
+                     "noir": 250, "studio": 245}
         return min(PACKS, key=lambda p: min(abs(f["h"] - centroids[p]), 360 - abs(f["h"] - centroids[p])))
     return best
 
@@ -309,6 +384,7 @@ def main() -> int:
         skin["category"] = cats[name]
         skin["pack"] = packs[name]
         skin["energy"] = feats[name]["energy"]
+        skin["typography"] = typography_for(name, packs[name])
     if not args.dry_run:
         for name, skin in skins.items():
             (SKINS / (name + ".yaml")).write_text(

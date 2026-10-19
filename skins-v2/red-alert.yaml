@@ -2,8 +2,8 @@ schema_version: 2
 name: red-alert
 label: Red Alert
 description: Klaxon warning — deep crimson, hazard orange, and cold white on near-black, urgent but clean
-category: Other
-pack: core
+category: persimmon
+pack: cyberpunk
 source: user
 light_colors:
   background: '#F8F7F2'
@@ -82,3 +82,9 @@ provenance:
   dark_file: red-alert
   derived:
   - light
+energy: vivid
+typography:
+  fontSans: '"Space Grotesk", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Fira Code", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

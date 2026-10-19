@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-gruvbox
 label: Gruvbox
 description: Gruvbox dark, retro warm groove
-category: Dynamic
-pack: core
+category: gold
+pack: studio
 source: user
 light_colors:
   background: '#fbf1c7'
@@ -81,3 +81,9 @@ provenance:
   light_file: light-gruvbox
   dark_file: dark-gruvbox
   derived: []
+energy: vivid
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"JetBrains Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

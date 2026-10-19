@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-ayu
 label: Ayu
 description: Ayu Dark, soft blue-charcoal
-category: Dynamic
-pack: core
+category: cobalt
+pack: studio
 source: user
 light_colors:
   background: '#fafafa'
@@ -81,3 +81,8 @@ provenance:
   light_file: light-ayu
   dark_file: dark-ayu
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"JetBrains Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

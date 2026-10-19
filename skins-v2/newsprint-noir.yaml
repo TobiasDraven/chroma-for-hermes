@@ -2,8 +2,8 @@ schema_version: 2
 name: newsprint-noir
 label: Newsprint Noir
 description: 1940s detective film — stark off-white text on ink-black, with muted navy and rust accents
-category: Dynamic
-pack: core
+category: neutral
+pack: noir
 source: user
 light_colors:
   background: '#f7f4ec'
@@ -81,3 +81,9 @@ provenance:
   light_file: light-paper
   dark_file: newsprint-noir
   derived: []
+energy: quiet
+typography:
+  fontSans: '"Source Sans 3", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Courier Prime", "Courier New", Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

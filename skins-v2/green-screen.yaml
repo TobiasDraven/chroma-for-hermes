@@ -2,8 +2,8 @@ schema_version: 2
 name: green-screen
 label: Green Screen
 description: Vintage IBM monochrome — phosphor green on dark tube glass, with a slight glow bloom
-category: Other
-pack: core
+category: fern
+pack: retro
 source: user
 light_colors:
   background: '#F5F8F4'
@@ -82,3 +82,9 @@ provenance:
   dark_file: green-screen
   derived:
   - light
+energy: vivid
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Courier Prime", "Courier New", Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

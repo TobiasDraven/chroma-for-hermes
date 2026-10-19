@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-bone
 label: Bone
 description: Dark bone, warm charcoal with stone
-category: Dynamic
-pack: core
+category: neutral
+pack: noir
 source: user
 light_colors:
   background: '#eae6dc'
@@ -81,3 +81,9 @@ provenance:
   light_file: minimal-bone
   dark_file: dark-bone
   derived: []
+energy: quiet
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Source Code Pro", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

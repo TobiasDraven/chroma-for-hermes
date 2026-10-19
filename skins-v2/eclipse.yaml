@@ -2,8 +2,8 @@ schema_version: 2
 name: eclipse
 label: Eclipse
 description: Total solar eclipse — charcoal field with a corona ring of soft lilac and electric white
-category: Other
-pack: core
+category: violet
+pack: noir
 source: user
 light_colors:
   background: '#F6F6FB'
@@ -82,3 +82,9 @@ provenance:
   dark_file: eclipse
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Source Code Pro", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

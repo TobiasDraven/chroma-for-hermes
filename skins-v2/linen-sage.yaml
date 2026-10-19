@@ -2,8 +2,8 @@ schema_version: 2
 name: linen-sage
 label: Linen Sage
 description: Linen fabric — natural flax background with muted sage green and soft clay accents
-category: Other
-pack: core
+category: fern
+pack: zen
 source: user
 light_colors:
   background: '#f4f0e8'
@@ -82,3 +82,8 @@ provenance:
   dark_file: null
   derived:
   - dark
+energy: balanced
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

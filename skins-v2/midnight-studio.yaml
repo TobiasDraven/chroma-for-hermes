@@ -2,7 +2,7 @@ schema_version: 2
 name: midnight-studio
 label: Midnight Studio
 description: Late-night coding den — dark indigo, warm gold accents, and soft amber glow
-category: Other
+category: gold
 pack: core
 source: user
 light_colors:
@@ -82,3 +82,9 @@ provenance:
   dark_file: midnight-studio
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

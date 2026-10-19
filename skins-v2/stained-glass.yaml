@@ -2,8 +2,8 @@ schema_version: 2
 name: stained-glass
 label: Stained Glass
 description: Cathedral window — jewel tones of sapphire, ruby, emerald, and amber on dark lead
-category: Dynamic
-pack: core
+category: cobalt
+pack: noir
 source: user
 light_colors:
   background: '#f7f3ee'
@@ -81,3 +81,9 @@ provenance:
   light_file: light-stained-glass
   dark_file: stained-glass
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Source Code Pro", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

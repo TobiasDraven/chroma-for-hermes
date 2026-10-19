@@ -2,8 +2,8 @@ schema_version: 2
 name: warm-ash
 label: Warm Ash
 description: Fireplace embers gone cold — a warm gray monochrome with the faintest amber memory
-category: Dynamic
-pack: core
+category: neutral
+pack: zen
 source: user
 light_colors:
   background: '#f4f1ea'
@@ -81,3 +81,8 @@ provenance:
   light_file: light-oat
   dark_file: warm-ash
   derived: []
+energy: quiet
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-one
 label: One
 description: One Dark, Atom's default editor theme
-category: Dynamic
-pack: core
+category: cobalt
+pack: studio
 source: user
 light_colors:
   background: '#fafafa'
@@ -81,3 +81,8 @@ provenance:
   light_file: light-one
   dark_file: dark-one
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"JetBrains Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

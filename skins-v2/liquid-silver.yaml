@@ -2,8 +2,8 @@ schema_version: 2
 name: liquid-silver
 label: Liquid Silver
 description: Mercury runoff — reflective silver, liquid chrome gradients, and deep void black accents
-category: Other
-pack: core
+category: neutral
+pack: retro
 source: user
 light_colors:
   background: '#F6F6FB'
@@ -82,3 +82,9 @@ provenance:
   dark_file: liquid-silver
   derived:
   - light
+energy: quiet
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Courier Prime", "Courier New", Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

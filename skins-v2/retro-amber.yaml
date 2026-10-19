@@ -2,7 +2,7 @@ schema_version: 2
 name: retro-amber
 label: Retro Amber
 description: Amber CRT glow on near-black
-category: Dynamic
+category: amber
 pack: core
 source: user
 light_colors:
@@ -81,3 +81,9 @@ provenance:
   light_file: light-honey
   dark_file: retro-amber
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

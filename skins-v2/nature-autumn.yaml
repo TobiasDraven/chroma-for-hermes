@@ -2,8 +2,8 @@ schema_version: 2
 name: nature-autumn
 label: Nature Autumn
 description: Rust and burnt orange on warm earth
-category: Dynamic
-pack: core
+category: apricot
+pack: earth
 source: user
 light_colors:
   background: '#fdf1e6'
@@ -81,3 +81,8 @@ provenance:
   light_file: light-melon
   dark_file: nature-autumn
   derived: []
+energy: vivid
+typography:
+  fontSans: '"Source Sans 3", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Cascadia Mono", Consolas, "SF Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", emoji'

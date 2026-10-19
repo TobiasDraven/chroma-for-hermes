@@ -2,7 +2,7 @@ schema_version: 2
 name: blueprint
 label: Blueprint
 description: Architectural cyanotype — white lines on Prussian blue, crisp and technical
-category: Other
+category: indigo
 pack: core
 source: user
 light_colors:
@@ -82,3 +82,9 @@ provenance:
   dark_file: null
   derived:
   - dark
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

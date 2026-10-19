@@ -2,8 +2,8 @@ schema_version: 2
 name: brutalist-concrete
 label: Brutalist Concrete
 description: Raw architectural concrete — unflinching gray on gray with one fluorescent orange signal
-category: Other
-pack: core
+category: persimmon
+pack: cyberpunk
 source: user
 light_colors:
   background: '#F8F7F2'
@@ -82,3 +82,9 @@ provenance:
   dark_file: brutalist-concrete
   derived:
   - light
+energy: vivid
+typography:
+  fontSans: '"Space Grotesk", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Fira Code", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

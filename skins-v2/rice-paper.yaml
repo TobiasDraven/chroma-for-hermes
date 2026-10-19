@@ -2,7 +2,7 @@ schema_version: 2
 name: rice-paper
 label: Rice Paper
 description: Japanese washi — off-white paper, sumi ink black, and a single vermilion accent
-category: Other
+category: persimmon
 pack: core
 source: user
 light_colors:
@@ -82,3 +82,9 @@ provenance:
   dark_file: null
   derived:
   - dark
+energy: vivid
+typography:
+  fontSans: '"Source Sans 3", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

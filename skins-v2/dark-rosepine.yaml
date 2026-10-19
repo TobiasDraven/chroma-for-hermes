@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-rosepine
 label: Rosepine
 description: Rosé Pine, rose-tinted dusk
-category: Dynamic
-pack: core
+category: persimmon
+pack: zen
 source: user
 light_colors:
   background: '#faf4ed'
@@ -81,3 +81,8 @@ provenance:
   light_file: light-rosepine
   dark_file: dark-rosepine
   derived: []
+energy: quiet
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"JetBrains Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

@@ -2,8 +2,8 @@ schema_version: 2
 name: slate-mist
 label: Slate Mist
 description: Fogged window — soft blue-gray monochrome with barely-there contrast, calm and quiet
-category: Dynamic
-pack: core
+category: neutral
+pack: zen
 source: user
 light_colors:
   background: '#eef2f6'
@@ -81,3 +81,8 @@ provenance:
   light_file: light-mist
   dark_file: slate-mist
   derived: []
+energy: quiet
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

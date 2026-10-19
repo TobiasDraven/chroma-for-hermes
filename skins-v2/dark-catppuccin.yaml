@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-catppuccin
 label: Catppuccin
 description: Catppuccin Mocha, creamy pastel dark
-category: Dynamic
-pack: core
+category: indigo
+pack: studio
 source: user
 light_colors:
   background: '#eff1f5'
@@ -81,3 +81,8 @@ provenance:
   light_file: light-catppuccin
   dark_file: dark-catppuccin
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"Fira Code", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

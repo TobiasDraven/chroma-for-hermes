@@ -2,8 +2,8 @@ schema_version: 2
 name: high-noon
 label: High Noon
 description: Bright terminal for daylight — dark navy text on soft white, readable in direct sun
-category: Other
-pack: core
+category: indigo
+pack: noir
 source: user
 light_colors:
   background: '#f5f5f0'
@@ -82,3 +82,9 @@ provenance:
   dark_file: null
   derived:
   - dark
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Source Code Pro", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

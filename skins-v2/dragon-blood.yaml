@@ -2,7 +2,7 @@ schema_version: 2
 name: dragon-blood
 label: Dragon Blood
 description: Ancient wyrm — dark crimson, molten gold, and charcoal black, forged in fire
-category: Other
+category: persimmon
 pack: core
 source: user
 light_colors:
@@ -82,3 +82,9 @@ provenance:
   dark_file: dragon-blood
   derived:
   - light
+energy: vivid
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

@@ -2,7 +2,7 @@ schema_version: 2
 name: dark-lemon
 label: Lemon
 description: Dark lemon, olive-yellow on near-black
-category: Dynamic
+category: lemon
 pack: core
 source: user
 light_colors:
@@ -81,3 +81,9 @@ provenance:
   light_file: light-lemon
   dark_file: dark-lemon
   derived: []
+energy: vivid
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-pastel-peach-blossom
 label: Pastel Peach Blossom
 description: Peach blossom — ripe peach and warm cream
-category: Dynamic
-pack: core
+category: apricot
+pack: zen
 source: user
 light_colors:
   background: '#FFF6F1'
@@ -83,3 +83,8 @@ provenance:
   light_file: light-pastel-peach-blossom
   dark_file: dark-pastel-peach-blossom
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

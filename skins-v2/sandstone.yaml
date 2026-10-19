@@ -2,7 +2,7 @@ schema_version: 2
 name: sandstone
 label: Sandstone
 description: Desert canyon at golden hour — warm terracotta, pale sand, and deep shadowed rust
-category: Other
+category: apricot
 pack: core
 source: user
 light_colors:
@@ -82,3 +82,9 @@ provenance:
   dark_file: sandstone
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

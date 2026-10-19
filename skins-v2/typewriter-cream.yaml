@@ -2,8 +2,8 @@ schema_version: 2
 name: typewriter-cream
 label: Typewriter Cream
 description: Aged manuscript — warm cream paper background with faded ink, sepia accents, and soft rust
-category: Other
-pack: core
+category: gold
+pack: retro
 source: user
 light_colors:
   background: '#F9F6F2'
@@ -82,3 +82,9 @@ provenance:
   dark_file: typewriter-cream
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Source Sans 3", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Courier Prime", "Courier New", Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

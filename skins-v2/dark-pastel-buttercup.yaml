@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-pastel-buttercup
 label: Pastel Buttercup
 description: Buttercup — warm butter and cream, gentle as morning light
-category: Dynamic
-pack: core
+category: gold
+pack: retro
 source: user
 light_colors:
   background: '#FEFAF0'
@@ -83,3 +83,9 @@ provenance:
   light_file: light-pastel-buttercup
   dark_file: dark-pastel-buttercup
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Courier Prime", "Courier New", Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

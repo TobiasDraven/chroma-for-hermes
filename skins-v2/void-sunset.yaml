@@ -2,8 +2,8 @@ schema_version: 2
 name: void-sunset
 label: Void Sunset
 description: Neon sunset bleeding into a dead channel — violet, tangerine, and seafoam on bruised plum
-category: Dynamic
-pack: core
+category: rose
+pack: noir
 source: user
 light_colors:
   background: '#fdf4ee'
@@ -81,3 +81,9 @@ provenance:
   light_file: light-sunset
   dark_file: void-sunset
   derived: []
+energy: vivid
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Source Code Pro", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

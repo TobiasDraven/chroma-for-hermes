@@ -2,8 +2,8 @@ schema_version: 2
 name: forge-master
 label: Forge Master
 description: Dwarven smithy — hot ember orange, cooling steel blue, and soot black, hammer on anvil
-category: Other
-pack: core
+category: cobalt
+pack: earth
 source: user
 light_colors:
   background: '#FAF6F3'
@@ -82,3 +82,8 @@ provenance:
   dark_file: forge-master
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Source Sans 3", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Cascadia Mono", Consolas, "SF Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", emoji'

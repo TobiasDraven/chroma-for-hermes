@@ -2,7 +2,7 @@ schema_version: 2
 name: commodore-64
 label: Commodore 64
 description: 1980s home computer — that specific washed-out blue background with purple-magenta titles
-category: Other
+category: violet
 pack: core
 source: user
 light_colors:
@@ -82,3 +82,9 @@ provenance:
   dark_file: commodore-64
   derived:
   - light
+energy: vivid
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Courier Prime", "Courier New", Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

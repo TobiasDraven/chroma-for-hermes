@@ -2,8 +2,8 @@ schema_version: 2
 name: neon-ghost
 label: Neon Ghost
 description: Electric ghost in the machine — hot magenta on void black with cyan whispers
-category: Other
-pack: core
+category: rose
+pack: cyberpunk
 source: user
 light_colors:
   background: '#F6F6FB'
@@ -82,3 +82,9 @@ provenance:
   dark_file: neon-ghost
   derived:
   - light
+energy: vivid
+typography:
+  fontSans: '"Space Grotesk", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Fira Code", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

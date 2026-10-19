@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-github
 label: Github
 description: GitHub Dark, official GitHub theme
-category: Dynamic
-pack: core
+category: indigo
+pack: studio
 source: user
 light_colors:
   background: '#ffffff'
@@ -81,3 +81,8 @@ provenance:
   light_file: light-github
   dark_file: dark-github
   derived: []
+energy: vivid
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: Menlo, Monaco, "SF Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji", emoji

@@ -2,8 +2,8 @@ schema_version: 2
 name: black-canary
 label: Black Canary
 description: Aviation cockpit — bright yellow on matte black with crisp white signals, zero ambiguity
-category: Other
-pack: core
+category: lemon
+pack: noir
 source: user
 light_colors:
   background: '#F8F7F2'
@@ -82,3 +82,9 @@ provenance:
   dark_file: black-canary
   derived:
   - light
+energy: vivid
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Source Code Pro", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

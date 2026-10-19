@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-everforest
 label: Everforest
 description: Everforest, green-tinted forest dark
-category: Dynamic
-pack: core
+category: fern
+pack: studio
 source: user
 light_colors:
   background: '#fdf6e3'
@@ -81,3 +81,9 @@ provenance:
   light_file: light-everforest
   dark_file: dark-everforest
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Source Sans 3", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

@@ -2,8 +2,8 @@ schema_version: 2
 name: retro-terminal
 label: Retro Terminal
 description: Classic green phosphor terminal
-category: Dynamic
-pack: core
+category: fern
+pack: retro
 source: user
 light_colors:
   background: '#f2faf5'
@@ -81,3 +81,9 @@ provenance:
   light_file: light-mint
   dark_file: retro-terminal
   derived: []
+energy: vivid
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Courier Prime", "Courier New", Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

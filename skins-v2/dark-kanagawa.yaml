@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-kanagawa
 label: Kanagawa
 description: Kanagawa Wave, Japanese ink-wash dark
-category: Dynamic
-pack: core
+category: indigo
+pack: studio
 source: user
 light_colors:
   background: '#f2ecbc'
@@ -81,3 +81,9 @@ provenance:
   light_file: light-kanagawa
   dark_file: dark-kanagawa
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

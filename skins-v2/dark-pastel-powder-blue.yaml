@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-pastel-powder-blue
 label: Pastel Powder Blue
 description: Powder blue — calm sky over fresh snow
-category: Dynamic
-pack: core
+category: cobalt
+pack: zen
 source: user
 light_colors:
   background: '#F3F8FD'
@@ -83,3 +83,8 @@ provenance:
   light_file: light-pastel-powder-blue
   dark_file: dark-pastel-powder-blue
   derived: []
+energy: quiet
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

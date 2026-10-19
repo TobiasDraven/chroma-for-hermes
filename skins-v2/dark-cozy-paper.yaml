@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-cozy-paper
 label: Cozy Paper
 description: Cozy Paper, warm dark
-category: Dynamic
-pack: core
+category: amber
+pack: zen
 source: user
 light_colors:
   background: '#f7f4ec'
@@ -81,3 +81,8 @@ provenance:
   light_file: light-cozy-paper
   dark_file: dark-cozy-paper
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

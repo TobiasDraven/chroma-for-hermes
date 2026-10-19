@@ -2,8 +2,8 @@ schema_version: 2
 name: netrunner
 label: Netrunner
 description: Jacked into the mainframe — phosphor amber, digital teal, and alert red on deep navy
-category: Other
-pack: core
+category: amber
+pack: cyberpunk
 source: user
 light_colors:
   background: '#F4F7FB'
@@ -82,3 +82,9 @@ provenance:
   dark_file: netrunner
   derived:
   - light
+energy: vivid
+typography:
+  fontSans: '"Space Grotesk", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Fira Code", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

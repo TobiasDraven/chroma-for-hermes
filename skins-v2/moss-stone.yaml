@@ -2,8 +2,8 @@ schema_version: 2
 name: moss-stone
 label: Moss Stone
 description: Cool forest stone — gray-green granite, soft olive, and earthy brown warmth
-category: Other
-pack: core
+category: fern
+pack: earth
 source: user
 light_colors:
   background: '#F5F8F3'
@@ -82,3 +82,8 @@ provenance:
   dark_file: moss-stone
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Source Sans 3", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Cascadia Mono", Consolas, "SF Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", emoji'

@@ -2,8 +2,8 @@ schema_version: 2
 name: baby-blue
 label: Baby Blue
 description: Calm nursery tones — powder blue, soft cream, and gentle coral on muted navy, soothing
-category: Other
-pack: core
+category: cobalt
+pack: zen
 source: user
 light_colors:
   background: '#F5F7FB'
@@ -82,3 +82,8 @@ provenance:
   dark_file: baby-blue
   derived:
   - light
+energy: quiet
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

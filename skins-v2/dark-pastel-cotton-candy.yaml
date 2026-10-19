@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-pastel-cotton-candy
 label: Pastel Cotton Candy
 description: Cotton candy — blush and lilac, soft as spun sugar
-category: Dynamic
-pack: core
+category: rose
+pack: earth
 source: user
 light_colors:
   background: '#FDF3F8'
@@ -83,3 +83,8 @@ provenance:
   light_file: light-pastel-cotton-candy
   dark_file: dark-pastel-cotton-candy
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Source Sans 3", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Cascadia Mono", Consolas, "SF Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", emoji'

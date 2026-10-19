@@ -2,7 +2,7 @@ schema_version: 2
 name: dark-dracula
 label: Dracula
 description: Dracula dark, purple on near-black
-category: Dynamic
+category: violet
 pack: core
 source: user
 light_colors:
@@ -81,3 +81,9 @@ provenance:
   light_file: light-dracula
   dark_file: dark-dracula
   derived: []
+energy: vivid
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Fira Code", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

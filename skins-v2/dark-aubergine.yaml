@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-aubergine
 label: Aubergine
 description: Deep aubergine with violet accents
-category: Dynamic
-pack: core
+category: violet
+pack: cyberpunk
 source: user
 light_colors:
   background: '#f6f3fb'
@@ -81,3 +81,9 @@ provenance:
   light_file: light-lavender
   dark_file: dark-aubergine
   derived: []
+energy: vivid
+typography:
+  fontSans: '"Space Grotesk", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Fira Code", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

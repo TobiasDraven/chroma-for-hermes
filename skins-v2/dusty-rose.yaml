@@ -2,8 +2,8 @@ schema_version: 2
 name: dusty-rose
 label: Dusty Rose
 description: Antique velvet — muted rose, dusty mauve, and faded sage on warm charcoal
-category: Other
-pack: core
+category: rose
+pack: earth
 source: user
 light_colors:
   background: '#FAF5F8'
@@ -82,3 +82,8 @@ provenance:
   dark_file: dusty-rose
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Source Sans 3", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Cascadia Mono", Consolas, "SF Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", emoji'

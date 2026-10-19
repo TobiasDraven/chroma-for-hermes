@@ -2,8 +2,8 @@ schema_version: 2
 name: nature-nordic
 label: Nature Nordic
 description: Frosted fjord blue-gray
-category: Dynamic
-pack: core
+category: teal
+pack: zen
 source: user
 light_colors:
   background: '#eef4f8'
@@ -81,3 +81,8 @@ provenance:
   light_file: light-frost
   dark_file: nature-nordic
   derived: []
+energy: quiet
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

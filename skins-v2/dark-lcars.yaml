@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-lcars
 label: Lcars
 description: LCARS, Star Trek black with orange accents
-category: Dynamic
-pack: core
+category: amber
+pack: retro
 source: user
 light_colors:
   background: '#F2F0EC'
@@ -81,3 +81,8 @@ provenance:
   light_file: light-lcars
   dark_file: dark-lcars
   derived: []
+energy: vivid
+typography:
+  fontSans: '"Space Grotesk", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: Menlo, Monaco, "SF Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji", emoji

@@ -2,8 +2,8 @@ schema_version: 2
 name: chrome-rain
 label: Chrome Rain
 description: Wet chrome streets at midnight — electric blue, hot pink, and acid yellow on deep indigo
-category: Other
-pack: core
+category: rose
+pack: cyberpunk
 source: user
 light_colors:
   background: '#F6F6FB'
@@ -82,3 +82,9 @@ provenance:
   dark_file: chrome-rain
   derived:
   - light
+energy: vivid
+typography:
+  fontSans: '"Space Grotesk", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Fira Code", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

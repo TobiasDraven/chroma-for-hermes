@@ -2,7 +2,7 @@ schema_version: 2
 name: dark-material
 label: Material
 description: Material, blue-gray developer dark
-category: Dynamic
+category: indigo
 pack: core
 source: user
 light_colors:
@@ -81,3 +81,9 @@ provenance:
   light_file: light-material
   dark_file: dark-material
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

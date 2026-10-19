@@ -2,8 +2,8 @@ schema_version: 2
 name: peach-fuzz
 label: Peach Fuzz
 description: Pantone Color of the Year 2024 — soft peach, warm coral, and gentle cream on dark taupe
-category: Dynamic
-pack: core
+category: apricot
+pack: retro
 source: user
 light_colors:
   background: '#fdf1ea'
@@ -81,3 +81,9 @@ provenance:
   light_file: light-peach
   dark_file: peach-fuzz
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Courier Prime", "Courier New", Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

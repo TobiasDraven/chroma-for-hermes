@@ -2,8 +2,8 @@ schema_version: 2
 name: arcane-tome
 label: Arcane Tome
 description: Wizard's spellbook — deep violet leather, glowing arcane blue, and aged gold foil
-category: Other
-pack: core
+category: gold
+pack: retro
 source: user
 light_colors:
   background: '#F7F6FA'
@@ -82,3 +82,9 @@ provenance:
   dark_file: arcane-tome
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Courier Prime", "Courier New", Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

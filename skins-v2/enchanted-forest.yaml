@@ -2,8 +2,8 @@ schema_version: 2
 name: enchanted-forest
 label: Enchanted Forest
 description: Feywild glade — deep viridian, bioluminescent teal, pale gold motes on woodland shadow
-category: Other
-pack: core
+category: lemon
+pack: earth
 source: user
 light_colors:
   background: '#F3F8F6'
@@ -82,3 +82,8 @@ provenance:
   dark_file: enchanted-forest
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Source Sans 3", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Cascadia Mono", Consolas, "SF Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", emoji'

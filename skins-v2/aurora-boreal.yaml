@@ -2,8 +2,8 @@ schema_version: 2
 name: aurora-boreal
 label: Aurora Boreal
 description: Northern lights over frozen tundra — emerald, violet, and ice blue shimmer on darkest teal
-category: Other
-pack: core
+category: cobalt
+pack: noir
 source: user
 light_colors:
   background: '#F3F7FA'
@@ -82,3 +82,9 @@ provenance:
   dark_file: aurora-boreal
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Source Code Pro", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

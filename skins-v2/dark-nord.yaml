@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-nord
 label: Nord
 description: Nord, arctic bluish calm
-category: Dynamic
-pack: core
+category: teal
+pack: studio
 source: user
 light_colors:
   background: '#eceff4'
@@ -81,3 +81,8 @@ provenance:
   light_file: light-nord
   dark_file: dark-nord
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

@@ -2,8 +2,8 @@ schema_version: 2
 name: single-malt
 label: Single Malt
 description: Warm whiskey in a dark room — amber on deep brown-black, one color, perfectly restrained
-category: Other
-pack: core
+category: amber
+pack: earth
 source: user
 light_colors:
   background: '#FAF6F3'
@@ -82,3 +82,8 @@ provenance:
   dark_file: single-malt
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Source Sans 3", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
+  fontMono: '"Cascadia Mono", Consolas, "SF Mono", monospace, "Apple Color Emoji", "Segoe UI Emoji", emoji'

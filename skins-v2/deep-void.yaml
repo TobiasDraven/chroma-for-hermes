@@ -2,8 +2,8 @@ schema_version: 2
 name: deep-void
 label: Deep Void
 description: True AMOLED black with barely-there violet undertones — the darkest readable theme possible
-category: Other
-pack: core
+category: violet
+pack: noir
 source: user
 light_colors:
   background: '#FAF5F6'
@@ -82,3 +82,9 @@ provenance:
   dark_file: deep-void
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Source Code Pro", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

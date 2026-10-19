@@ -2,8 +2,8 @@ schema_version: 2
 name: amber-terminal
 label: Amber Terminal
 description: Classic CRT phosphor — warm amber text on a deep burnt-black tube with scanline vibes
-category: Other
-pack: core
+category: amber
+pack: retro
 source: user
 light_colors:
   background: '#F9F6F2'
@@ -82,3 +82,9 @@ provenance:
   dark_file: amber-terminal
   derived:
   - light
+energy: balanced
+typography:
+  fontSans: '"Segoe WPC", "Segoe UI", -apple-system, system-ui, sans-serif, "Apple Color Emoji", "Segoe
+    UI Emoji", emoji'
+  fontMono: '"Courier Prime", "Courier New", Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

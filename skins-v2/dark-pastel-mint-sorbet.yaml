@@ -2,8 +2,8 @@ schema_version: 2
 name: dark-pastel-mint-sorbet
 label: Pastel Mint Sorbet
 description: Mint sorbet — cool mint over clean porcelain
-category: Dynamic
-pack: core
+category: teal
+pack: zen
 source: user
 light_colors:
   background: '#F2FAF6'
@@ -83,3 +83,8 @@ provenance:
   light_file: light-pastel-mint-sorbet
   dark_file: dark-pastel-mint-sorbet
   derived: []
+energy: balanced
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'

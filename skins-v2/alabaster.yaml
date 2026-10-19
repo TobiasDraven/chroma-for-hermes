@@ -2,8 +2,8 @@ schema_version: 2
 name: alabaster
 label: Alabaster
 description: Pure white stone — almost-white canvas with charcoal text and a single cobalt thread
-category: Other
-pack: core
+category: indigo
+pack: earth
 source: user
 light_colors:
   background: '#fdfdfa'
@@ -82,3 +82,8 @@ provenance:
   dark_file: null
   derived:
   - dark
+energy: balanced
+typography:
+  fontSans: '"Inter", "Segoe UI", system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", emoji'
+  fontMono: '"IBM Plex Mono", "Cascadia Mono", Consolas, monospace, "Apple Color Emoji", "Segoe UI Emoji",
+    emoji'
