@@ -13,6 +13,7 @@ Baseline: `7eaa80b`, 109 cards, 150 palette files.
 | D3 | **Exactly one pack per skin** — `core` or one of five. | Packs partition the catalogue. Overlap is a build failure. |
 | D4 | **Exactly one category per skin.** | Categories partition the catalogue independently of packs. |
 | D5 | **One word: skin.** | "Scene" disappears from code, API, docs and UI. |
+| D6 | **Host built-ins leave the catalogue.** | 15 entries (`nous`, `midnight`, `ember`, `mono`, `cyberpunk`, `slate` + 7 backend) are Hermes' themes, not ours. **94 skins ship.** Appearance still lists the host's own themes. |
 
 ## 2. The model
 
@@ -52,21 +53,40 @@ a saved theme or an override.
 | palette files today | 150 |
 | user cards | 94 (54 merged from two files, 40 single) |
 | host built-in cards | 15 (8 Desktop, 7 backend) |
-| **target skin files** | **94, or 109 if D1 is read to include host built-ins** |
+| **target skin files** | **94** (D6) |
 
-### 4.1 The one open sub-decision
+### 4.1 Resolved — host built-ins leave (D6)
 
-The 15 host built-ins (`nous`, `midnight`, `ember`, `mono`, `cyberpunk`, `slate`,
-+ 7 backend) are **the host's** themes, not ours. They are also the 8 skins that
-carry no `status_bar_bg` and no `banner_dim` — the reason 14 skins fail the
-signature-role check today.
+They are **the host's** themes, not ours, and they are the 8 skins carrying no
+`status_bar_bg` and no `banner_dim`. Dropping all 15 removes the entire
+missing-role defect class: **the 94 remaining skins are complete.**
 
-- **Recommended: drop them from the catalogue.** 94 skins, every one a complete
-  file, zero invented colour, and the 14 missing-role defects vanish. Hermes'
-  own Appearance list still shows the host's themes, which is where they belong.
-- Alternative: materialise them as files — but then we must invent the two roles
-  the host does not define, and the picker shows a second copy of a theme the
-  user already has.
+### 4.2 Measured — the migration reproduces every shipped palette
+
+`scripts/migrate-to-skins.py` builds the 94 records, projects each back to the
+current catalogue shape, and diffs it against `desktop/plugin.js`:
+
+```
+records=94 checked=94 mismatched=0
+```
+
+Two rules make that exact, and both were found the hard way:
+
+- A **derived** half is ported from the *compacted* palette (`KEEP_KEYS`), not
+  the 43-role file, because `_port_palette` synthesises extra roles.
+- A **derived** half is emitted whole (27 roles); an **authored** half is
+  compacted to `KEEP_KEYS` on load. Compacting both broke 40 skins.
+
+### 4.3 Open — a ported half carries 27 of 43 roles
+
+40 skins ship a ported half that lacks 16 roles (`diff_*`, `syntax_*`,
+`voice_status_bg`, `selection_bg`…). The picker never reads them, so nothing on
+screen is wrong today. Two honest options for P2:
+
+- **Accept**: the file records what ships, and the gap is documented.
+- **Complete**: port the remaining 16 with the same rule. Deterministic, not
+  invented — but it puts colour into files that never had it, so it is a
+  decision, not a cleanup.
 
 ## 5. Phases
 
