@@ -8,7 +8,7 @@ brings it back. `docs/PLANS/CHROMA-ROADMAP.md` holds the product roadmap;
 
 | Item | Trigger / reason |
 |:--|:--|
-| F7 — group and sort by main hue | 104 scenes are grouped only by mode, so finding "something green" means reading every swatch |
+| F7 — group and sort by main hue | Skins are grouped by colour family (fixed in 2.6.0), so finding "something green" means reading every swatch |
 | F8 — adjust tint, value and brightness | "This one, but warmer" is the common reaction to a palette; today the answer is export, edit, re-import. Build on the SDK's OKLCH helpers (`hexToOklch`, `oklchToHex`, `maxChroma`, `contrastRatio`) rather than a hand-rolled colour model |
 | F9 — accent-picker interoperability | Decide precedence first: a skin apply and an accent override are two writers of one appearance. F8 likely shrinks this to that question alone |
 | Per-card overflow menu | Export / Rename / Delete sit in a row under the card. They cannot move inside it: a button inside a button is invalid HTML |
@@ -27,7 +27,7 @@ brings it back. `docs/PLANS/CHROMA-ROADMAP.md` holds the product roadmap;
 | Item | Note |
 |:--|:--|
 | CI workflow | The catalog expects a repository that builds and checks itself |
-| A fresh screenshot | `docs/hermes-chroma.png` still shows the pre-fork UI |
+| A fresh screenshot | `docs/chroma-banner.png` still shows the pre-fork UI |
 
 ## Quality-gate debt
 

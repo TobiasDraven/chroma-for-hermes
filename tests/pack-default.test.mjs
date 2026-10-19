@@ -118,3 +118,19 @@ test('the shipped toggle writes the store, not just the component state', async 
 
   store.removeItem('chroma-packs-v1')
 })
+
+test('the empty state names the pack filter when that is what hid the skins', async () => {
+  const { context } = await loadPlugin()
+  const t = context.testHelpers
+
+  // Nothing to draw: say why. This is the branch the previous build could never
+  // reach because it guarded on a group count.
+  assert.equal(t.emptyStateFor(0, 64).title, 'No skins found')
+  assert.match(t.emptyStateFor(0, 64).description, /packs you have on/)
+  assert.match(t.emptyStateFor(0, 0).description, /different search/)
+  // Nothing hidden by packs: the plain message, exactly as before the fix.
+  assert.ok(!/packs you have on/.test(t.emptyStateFor(0, 0).description))
+  // Skins on screen: no empty state at all.
+  assert.equal(t.emptyStateFor(1, 0), null)
+  assert.equal(t.emptyStateFor(30, 64), null)
+})

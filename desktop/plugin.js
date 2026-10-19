@@ -2343,19 +2343,23 @@ function filterByPacks(skins, enabledPacks) {
   return skins.filter(scene => allowed.has(scene.pack || 'core'))
 }
 
-/** One broad category per scene - the "by theme" lens.
+/** What the gallery says when nothing can be drawn.
  *
- *  The catalogue stores the measured family, so a shipped skin is filed by its
- *  own `category`. This rule is the floor for a palette that arrives without one
- *  (an import, or an older saved theme):
- *   1. A scene that can serve only one mode goes to Light or Dark.
- *   2. The accent's chroma is read first: below 0.04 there is no hue to file, so
- *      the skin is Neutral.
- *   3. Otherwise the accent's hue picks the family, using the same cut points the
- *      catalogue was measured with (scripts/taxonomy.json).
- *
- *  Deterministic, so the grid is stable between renders. Never throws on a
- *  partial palette: an unreadable accent falls back to Neutral, not `undefined`. */
+ *  Extracted so the branch is testable: the previous guard read a group count
+ *  that the group builders never return as zero, so the pack-aware message was
+ *  dead code and the plain one had been lost. This takes the two numbers that
+ *  actually decide it. */
+function emptyStateFor(visibleCount, hiddenByPacks) {
+  if (visibleCount > 0) return null
+  if (hiddenByPacks > 0) {
+    return {
+      title: 'No skins found',
+      description: 'Nothing in the packs you have on matches. Turn a pack on above, or change the search.'
+    }
+  }
+  return { title: 'No skins found', description: 'Try a different search.' }
+}
+
 const PACKS_KEY = 'chroma-packs-v1'
 const PACK_TITLES = {
   earth: 'Earth', cyberpunk: 'Cyberpunk', zen: 'Zen',
@@ -2393,6 +2397,19 @@ function togglePackChoice(prev, pack) {
   return next
 }
 
+/** One broad category per scene - the "by theme" lens.
+ *
+ *  The catalogue stores the measured family, so a shipped skin is filed by its
+ *  own `category`. This rule is the floor for a palette that arrives without one
+ *  (an import, or an older saved theme):
+ *   1. A scene that can serve only one mode goes to Light or Dark.
+ *   2. The accent's chroma is read first: below 0.04 there is no hue to file, so
+ *      the skin is Neutral.
+ *   3. Otherwise the accent's hue picks the family, using the same cut points the
+ *      catalogue was measured with (scripts/taxonomy.json).
+ *
+ *  Deterministic, so the grid is stable between renders. Never throws on a
+ *  partial palette: an unreadable accent falls back to Neutral, not `undefined`. */
 function sceneCategory(scene) {
   if (scene.modeSupport === 'dark') return 'dark'
   if (scene.modeSupport === 'light') return 'light'
@@ -2862,7 +2879,7 @@ function ThemeCardEditGear({ scene, onEdit }) {
   return jsx('button', {
     type: 'button',
     onClick: () => onEdit(scene),
-    title: 'Edit this theme: recolour it and save your own override',
+    title: 'Edit this skin: recolour it and save your own override',
     'aria-label': 'Edit ' + (scene.label || scene.name),
     className: EDIT_GEAR_CLASS,
     children: jsx('span', { className: 'codicon codicon-settings-gear', 'aria-hidden': 'true' })
@@ -4745,7 +4762,7 @@ function ThemePicker() {
                   jsxs(SelectContent, {
                     children: [
                       jsx(SelectItem, { value: 'scene', children: 'By skin' }),
-                      jsx(SelectItem, { value: 'theme', children: 'By theme' })
+                      jsx(SelectItem, { value: 'theme', children: 'By colour family' })
                     ]
                   })
                 ]
@@ -4997,16 +5014,11 @@ function ThemePicker() {
         className: 'min-h-0 flex-1 p-2',
         children: jsx(SkinBoundary, {
           children:
-            // Group builders always return their shelves, so groups.length is
-            // never zero. The honest test is whether any skin survived the
-            // search AND the pack filter.
+            // Group builders always return their shelves, so a group count is
+            // never zero. The empty state is decided by emptyStateFor, which
+            // reads the skins that survived the search AND the pack filter.
             visibleSkins.length === 0
-              ? jsx(EmptyState, {
-                  title: 'No skins found',
-                  description: hiddenByPacks
-                    ? 'Nothing in the packs you have on matches. Turn a pack on above, or change the search.'
-                    : 'Try a different search.'
-                })
+              ? jsx(EmptyState, emptyStateFor(visibleSkins.length, hiddenByPacks))
               : jsx('div', {
                   className: 'flex flex-col gap-4',
                   children: groups.map((group, index) =>

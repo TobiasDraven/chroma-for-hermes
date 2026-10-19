@@ -34,7 +34,7 @@ them in Appearance. Dropping them removed the entire missing-role defect class.
 
 | Gate | Result |
 |---|---|
-| JS suite | 227 / 227, exit 0 |
+| JS suite | 228 / 228, exit 0 |
 | Backend suite | 163 passed |
 | Generator suite | 16 passed, 4 skipped |
 | `scripts/check-packs.py` | OK: contract holds |
