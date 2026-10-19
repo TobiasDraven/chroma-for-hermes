@@ -20,6 +20,7 @@ import sys
 import tempfile
 import threading
 import time
+import re
 import unittest
 from pathlib import Path
 
@@ -747,19 +748,37 @@ class SchemaTests(EditorTestCase):
         self.assertEqual(self.api.get_schema()["modes"], ["light", "dark"])
 
     def test_reports_exactly_the_writers_vocabulary(self):
+        """The schema is the pane's contract, so it must name every colour the
+        writer accepts - no more and, above all, no fewer. Ten keys made
+        thirty-three named colours unreachable from the only editor that exists."""
         schema = self.api.get_schema()
-        expected = {
-            "background", "status_bar_bg", "ui_text", "banner_text", "banner_dim",
-            "ui_accent", "ui_border", "ui_tool", "banner_accent", "banner_border",
-        }
-        self.assertEqual(set(schema["paletteKeys"]), expected)
+        self.assertEqual(set(schema["paletteKeys"]), set(self.api.EDITABLE_SKIN_KEYS))
+        self.assertEqual(len(schema["paletteKeys"]), 43, "a full skin carries 43 colours")
         self.assertEqual([r["id"] for r in schema["roles"]], list(self.api.EDITABLE_SKIN_KEYS))
 
-    def test_groups_the_six_roles_and_covers_every_key(self):
+    def test_groups_cover_every_key_exactly_once(self):
         schema = self.api.get_schema()
-        self.assertEqual(len(schema["groups"]), 6, "the six skin roles")
-        covered = [key for group in schema["groups"] for key in group["keys"]]
+        groups = schema["groups"]
+        self.assertEqual(len(groups), len({row[1] for row in self.api.EDITABLE_ROLES}))
+        covered = [key for group in groups for key in group["keys"]]
         self.assertEqual(sorted(covered), sorted(schema["paletteKeys"]), "every key sits in a group")
+        self.assertEqual(len(covered), len(set(covered)), "and in exactly one")
+
+    def test_the_pane_can_reach_every_key_the_writer_accepts(self):
+        """Two vocabularies, one of them on each side of the wire. If the pane's
+        role table ever falls behind the writer again, this is the test that says so."""
+        template = (Path(__file__).resolve().parent.parent
+                    / "desktop" / "plugin.template.js").read_text(encoding="utf-8")
+        start = template.index("const EDITOR_ROLES = [")
+        end = template.index("\n]", start)
+        block = template[start:end]
+        pane_keys = set(re.findall(r"keys: \[([^\]]*)\]", block))
+        flattened = set()
+        for chunk in pane_keys:
+            for key in re.findall(r"'([a-z_]+)'", chunk):
+                flattened.add(key)
+        self.assertEqual(flattened, set(self.api.EDITABLE_SKIN_KEYS),
+                         "the editor's roles and the writer's vocabulary must agree")
 
     def test_keeps_the_size_caps_the_writer_enforces(self):
         caps = self.api.get_schema()["caps"]

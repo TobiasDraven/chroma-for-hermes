@@ -28,11 +28,7 @@
            "className": "flex min-w-0 items-center gap-1",
            "type": "span",
            "children": [
-            {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-             "type": "span",
-             "children": "Both"
-            },
+            null,
             {
              "className": "truncate text-[0.6875rem] font-medium",
              "type": "span",
@@ -352,11 +348,7 @@
          "className": "flex min-w-0 items-center gap-1",
          "type": "span",
          "children": [
-          {
-           "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-           "type": "span",
-           "children": "Both"
-          },
+          null,
           {
            "className": "truncate text-[0.6875rem] font-medium",
            "type": "span",
@@ -544,11 +536,7 @@
            "className": "flex min-w-0 items-center gap-1",
            "type": "span",
            "children": [
-            {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-warn)",
-             "type": "span",
-             "children": "Both"
-            },
+            null,
             {
              "className": "truncate text-[0.6875rem] font-medium",
              "type": "span",
@@ -872,11 +860,7 @@
            "className": "flex min-w-0 items-center gap-1",
            "type": "span",
            "children": [
-            {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-             "type": "span",
-             "children": "Both"
-            },
+            null,
             {
              "className": "truncate text-[0.6875rem] font-medium",
              "type": "span",
@@ -1188,11 +1172,7 @@
         "className": "flex min-w-0 items-center gap-1",
         "type": "span",
         "children": [
-         {
-          "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-          "type": "span",
-          "children": "Both"
-         },
+         null,
          {
           "className": "truncate text-[0.6875rem] font-medium",
           "type": "span",
@@ -1511,11 +1491,7 @@
       "className": "flex min-w-0 items-center gap-1",
       "type": "span",
       "children": [
-       {
-        "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-        "type": "span",
-        "children": "Both"
-       },
+       null,
        {
         "className": "truncate text-[0.6875rem] font-medium",
         "type": "span",
@@ -1702,11 +1678,7 @@
         "className": "flex min-w-0 items-center gap-1",
         "type": "span",
         "children": [
-         {
-          "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-          "type": "span",
-          "children": "Both"
-         },
+         null,
          {
           "className": "truncate text-[0.6875rem] font-medium",
           "type": "span",
@@ -2044,11 +2016,7 @@
            "className": "flex min-w-0 items-center gap-1",
            "type": "span",
            "children": [
-            {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-             "type": "span",
-             "children": "Both"
-            },
+            null,
             {
              "className": "truncate text-[0.6875rem] font-medium",
              "type": "span",
@@ -2375,11 +2343,7 @@
            "className": "flex min-w-0 items-center gap-1",
            "type": "span",
            "children": [
-            {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-             "type": "span",
-             "children": "Both"
-            },
+            null,
             {
              "className": "truncate text-[0.6875rem] font-medium",
              "type": "span",
@@ -2699,11 +2663,7 @@
            "className": "flex min-w-0 items-center gap-1",
            "type": "span",
            "children": [
-            {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-             "type": "span",
-             "children": "Both"
-            },
+            null,
             {
              "className": "truncate text-[0.6875rem] font-medium",
              "type": "span",
@@ -3027,11 +2987,7 @@
            "className": "flex min-w-0 items-center gap-1",
            "type": "span",
            "children": [
-            {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-             "type": "span",
-             "children": "Both"
-            },
+            null,
             {
              "className": "truncate text-[0.6875rem] font-medium",
              "type": "span",
@@ -4978,11 +4934,7 @@
         "className": "flex min-w-0 items-center gap-1",
         "type": "span",
         "children": [
-         {
-          "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-warn)",
-          "type": "span",
-          "children": "Both"
-         },
+         null,
          {
           "className": "truncate text-[0.6875rem] font-medium",
           "type": "span",
@@ -5313,11 +5265,7 @@
          "className": "flex min-w-0 items-center gap-1",
          "type": "span",
          "children": [
-          {
-           "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-           "type": "span",
-           "children": "Both"
-          },
+          null,
           {
            "className": "truncate text-[0.6875rem] font-medium",
            "type": "span",
@@ -5508,11 +5456,7 @@
            "className": "flex min-w-0 items-center gap-1",
            "type": "span",
            "children": [
-            {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-             "type": "span",
-             "children": "Both"
-            },
+            null,
             {
              "className": "truncate text-[0.6875rem] font-medium",
              "type": "span",
@@ -5836,11 +5780,7 @@
            "className": "flex min-w-0 items-center gap-1",
            "type": "span",
            "children": [
-            {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-             "type": "span",
-             "children": "Both"
-            },
+            null,
             {
              "className": "truncate text-[0.6875rem] font-medium",
              "type": "span",
@@ -6160,11 +6100,7 @@
          "className": "flex min-w-0 items-center gap-1",
          "type": "span",
          "children": [
-          {
-           "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-           "type": "span",
-           "children": "Both"
-          },
+          null,
           {
            "className": "truncate text-[0.6875rem] font-medium",
            "type": "span",
@@ -6352,11 +6288,7 @@
            "className": "flex min-w-0 items-center gap-1",
            "type": "span",
            "children": [
-            {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-             "type": "span",
-             "children": "Both"
-            },
+            null,
             {
              "className": "truncate text-[0.6875rem] font-medium",
              "type": "span",
@@ -7008,11 +6940,7 @@
            "className": "flex min-w-0 items-center gap-1",
            "type": "span",
            "children": [
-            {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-             "type": "span",
-             "children": "Both"
-            },
+            null,
             {
              "className": "truncate text-[0.6875rem] font-medium",
              "type": "span",
@@ -7335,11 +7263,7 @@
            "className": "flex min-w-0 items-center gap-1",
            "type": "span",
            "children": [
-            {
-             "className": "shrink-0 text-[0.6875rem] leading-none text-(--ui-accent)",
-             "type": "span",
-             "children": "Both"
-            },
+            null,
             {
              "className": "truncate text-[0.6875rem] font-medium",
              "type": "span",

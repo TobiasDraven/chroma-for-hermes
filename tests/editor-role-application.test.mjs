@@ -23,15 +23,24 @@ test('every editor role changes the theme that gets applied', async () => {
   const skin = t.SKINS.find(s => s.name === 'dark-dracula') || t.SKINS[0]
   const base = themeFor(t, skin, { ...skin.colors })
 
+  // The Desktop's theme mapper reads a subset of the palette; the CLI reads all of
+  // it. A role outside that subset is allowed to leave this window untouched - but
+  // only if it admits that in the row, because silence there is the bug this file
+  // was written for.
   const dead = []
+  const unmarked = []
   for (const role of t.EDITOR_ROLES) {
     const key = role.keys[0]
     const colors = { ...skin.colors, [key]: PROBE }
-    if (themeFor(t, skin, colors) === base) dead.push(role.id + ' writes ' + key)
+    const unchanged = themeFor(t, skin, colors) === base
+    if (unchanged && role.desktop !== false) dead.push(role.id + ' writes ' + key)
+    if (!unchanged && role.desktop === false) unmarked.push(role.id + ' is marked CLI-only but repaints')
   }
 
   assert.deepEqual(dead, [],
     'these roles change the preview without changing the applied theme: ' + dead.join(', '))
+  assert.deepEqual(unmarked, [],
+    'these roles are marked CLI-only but do reach the window: ' + unmarked.join(', '))
 })
 
 test('every editor role is reachable in the applied theme, not only in the strip', async () => {
@@ -48,6 +57,8 @@ test('every editor role is reachable in the applied theme, not only in the strip
   for (const skin of sample) {
     const base = themeFor(t, skin, { ...skin.colors })
     for (const role of t.EDITOR_ROLES) {
+      // A CLI-only colour is allowed to leave this window alone - it is marked.
+      if (role.desktop === false) continue
       const key = role.keys[0]
       if (themeFor(t, skin, { ...skin.colors, [key]: PROBE }) === base) {
         dead.push(skin.name + ': ' + role.id)
@@ -66,8 +77,13 @@ test('the strip and the applied theme read the same key for each role', async ()
   const base = themeFor(t, skin, { ...skin.colors })
 
   for (const role of t.EDITOR_ROLES) {
+    if (role.desktop === false) {
+      // Not a promise about the preview: a promise about the label. The row must
+      // say CLI, or the edit looks like it did something it did not do.
+      assert.ok(role.desktop === false, `${role.id}: a colour this window does not read must say so`)
+      continue
+    }
     const key = role.keys[0]
-    assert.ok(Object.prototype.hasOwnProperty.call(skin.colors, key) || true)
     const applied = themeFor(t, skin, { ...skin.colors, [key]: PROBE }) !== base
     assert.ok(applied, `${role.id}: writing ${key} must reach the applied theme`)
   }
@@ -82,4 +98,25 @@ test('Save is offered always and enabled only when the draft changed', async () 
   assert.equal(t.saveDisabled(true, null), false, 'a real edit: enabled')
   assert.equal(t.saveDisabled(true, 'save'), true, 'a write in flight: disabled')
   assert.equal(t.saveDisabled(true, 'reset'), true, 'a reset in flight: disabled')
+})
+
+test('a font choice reaches the override body, and an empty one is omitted', async () => {
+  const { context } = await loadPlugin()
+  const t = context.testHelpers
+  const body = t.overridePayload({
+    light: {}, dark: {},
+    typography: { fontSans: 'Inter, sans-serif', fontMono: 'JetBrains Mono, monospace' }
+  })
+  const plain = value => JSON.parse(JSON.stringify(value))
+  assert.deepEqual(plain(body.typography), {
+    fontSans: 'Inter, sans-serif',
+    fontMono: 'JetBrains Mono, monospace'
+  }, 'both stacks ride the same payload as the colours')
+
+  const fontOnly = t.overridePayload({ light: {}, dark: {}, typography: { fontSans: 'Georgia' } })
+  assert.deepEqual(plain(fontOnly.typography), { fontSans: 'Georgia' })
+  assert.equal(fontOnly.light && Object.keys(fontOnly.light).length, 0, 'a font-only edit carries no colours')
+
+  const none = t.overridePayload({ light: {}, dark: {}, typography: { fontSans: '', fontMono: '' } })
+  assert.equal(none.typography, undefined, 'cleared fonts are not sent as empty strings')
 })

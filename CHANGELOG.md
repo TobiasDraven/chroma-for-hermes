@@ -9,6 +9,26 @@ The catalogue is rebuilt. This is the release prepared for the public directory.
 
 ### Changed
 
+- **The editor edits the whole skin.** It showed six roles wrapping ten keys; a
+  full skin carries **43** named colours and a ported half carries 27. All of
+  them are rows now, grouped (Core, Menus, Text, State, Syntax, Diffs, Framing),
+  in both modes. A colour this window does not paint carries a `CLI` mark in its
+  row, because the Desktop's theme mapper reads a subset of the palette while the
+  CLI reads all of it — an edit that does not repaint the editor must say so.
+- **The editor sets fonts.** A skin carries two stacks, `fontSans` and `fontMono`,
+  and there was no way to choose either. Both are fields now, with presets and
+  free text, riding the same override record as the colours.
+- **The *Both* badge is gone.** Most of the catalogue is dynamic, so the word
+  repeated on every card to say what the card already shows. Only a single-mode
+  skin carries a word now.
+
+### Fixed
+
+- **The card actions were white boxes.** `bg-black/45` was never in the host's
+  stylesheet, so the button fell back to the host's default white paint while its
+  label stayed white. The pill now carries its own background, text and edge as
+  inline style, which no build can drop.
+
 - **Every icon that failed in the field is a word now.** The card actions read
   *Edit* and *Fork*; the mode badge reads *Both* / *Dark* / *Light*; the status
   bar reads the mode it will switch to. Three icon strategies reached a real

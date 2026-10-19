@@ -89,9 +89,13 @@ test('the gear is on every card the pane renders, and only the eye cannot see it
   assert.equal(at(gear, 'type'), 'button')
   assert.equal(at(gear, 'aria-label'), 'Edit Ocean Skin')
   const classes = String(at(gear, 'className')).split(/\s+/)
-  for (const token of ['opacity-0', 'group-hover:opacity-100', 'focus-visible:opacity-100', 'pointer-coarse:opacity-100']) {
-    assert.ok(classes.includes(token), 'the gear must carry ' + token)
-  }
+  // The pill carries its own paint: the host's stylesheet did not contain these
+  // utilities, so the button fell back to the host's white default and the white
+  // label vanished inside it. An inline style cannot be omitted from a build.
+  const style = at(gear, 'style') || {}
+  assert.ok(String(style.background || '').length > 0, 'the gear paints its own background')
+  assert.equal(String(style.color).toLowerCase(), '#ffffff')
+  assert.ok(String(style.border || '').length > 0, 'and its own edge, so any backdrop keeps it visible')
   // A word, not a glyph. Two icon strategies reached the field as an empty
   // control: a codicon the host did not paint, and an inline SVG the app's JSX
   // runtime did not paint. Text is the one path both of them share.
@@ -191,7 +195,7 @@ test('the modal lays out header, preview, six role rows, the advisory strip and 
 
   const sheet = childrenOf(modal)[0]
   const zones = childrenOf(sheet)
-  assert.equal(zones.length, 6, 'six zones: header, preview, legend, roles, advice, actions')
+  assert.equal(zones.length, 7, 'seven zones: header, preview, legend, roles, typography, advice, actions')
   assert.ok(textsOf(zones[0]).some(text => text.startsWith('Edit ')), 'the header names the scene')
   assert.equal(countTag(zones[0], 'button'), 1, 'the header holds the Close button')
 
@@ -204,33 +208,46 @@ test('the modal lays out header, preview, six role rows, the advisory strip and 
   assert.equal(at(childrenOf(rows[0])[0], 'style').backgroundColor, RICH_SCENE.lightColors.background, 'light on top, as shipped')
   assert.equal(at(childrenOf(rows[1])[0], 'style').backgroundColor, RICH_SCENE.darkColors.background, 'dark below')
 
-  // Six role rows, light and dark side by side, each with the missing primitive.
+  // Typography: a skin is colour AND the two font stacks the engine reads.
+  const fontZone = zones[4]
+  const fontInputs = findAll(fontZone, el => at(el, 'type') === 'text')
+  assert.equal(fontInputs.length, 2, 'one field for the interface font and one for code')
+  const fontButtons = findAll(fontZone, el => el.type === 'button')
+  assert.ok(fontButtons.length >= 8, 'and presets to fill them without typing a stack')
+
+  // Role rows, light and dark side by side, each with the missing primitive.
   const roleZone = zones[3]
   const rowsFound = findAll(roleZone, el => typeof at(el, 'data-role') === 'string')
   assert.equal(rowsFound.length, t.EDITOR_ROLES.length, 'one row per editable role')
   assert.deepEqual(rowsFound.map(row => at(row, 'data-role')), Array.from(t.EDITOR_ROLES, role => role.id), 'in the strip order')
-  assert.equal(inputsOfKind(roleZone, 'color').length, 12, 'a native colour input per role per mode')
-  assert.equal(inputsOfKind(roleZone, 'text').length, 12, 'and a hex field beside each')
+  assert.equal(inputsOfKind(roleZone, 'color').length, t.EDITOR_ROLES.length * 2, 'a native colour input per role per mode')
+  assert.equal(inputsOfKind(roleZone, 'text').length, t.EDITOR_ROLES.length * 2, 'and a hex field beside each')
   const chips = findAll(roleZone, el => typeof at(el, 'title') === 'string' && /advisory target|can be measured/.test(at(el, 'title')))
-  assert.equal(chips.length, 12, 'and a contrast read-out per role per mode')
-  assert.equal(chips.filter(chip => /^\d+\.\d\d:1$/.test(at(chip, 'children'))).length, 10, 'a real ratio for every role the palette carries')
+  assert.equal(chips.length, t.EDITOR_ROLES.length * 2, 'and a contrast read-out per role per mode')
+  // Every role the palette carries gets a number; every role it omits reads as a
+  // dash. The count follows the catalogue, not a remembered figure.
+  const ratios = chips.filter(chip => /^\d+\.\d\d:1$/.test(at(chip, 'children')))
+  assert.ok(ratios.length >= 10, 'a real ratio for every role the palette carries, and no invented ones')
+  assert.equal(chips.length - ratios.length,
+    chips.filter(chip => at(chip, 'children') === '—').length,
+    'every read-out is a number or a dash')
   const dimRow = rowsFound.filter(row => at(row, 'data-role') === 'dim')[0]
   const dimChips = findAll(dimRow, el => /can be measured/.test(String(at(el, 'title'))))
   assert.equal(dimChips.length, 2, 'a role this palette omits reads as a dash in both modes')
   assert.ok(dimChips.every(chip => at(chip, 'children') === '—'))
 
   // The advisory strip names all three targets.
-  const advice = textsOf(zones[4])
+  const advice = textsOf(zones[5])
   for (const label of ['Text 9:1', 'Interface 3:1', 'Signals 4.5:1']) {
     assert.ok(advice.includes(label), 'the strip shows ' + label)
   }
 
   // Actions: Save is ENABLED for a built-in scene (§17.1), and no Reset exists,
   // because there is no override to clear.
-  const actions = textsOf(zones[5])
+  const actions = textsOf(zones[6])
   assert.ok(actions.includes('Save'), 'Save is offered')
   assert.ok(!actions.includes('Reset'), 'Reset is not: only an override can be reset')
-  const save = buttonsWith(zones[5], 'Save')[0]
+  const save = buttonsWith(zones[6], 'Save')[0]
   assert.equal(at(save, 'disabled'), true, 'Save waits for a change: an untouched save pins the shipped palette')
   assert.match(at(save, 'title'), /override of the shipped palette/)
 })
@@ -284,7 +301,7 @@ test('a busy write labels itself, and a palette with nothing in it renders dashe
   assert.equal(at(buttonsWith(saving, 'Saving…')[0], 'disabled'), true)
 
   const empty = t.EditorModal(modalProps({ scene: EMPTY_SCENE }))
-  assert.equal(textsOf(empty).filter(text => text === '—').length, 12, 'twelve read-outs, twelve dashes, no invented numbers')
+  assert.equal(textsOf(empty).filter(text => text === '—').length, t.EDITOR_ROLES.length * 2, 'one dash per read-out, no invented numbers')
   assert.equal(inputsOfKind(empty, 'text').filter(input => at(input, 'value')).length, 0, 'and empty fields to fill')
 })
 
@@ -385,8 +402,14 @@ test('a draft becomes the override body the routes expect', async () => {
   assert.equal(draft.text, RICH_SCENE.lightColors.ui_text)
   assert.equal(draft.dim, '', 'a role the palette omits is empty, not invented')
   const payload = t.overridePayload({ light: draft, dark: t.draftForScene(EMPTY_SCENE, 'dark') })
-  assert.deepEqual(sortedKeys(payload.light), ['background', 'status_bar_bg', 'ui_accent', 'ui_border', 'ui_text'],
-    'the primary skin key per role, no aliases')
+  // The body carries exactly the primary key of every role the palette holds.
+  // The expected list is derived from the palette, so adding a role cannot leave
+  // a stale literal behind.
+  const expected = []
+  for (const role of t.EDITOR_ROLES) {
+    if (RICH_SCENE.lightColors[role.keys[0]]) expected.push(role.keys[0])
+  }
+  assert.deepEqual(sortedKeys(payload.light), expected.sort(), 'the primary skin key per role, no aliases')
   assert.deepEqual(sortedKeys(payload.dark), [], 'a role with nothing in it is omitted, not sent as an empty string')
   assert.equal(payload.light.background, RICH_SCENE.lightColors.background)
   assert.ok(t.modeDraftEqual({ shell: '#abc' }, { shell: '#aabbcc' }), 'three digits and six are the same colour')

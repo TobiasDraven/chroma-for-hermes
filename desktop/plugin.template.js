@@ -2855,7 +2855,10 @@ function ThemeCardLabel({ scene, mode, active, localScope, showState, className,
   const isActive = scene.name === active
   // Words, not glyphs. `⇄` / `☾` / `☀` are not in every font this pane may be
   // rendered with, and a missing glyph is an empty box on every card at once.
-  const glyph = scene.modeSupport === 'dynamic' ? 'Both' : (scene.modeSupport === 'dark' ? 'Dark' : 'Light')
+  // `Both` was noise: most of the catalogue is dynamic, so it repeated on every
+  // card and pushed the name aside to say what the card already shows. Only a
+  // single-mode skin carries a word now, because that is the exceptional case.
+  const glyph = scene.modeSupport === 'dynamic' ? '' : (scene.modeSupport === 'dark' ? 'Dark' : 'Light')
   const modeClass = mode === 'dark' ? 'text-(--ui-accent)' : 'text-(--ui-warn)'
   const support = scene.modeSupport === 'dynamic' ? mode : scene.modeSupport
   const bit = isActive
@@ -2865,7 +2868,7 @@ function ThemeCardLabel({ scene, mode, active, localScope, showState, className,
   // edited card must add one element, and a card without an override must digest
   // byte-for-byte as it did before the editor existed.
   const parts = [
-    jsx('span', { className: cn('shrink-0 text-[0.6875rem] leading-none', modeClass), children: glyph }),
+    glyph ? jsx('span', { className: cn('shrink-0 text-[0.6875rem] leading-none', modeClass), children: glyph }) : null,
     jsx('span', { className: 'truncate text-[0.6875rem] font-medium', children: scene.label || scene.name.replace(/-/g, ' ') }),
     jsx(CliBadge, { scene, localScope })
   ]
@@ -2914,7 +2917,18 @@ function ThemeCardPreviewPill({ scene, previewing, previewUntil, onPreview, onSt
 // It is anchored to the bottom edge, centred, rather than a corner: the label row
 // owns the top of a square card and the caption owns the top of a circle, while
 // the centre of the card belongs to the preview pill.
-const EDIT_GEAR_CLASS = 'absolute bottom-1 left-1/2 z-10 -translate-x-1/2 rounded border border-white/25 bg-black/45 px-1 text-[0.625rem] leading-4 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100'
+// A card action must be legible over ANY skin, and it must be legible when the
+// host's stylesheet does not contain our utility class. It shipped twice as an
+// empty white box: `bg-black/45` was never generated, so the button fell back to
+// the host's default paint (white) while the label stayed white. Inline styles
+// are the one channel the host cannot fail to apply, so the pill carries its own.
+const CARD_ACTION_STYLE = {
+  background: 'rgba(0, 0, 0, 0.78)',
+  color: '#ffffff',
+  border: '1px solid rgba(255, 255, 255, 0.55)',
+  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.45)'
+}
+const EDIT_GEAR_CLASS = 'absolute bottom-1 left-1/2 z-10 -translate-x-1/2 rounded px-1 text-[0.625rem] font-semibold leading-4 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100'
 
 function ThemeCardEditGear({ scene, onEdit }) {
   return jsx('button', {
@@ -2922,7 +2936,8 @@ function ThemeCardEditGear({ scene, onEdit }) {
     onClick: () => onEdit(scene),
     title: 'Edit this skin: recolour it and save your own override',
     'aria-label': 'Edit ' + (scene.label || scene.name),
-    className: EDIT_GEAR_CLASS + ' font-medium',
+    className: EDIT_GEAR_CLASS,
+    style: CARD_ACTION_STYLE,
     // A label, not an icon. The codicon face is not loaded by every Desktop and
     // this app's JSX runtime does not paint namespaced SVG, so an icon either
     // arrived as an empty square or did not arrive at all. A word always arrives.
@@ -2937,7 +2952,7 @@ function ThemeCardEditGear({ scene, onEdit }) {
 // shipped file (§17.1). It sits at the bottom-RIGHT so it never collides with
 // the centred gear, and it carries the same keyboard/touch reachability rule
 // (`focus-visible:` + `pointer-coarse:`) the gear carries.
-const EDIT_DUPLICATE_CLASS = 'absolute bottom-1 right-1 z-10 rounded border border-white/25 bg-black/45 px-1 text-[0.625rem] leading-4 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100'
+const EDIT_DUPLICATE_CLASS = 'absolute bottom-1 right-1 z-10 rounded px-1 text-[0.625rem] font-semibold leading-4 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100'
 
 function ThemeCardDuplicate({ scene, onDuplicate }) {
   return jsx('button', {
@@ -2945,7 +2960,8 @@ function ThemeCardDuplicate({ scene, onDuplicate }) {
     onClick: () => onDuplicate(scene),
     title: 'Fork this skin into a new skin you own — the source file is untouched',
     'aria-label': 'Duplicate ' + (scene.label || scene.name),
-    className: EDIT_DUPLICATE_CLASS + ' font-medium',
+    className: EDIT_DUPLICATE_CLASS,
+    style: CARD_ACTION_STYLE,
     children: 'Fork'
   })
 }
@@ -3106,13 +3122,48 @@ function adviceTarget(role) {
  *  measured against: every role is read against the shell, and the shell itself
  *  against its own text — its contrast with itself is 1:1 by definition and
  *  would say nothing. */
+// The six headline roles are how a skin is usually thought about and they carry
+// the advisory readouts. They are NOT the whole palette: a full skin holds 43
+// named colours and a ported half holds 27. Every one of them is editable below,
+// grouped, because "which colour am I editing" must never be answered with
+// "the editor does not have that one".
 const EDITOR_ROLES = [
-  { id: 'shell', label: 'Shell', hint: 'the base every other role is read against', keys: ['background'], kind: 'interface', against: 'text' },
-  { id: 'surface', label: 'Surface', hint: 'raised bars, menus, cards', keys: ['status_bar_bg', 'completion_menu_bg'], kind: 'interface', against: 'shell' },
-  { id: 'signature', label: 'Signature', hint: 'accent surfaces and highlights', keys: ['ui_accent', 'banner_accent', 'banner_title'], kind: 'interface', against: 'shell' },
-  { id: 'text', label: 'Text', hint: 'the reading colour', keys: ['ui_text', 'banner_text', 'status_bar_text'], kind: 'text', against: 'shell' },
-  { id: 'dim', label: 'Dim text', hint: 'secondary and muted labels', keys: ['banner_dim'], kind: 'text', against: 'shell' },
-  { id: 'structure', label: 'Structure', hint: 'borders and dividers', keys: ['ui_border', 'banner_border', 'session_border'], kind: 'interface', against: 'shell' }
+  { id: 'shell', group: 'Core', label: 'Shell', hint: 'the base every other role is read against', keys: ['background'], kind: 'interface', against: 'text' , desktop: true },
+  { id: 'surface', group: 'Core', label: 'Surface', hint: 'raised bars, menus, cards', keys: ['status_bar_bg', 'completion_menu_bg'], kind: 'interface', against: 'shell' , desktop: true },
+  { id: 'signature', group: 'Core', label: 'Signature', hint: 'accent surfaces and highlights', keys: ['ui_accent', 'banner_accent', 'banner_title'], kind: 'interface', against: 'shell' , desktop: true },
+  { id: 'text', group: 'Core', label: 'Text', hint: 'the reading colour', keys: ['ui_text', 'banner_text', 'status_bar_text'], kind: 'text', against: 'shell' , desktop: true },
+  { id: 'dim', group: 'Core', label: 'Dim text', hint: 'secondary and muted labels', keys: ['banner_dim'], kind: 'text', against: 'shell' , desktop: true },
+  { id: 'structure', group: 'Core', label: 'Structure', hint: 'borders and dividers', keys: ['ui_border', 'banner_border', 'session_border'], kind: 'interface', against: 'shell' , desktop: true },
+  { id: 'completion_menu_current_bg', group: 'Menus', label: 'Menu selection', hint: 'the highlighted row in a menu', keys: ['completion_menu_current_bg'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'completion_menu_meta_bg', group: 'Menus', label: 'Menu meta', hint: 'the meta strip under a menu row', keys: ['completion_menu_meta_bg'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'completion_menu_meta_current_bg', group: 'Menus', label: 'Menu meta selection', hint: 'the meta strip on the highlighted row', keys: ['completion_menu_meta_current_bg'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'selection_bg', group: 'Menus', label: 'Text selection', hint: 'selected text in the transcript', keys: ['selection_bg'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'voice_status_bg', group: 'Menus', label: 'Voice bar', hint: 'the voice input bar surface', keys: ['voice_status_bg'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'ui_label', group: 'Text', label: 'Labels', hint: 'small interface labels', keys: ['ui_label'], kind: 'text', against: 'shell' , desktop: false },
+  { id: 'status_bar_dim', group: 'Text', label: 'Status dim', hint: 'secondary status bar text', keys: ['status_bar_dim'], kind: 'text', against: 'shell' , desktop: false },
+  { id: 'status_bar_strong', group: 'Text', label: 'Status strong', hint: 'emphasised status bar text', keys: ['status_bar_strong'], kind: 'text', against: 'shell' , desktop: false },
+  { id: 'session_label', group: 'Text', label: 'Session label', hint: 'the session name in the header', keys: ['session_label'], kind: 'text', against: 'shell' , desktop: false },
+  { id: 'prompt', group: 'Text', label: 'Prompt', hint: 'the input prompt mark', keys: ['prompt'], kind: 'text', against: 'shell' , desktop: false },
+  { id: 'shell_dollar', group: 'Text', label: 'Shell mark', hint: 'the shell prompt glyph', keys: ['shell_dollar'], kind: 'text', against: 'shell' , desktop: false },
+  { id: 'ui_ok', group: 'State', label: 'OK', hint: 'success', keys: ['ui_ok'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'ui_warn', group: 'State', label: 'Warning', hint: 'caution', keys: ['ui_warn'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'ui_error', group: 'State', label: 'Error', hint: 'failure', keys: ['ui_error'], kind: 'interface', against: 'shell' , desktop: true },
+  { id: 'ui_thinking', group: 'State', label: 'Thinking', hint: 'the reasoning indicator', keys: ['ui_thinking'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'ui_tool', group: 'State', label: 'Tool', hint: 'the tool-call accent', keys: ['ui_tool'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'status_bar_good', group: 'State', label: 'Status good', hint: 'status bar, healthy', keys: ['status_bar_good'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'status_bar_warn', group: 'State', label: 'Status warn', hint: 'status bar, warning', keys: ['status_bar_warn'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'status_bar_bad', group: 'State', label: 'Status bad', hint: 'status bar, failure', keys: ['status_bar_bad'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'status_bar_critical', group: 'State', label: 'Status critical', hint: 'status bar, critical', keys: ['status_bar_critical'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'syntax_comment', group: 'Syntax', label: 'Comment', hint: 'code comments', keys: ['syntax_comment'], kind: 'text', against: 'shell' , desktop: false },
+  { id: 'syntax_keyword', group: 'Syntax', label: 'Keyword', hint: 'language keywords', keys: ['syntax_keyword'], kind: 'text', against: 'shell' , desktop: false },
+  { id: 'syntax_number', group: 'Syntax', label: 'Number', hint: 'numeric literals', keys: ['syntax_number'], kind: 'text', against: 'shell' , desktop: false },
+  { id: 'syntax_string', group: 'Syntax', label: 'String', hint: 'string literals', keys: ['syntax_string'], kind: 'text', against: 'shell' , desktop: false },
+  { id: 'diff_added', group: 'Diffs', label: 'Added line', hint: 'an added line', keys: ['diff_added'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'diff_added_word', group: 'Diffs', label: 'Added word', hint: 'the changed word in an added line', keys: ['diff_added_word'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'diff_removed', group: 'Diffs', label: 'Removed line', hint: 'a removed line', keys: ['diff_removed'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'diff_removed_word', group: 'Diffs', label: 'Removed word', hint: 'the changed word in a removed line', keys: ['diff_removed_word'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'response_border', group: 'Framing', label: 'Response frame', hint: 'the border around a response', keys: ['response_border'], kind: 'interface', against: 'shell' , desktop: false },
+  { id: 'input_rule', group: 'Framing', label: 'Input rule', hint: 'the rule above the composer', keys: ['input_rule'], kind: 'interface', against: 'shell' , desktop: false },
 ]
 
 /** The first present value among `keys`, else ''. A row shows what the palette
@@ -3374,6 +3425,65 @@ const OWNED_SAVE_REASON = 'Rewrite your own skin file in place — this is not a
 /** One role across both modes: the label, then a light and a dark cell, each
  *  with the colour input and its own contrast read-out against that mode's
  *  shell. */
+// A short list of stacks a skin can name without shipping a font file. The field
+// is free text beside them: the engine accepts any CSS stack, and refusing one the
+// list forgot would make the list the product instead of the skin.
+const FONT_PRESETS_SANS = ['Inter', 'Segoe UI', 'system-ui', 'Helvetica Neue', 'Georgia', 'Verdana']
+const FONT_PRESETS_MONO = ['JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', 'Courier New']
+
+function FontField({ label, hint, value, presets, onChange }) {
+  return jsxs('div', { className: 'flex flex-col gap-1', children: [
+    jsxs('div', { key: 'head', className: 'flex items-center gap-2', children: [
+      jsx('span', { key: 'l', title: hint, className: 'w-16 shrink-0 text-[0.625rem] text-(--ui-text-secondary)', children: label }),
+      jsx('input', {
+        key: 'v',
+        type: 'text',
+        value: typeof value === 'string' ? value : '',
+        placeholder: presets[0] + ', fallback, sans-serif',
+        title: 'Any CSS font stack. The engine uses it as written.',
+        onChange: event => onChange(event && event.target ? event.target.value : ''),
+        className: 'h-6 min-w-0 flex-1 rounded border border-(--ui-stroke-secondary) bg-(--ui-bg-secondary) px-1 font-mono text-[0.625rem]'
+      })
+    ]}),
+    jsxs('div', { key: 'presets', className: 'flex flex-wrap gap-1 pl-[4.5rem]', children:
+      presets.map(preset => jsx('button', {
+        key: preset,
+        type: 'button',
+        onClick: () => onChange(preset),
+        title: 'Use ' + preset,
+        className: 'rounded border border-(--ui-stroke-secondary) px-1 text-[0.5625rem] text-(--ui-text-tertiary) hover:border-(--ui-accent) hover:text-(--ui-accent)',
+        children: preset
+      }))
+    })
+  ]})
+}
+
+/** One row per role, with a heading whenever the group changes. The heading is a
+ *  row of its own so the list stays a flat scrollable column. */
+function editorRoleNodes(draft, onChange, shells, texts) {
+  const nodes = []
+  let group = null
+  for (const role of EDITOR_ROLES) {
+    if (role.group !== group) {
+      group = role.group
+      nodes.push(jsx('div', {
+        key: 'group-' + group,
+        className: 'pt-1 text-[0.5625rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)',
+        children: group
+      }))
+    }
+    nodes.push(jsx(EditorRoleRow, {
+      key: role.id,
+      role,
+      draft,
+      onChange,
+      shells,
+      texts
+    }))
+  }
+  return nodes
+}
+
 function EditorRoleRow({ role, draft, onChange, shells, texts }) {
   const cell = (modeKey) => {
     const value = draft[modeKey][role.id]
@@ -3406,7 +3516,19 @@ function EditorRoleRow({ role, draft, onChange, shells, texts }) {
     'data-role': role.id,
     children: [
       jsxs('div', { className: 'w-24 shrink-0 pt-0.5', children: [
-        jsx('div', { className: 'font-medium leading-4', children: role.label }),
+        jsxs('div', { className: 'flex items-center gap-1', children: [
+          jsx('div', { key: 'l', className: 'font-medium leading-4', children: role.label }),
+          // Truth in the row: this window paints a subset of the palette, and a
+          // colour this window does not read still reaches the CLI's skins.
+          role.desktop === false
+            ? jsx('span', {
+                key: 'cli',
+                title: 'The CLI paints with this colour. This window previews a subset of the palette, so an edit here is saved without repainting the editor.',
+                className: 'rounded border border-(--ui-stroke-secondary) px-1 text-[0.5rem] leading-tight text-(--ui-text-tertiary)',
+                children: 'CLI'
+              })
+            : null
+        ]}),
         jsx('div', { className: 'text-[0.5625rem] leading-tight text-(--ui-text-tertiary)', children: role.hint })
       ]}),
       cell('light'),
@@ -3593,10 +3715,23 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
   // that opens a name prompt and posts the SAME draft as a brand-new skin. The
   // prompt stays open on a 409 with the collision ON THE FIELD — the colours are
   // never lost — and the user, never an auto-suffix, picks the name.
+  // Typography rides the same override record (E5), so the draft carries it.
+  const seedFonts = safeMerge({}, (effective && effective.typography) || {})
+  const [fonts, setFonts] = useState(() => safeMerge(seedFonts))
+  const fontsDirty = String(fonts.fontSans || '') !== String(seedFonts.fontSans || '')
+    || String(fonts.fontMono || '') !== String(seedFonts.fontMono || '')
+  const changeFont = (key, value) => {
+    setFonts(prev => {
+      const next = safeMerge(prev)
+      if (value) next[key] = value
+      else delete next[key]
+      return next
+    })
+  }
   const [forking, setForking] = useState(false)
   const [forkName, setForkName] = useState('')
   const [forkError, setForkError] = useState('')
-  const dirty = !modeDraftEqual(lightDraft, seedLight) || !modeDraftEqual(darkDraft, seedDark)
+  const dirty = !modeDraftEqual(lightDraft, seedLight) || !modeDraftEqual(darkDraft, seedDark) || fontsDirty
   const changeRole = (modeKey, roleId, value) => {
     const setter = modeKey === 'light' ? setLightDraft : setDarkDraft
     setter(prev => {
@@ -3605,7 +3740,7 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
       return next
     })
   }
-  const draft = { light: lightDraft, dark: darkDraft }
+  const draft = { light: lightDraft, dark: darkDraft, typography: fonts }
   // What the strip paints is the DRAFT on the effective palette, so an edit shows
   // before it is saved, and the preview cannot disagree with the card.
   const light = draftPalette(effective, 'light', draft.light)
@@ -3703,14 +3838,31 @@ function EditorModal({ scene, overrides, owned, mode, busy, modes, caps, onClose
             jsx('span', { className: 'flex-1', children: '☀ light' }),
             jsx('span', { className: 'flex-1', children: '☾ dark' })
           ]})
-        ].concat(EDITOR_ROLES.map(role => jsx(EditorRoleRow, {
-          key: role.id,
-          role,
-          draft,
-          onChange: changeRole,
-          shells,
-          texts
-        })))}),
+        ].concat(editorRoleNodes(draft, changeRole, shells, texts))}),
+        // Typography. A skin is not only colour: it carries the two font stacks the
+        // engine reads, so an editor that cannot set them cannot make a skin.
+        jsxs('div', { key: 'fonts', className: 'flex flex-col gap-1 rounded border border-(--ui-stroke-secondary) p-2', children: [
+          jsxs('div', { key: 'head', className: 'flex items-baseline justify-between', children: [
+            jsx('span', { key: 't', className: 'text-[0.5625rem] font-semibold uppercase tracking-wide text-(--ui-text-tertiary)', children: 'Typography' }),
+            jsx('span', { key: 'h', className: 'text-[0.5625rem] text-(--ui-text-tertiary)', children: 'applies to both modes' })
+          ]}),
+          jsx(FontField, {
+            key: 'sans',
+            label: 'Interface',
+            hint: 'the reading font of the interface',
+            value: fonts.fontSans,
+            presets: FONT_PRESETS_SANS,
+            onChange: value => changeFont('fontSans', value)
+          }),
+          jsx(FontField, {
+            key: 'mono',
+            label: 'Code',
+            hint: 'the font of code, diffs and the prompt',
+            value: fonts.fontMono,
+            presets: FONT_PRESETS_MONO,
+            onChange: value => changeFont('fontMono', value)
+          })
+        ]}),
         jsxs('div', {
           key: 'advice',
           className: 'flex flex-wrap items-center gap-2 rounded border border-(--ui-stroke-secondary) px-2 py-1 text-[0.5625rem] text-(--ui-text-tertiary)',
