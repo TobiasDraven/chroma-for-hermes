@@ -70,7 +70,9 @@ refused BY NAME as iTerm2, rather than failing with a generic parse error.
 
 The plugin writes two classes of localStorage key, and nothing else:
 
-- Its own `chroma-*` keys (apply scope, card shape, card size, group mode).
+- Its own `chroma-*` keys: apply scope, card shape, card size, group mode,
+  `chroma-overrides-v1` (per-skin overrides) and `chroma-packs-v1` (the
+  enabled theme packs).
 - The app's own appearance keys it mirrors so a contributed theme survives a
   restart: `hermes-desktop-user-themes-v1`, `hermes-desktop-theme-v2`,
   `hermes-desktop-mode-v1`, `hermes-desktop-profile-themes-v1`,

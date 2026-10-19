@@ -34,7 +34,7 @@ them in Appearance. Dropping them removed the entire missing-role defect class.
 
 | Gate | Result |
 |---|---|
-| JS suite | 222 / 222, exit 0 |
+| JS suite | 224 / 224, exit 0 |
 | Backend suite | 163 passed |
 | Generator suite | 16 passed, 4 skipped |
 | `scripts/check-packs.py` | OK: contract holds |
@@ -61,6 +61,13 @@ The genuinely real item is `stripJsonNoise` (cyclomatic complexity 16) in
 its own change rather than this submission.
 
 ## Known limits
+
+- **Five light palettes have low accent-on-shell contrast.** The `dark-pastel-*`
+  skins were authored for dark mode; their derived light halves measure 1.41–2.05:1
+  for the accent against the shell (`dark-pastel-buttercup`: `#EFD292` on
+  `#FEFAF0`). This predates the cutover and is unchanged by it. It is a real
+  readability defect in shipped skins and the next content pass should retune
+  those five light halves.
 
 - The **G15 acceptance walk** — install from the catalogue URL and click through
   the picker — has not been run on the Captain's machine. Until it is, the

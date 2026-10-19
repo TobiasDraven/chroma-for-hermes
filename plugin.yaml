@@ -5,5 +5,7 @@ description: >-
   including TweakCN imports that mint real gateway skins so the CLI and every
   connected Desktop follow the change. A hard fork of "Hermes Theme Picker" by
   Joshua Timothy (jdtimothy/hermes-theme-picker, MIT).
+license: MIT
+homepage: https://github.com/TobiasDraven/chroma-for-hermes
 author: >-
   Tobias Draven (fork maintainer) · original "Hermes Theme Picker" by Joshua Timothy

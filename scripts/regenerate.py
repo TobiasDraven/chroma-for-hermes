@@ -10,7 +10,7 @@ Usage:
 
 Defaults:
     skins_dir   = <hermes home>/skins  (HERMES_HOME, else ~/.hermes)
-    out_plugin  = <hermes home>/desktop-plugins/theme-picker/plugin.js
+    out_plugin  = <hermes home>/desktop/plugin.js
 
 Then copy the output plugin.js to the machine running the desktop app
 (Windows: %LOCALAPPDATA%\\hermes\\desktop-plugins\\theme-picker\\plugin.js)
