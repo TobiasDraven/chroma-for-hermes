@@ -1,5 +1,13 @@
 # Architecture
 
+> **HISTORICAL — read `docs/ARCH.md` instead.** This file came in with the hard
+> fork and describes the upstream three-layer theme system as it was inherited.
+> Its build sections (pair counts, the pair table, backend built-ins, the
+> Dynamic/Dark-only/Light-only grouping) are stale: since 2.6.0 the catalogue is
+> `skins-v2/` and the generator reads only that. Keep it for the upstream
+> reasoning, not for how the build works today.
+
+
 How the Chroma works internally — written so the next maintainer (or a
 fork for another setup) does not have to re-derive it from the Desktop source.
 

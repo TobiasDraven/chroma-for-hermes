@@ -86,9 +86,11 @@ green. A stub may never be added for a name the build does not import.
 The harness executes function components, so component bodies really run and
 handler behaviour can be asserted.
 
-Backend tests run under the Hermes venv interpreter (FastAPI, pydantic, yaml). A
-bare `python` lacks them. `tests/__init__.py` exists so the tests directory stays
-a package even when a foreign `tests` package is earlier on `PYTHONPATH`.
+Backend tests run under any interpreter that carries FastAPI, pydantic and yaml —
+on this host both the system `python` and the Hermes venv satisfy that; an
+interpreter without them fails at import, which is the honest failure.
+`tests/__init__.py` exists so the tests directory stays a package even when a
+foreign `tests` package is earlier on `PYTHONPATH`.
 
 ## Backend architecture
 

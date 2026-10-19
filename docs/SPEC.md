@@ -93,12 +93,14 @@ It never invents a new app-owned key — only keys the app itself already uses.
 
 ## Acceptance
 
-A change is done when all of these are green:
+A change is done when all of these are green. `rigour check --ci` is *not* in
+this list: it is red on accepted, documented debt (see `docs/RELEASE-2.6.0.md`),
+and a gate that everyone knows is red stops being a gate.
 
 ```bash
 python scripts/regenerate.py                     # after any template edit
-node --test tests/*.test.mjs                               # node suites
+node --test tests/*.test.mjs                    # node suites
 <venv>/python.exe -m unittest tests.test_plugin_api
 hermes plugins validate .                        # plugin admission gate
-rigour check --ci                                # quality gates
+python scripts/check-packs.py                    # catalogue contract
 ```

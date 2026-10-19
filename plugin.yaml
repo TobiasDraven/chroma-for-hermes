@@ -1,5 +1,6 @@
 name: chroma
 version: "2.6.0"
+requires_hermes: ">=0.22.0"
 description: >-
   Chroma for Hermes — browse, import and manage Hermes skins from the Desktop,
   including TweakCN imports that mint real gateway skins so the CLI and every

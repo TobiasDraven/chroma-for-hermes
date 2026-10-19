@@ -13,13 +13,14 @@
 # Modes:
 #   -Link (default on Windows when run as admin) : junction to this checkout (dev)
 #   -Copy                                        : copy the package (stable install)
-$ErrorActionPreference = 'Stop'
-
 param(
   [switch]$Copy
 )
 
-$repo = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ErrorActionPreference = 'Stop'
+
+# This file lives in <repo>/install/, so the package root is one level up.
+$repo = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 
 $desktopHome = Join-Path $env:LOCALAPPDATA 'hermes'
 $cliHome = Join-Path $env:USERPROFILE '.hermes'
@@ -36,9 +37,21 @@ if (Test-Path -LiteralPath $target) {
 }
 
 if ($Copy) {
+  # The manifest is not optional: Hermes refuses a plugin directory without
+  # plugin.yaml, and the licence and notices must travel with the copy.
   New-Item -ItemType Directory -Force -Path $target | Out-Null
-  Copy-Item -Path (Join-Path $repo 'desktop')   -Destination $target -Recurse -Force
-  Copy-Item -Path (Join-Path $repo 'dashboard') -Destination $target -Recurse -Force
+  foreach ($item in @('desktop', 'dashboard', 'plugin.yaml', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'README.md')) {
+    $from = Join-Path $repo $item
+    if (-not (Test-Path -LiteralPath $from)) {
+      Write-Host "WARNING: '$item' is missing from the package; the copy is incomplete." -ForegroundColor Yellow
+      continue
+    }
+    if ((Get-Item -LiteralPath $from).PSIsContainer) {
+      Copy-Item -LiteralPath $from -Destination $target -Recurse -Force
+    } else {
+      Copy-Item -LiteralPath $from -Destination $target -Force
+    }
+  }
   Write-Host "Copied the package to: $target" -ForegroundColor Green
 } else {
   # A junction needs no admin rights and the app follows it (listDirs followLinks).

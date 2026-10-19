@@ -2606,7 +2606,7 @@ function syncSceneToGateway(scene, mode, profile, generation) {
       if (!durable && latestAppearanceByProfile.get(profile)?.generation === generation) {
         host.notify({
           kind: 'warning',
-          message: `${scene.label || scene.name} synchronized, but its combined scene could not be saved for restart`
+          message: `${scene.label || scene.name} synchronized, but its combined skin could not be saved for restart`
         })
       }
       return true

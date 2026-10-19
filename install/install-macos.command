@@ -22,12 +22,22 @@ else
 fi
 
 hermes_home=${HERMES_HOME:-"$HOME/.hermes"}
-plugin_dir="$hermes_home/desktop-plugins/chroma"
-installed_plugin="$plugin_dir/plugin.js"
+# Same layout as the Windows installer and as `hermes plugins install`: the
+# package directory carries plugin.yaml, the desktop half and the dashboard half.
+# A bare plugin.js under desktop-plugins/ is the legacy manual route and has no
+# manifest, so Hermes refuses it at the catalog gate.
+if [ ! -f "$repo_root/plugin.yaml" ]; then
+  printf 'This installer needs a source checkout (plugin.yaml beside desktop/).\n' >&2
+  printf 'Missing: %s\n' "$repo_root/plugin.yaml" >&2
+  exit 1
+fi
+plugin_dir="$hermes_home/plugins/chroma"
 
+rm -rf "$plugin_dir"
 mkdir -p "$plugin_dir"
-cp "$source_plugin" "$installed_plugin"
+cp -R "$repo_root/desktop" "$repo_root/dashboard" "$plugin_dir/"
+cp "$repo_root/plugin.yaml" "$repo_root/LICENSE" "$repo_root/THIRD_PARTY_NOTICES.md" "$repo_root/README.md" "$plugin_dir/"
 
-printf '\nInstalled Theme Picker into: %s\n' "$plugin_dir"
-printf 'Now open the Command Palette in Hermes Desktop and run: Reload desktop plugins\n'
-printf '(or fully quit and relaunch Hermes Desktop).\n'
+printf '\nInstalled Chroma into: %s\n' "$plugin_dir"
+printf 'Restart Hermes Desktop once so the pane and the backend mount.\n'
+printf '(Then Capabilities -> Plugins -> Rescan if the row does not appear.)\n'

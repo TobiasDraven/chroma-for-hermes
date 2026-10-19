@@ -1,13 +1,14 @@
 """Backend tests for Chroma's dashboard half.
 
-Run with the Hermes venv interpreter (the one that actually mounts the router):
+Run them with any interpreter that has fastapi and PyYAML:
 
-    /c/Users/malan/AppData/Local/hermes/installs/*/environments/*/venv/Scripts/python.exe \
-        -m unittest tests.test_plugin_api
+    python -m pytest tests/test_plugin_api.py
+    python -m unittest tests.test_plugin_api
 
-The module imports fastapi at load time, so the system python cannot import it.
-HERMES_HOME is overridden on the module AFTER import, so every path helper
-resolves inside a temp directory and never touches the real vault.
+On this host both the system python and the Hermes venv interpreter satisfy
+that; if an interpreter lacks fastapi the import fails at load time, which is
+the honest failure. HERMES_HOME is rebound to a temp directory, so every path
+helper resolves inside it and never touches the real Hermes home.
 """
 
 from __future__ import annotations

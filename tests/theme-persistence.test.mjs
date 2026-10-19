@@ -824,7 +824,7 @@ test('a stale acknowledgement cannot replace the latest persisted scene when the
   assert.equal(plugin.__state.root.style.getPropertyValue('--theme-background-seed'), latestScene.lightColors.background)
 })
 
-test('post-ack persistence failure warns that the combined scene is not durable', async () => {
+test('post-ack persistence failure warns that the combined skin is not durable', async () => {
   const stored = new Map()
   let blockAppearance = false
   const partialStorage = {
@@ -844,7 +844,7 @@ test('post-ack persistence failure warns that the combined scene is not durable'
   await plugin.__test.applyScene(scene, 'dark', () => {})
 
   assert.equal(plugin.__state.notifications.at(-1).kind, 'warning')
-  assert.match(plugin.__state.notifications.at(-1).message, /combined scene could not be saved for restart/)
+  assert.match(plugin.__state.notifications.at(-1).message, /combined skin could not be saved for restart/)
 })
 
 test('in-place repaint still works when appearance storage is unavailable', async () => {

@@ -213,18 +213,23 @@ Hermes skins are YAML files containing a name, description, and colors.
 ### Regenerate the catalog
 
 ```bash
-# skins-v2/ → desktop/plugin.js
+# skins-v2/ -> desktop/plugin.js (+ gateway-skins/)
 python3 scripts/regenerate.py
 
-# Read another skin directory
-python3 scripts/regenerate.py ~/.hermes/skins
+# Read another catalogue directory (must hold schema v2 skins)
+python3 scripts/regenerate.py path/to/skins-v2
 
 # Choose an output file
-python3 scripts/regenerate.py ~/.hermes/skins /tmp/plugin.js
+python3 scripts/regenerate.py path/to/skins-v2 /tmp/plugin.js
 ```
 
-On Windows, the included runner combines bundled themes with skins installed in
-`%LOCALAPPDATA%\hermes\skins\` and updates the installed plugin:
+The generator reads **schema v2** skins only: one YAML per skin carrying both
+`light_colors` and `dark_colors`. It refuses anything else by name and leaves
+the existing `plugin.js` untouched, so the `~/.hermes/skins/` directory (which
+holds mode-locked gateway transports, not catalogue skins) is never valid input.
+
+On Windows, the included runner rebuilds the installed plugin from this
+checkout's `skins-v2/` catalogue:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass
@@ -237,6 +242,22 @@ refuses to replace `plugin.js` when no valid skins are found.
 For UI changes, edit `desktop/plugin.template.js`, run the generator, then copy
 the rebuilt `desktop/plugin.js` into Hermes Desktop and reload plugins.
 
+## What it touches
+
+Chroma is a Desktop plugin. This is everything it does outside its own pane.
+
+- **Network:** one HTTPS `GET` to `https://tweakcn.com/r/themes/<name>` when you
+  import a TweakCN preset. Nothing else leaves the machine: no telemetry, no
+  analytics, no update check, no remote code. The catalogue ships inside
+  `plugin.js`.
+- **Writes:** the theme choice through `config.set('skin', …)`, and its own
+  keys in the Desktop's local storage (`chroma-packs-v1` for the pack chips,
+  `chroma-overrides-v1` and its mirror for palette edits, plus the user-theme
+  key). The backend half writes skin YAML and a small `skins/.chroma/` index
+  under your Hermes home when you create or edit a skin.
+- **Reads:** the Hermes skin directory and its own keys. No credential store,
+  no browser profile, no shell. The plugin has no `requires_env` and no tools.
+
 ## Project layout
 
 ```text
@@ -246,7 +267,7 @@ skins/                         Retired v1 pair table (migration record only)
 gateway-skins/                 Mode-locked gateway transport palettes
 scripts/regenerate.py          Catalog generator
 install/                       Desktop and gateway installers
-docs/ARCHITECTURE.md           Implementation details
+docs/ARCH.md                   Implementation details
 THIRD_PARTY_NOTICES.md         Licenses for bundled palettes
 ```
 
@@ -255,7 +276,13 @@ THIRD_PARTY_NOTICES.md         Licenses for bundled palettes
 Remove the plugin from both halves: delete the `chroma` directory from the
 local `desktop-plugins` folder, and remove `chroma` from `plugins.enabled` (or
 delete `plugins/chroma`) so the Python half stops loading. Then reload Desktop
-plugins or restart Hermes. Your skin files are not removed.
+plugins or restart Hermes.
+
+The gateway half leaves two kinds of file behind, and neither is removed for
+you: the 188 `theme-picker-*.yaml` transports in `~/.hermes/skins/` (written by
+`install/install-gateway-skins.sh`), and the `skins/.chroma/` sidecar that holds
+the skin index, overrides and trash. Delete those yourself if you want a clean
+gateway. Your own skins are never removed.
 
 ## FAQ
 
