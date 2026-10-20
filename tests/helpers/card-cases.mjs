@@ -20,6 +20,8 @@
 //    So this file lists 27 cases and yields 24 distinct digests, and the count in
 //    the parity test is a property of the LIST, not a count of behaviours.
 
+import { REACT_ELEMENT } from './load-plugin.mjs'
+
 export const RICH_COLORS = {
   background: '#1b1f27', status_bar_bg: '#141821',
   ui_accent: '#5aa9e6', banner_accent: '#3d7ea6', banner_title: '#ffffff',
@@ -155,6 +157,39 @@ export function digestElement(el) {
   out.type = type
   out.children = digestValue(props.children)
   return out
+}
+
+/**
+ * Walk the children of a tree exactly as React does for its "objects are not
+ * valid as a React child" rule: primitives are fine, arrays are flattened, and
+ * every object child must carry the element marker. It deliberately does NOT
+ * descend into arbitrary prop values, because React's rule applies to children,
+ * not to what a prop happens to hold.
+ *
+ * Exists because `digestElement` treats any object with `type` and `props` as an
+ * element, so a hand-built `{ type, key, props }` literal (React error #31)
+ * digested identically to a real element. This guard sees the marker.
+ */
+export function assertNoRawElements(node, label) {
+  const where = label || 'tree'
+  const check = (value, path) => {
+    if (value === null || value === undefined) return
+    const kind = typeof value
+    if (kind === 'string' || kind === 'number' || kind === 'boolean') return
+    if (Array.isArray(value)) {
+      for (let i = 0; i < value.length; i += 1) check(value[i], path + '[' + i + ']')
+      return
+    }
+    if (kind !== 'object') return
+    if (value.$$typeof !== REACT_ELEMENT) {
+      const keys = Object.keys(value).join(', ')
+      throw new Error(where + ': object is not valid as a React child at ' + path +
+        ' (found: object with keys {' + keys + '})')
+    }
+    const props = value.props
+    check(props ? props.children : undefined, path + '.children')
+  }
+  check(node, 'root')
 }
 
 /** Count host elements in a digested or live tree; used by the focused tests. */

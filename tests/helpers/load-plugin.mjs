@@ -4,6 +4,14 @@ import vm from 'node:vm'
 const pluginPath = new URL('../../desktop/plugin.js', import.meta.url)
 
 /**
+ * Stands in for React's `$$typeof` marker. Elements the harness builds carry it
+ * so a raw `{ type, key, props }` literal (which React refuses with error #31)
+ * is distinguishable here; React itself brands a real element with
+ * `Symbol.for('react.element')`.
+ */
+export const REACT_ELEMENT = Symbol.for('react.element')
+
+/**
  * The one loader every Chroma test shares.
  *
  * It reads the SHIPPED build's own import statements and injects exactly those
@@ -126,6 +134,10 @@ export async function loadPlugin(overrides = {}) {
     useMemo: (fn) => fn(),
     useCallback: (fn) => fn,
     useRef: (v) => ({ current: v }),
+    // cloneElement returns a NEW element with the marker intact, exactly as React
+    // does. A hand-built literal or a stub that drops the marker is the defect
+    // this harness now exists to catch.
+    cloneElement: (el, config) => ({ ...el, props: { ...(el.props || {}), ...(config || {}) } }),
     ...overrides.stubbed
   }
 
@@ -145,7 +157,7 @@ export async function loadPlugin(overrides = {}) {
       }
       return type(props || {})
     }
-    return { type, props }
+    return { $$typeof: REACT_ELEMENT, type, props }
   }
   context.jsx = render
   context.jsxs = (type, props) => render(type, props)

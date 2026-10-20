@@ -50,7 +50,7 @@ import {
   useValue
 } from '@hermes/plugin-sdk'
 import { jsx, jsxs } from 'react/jsx-runtime'
-import { Component, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Component, cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 let _rest = null
 
@@ -4481,7 +4481,7 @@ function ThemeCard({ scene, mode, active, applying, onApply, owned, managing, on
   }
   // Attach the roving handler+ref to whichever element is outermost for the shape,
   // exactly once, so a bubbling key event cannot move focus twice.
-  const withRove = el => ({ type: el.type, key: el.key, props: { ...el.props, ref: roveRef, onKeyDown: onRove } })
+  const withRove = el => cloneElement(el, { ref: roveRef, onKeyDown: onRove })
   const labelClass = shape === 'circle'
     ? 'mb-1 flex w-full items-center justify-center gap-1'
     : 'flex w-full items-center justify-between gap-1'
