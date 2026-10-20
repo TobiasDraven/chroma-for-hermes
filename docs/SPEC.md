@@ -7,22 +7,26 @@ mint real gateway skins so the CLI and every connected Desktop follow a change.
 A hard fork of "Hermes Theme Picker" by Joshua Timothy (`jdtimothy/hermes-theme-picker`,
 MIT) — see `THIRD_PARTY_NOTICES.md`.
 
-`plugin.yaml`: name `chroma`, version `2.8.1` (matching `VERSION`). The repo root IS the plugin package.
+`plugin.yaml`: name `chroma`, version `2.9.0` (matching `VERSION`). The repo root IS the plugin package.
 
 ## Surfaces it registers
 
-Six registrations. All six are asserted by `tests/surfaces-regression.test.mjs`,
+Five registrations. All five are asserted by `tests/surfaces-regression.test.mjs`,
 because a past restructure removed several of them while every other test stayed
 green:
 
 | Surface | Registration | Data |
 |:--|:--|:--|
+| Theme catalog | `THEMES_AREA` | one Desktop theme per skin (94); 188 gateway transports |
 | Full-page picker | `ROUTES_AREA` | path `/chroma` |
 | Sidebar entry | `SIDEBAR_NAV_AREA` | path `/chroma` |
-| Status-bar chip | `STATUSBAR_AREAS` | renders the active skin |
-| Command palette | — | command id `chroma.open` |
-| Theme catalog | `THEMES_AREA` | one Desktop theme per skin (94); 188 gateway transports |
-| Gateway sync | — | pushes a picked skin to the gateway |
+| Command palette | `PALETTE_AREA` | command id `chroma.open` |
+| Status-bar chip | `STATUSBAR_AREAS.right` | renders the active skin |
+
+Gateway sync is **not** a sixth registration: it is what a pick does with the
+surfaces above — `host.request('config.set', { key: 'skin', … })` pushes the
+chosen skin to the gateway. The same guard file asserts that call, the
+ThemeProvider handoff and the app-owned storage keys are still in the build.
 
 ## Features
 
@@ -32,10 +36,10 @@ green:
 | F1 | Delete and rename an owned skin | shipped (backend + UI) |
 | F2 | Badge marking which skins the CLI can use | shipped |
 | F3 | Export one skin, or all as a bundle | shipped |
-| F4 | Import TweakCN, Windows Terminal, Base16/24, VS Code | shipped (iTerm2 refused; deferred) |
+| F4 | Import TweakCN, CSS, Windows Terminal, Base16/24, VS Code | shipped (iTerm2 refused; deferred) |
 | F5 | Per-profile apply scope (local vs everywhere) | shipped, one limitation recorded |
 | F6 | Square-card picker gallery | shipped, revised in the field |
-| F7 | Sort and group by main hue | open — see `docs/PLANS/CHROMA-ROADMAP.md` |
+| F7 | Sort and group by main hue | shipped, differently — twelve measured colour families, not hue buckets, and three lenses (skin, colour family, theme pack) — see `docs/PLANS/CHROMA-ROADMAP.md` |
 | F8 | Adjust a skin's tint, value and brightness | open |
 | F9 | Interoperate with the official accent-picker plugin | open |
 | P0 | Picker shipped dead (missing React hook imports) | fixed |
@@ -63,8 +67,8 @@ path-parameter route, because FastAPI matches in registration order and
 A skin is one file in `skins-v2/`. `schema_version` describes the file format;
 `design_spec` describes how much of the skin was decided.
 
-- `design_spec: v1` — a hand-authored 43-key palette, grandfathered. Every skin
-  shipped before 2.7.0 carries this.
+- `design_spec: v1` — a hand-authored 43-key palette, grandfathered. All 94
+  shipped skins carry this.
 - `design_spec: v2` — **ten named surfaces plus two fonts**. The remaining 33 keys
   derive by the rules in `docs/THEME-PACK-CREATION.md` §5, or are overridden with a
   written reason.
@@ -76,20 +80,24 @@ The contract, the 43-key surface map, the colour science and the build recipe li
 ## Import
 
 One paste box, and the format is sniffed from the text — the user does not pick a
-format. Accepted: TweakCN page URL or CSS, Windows Terminal scheme or whole
+format. Accepted: a TweakCN preset name or URL, CSS with a `:root { … }` block
+(shadcn and TweakCN CSS both work), a Windows Terminal scheme or a whole
 `settings.json`, Base16/Base24 YAML (legacy flat and Tinted 0.11 nested), VS Code
 colour theme JSON (comments and trailing commas tolerated). An XML plist is
 refused BY NAME as iTerm2, rather than failing with a generic parse error.
 
 ## Storage keys
 
-The plugin writes two classes of localStorage key, and nothing else:
+The plugin writes two classes of localStorage key, and nothing else — **fourteen
+keys in all**:
 
-- Its own `chroma-*` keys: apply scope, card shape, card size, group mode,
-  `chroma-overrides-v1` (per-skin overrides) and `chroma-packs-v1` (the
+- Its own seven `chroma-*` keys: `chroma-apply-scope-v1` (apply scope),
+  `chroma-card-shape-v1` (card shape), `chroma-card-size-v1` (card size),
+  `chroma-group-mode-v1` (grouping lens), `chroma-overrides-v1` (per-skin
+  overrides), `chroma-favorites-v1` (starred skins) and `chroma-packs-v1` (the
   enabled theme packs).
-- The app's own appearance keys it mirrors so a contributed theme survives a
-  restart: `hermes-desktop-user-themes-v1`, `hermes-desktop-theme-v2`,
+- The app's own seven appearance keys it mirrors so a contributed theme
+  survives a restart: `hermes-desktop-user-themes-v1`, `hermes-desktop-theme-v2`,
   `hermes-desktop-mode-v1`, `hermes-desktop-profile-themes-v1`,
   `hermes-desktop-profile-modes-v1`, and the `hermes-boot-background` /
   `hermes-boot-color-scheme` boot hints (`desktop/plugin.template.js:69-73`).
@@ -103,8 +111,12 @@ It never invents a new app-owned key — only keys the app itself already uses.
 - A community theme marketplace — hosting, moderation and trust are a project of
   their own.
 - Time-of-day automatic switching.
-- Reaching into the app's theming internals. Every difficult bug in this project
-  came from the plugin trying to own state the ThemeProvider owns.
+- Owning the app's appearance state. Every difficult bug in this project came
+  from the plugin trying to own state the ThemeProvider owns. Chroma writes the
+  root theme attributes and custom properties the host's own provider writes,
+  and hands the switch to the provider through the SDK's `setTheme`/`setMode` —
+  it does not own that state, and it does not query or restyle the app's own
+  markup.
 
 ## Acceptance
 

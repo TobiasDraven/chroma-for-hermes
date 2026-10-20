@@ -75,8 +75,18 @@ install/                  platform installers for the plugin
    The boot cache in particular MUST be written: Desktop reads its theme cache *before* plugins
    register, so a contributed theme not mirrored there is unresolvable at the next startup. Never invent
    a *new* app-owned key — if the app does not already use the key, do not write it.
-5. **New picker code must not use template literals** — the plugin catalog's security scan reads
-   `${...}` as inline shell. Use string concatenation and `+`.
+5. **No backtick string in the plugin source may look like shell.** The plugin catalog's security
+   scan reads SOURCE TEXT, not semantics. Its `inline_shell_exec` pattern matches a backtick that
+   is preceded by an exclamation mark (the *Skills* inline-shell auto-exec DSL,
+   `tools/skills_guard.py:393`), and its `backtick_subshell` pattern matches a backtick string that
+   contains a command substitution (a dollar sign followed by a parenthesised command,
+   `tools/skills_guard.py:386`). **Neither one looks for `${...}`.** A JavaScript template literal is
+   not shell, but a backtick string carrying that shape is reported as an execution finding, so
+   keep shell-looking text out of the source. Ordinary template literals are fine: the host's own
+   `tools.plugin_guard.scan_plugin` returns `verdict: safe` for this repo (measured 2026-10-20), and
+   the build's template literals are not among its findings. An earlier version of this rule said
+   the scan "reads `${...}` as inline shell" — that was **false**, and it is retired. Keep the rule
+   for the reason above, not for the reason it used to give.
 6. **Import React hooks explicitly.** A hook that is used but not imported is a dead page, and the test
    harness cannot catch it if it stubs the hook for you (see §5).
 7. **The backend `_hex` accepts only `#rrggbb` / `#rgb`.** Anything else must be normalised at the edge
@@ -140,7 +150,7 @@ harness can catch an undefined global here (§5).
 
 ```bash
 node --test tests/<name>.test.mjs      # one suite; WITHOUT a pipe, so you see the real exit code
-node --test tests/                     # every JS suite
+node --test tests/*.test.mjs           # every JS suite
 python -m pytest tests/ -q             # every Python suite; needs a venv with fastapi + pyyaml + pytest
 python scripts/check-package.py        # package contract: version loci, entry points, tracked junk
 python scripts/check-packs.py          # catalogue contract
@@ -148,6 +158,11 @@ python scripts/check-host-classes.py   # a class we use that the HOST stylesheet
 hermes plugins validate .              # the plugin admission gate (LOCAL ONLY: no PyPI package carries it)
 rigour check --ci                      # quality gates (exit 1 = FAIL, 2 = no config)
 ```
+
+**`node --test tests/` does not work — use the glob.** On Node 24.19.0 a bare directory argument
+is treated as a MODULE path, and the run exits 1 with "Cannot find module '…\tests'". The glob form
+`node --test tests/*.test.mjs` is the one that works, on every platform, because node expands the
+pattern itself (node >= 21). It is also what CI runs.
 
 **Run the Python suites with pytest, not unittest.** `tests/test_skin_contract.py`
 imports pytest at module scope, and under `unittest` a pytest-style module loads and
@@ -159,6 +174,9 @@ selectors the Tailwind way, so an unescaped `grep 'max-h-[87vh]'` is NOT evidenc
 returns 0 for a present class too. A class with no rule silently takes the browser
 default — that is how a white pill, an invisible role colour and an unscrollable modal
 all shipped. Anything that constrains layout or carries meaning is an INLINE STYLE.
+**This gate is LOCAL-ONLY**: a GitHub runner has no Hermes Desktop build, so the script
+exits 2 (UNVERIFIED) there. CI still runs it — it reports the UNVERIFIED state as a warning
+rather than hiding it — and enforces the part it can without the host (§10).
 
 Environment truths that change the answer:
 
@@ -251,6 +269,11 @@ Behaviour-preserving work is proven, never asserted:
   fifth of real VS Code values carry alpha — see `docs/PLANS/VSCODE-MAPPING-RESEARCH.md`.
 - Complexity and file-size debt is tracked, not hidden: `desktop/plugin.template.js` is far past the
   500-line gate, and the honest fix is splitting it.
+- The "one-step install" claim (paste the repo URL into Desktop -> Plugins) is **being settled, not
+  established**: it is published in `README.md` and printed by `scripts/regenerate.py` on every
+  build, and it depends on the repo root being an agent package. Do not repeat it in a doc or a
+  commit message until it has been re-proven on a real machine —
+  `docs/REVIEWS/review-2026-10-20/review-F-packaging-gates.md` (F1, F2) holds the evidence.
 
 ## 10. Quality gates
 
@@ -260,3 +283,43 @@ workflow (recall -> scope -> check-pattern -> work -> review -> check) is preser
 `docs/AGENT_INSTRUCTIONS.md` alongside the MCP tool notes. Current debt and every
 adjudicated false positive (imports the loader provides, a two-argument `.then()` that IS the rejection
 handler, prototype-pollution in pre-existing code) are recorded in `docs/TASKS.md` with the evidence.
+
+### What CI runs, and what each job is allowed to decide
+
+| Job | Gate | Fails the build when |
+|:--|:--|:--|
+| `test` (ubuntu/macos/windows) | `node --test tests/*.test.mjs`, `python -m pytest tests/ -q`, `check-packs.py`, `check-package.py` | a test, the catalogue contract or the package contract fails |
+| `build-is-current` | `regenerate.py` + `generate-gallery.py`, then the committed tree must match what they produced | the committed build, the transports or `docs/gallery.html` differ from the generators — including a file the generator produced that was never committed |
+| `contrast` | every text pair the plugin paints clears WCAG AA 4.5:1 | one painted pair drops below 4.5:1 |
+| `rigour` | the whole `rigour check --ci` gate, against a PINNED finding set | the finding set moves in EITHER direction |
+| `host-classes` | `check-host-classes.py` (host stylesheet) + the arbitrary-value inventory | a class we use has no rule in the host's stylesheet, or the inventory of arbitrary-value utilities moves |
+
+Four facts about that table that are easy to get wrong:
+
+- **The rigour job is a NO-REGRESSION gate, not a green gate.** `rigour check --ci` is RED at the pin
+  and cannot be made green without weakening `rigour.yml`, which §3/§6 forbid: the file-size and
+  complexity debt is tracked on purpose (§9), and the docs are over the limit by design. So the job
+  pins the finding set it is allowed to see. A finding that is NOT in the pin fails the build; a
+  finding IN the pin that is no longer reported ALSO fails the build, because the pin is then stale
+  and must be updated in the same change that fixed it. Nothing is suppressed — rigour runs every
+  sub-gate and the report is uploaded either way — and the pin can only shrink. It lives in
+  `.github/workflows/ci.yml`.
+- **The pin is measured on a CLEAN checkout, and the two views differ.** `style-drift` and
+  `logic-drift` compare against a baseline under `.rigour/`, which is gitignored: on a fresh runner
+  those gates build the baseline from the tree they are scanning and report nothing, while a
+  developer with an old local `.rigour/style-baseline.json` sees five extra `style-drift` findings.
+  The clean-checkout view at the pin is 20 findings (2 critical, 12 high, 5 medium, 1 low); a
+  developer's working tree can show more, and uncommitted work adds its own. Only the clean-checkout
+  view is what the job compares against. Measure it in a clean clone when you are reproducing a CI
+  failure — and remember that any change which moves the finding set (a lane fixing a finding, a
+  file crossing 500 lines, the review documents being committed) needs the pin updated in the SAME
+  change. The failing job prints the set to copy.
+- **The build-currency gate must see UNTRACKED files.** `git diff --exit-code` compares the index
+  with the working tree and ignores them, so a committed transport that was deleted and regenerated
+  came back as `??` and the old gate still exited 0 — a package missing a mode-locked transport
+  shipped with CI green. The gate stages what the generators produced and diffs the INDEX.
+- **The host-class gate is only half-verifiable on a runner.** Without the Desktop app's compiled
+  stylesheet the script exits 2 (UNVERIFIED) and the job says so in a warning; what the job CAN
+  enforce is the inventory of arbitrary-value utilities, because the host cannot have generated our
+  literal. Adding one is a deliberate act, not an accident.
+

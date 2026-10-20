@@ -5,42 +5,62 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # The gates below are cheap enough to re-run by hand, and a reviewer who
+  # wants to see a single gate's raw output should not have to push an empty
+  # commit to get it.
+  workflow_dispatch:
+
+# Every job here only reads the repository. Saying so stops a later step from
+# inheriting a write token it never needs.
+permissions:
+  contents: read
+
+# A burst of pushes runs the full 3-OS matrix each time; only the newest run
+# of a ref is worth finishing.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     # The plugin ships to Desktop users on all three platforms and its backend
     # uses only pathlib/tempfile/os.replace, so the suite runs everywhere rather
     # than on the maintainer's machine alone. `matrix.os` is a fixed list
-    # defined below, never untrusted event input.
+    # defined below, never untrusted event input. The runner labels are pinned
+    # rather than `-latest`, so a runner-image update cannot change what the
+    # suite is proved against.
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-24.04, macos-14, windows-2022]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '22'
-
       - name: Run JS tests
         run: node --test tests/*.test.mjs
-
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
-
       - name: Install backend dependencies
-        run: pip install fastapi PyYAML pytest
-
+        # Pinned, not floating: an unpinned `pip install` is a supply-chain
+        # finding in the catalog's own scan of this package, and a CI that
+        # changes under you is not a CI you can reason about. These are the
+        # versions the suites are green on; bump them deliberately.
+        run: pip install fastapi==0.133.1 PyYAML==6.0.3 pytest==9.1.1
       # check-packs.py imports PyYAML at module scope, so it runs after the
       # interpreter and its dependency exist. The data contract is a gate: a
       # skin that loses a palette, a pack that loses every member, or a
       # duplicate label fails here instead of shipping.
       - name: The catalogue obeys its own contract
         run: python scripts/check-packs.py
-
+      # The package contract used to run on Linux only, so a packaging error
+      # that only shows on Windows reached the maintainer after the merge.
+      - name: The package agrees with itself
+        run: python scripts/check-package.py
       # One runner for all three suites, because that is the command the repo
       # documents. The previous shape ran each suite through `unittest` while
       # `tests/test_skin_contract.py` imports pytest at module scope: CI could
@@ -52,21 +72,19 @@ jobs:
   build-is-current:
     # desktop/plugin.js is committed because the installer loads it, so a
     # template edit that was never regenerated would ship stale code. Rebuilding
-    # must be a no-op.
-    runs-on: ubuntu-latest
+    # must be a no-op. docs/gallery.html is committed for the same reason: it
+    # is generated from skins-v2/ and it drifted silently for a long time.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
-
       - name: Install backend dependencies
-        run: pip install fastapi PyYAML
-
+        run: pip install fastapi==0.133.1 PyYAML==6.0.3
       - name: The catalogue obeys its own contract
         run: python scripts/check-packs.py
-
       # `hermes plugins validate .` is the catalog admission gate, but the Hermes
       # CLI is not installable from PyPI yet (hermes-agent 0.19.0 ships no
       # `validate` subcommand), so CI cannot run that exact check. This script owns
@@ -74,10 +92,311 @@ jobs:
       # fields, the entry points, the committed build's stamp, and tracked junk.
       - name: The package agrees with itself
         run: python scripts/check-package.py
-
       - name: Rebuild the shipped plugin
-        run: python scripts/regenerate.py
+        run: |
+          python scripts/regenerate.py
+          echo "::warning title=UNPROVEN CLAIM::regenerate.py closes by telling the reader that the dialog installs the plugin and its Desktop half in one step. That claim is being settled, not established: it depends on the repo root being an agent package. The packaging lane owns it (docs/REVIEWS/review-2026-10-20/review-F-packaging-gates.md, F1 and F2). Nothing in CI asserts it."
+      - name: Rebuild the shipped gallery
+        run: python scripts/generate-gallery.py
+      # THE BUILD-CURRENCY GATE. `git diff --exit-code` compares the INDEX with
+      # the working tree and ignores UNTRACKED files, so a committed transport
+      # that had been deleted and regenerated by the step above came back as
+      # `??` and the old gate still exited 0: a package missing a mode-locked
+      # transport shipped with CI green. Staging what the generators produced
+      # and diffing the INDEX sees the untracked file too, and it also sees a
+      # file the generators did NOT restore. (Fault-injected both ways; see
+      # docs/REVIEWS/review-2026-10-20/review-F-packaging-gates.md F4.)
+      - name: The committed build and gallery must match their generators
+        run: |
+          git add -A
+          git diff --cached --stat
+          git diff --exit-code --cached
 
-      - name: The committed build must match its template
-        run: git diff --exit-code -- desktop/plugin.js gateway-skins docs/DERIVED-PALETTES.md
+  contrast:
+    # No gate in the repo used to measure contrast, so a palette that painted
+    # unreadable text passed every other check. This gate measures the pairs
+    # the plugin actually PAINTS - the same colour-resolution order the build
+    # uses - and holds them to WCAG 2 SC 1.4.3 (AA, normal text: 4.5:1).
+    # It is green at the pin: the worst painted pair in the catalogue is
+    # 4.5002:1. It fails on the first palette that drops below 4.5:1.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+      - name: Install the catalogue's parser
+        run: pip install PyYAML==6.0.3
+      - name: Every text role the plugin paints clears 4.5:1
+        run: |
+          python - <<'PY'
+          import glob, os, sys, yaml
 
+          MIN = 4.5  # WCAG 2 SC 1.4.3 (AA): normal text needs 4.5:1
+
+          # The reading colour, exactly as the build resolves it:
+          # pickColor(colors, ['ui_text', 'banner_text', 'status_bar_text']).
+          READING = ("ui_text", "banner_text", "status_bar_text")
+          # (role, the surface it is painted on)
+          PAIRS = (
+              ("reading", "background"),
+              ("reading", "status_bar_bg"),
+              ("banner_text", "background"),
+              ("banner_title", "background"),
+              ("banner_dim", "background"),
+              ("prompt", "background"),
+          )
+
+          def lum(value):
+              value = value.strip().lstrip("#")
+              if len(value) == 3:
+                  value = "".join(c * 2 for c in value)
+              r, g, b = (int(value[i:i + 2], 16) / 255 for i in (0, 2, 4))
+              f = lambda c: c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+              r, g, b = f(r), f(g), f(b)
+              return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+          def ratio(a, b):
+              la, lb = lum(a), lum(b)
+              hi, lo = max(la, lb), min(la, lb)
+              return (hi + 0.05) / (lo + 0.05)
+
+          failures = []
+          checked = 0
+          for path in sorted(glob.glob("skins-v2/*.yaml")):
+              stem = os.path.basename(path)[:-5]
+              data = yaml.safe_load(open(path, encoding="utf-8"))
+              for mode, key in (("light", "light_colors"), ("dark", "dark_colors")):
+                  palette = data.get(key) or {}
+                  for role, surface in PAIRS:
+                      if role == "reading":
+                          fg = next((palette[r] for r in READING if palette.get(r)), None)
+                      else:
+                          fg = palette.get(role)
+                      bg = palette.get(surface)
+                      if not fg or not bg:
+                          continue
+                      checked += 1
+                      value = ratio(fg, bg)
+                      if value < MIN:
+                          failures.append("%s|%s|%s on %s = %.3f:1" % (stem, mode, role, surface, value))
+          for line in failures:
+              print("FAIL: " + line + " - below %.1f:1" % MIN)
+          if failures:
+              sys.exit(1)
+          print("OK: %d painted text pairs across %d skins clear %.1f:1"
+                % (checked, len(glob.glob("skins-v2/*.yaml")), MIN))
+          PY
+
+  rigour:
+    # The repo's own committed quality gate (rigour.yml). It was not in CI at
+    # all, so the number a reviewer saw ("4/4 green") said nothing about it.
+    #
+    # `rigour check --ci` is RED at the pin and CANNOT be made green without
+    # weakening rigour.yml, which AGENTS.md forbids: the file-size and
+    # complexity debt is tracked on purpose (AGENTS.md section 9) and the
+    # docs/PLANS files are above the limit by design. So the gate here is a
+    # NO-REGRESSION gate over the finding set:
+    #
+    #   * every finding the pinned set lists is still reported, with its owner;
+    #   * a finding that is NOT in the pinned set fails the build;
+    #   * a finding in the pinned set that is NO LONGER reported also fails the
+    #     build, because the pin is then stale and must be updated in the same
+    #     change that fixed it.
+    #
+    # Nothing is suppressed: rigour runs every sub-gate and the report is
+    # uploaded as an artefact either way. The pin is not an allowlist - it is
+    # the record of what the gate currently says, and it can only shrink.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+      # Pinned version: the finding set below was measured with 6.4.4, and a
+      # floating "latest" would change the gate's verdicts under the repo's
+      # feet. The repo has no package.json and gains none: npx keeps its
+      # download in the runner's npm cache, outside the tree.
+      - name: Install the quality gate
+        run: npx --yes @rigour-labs/cli@6.4.4 --version
+      - name: The repo's own quality gate
+        run: |
+          # Start from nothing. A stale .rigour/ directory carries a style
+          # baseline from some other tree, and a leftover rigour-fix-packet.json
+          # is a GENERATED file that the file-size gate would then name - both
+          # would make the finding set depend on what the runner happened to
+          # be carrying. The pin below is the clean-checkout view, so measure
+          # that.
+          rm -rf .rigour rigour-report.json rigour-fix-packet.json
+          # The report is captured OUTSIDE the tree: a file that exists inside
+          # it while the gates run is a file the file-size gate can name, and
+          # the finding set would then depend on the size of its own report.
+          REPORT="${RUNNER_TEMP:-/tmp}/rigour-stdout.json"
+          npx --yes @rigour-labs/cli@6.4.4 check --ci --json > "$REPORT" || true
+          RIGOUR_REPORT="$REPORT" python - <<'PY'
+          import json, os, sys
+
+          # The finding set CI is allowed to see, measured on a clean checkout of
+          # 352c3c5 on 2026-10-20. One line per finding:
+          #   id | severity | title | the file it names, or how many it names
+          # The line numbers are deliberately NOT in the signature: they move
+          # whenever anything above them changes, and a finding that moved is
+          # not a new finding.
+          PINNED = {
+              "AST_COMPLEXITY | medium | Function 'stripJsonNoise' has cyclomatic complexity of 16 (max: 10) | desktop/plugin.js",
+              "AST_COMPLEXITY | medium | Function 'stripJsonNoise' has cyclomatic complexity of 16 (max: 10) | desktop/plugin.template.js",
+              "AST_COMPLEXITY_LIMIT_EXCEEDED | medium | More than 5 AST_COMPLEXITY violations in desktop/plugin.js | desktop/plugin.js",
+              "AST_COMPLEXITY_LIMIT_EXCEEDED | medium | More than 5 AST_COMPLEXITY violations in desktop/plugin.template.js | desktop/plugin.template.js",
+              "context-window-artifacts | high | Context Window Artifacts | scripts/analyse-palettes.py",
+              "context-window-artifacts | high | Context Window Artifacts | tests/helpers/card-cases.mjs",
+              "file-size | low | File Size Limit | CHANGELOG.md;dashboard/plugin_api.py;desktop/plugin.js;desktop/plugin.template.js;docs/PALETTE-ANALYSIS.json;docs/PLANS/CHROMA-EDITOR.md;docs/PLANS/CHROMA-IMPLEMENTATION.md;docs/PLANS/CHROMA-ROADMAP.md;docs/REVIEWS/ARIA-SCOUT-2026-10-19.md;docs/THEME-PACK-CREATION.md;scripts/regenerate.py;tests/fixtures/theme-card-parity.json;tests/test_plugin_api.py;tests/theme-persistence.test.mjs",
+              "hallucinated-imports | critical | Hallucinated Imports | desktop/plugin.js",
+              "hallucinated-imports | critical | Hallucinated Imports | desktop/plugin.template.js",
+              "inconsistent-error-handling | high | Inconsistent Error Handling | 5 files",
+              "phantom-apis | high | Phantom APIs | dashboard/plugin_api.py",
+              "promise-safety | high | Async & Error Safety Violation | desktop/plugin.js",
+              "promise-safety | high | Async & Error Safety Violation | desktop/plugin.template.js",
+              "promise-safety | high | Async & Error Safety Violation | scripts/analyse-palettes.py",
+              "promise-safety | high | Async & Error Safety Violation | scripts/check-packs.py",
+              "promise-safety | high | Async & Error Safety Violation | scripts/classify-skins.py",
+              "promise-safety | high | Async & Error Safety Violation | scripts/generate-gallery.py",
+              "promise-safety | high | Async & Error Safety Violation | scripts/migrate-to-skins.py",
+              "promise-safety | high | Async & Error Safety Violation | tests/test_regenerate.py",
+              "side-effect-analysis | medium | Side-Effect: Resource Leak | scripts/measure/measure-catalogue.py",
+          }
+
+          def signature(failure):
+              """A stable name for one finding.
+
+              The file list is part of the name, because a finding that moved to
+              another file is a different finding. Two exceptions:
+                * the file-size gate names EVERY file over the limit, so its
+                  list is complete and is pinned exactly (it moves when a file
+                  crosses 500 lines - including when the review documents are
+                  committed - and the pin must move with it);
+                * the inconsistent-error-handling gate TRUNCATES its list to 5
+                  of N, in scan order, so only the count can be pinned there.
+              """
+              files = sorted(f.split(" (")[0] for f in (failure.get("files") or []))
+              head = "%s | %s | %s" % (failure.get("id"), failure.get("severity"),
+                                      failure.get("title"))
+              if failure.get("id") == "file-size":
+                  return head + " | " + ";".join(files)
+              if len(files) == 1:
+                  return head + " | " + files[0]
+              return head + " | %d files" % len(files)
+
+          report = json.load(open(os.environ["RIGOUR_REPORT"], encoding="utf-8"))
+          actual = set(signature(failure) for failure in report.get("failures", []))
+
+
+          new = sorted(actual - PINNED)
+          gone = sorted(PINNED - actual)
+          for line in new:
+              print("NEW FINDING (not in the pin - fix it, or adjudicate it in docs/TASKS.md "
+                    "and then add it here): " + line)
+          for line in gone:
+              print("STALE PIN (this finding is no longer reported - remove it from the pin "
+                    "in the same change that fixed it): " + line)
+          if new or gone:
+              print("FAIL: the quality gate's finding set moved. %d new, %d stale."
+                    % (len(new), len(gone)))
+              print("")
+              print("Update the PINNED set in .github/workflows/ci.yml in this same change.")
+              print("The set the gate actually reports is below - copy it over.")
+              print("")
+              for line in sorted(actual):
+                  print('              "%s",' % line)
+              sys.exit(1)
+          print("OK: the quality gate reports exactly the %d findings the pin lists."
+                % len(PINNED))
+          print("NOTE: the score is a band, not a metric. Report the finding LIST, not the score.")
+          PY
+      - name: The report, whatever the verdict
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: rigour-report
+          path: |
+            rigour-report.json
+            ${{ runner.temp }}/rigour-stdout.json
+          if-no-files-found: error
+
+  host-classes:
+    # A class we use that the HOST's stylesheet never generates has no rule:
+    # the element silently falls back to the browser default. That is how a
+    # white card pill on a white label, an invisible role colour and an
+    # unscrollable editor sheet all shipped.
+    #
+    # The full gate needs the Desktop app's compiled Tailwind build, which a
+    # GitHub runner does not have, so it exits 2 (UNVERIFIED) here. That state
+    # is reported loudly rather than hidden, and the second step below is the
+    # part of the same concern that CAN be enforced without the host: the
+    # inventory of arbitrary-value utilities. The host cannot have used our
+    # literal, so a new one is almost always a class with no rule - the repo's
+    # own rule (AGENTS.md section 5) is that anything constraining layout or
+    # carrying meaning must be an inline style.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+      - name: The host-class gate
+        run: |
+          if python scripts/check-host-classes.py; then
+            code=0
+          else
+            code=$?
+          fi
+          if [ "$code" -eq 2 ]; then
+            echo "::warning title=UNVERIFIED::check-host-classes.py could not verify: this runner has no Hermes Desktop build, so the host's compiled stylesheet is absent. Run it on a machine that has the app: python scripts/check-host-classes.py"
+          elif [ "$code" -ne 0 ]; then
+            echo "::error::check-host-classes.py found a class we use that the host's stylesheet never generates. Fix it before shipping."
+            exit 1
+          fi
+      - name: The arbitrary-value utility inventory must not move silently
+        run: |
+          python - <<'PY'
+          import importlib.util, pathlib, sys
+
+          # The arbitrary-value utilities the build uses at the pin, measured on
+          # 352c3c5 on 2026-10-20. Every one of them IS in the host's compiled
+          # stylesheet (the local gate reports "with no rule: 0"), so none of
+          # them is a defect - but a NEW one is a class the host almost
+          # certainly does not generate. The inventory is pinned so that adding
+          # or removing one is a deliberate act, in the same change.
+          PINNED = {
+              "bg-(--ui-bg-secondary)", "bg-(--ui-bg-tertiary)", "bg-(--ui-stroke-secondary)",
+              "border-(--ui-accent)", "border-(--ui-stroke-secondary)",
+              "hover:bg-(--chrome-action-hover)", "py-[3px]", "rounded-[4px]",
+              "text-[0.5rem]", "text-[0.5625rem]", "text-[0.625rem]", "text-[0.6875rem]",
+              "text-[0.75rem]", "text-[0.8125rem]", "text-(--ui-accent)",
+              "text-(--ui-text-secondary)", "text-(--ui-text-tertiary)", "tracking-[0.08em]",
+          }
+
+          spec = importlib.util.spec_from_file_location("host_classes", "scripts/check-host-classes.py")
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          build = pathlib.Path("desktop/plugin.js").read_text(encoding="utf-8")
+          tokens = module.class_tokens(build)
+          actual = {token for token in tokens if "[" in token or "(--" in token}
+
+          new = sorted(actual - PINNED)
+          gone = sorted(PINNED - actual)
+          for token in new:
+              print("NEW arbitrary-value utility: " + token)
+              print("  The host cannot have generated it. Run `python scripts/check-host-classes.py`"
+                    " on a machine with the Desktop app before you keep it, or use an inline style.")
+          for token in gone:
+              print("STALE PIN: " + token + " is no longer used - remove it from the pin.")
+          if new or gone:
+              sys.exit(1)
+          print("OK: %d arbitrary-value utilities, unchanged." % len(actual))
+          PY

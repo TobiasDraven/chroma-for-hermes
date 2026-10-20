@@ -2,3 +2,21 @@
 # ESM that the desktop loader and the test harness parse with line-anchored
 # regexes; CRLF breaks both.
 * text=auto eol=lf
+
+# Shell scripts are executed by /bin/sh (and, for .command, by Finder on
+# macOS through its shebang): a CRLF byte after "#!" makes the kernel report
+# "bad interpreter" and the script never runs. `text=auto` already lands them
+# on LF; these rules state the requirement instead of relying on git's
+# binary/text heuristic to keep noticing.
+*.sh text eol=lf
+*.command text eol=lf
+
+# Binary assets are never text. The catalog banner (docs/chroma-banner.png) is
+# a PNG: `text=auto` leaves it alone today because git's heuristic sees the
+# NUL bytes, but an explicit rule cannot be defeated by a future file whose
+# first chunk happens to look like text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.webp binary

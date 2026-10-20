@@ -1,13 +1,22 @@
-# Installs Theme Picker into the active Windows Hermes home.
+# Installs Chroma into the active Windows Hermes home.
 #
-# The repo root IS the plugin package now:
-#     desktop/plugin.js        <- the desktop UI half
-#     dashboard/manifest.json  <- the Python backend
-#     dashboard/plugin_api.py
+# This is the MANUAL route. The supported routes are:
+#   - Desktop: Capabilities -> Plugins -> Install, and paste
+#     https://github.com/TobiasDraven/chroma-for-hermes
+#     (the dialog installs the package - backend AND desktop half - in one step)
+#   - CLI:     hermes plugins install https://github.com/TobiasDraven/chroma-for-hermes
+# Use this script only when neither is reachable.
+#
+# The repo root IS the plugin package:
+#     __init__.py             <- the agent-plugin entry point (register(ctx))
+#     plugin.yaml             <- the manifest (name: chroma)
+#     desktop/plugin.js       <- the desktop UI half
+#     dashboard/manifest.json <- the backend half's manifest
+#     dashboard/plugin_api.py <- the FastAPI router
 #
 # The Desktop app COPIES a package's desktop half out of
 # <hermes home>/plugins/<name>/desktop/ into <hermes home>/desktop-plugins/<name>/
-# by itself, and — when the package folder is a symlink — re-syncs on every save.
+# by itself, and - when the package folder is a symlink - re-syncs on every save.
 # So installing is just placing this folder at <hermes home>/plugins/chroma.
 #
 # Modes:
@@ -37,10 +46,12 @@ if (Test-Path -LiteralPath $target) {
 }
 
 if ($Copy) {
-  # The manifest is not optional: Hermes refuses a plugin directory without
-  # plugin.yaml, and the licence and notices must travel with the copy.
+  # The manifest and the agent entry point are not optional: Hermes refuses a
+  # plugin directory without plugin.yaml, and without __init__.py the plugin
+  # raises FileNotFoundError at every gateway start. The licence and notices
+  # must travel with the copy.
   New-Item -ItemType Directory -Force -Path $target | Out-Null
-  foreach ($item in @('desktop', 'dashboard', 'plugin.yaml', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'README.md')) {
+  foreach ($item in @('desktop', 'dashboard', 'plugin.yaml', '__init__.py', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'README.md')) {
     $from = Join-Path $repo $item
     if (-not (Test-Path -LiteralPath $from)) {
       Write-Host "WARNING: '$item' is missing from the package; the copy is incomplete." -ForegroundColor Yellow

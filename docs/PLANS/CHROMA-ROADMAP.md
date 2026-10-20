@@ -27,10 +27,15 @@ remain unstarted. **Custom background/backdrop images** are deferred to v3 — s
   fixed the roving-set regression it exposed. Focus behaviour is accepted as headless-and-walk
   verified, not unit-tested — the harness has no real `document` or layout, and `tests/aria.test.mjs`
   says so in its header.
-- **CI defines four job instances.** `test` runs on `ubuntu-latest`, `macos-latest` and
-  `windows-latest`; `build-is-current` rebuilds the plugin and refuses a stale committed build.
-- **Gates run for this revision.** JS `266/266`; pytest `185 passed, 4 skipped, 9 subtests passed`;
-  `scripts/check-package.py` holds at 2.9.0 with 94 skins and 533 tracked files;
+- **CI defines five job instances.** `test` runs on `ubuntu-latest`, `macos-latest` and
+  `windows-latest`; `build-is-current` rebuilds the plugin and the gallery and refuses a
+  stale committed build; `contrast` checks every painted text pair against WCAG AA 4.5:1;
+  `rigour` pins the quality-gate finding set; `host-classes` checks the pane's classes
+  against the host's compiled stylesheet.
+- **Gates run for this revision.** JS `266/266`; pytest `217 passed, 4 skipped, 18 subtests passed`, with
+  two `tests/test_regenerate.py` cases red because they read the retired v1 `skins/` table this
+  campaign archived out of the repository;
+  `scripts/check-package.py` holds at 2.9.0 with 94 skins and 538 tracked files;
   `scripts/check-packs.py` holds with 7 packs and 12 categories; `scripts/check-host-classes.py`
   reports 134 classes used and **0** with no rule in the host stylesheet.
 - **Distribution: prepared, not submitted.** The repository name is decided
@@ -126,15 +131,18 @@ self-serve registry.
 - **`plugin.yaml` exists** (the gate refuses a plugin directory without one), the private core imports
   are gone, and the search-filter template literal that tripped the security scan is plain
   concatenation.
-- **CI exists** — four job instances: the three-OS test matrix plus `build-is-current`. It runs the
-  JS suite, pytest, `check-packs.py` and `check-package.py`, then rebuilds and refuses a diff.
+- **CI exists** — five job instances: the three-OS test matrix, `build-is-current`,
+  `contrast`, `rigour` and `host-classes`. It runs the JS suite, pytest, `check-packs.py`
+  and `check-package.py`, then rebuilds and refuses a diff.
 - **The catalogue entry is drafted** in `docs/CATALOG-SUBMISSION.md`: name `chroma`, tier `community`,
   category `desktop`, version 2.9.0, `requires_hermes: ">=0.22.0"`, empty capabilities, and a full
-  SHA. The draft pins `43f8e1b`; HEAD is two commits further on (one docs pin, one a11y fix).
+  SHA. The draft pins `43f8e1b`; HEAD is four commits further on. The SHA is set at PR time.
 - **The admission gate was recorded as passing** in the submission record. The recorded output is the
   same checks the catalogue CI runs: manifest, fields, `requires_hermes`, loadability, Python
   dependencies, tool collisions, `security scan — safe`, no core override, desktop surface, and a
-  portable-plugin isolation note.
+  plugin-host isolation note — **and no warnings**. The package now carries an `__init__.py`, so the
+  gate's capability probe actually runs (`register() ran in isolation`, `declared tools / hooks /
+  middleware — matches registrations`) instead of being skipped.
 
 UNVERIFIED: the catalogue has not been submitted — that status is read from
 `docs/CATALOG-SUBMISSION.md`; no catalogue PR was queried this session.
@@ -155,7 +163,7 @@ re-probed against a Hermes release this session.
 4. **A fresh screenshot.** `docs/chroma-banner.png` is recorded in `docs/TASKS.md` as pre-fork UI.
 5. **Open the PR** against `NousResearch/hermes-agent` adding `plugin-catalog/chroma.yaml`, with the
    drafted description, the lineage note (derived from jdtimothy/hermes-theme-picker, MIT), and the
-   disclosure of the one TweakCN network call and the local-storage/skin-YAML writes.
+   disclosure of the TweakCN import's reachable endpoint set and the local-storage/skin-YAML writes.
 
 The intake route is a human-reviewed PR, not a form; the gate documents the checks, not the queue.
 After merge, install is `hermes plugins install chroma`; later updates are SHA-bump PRs, never a
@@ -306,7 +314,7 @@ host-capability questions — not a fix to an existing one.
 ### What the SDK offers today
 
 Read from the host source on 2026-10-20: the Desktop SDK under
-`C:/Users/malan/AppData/Local/hermes/hermes-agent/apps/desktop/src`, and — separately — the
+`<hermes home>/hermes-agent/apps/desktop/src`, and — separately — the
 dashboard/web plugin and theme surfaces under the same install.
 
 - **No decoration slot exists in the Desktop SDK.** The SDK exports these contribution areas:
@@ -412,9 +420,11 @@ previous version of this file.
 
 ```
 $ "/c/Program Files/Git/cmd/git.exe" rev-parse --short HEAD
-f338063
+352c3c5
 
 $ "/c/Program Files/Git/cmd/git.exe" log --oneline -12
+352c3c5 feat: adopt Pantheon's disclosure + licence register + manifest shape
+06e1c5d docs(gallery,roadmap): a browsable index of all 94 skins, and v3 custom images on the roadmap
 f338063 fix(a11y): the roving set returned a fake React element, and every card broke
 e251603 docs(submission): pin 2.9.0 and its sha
 43f8e1b feat(a11y): the pane is operable and announceable without a pointer (C9)
@@ -425,8 +435,6 @@ df327d8 fix(skins): the quiet tier clears AA — 44 one-mode failures, 168 value
 738b1a2 docs(agents): name the gates that exist, and the runner that actually runs
 37c0846 fix(pane): every dead class replaced by the channel the host cannot drop
 2caf959 fix(editor): the modal caps itself in the one channel the host cannot drop
-d2fac1b ci: install the runner the suite needs, and run the suites as the repo documents
-6baa64c docs: pin the submission to 4462d05, and say when to re-pin
 
 $ cat VERSION
 2.9.0
@@ -443,12 +451,12 @@ $ "/c/Program Files/nodejs/node" --test tests/*.test.mjs 2>&1 | grep -E "^ℹ (t
 ℹ fail 0
 
 $ unset PYTHONPATH && python -m pytest tests/ -q 2>&1 | tail -3
-........................................................................ [ 76%]
-.................................sss........                   [100%]
-185 passed, 4 skipped, 9 subtests passed in 132.35s (0:02:12)
+FAILED tests/test_regenerate.py::ThemeCatalogTests::test_cliffwade_v1_1_0_files_match_the_pinned_hash_manifest
+FAILED tests/test_regenerate.py::ThemeCatalogTests::test_updated_cliff_pack_has_fifty_complete_pairs
+2 failed, 217 passed, 4 skipped, 18 subtests passed in 75.39s (0:01:15)
 
 $ python scripts/check-package.py
-OK: package contract holds at 2.9.0 (94 skins, 533 tracked files)
+OK: package contract holds at 2.9.0 (94 skins, 538 tracked files)
 
 $ python scripts/check-packs.py
 skins: 94
@@ -467,22 +475,42 @@ v1.5.1
 v2.7.0
 
 $ "/c/Program Files/Git/cmd/git.exe" describe --tags --always
-v2.7.0-16-gf338063
+v2.7.0-18-g352c3c5
 
 $ "/c/Program Files/Git/cmd/git.exe" rev-list --count 43f8e1b..HEAD
-2
+4
 
 $ python -c "import yaml;d=yaml.safe_load(open('.github/workflows/ci.yml'));print('jobs:',list(d['jobs']));print('matrix:',d['jobs']['test']['strategy']['matrix']['os'])"
-jobs: ['test', 'build-is-current']
+jobs: ['test', 'build-is-current', 'contrast', 'rigour', 'host-classes']
 matrix: ['ubuntu-latest', 'macos-latest', 'windows-latest']
 
 $ hermes plugins validate .
-hermes: cannot recover dependency publication: C:\Users\malan\AppData\Local\hermes\installs\a13589dc3d4cc6ea\publication.json: config changed after publication began; preserve it for manual recovery; run `hermes pm repair`
+hermes: cannot recover dependency publication: <hermes home>\installs\<install id>\publication.json: config changed after publication began; preserve it for manual recovery; run `hermes pm repair`
+
+$ <host checkout>/venv/Scripts/python.exe -B <script that calls hermes_cli.plugin_validate.validate_plugin_dir on this tree>
+exit_code 0
+OK manifest -- plugin.yaml parses
+OK manifest fields -- name, version, description present
+OK requires_hermes -- spec '>=0.22.0' parses
+OK config schema -- not declared
+OK requires_env -- all entries UPPER_SNAKE
+OK loadable -- entry: __init__.py, desktop/plugin.js
+OK python dependencies -- none declared
+OK capability probe -- register() ran in isolation
+OK declared tools -- matches registrations
+OK declared hooks -- matches registrations
+OK declared middleware -- matches registrations
+OK built-in tool collisions -- no tools to check
+OK security scan -- safe
+OK no core override -- no runtime rebinds of Hermes core
+OK desktop surface -- stays inside the plugin SDK surface
+Isolation — host (host_ready: True)
+Validation passed.   (no warnings)
 
 $ grep -rn "customCSS" dashboard desktop scripts skins-v2
 (no output; exit 1)
 
-$ grep -rhoE "[A-Z][A-Z_]+_AREAS?" "C:/Users/malan/AppData/Local/hermes/hermes-agent/apps/desktop/src/sdk/index.ts" | sort -u
+$ grep -rhoE "[A-Z][A-Z_]+_AREAS?" "<hermes home>/hermes-agent/apps/desktop/src/sdk/index.ts" | sort -u
 APPEARANCE_AREAS
 CHAT_EMPTY_AREA
 COMPOSER_AREAS
@@ -502,9 +530,9 @@ TITLEBAR_AREAS
 TRANSCRIPT_DIRECTIVE_AREA
 WORKSPACE_PAGE_HEADER_AREA
 
-$ grep -rn "theme-asset" "C:/Users/malan/AppData/Local/hermes/hermes-agent/apps/desktop/src"
-C:/Users/malan/AppData/Local/hermes/hermes-agent/apps/desktop/src/styles.css:1003::root:not([style*='--theme-asset-bg:']) .theme-default-filler {
-C:/Users/malan/AppData/Local/hermes/hermes-agent/apps/desktop/src/styles.css:1007::root[style*='--theme-asset-bg:'] .theme-default-filler {
+$ grep -rn "theme-asset" "<hermes home>/hermes-agent/apps/desktop/src"
+<hermes home>/hermes-agent/apps/desktop/src/styles.css:1003::root:not([style*='--theme-asset-bg:']) .theme-default-filler {
+<hermes home>/hermes-agent/apps/desktop/src/styles.css:1007::root[style*='--theme-asset-bg:'] .theme-default-filler {
 
 $ grep -n "sidebarBackground\|customCSS" .../apps/desktop/src/themes/types.ts
 46:  sidebarBackground?: string

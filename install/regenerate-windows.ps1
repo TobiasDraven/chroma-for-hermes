@@ -33,7 +33,7 @@ try {
 
   & py $regenerator $stagingSkins $pluginPath
   if ($LASTEXITCODE -ne 0) {
-    throw 'Theme Picker regeneration failed; the existing plugin was left unchanged.'
+    throw 'Chroma regeneration failed; the existing plugin was left unchanged.'
   }
 } finally {
   Remove-Item -Path $stagingSkins -Recurse -Force -ErrorAction SilentlyContinue

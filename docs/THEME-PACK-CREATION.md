@@ -5,7 +5,7 @@
 Status: **in force**. `design_spec: v1` is grandfathered; `design_spec: v2` is the
 target for every new skin and every skin that is revised.
 Owner: Faris. Gate: `python scripts/check-packs.py` plus `pytest tests/`.
-Measured against: the 94 skins in `skins-v2/`, on 2026-10-19.
+Measured against: the 94 skins in `skins-v2/`, on 2026-10-20.
 
 ---
 
@@ -116,7 +116,7 @@ presence; the judgement is yours.
 
 Fourteen keys are read by the Desktop window's renderer (marked **D**). The whole
 palette is handed to the host, but the renderer paints from fourteen of them; the
-CLI paints from all 43. A key without **D** is real, and editing it will not repaint the window — the
+CLI paints from **all 43**. A key without **D** is real, and editing it will not repaint the window — the
 editor marks those rows `CLI` rather than pretending they are inert.
 
 Grouped as the editor groups them.
@@ -508,9 +508,13 @@ Contrast, as an advisory measure rather than a gate (no skin fails; see §12):
    choices. `status_bar_dim` remains below 4.5:1 on the raised `status_bar_bg` in 11
    light skins (worst 3.996:1), accepted because every moved key improved and none
    regressed.
-2. **29 of the 43 keys do not repaint the Desktop window.** The CLI reads all 43. The
-   editor marks those rows `CLI`. A user editing `syntax_comment` changes the CLI and
-   nothing else; the badge is the honest answer.
+2. **29 of the 43 keys do not repaint the Desktop window.** The CLI reads all 43:
+   every role reaches the gateway skin file the CLI paints from, and the editor
+   marks those rows `CLI`. A user editing `syntax_comment` changes the CLI and
+   nothing else; the badge is the honest answer. (The generator used to compact
+   an authored palette down to 21 keys before minting a gateway transport, which
+   left 16 roles authored in `skins-v2/` and shipped nowhere; that compaction is
+   gone, and a transport now carries every role the skin authors.)
 3. **v1 skins carry 27–43 keys.** Inheritance fills the gaps at load. This is
    documented, not accidental, and it is why the v2 gate does not run backwards over
    the old catalogue.

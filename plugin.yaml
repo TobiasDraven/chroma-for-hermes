@@ -1,10 +1,27 @@
+# Chroma for Hermes — the agent-plugin manifest.
+#
+# Field decisions (verified against the host, 2026-10-20):
+#   kind: standalone   - the valid kinds are standalone | backend | exclusive |
+#                         platform | model-provider (hermes_cli/plugins_manifest.py:27).
+#                         Chroma is a desktop half plus a dashboard router: it is not a
+#                         gateway platform adapter, not an LLM provider profile, not a
+#                         single-select category provider (memory/cron/computer-use), and
+#                         not a category backend (browser/image-gen provider). It is a
+#                         general plugin the PluginManager imports and calls
+#                         register(ctx) on, so `standalone` is the honest kind.
+#   provides_tools / provides_hooks - known manifest fields; the admission gate
+#                         diffs them against what register() actually registers.
+#   requires_env        - known manifest field; Chroma reads no credential store.
+#   provides_middleware - NOT a manifest field (absent from _KNOWN_MANIFEST_FIELDS,
+#                         hermes_cli/plugins_manifest.py:32-39): the loader warned and
+#                         ignored it. The "no middleware" claim lives in the catalog
+#                         entry's capabilities block, which is where the catalog reads it.
 name: chroma
 version: "2.9.0"
 manifest_version: 1
-kind: plugin
+kind: standalone
 provides_tools: []
 provides_hooks: []
-provides_middleware: []
 requires_env: []
 requires_hermes: ">=0.22.0"
 description: >-

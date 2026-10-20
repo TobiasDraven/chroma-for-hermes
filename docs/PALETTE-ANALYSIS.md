@@ -7,9 +7,9 @@ Six signature roles, OKLab distance, maximum per role (not the mean).
 
 | measure | value |
 |---|---|
-| skins | 109 |
-| with a derived mode | 47 |
-| missing a signature role | 14 |
+| skins | 94 |
+| with a derived mode | 40 |
+| missing a signature role | 0 |
 | pairs below 0.02 (near-duplicate) | 0 |
 | pairs 0.02-0.05 (close) | 6 |
 
@@ -17,15 +17,15 @@ Six signature roles, OKLab distance, maximum per role (not the mean).
 
 | band | skins |
 |---|---|
-| yellow-green | 21 |
-| blue | 18 |
-| violet | 16 |
-| gold | 12 |
-| orange | 9 |
-| green | 8 |
+| yellow-green | 19 |
+| blue | 16 |
+| violet | 14 |
+| orange | 8 |
 | magenta | 8 |
-| red | 7 |
-| cyan | 6 |
+| gold | 8 |
+| green | 7 |
+| red | 6 |
+| cyan | 4 |
 | teal | 4 |
 
 ## Closest pairs
@@ -42,12 +42,8 @@ Six signature roles, OKLab distance, maximum per role (not the mean).
 | dark-navy | dark-charcoal | 0.05833 |
 | moss-stone | typewriter-cream | 0.06006 |
 | typewriter-cream | moss-stone | 0.06006 |
+| newsprint-noir | obsidian | 0.06074 |
+| obsidian | newsprint-noir | 0.06074 |
 | blueprint | high-noon | 0.06525 |
 | high-noon | blueprint | 0.06525 |
-| slate-mist | steel-thread | 0.06898 |
-| eclipse | liquid-silver | 0.07159 |
-| liquid-silver | eclipse | 0.07159 |
-
-## Missing a signature role
-
-`nous`, `midnight`, `ember`, `mono`, `cyberpunk`, `rose`, `hermes-teal`, `ares`, `slate`, `daylight`, `warm-lightmode`, `poseidon`, `sisyphus`, `charizard`
+| slate-mist | bone-white | 0.06537 |

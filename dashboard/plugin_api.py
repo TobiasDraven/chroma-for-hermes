@@ -26,12 +26,34 @@ from typing import Any
 
 import os
 
-HERMES_HOME = None
-try:
-    from hermes_constants import get_hermes_home  # documented way to resolve <hermes home>
-    HERMES_HOME = Path(get_hermes_home())
-except Exception:  # pragma: no cover - fallback for direct import
-    HERMES_HOME = Path(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")))
+HERMES_HOME: Path | None = None
+"""An explicit override for <hermes home>.
+
+`None` means "resolve it per request" (see `_home`). A `Path` pins it — which
+is how a test run, or an explicit deployment, stays away from the real Hermes
+home. The value is read at CALL time, so assigning to it redirects every path
+helper at once."""
+
+
+def _home() -> Path:
+    """Resolve <hermes home> for THIS request.
+
+    The host's home is CONTEXT-LOCAL: `hermes_constants.get_hermes_home()`
+    reads a ContextVar that the plugin router's per-profile dependency sets for
+    the request. This module is imported ONCE, so a home frozen at import time
+    sends every profile's request to the LAUNCH profile's directory — an import
+    scoped to profile B lands in profile A's `skins/`. Resolving per call is
+    what makes `?profile=` mean anything.
+
+    The static override wins when it is set: it is how a test run stays out of
+    the real <hermes home>."""
+    if HERMES_HOME is not None:
+        return Path(HERMES_HOME)
+    try:
+        from hermes_constants import get_hermes_home  # documented way to resolve <hermes home>
+        return Path(get_hermes_home())
+    except Exception:  # pragma: no cover - fallback for direct import
+        return Path(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")))
 
 
 # This module deliberately imports NOTHING private from the Hermes core.
@@ -40,10 +62,39 @@ except Exception:  # pragma: no cover - fallback for direct import
 # below is serialised here and written atomically with the standard library.
 
 
-def _yaml_scalar(value: Any) -> str:
+def _refuse_control_characters(text: str, field: str) -> None:
+    """Refuse a control character in a string that becomes skin file content.
+
+    A control character has no legitimate use in a skin label or description,
+    and some of them are FATAL to the file: inside a single-quoted scalar a
+    newline is legal YAML but FOLDS into the value, so a label can inject lines
+    of its own (including a `---` document marker), and a NUL makes the Hermes
+    engine's parser reject the file outright — the skin then vanishes from the
+    CLI while the import reports success.
+
+    The policy is REFUSE, not sanitise: a label is human text, so a control
+    character in one is a mistake or an attack, never intent — and silently
+    rewriting a user's label would hide the very thing the user needs to see.
+    A refusal cannot lose real intent; a sanitiser can."""
+    for ch in text:
+        code = ord(ch)
+        if code < 0x20 or code == 0x7F:
+            raise HTTPException(
+                400,
+                f"the {field} may not contain the control character U+{code:04X}; "
+                f"a skin label is single-line text",
+            )
+
+
+def _yaml_scalar(value: Any, field: str = "value") -> str:
     """Emit one YAML scalar. Only plain strings reach here (hex colours, names,
-    descriptions), so single-quoting with doubled quotes is sufficient."""
-    return "'" + str(value).replace("'", "''") + "'"
+    descriptions), so single-quoting with doubled quotes is sufficient.
+
+    A control character is refused rather than escaped: see
+    `_refuse_control_characters` for why a refusal is the honest answer."""
+    text = str(value)
+    _refuse_control_characters(text, field)
+    return "'" + text.replace("'", "''") + "'"
 
 
 def _dump_skin_yaml(data: dict[str, Any]) -> str:
@@ -53,9 +104,9 @@ def _dump_skin_yaml(data: dict[str, Any]) -> str:
         if isinstance(value, dict):
             lines.append(f"{key}:")
             for inner_key, inner_value in value.items():
-                lines.append(f"  {inner_key}: {_yaml_scalar(inner_value)}")
+                lines.append(f"  {inner_key}: {_yaml_scalar(inner_value, inner_key)}")
         else:
-            lines.append(f"{key}: {_yaml_scalar(value)}")
+            lines.append(f"{key}: {_yaml_scalar(value, key)}")
     return "\n".join(lines) + "\n"
 
 
@@ -133,7 +184,7 @@ class IndexUnreadableError(RuntimeError):
 
 
 def _skins_dir() -> Path:
-    d = Path(HERMES_HOME) / "skins"
+    d = _home() / "skins"
     d.mkdir(parents=True, exist_ok=True)
     return d
 
@@ -312,6 +363,13 @@ CORE_NAMES = frozenset(
 # A slug is a single word-like token: safe for a flat filename and for config keys.
 _SLUG_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 
+# The slug's LENGTH is bounded too, and separately: `_SLUG_RE` bounds the
+# alphabet, not the size. A 300-character slug passes every other guard and
+# then fails in the filesystem itself (`ENAMETOOLONG`), which is a 500 for what
+# is really a bad input. Sixty-four characters is far more than any real skin
+# name needs and far less than any filesystem allows.
+MAX_SKIN_NAME_CHARS = 64
+
 # Windows reserves these as device names, with or without an extension: a file
 # called `con.yaml` is not a file at all, it is the console device — the write
 # silently goes nowhere and the gateway never sees a skin, or the create fails
@@ -325,27 +383,6 @@ WINDOWS_RESERVED_NAMES = frozenset(
 
 # Colour tokens: `#rgb` or `#rrggbb`, case-insensitive. Nothing else is a colour.
 _HEX_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
-
-
-class TweakcnColorMap(BaseModel):
-    background: str
-    ui_text: str
-    banner_text: str
-    ui_accent: str
-    banner_accent: str
-    ui_tool: str
-    ui_border: str
-    banner_border: str
-    banner_title: str
-    banner_dim: str
-    ui_label: str
-    ui_ok: str
-    ui_error: str
-    ui_warn: str
-    light_colors: dict[str, str] = {}
-    dark_colors: dict[str, str] = {}
-    description: str = ""
-    description_extra: str = ""
 
 
 class ImportRequest(BaseModel):
@@ -420,17 +457,36 @@ def _validate_colors(*maps: Any) -> None:
     A missing token is fine (it falls back); a supplied-but-broken one is a 400
     naming the token, so the user sees which value was rejected instead of
     discovering a wrong palette after the skin is live.
-    """
+
+    A supplied value that is not even a STRING is broken in the same way, and
+    `_hex`'s own contract says so: it returns None for an absent token, so a
+    non-string used to be skipped here and silently became a default palette
+    with a 200 OK."""
     for mapping in maps:
         if not isinstance(mapping, dict):
             continue
         for key, value in mapping.items():
-            if value is None or not isinstance(value, str):
-                continue
+            if value is None:
+                continue  # not supplied: the token falls back
+            if not isinstance(value, str):
+                raise HTTPException(
+                    400, f"invalid colour for '{key}': {value!r} is not a hex colour"
+                )
             try:
                 _hex(value)
             except ValueError as exc:
                 raise HTTPException(400, f"invalid colour for '{key}': {exc}") from exc
+
+
+def _check_name_length(name: str, field: str) -> None:
+    """Refuse a name too long to be a filename, naming the limit.
+
+    A name this backend mints becomes a file, and the filesystem's own limit
+    (255 bytes on ext4/NTFS) is not a validation rule the user can act on."""
+    if len(name) > MAX_SKIN_NAME_CHARS:
+        raise HTTPException(
+            400, f"{field} is too long (max {MAX_SKIN_NAME_CHARS} characters)"
+        )
 
 
 def _is_unsafe_name(name: str) -> bool:
@@ -449,6 +505,7 @@ def import_skin(req: ImportRequest) -> dict[str, Any]:
             "skin name must be a slug (lower-case, hyphens) and must not be a "
             "Windows reserved device name (con, nul, com1…)",
         )
+    _check_name_length(name, "skin name")
     if name in CORE_NAMES:
         raise HTTPException(409, f"'{name}' collides with a built-in skin")
 
@@ -459,8 +516,9 @@ def import_skin(req: ImportRequest) -> dict[str, Any]:
     if oversized:
         raise HTTPException(413, f"theme is too large: {oversized}")
 
-    skins_dir = Path(HERMES_HOME) / "skins"
-    skins_dir.mkdir(parents=True, exist_ok=True)
+    # `_skins_dir()` and not `Path(HERMES_HOME)`: the home is resolved per
+    # request, and the override may be None.
+    skins_dir = _skins_dir()
     target = skins_dir / f"{name}.yaml"
 
     # Build the token map from the incoming theme dict. The UI sends a DesktopTheme
@@ -602,6 +660,7 @@ def _guard_name(value: str, *, field: str) -> str:
     clean = (value or "").strip().lower()
     if _is_unsafe_name(clean):
         raise HTTPException(400, f"{field} must be a slug (lower-case, hyphens)")
+    _check_name_length(clean, field)
     if clean in CORE_NAMES:
         raise HTTPException(409, f"'{clean}' is a built-in skin")
     return clean
@@ -649,6 +708,55 @@ def _rewrite_skin_name(path: Path, old_name: str, new_name: str) -> None:
     )
 
     _atomic_write_text(path, text)
+
+
+def _rollback_rename(src: Path, dst: Path, original_text: str) -> str:
+    """Undo a rename: the original BYTES at the original PATH.
+
+    Both halves, because the engine needs both: `list_skins` keys a skin by the
+    `name:` field INSIDE the file, while `load_skin` opens `<skins>/<name>.yaml`.
+    A file left at the old path with the new name inside it is listed under a
+    name it cannot be loaded by — the CLI then paints the default palette
+    instead of the user's theme, and says nothing about it.
+
+    Two orders, chosen by what is actually on disk:
+
+    * `dst` still holds the ORIGINAL bytes (the identity rewrite failed, and it
+      is atomic): move it back. One step, and it needs no free space.
+    * `dst` holds the RENAMED bytes (the index write failed): write the
+      original bytes back at `src` FIRST, and only then drop the renamed copy.
+      If that write fails there is no room for it, and `dst` is left alone —
+      a self-consistent skin whose `name:` matches its filename, which is the
+      best state a full disk can leave behind. Deleting `dst` there would be
+      the one thing that loses the user's theme.
+
+    Returns a note describing what is actually on disk; "" means the rollback
+    was complete."""
+    try:
+        current: str | None = dst.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        current = None
+
+    if current is not None and current == original_text:
+        # Still the original bytes: one move restores the path AND the content.
+        try:
+            os.replace(dst, src)
+            return ""
+        except OSError as exc:
+            return f"the skin could not be put back ({exc}); it is still at {dst}"
+
+    try:
+        _atomic_write_text(src, original_text)
+    except OSError as exc:
+        return (
+            f"the skin could not be restored to {src} ({exc}); it is still at {dst} "
+            f"under its new name '{dst.stem}'"
+        )
+    # `src` now holds a full copy of the skin, so the renamed copy may go.
+    # `dst` did not exist before this call (a 409 refuses that), so this
+    # removes a file this call created — never one the user had.
+    _unlink_quietly(dst)
+    return ""
 
 
 @router.delete("/skins/{name}")
@@ -734,6 +842,16 @@ def rename_skin(req: RenameRequest) -> dict[str, Any]:
         if dst.exists():
             raise HTTPException(409, f"'{target}' already exists")
 
+        # The ORIGINAL bytes, read before anything moves. A rollback has to put
+        # back BOTH halves of the rename: the path AND the content. Restoring
+        # the path alone leaves the file at `old-name.yaml` holding
+        # `name: 'new-name'` — and the engine lists a skin by the `name:` field
+        # INSIDE the file while it LOADS it by filename, so the CLI lists a
+        # theme it cannot load and silently paints the default palette instead.
+        # Read it through the guarded reader: a file that is not UTF-8 is named
+        # here, before anything moves, rather than crashing the endpoint.
+        original_text = _read_skin_text(src)
+
         # Move first, then the identity fields, then the index: the skin file is
         # what the engine reads, so it must never point at a file that is not there.
         try:
@@ -743,13 +861,16 @@ def rename_skin(req: RenameRequest) -> dict[str, Any]:
 
         try:
             _rewrite_skin_name(dst, source, target)
-        except OSError as exc:
-            # Roll back the move: a half-renamed skin is worse than no rename.
-            try:
-                os.replace(dst, src)
-            except OSError:
-                pass
-            raise HTTPException(500, f"could not rewrite the renamed skin {dst}: {exc}") from exc
+        except (OSError, UnicodeDecodeError) as exc:
+            # A half-renamed skin is worse than no rename. The rewrite is atomic,
+            # so `dst` still holds the ORIGINAL bytes here: the rollback puts
+            # both halves back.
+            note = _rollback_rename(src, dst, original_text)
+            raise HTTPException(
+                500,
+                f"could not rewrite the renamed skin {dst}: {exc}; "
+                f"{note or 'the rename was rolled back'}.",
+            ) from exc
 
         index.pop(source, None)
         updated = dict(record) if isinstance(record, dict) else {}
@@ -762,17 +883,20 @@ def rename_skin(req: RenameRequest) -> dict[str, Any]:
         try:
             _write_index(index)
         except OSError as exc:
-            # Put the file back under its old name: a rename the index never
-            # learned about is a skin the picker can neither show nor delete.
-            try:
-                os.replace(dst, src)
-            except OSError:
-                pass
+            # Put the file back under its old name AND with its old bytes: a
+            # rename the index never learned about is a skin the picker can
+            # neither show nor delete, and a skin whose `name:` no longer
+            # matches its filename is one the CLI cannot load.
+            note = _rollback_rename(src, dst, original_text)
+            rolled = (
+                "the rename was rolled back"
+                if not note
+                else f"the rename could NOT be rolled back completely: {note}"
+            )
             raise HTTPException(
                 500,
                 f"the skin was moved but the provenance index could not be updated "
-                f"({exc}); the rename was rolled back. Fix free space or permissions "
-                f"and retry.",
+                f"({exc}); {rolled}. Fix free space or permissions and retry.",
             ) from exc
 
     was_active = (req.active or "").strip().lower() == source
@@ -803,7 +927,7 @@ def export_skins(name: str = "") -> dict[str, Any]:
         path = skins_dir / f"{skin}.yaml"
         if not path.is_file():
             raise HTTPException(404, f"'{skin}' has no skin file")
-        return path.read_text(encoding="utf-8")
+        return _read_skin_text(path)
 
     if name:
         clean = _guard_name(name, field="skin name")
@@ -815,17 +939,27 @@ def export_skins(name: str = "") -> dict[str, Any]:
             "files": [{"name": clean, "yaml": read_one(clean)}],
         }
 
-    files = [
-        {"name": skin, "yaml": read_one(skin)}
-        for skin in sorted(index)
-        if (skins_dir / f"{skin}.yaml").is_file()
-    ]
+    # One mis-encoded file must not block the export of every other skin: the
+    # failures are collected and reported alongside the files that did export.
+    files: list[dict[str, Any]] = []
+    unreadable: list[dict[str, str]] = []
+    for skin in sorted(index):
+        path = skins_dir / f"{skin}.yaml"
+        if not path.is_file():
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as exc:
+            unreadable.append({"name": skin, "error": str(exc)})
+            continue
+        files.append({"name": skin, "yaml": text})
     return {
         "ok": True,
         "filename": "chroma-skins.json",
         "count": len(files),
         "index": index,
         "files": files,
+        "unreadable": unreadable,
     }
 
 
@@ -1109,6 +1243,26 @@ def _unscalar(value: str) -> str:
     return value
 
 
+def _read_skin_text(path: Path) -> str:
+    """Read a skin file as UTF-8 text, turning an unreadable file into an
+    actionable error instead of an unhandled exception.
+
+    `UnicodeDecodeError` is a `ValueError`, NOT an `OSError`, so the
+    `except OSError` guards around this code never caught it: one mis-encoded
+    skin file 500'd the export of EVERY skin, and `GET /skins/{name}` died with
+    a bare traceback. A file that cannot be read is named, not crashed on."""
+    try:
+        return path.read_text(encoding="utf-8")
+    except UnicodeDecodeError as exc:
+        raise HTTPException(
+            500, f"the skin file {path.name} is not readable UTF-8 ({exc})"
+        ) from exc
+    except OSError as exc:
+        raise HTTPException(
+            500, f"the skin file {path.name} could not be read ({exc})"
+        ) from exc
+
+
 def _read_skin_file(path: Path) -> dict[str, Any]:
     """Parse the flat skin shape `_dump_skin_yaml` writes: top-level `key: 'v'`
     scalars plus nested `key:` blocks of indented `inner: 'v'`.
@@ -1119,7 +1273,7 @@ def _read_skin_file(path: Path) -> dict[str, Any]:
     out of the result rather than guessed at."""
     data: dict[str, Any] = {}
     current: dict[str, Any] | None = None
-    for raw in path.read_text(encoding="utf-8").splitlines():
+    for raw in _read_skin_text(path).splitlines():
         if not raw.strip() or raw.lstrip().startswith("#"):
             continue
         if raw[:1] in (" ", "\t"):
@@ -1166,7 +1320,9 @@ def _authored_scene(scene: str) -> dict[str, dict[str, str]]:
         if path.is_file():
             try:
                 parsed = _read_skin_file(path)
-            except OSError:
+            except (OSError, HTTPException):
+                # An unreadable transport file is skipped, not fatal: one bad
+                # file must not take the whole scene down.
                 continue
             colors = parsed.get("colors")
             if isinstance(colors, dict):
@@ -1310,6 +1466,7 @@ def _editor_name(value: str, *, field: str, builtin_hint: bool) -> str:
     clean = (value or "").strip().lower()
     if _is_unsafe_name(clean):
         raise HTTPException(400, f"{field} must be a slug (lower-case, hyphens)")
+    _check_name_length(clean, field)
     if clean in CORE_NAMES:
         if builtin_hint:
             raise HTTPException(
@@ -1488,9 +1645,19 @@ def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
         if not target.is_file():
             raise HTTPException(404, f"'{clean}' has no skin file")
 
-        original_text = target.read_text(encoding="utf-8")
+        original_text = _read_skin_text(target)
         existing = _read_skin_file(target)
-        base_light = existing.get("colors") if isinstance(existing.get("colors"), dict) else {}
+        base_colors = existing.get("colors") if isinstance(existing.get("colors"), dict) else {}
+        # The editor DISPLAYS `light_colors` (see `get_skin`), and the pane
+        # sends only the roles the user actually edited. Merging those edits
+        # over `colors` therefore replaced a divergent light palette with the
+        # shared one on the first save — the palette the user was looking at
+        # vanished. The merge base must be the palette that was DISPLAYED.
+        base_light = (
+            existing.get("light_colors")
+            if isinstance(existing.get("light_colors"), dict)
+            else base_colors
+        )
         base_dark = existing.get("dark_colors") if isinstance(existing.get("dark_colors"), dict) else {}
         merged_light = {**base_light, **light}
         merged_dark = {**base_dark, **dark}
@@ -2157,10 +2324,15 @@ def _validate_bundle_skins(req: PackImportRequest) -> list[dict[str, Any]]:
         light = _normalise_palette(entry.get("light") or {}, what=f"light palette of '{clean}'")
         dark = _normalise_palette(entry.get("dark") or {}, what=f"dark palette of '{clean}'")
         label = entry.get("label")
+        label_text = label.strip() if isinstance(label, str) and label.strip() else clean
+        # The label becomes the skin file's `description:` — and the writer
+        # refuses a control character there. Refuse it HERE too, so the preview
+        # (which writes nothing) is where the user learns the bundle is broken.
+        _refuse_control_characters(label_text, "label")
         parsed.append(
             {
                 "name": clean,
-                "label": label.strip() if isinstance(label, str) and label.strip() else clean,
+                "label": label_text,
                 "light": light,
                 "dark": dark,
             }
@@ -2433,6 +2605,19 @@ def import_pack(req: PackImportRequest) -> dict[str, Any]:
     }
 
 
+def _restore_trashed_members(trashed_members: list[tuple[Path, Path]]) -> list[str]:
+    """Put trashed pack members back where they were. Returns the names that
+    could not be restored — those are still in the trash, so they are
+    recoverable by hand."""
+    unrestored: list[str] = []
+    for target, trashed in trashed_members:
+        try:
+            os.replace(trashed, target)
+        except OSError:
+            unrestored.append(target.stem)
+    return unrestored
+
+
 @router.delete("/packs/{slug}")
 def delete_pack(slug: str, withSkins: bool = False) -> dict[str, Any]:
     """Drop a pack record.
@@ -2463,9 +2648,19 @@ def delete_pack(slug: str, withSkins: bool = False) -> dict[str, Any]:
                 index = _read_index_for_update()
             except IndexUnreadableError as exc:
                 raise _index_error(exc) from exc
+            # (original path, trash path) for every member moved, so a failed
+            # index write can put them back where they were.
+            trashed_members: list[tuple[Path, Path]] = []
             for member in members:
                 member_name = str(member)
                 if _is_unsafe_name(member_name):
+                    continue
+                # ONLY skins Chroma owns. `delete_skin` refuses anything without
+                # a provenance record ("both operations act only on skins Chroma
+                # owns"), but this path used to take the pack record's member
+                # list on trust and moved ANY matching skin to the trash — a
+                # skin the user wrote by hand included.
+                if not isinstance(index.get(member_name), dict):
                     continue
                 target = _skins_dir() / f"{member_name}.yaml"
                 if not target.is_file():
@@ -2481,9 +2676,28 @@ def delete_pack(slug: str, withSkins: bool = False) -> dict[str, Any]:
                         f"could not move the pack member '{member_name}' to the trash "
                         f"({trashed}): {exc}",
                     ) from exc
+                trashed_members.append((target, trashed))
                 index.pop(member_name, None)
                 removed.append(member_name)
-            _write_index_or_500(index)
+            try:
+                _write_index(index)
+            except OSError as exc:
+                # The members are already in the trash but the index still names
+                # them, so the skins would be gone from the CLI while the error
+                # blamed the index alone. Put them back: a failed index write
+                # must not take the user's skins away.
+                unrestored = _restore_trashed_members(trashed_members)
+                note = (
+                    ""
+                    if not unrestored
+                    else f"; {len(unrestored)} member(s) could not be put back and are "
+                    f"in the trash: {', '.join(unrestored)}"
+                )
+                raise HTTPException(
+                    500,
+                    f"could not update the skin provenance index ({_index_path()}): {exc}. "
+                    f"Fix free space or permissions and retry{note}.",
+                ) from exc
 
     try:
         path.unlink()

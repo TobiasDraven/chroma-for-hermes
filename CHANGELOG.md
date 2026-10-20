@@ -3,6 +3,93 @@
 Notable changes to Chroma are documented here. This project uses
 [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+## [Unreleased]
+
+The README is the plugin's public catalogue page — a stranger reads it before
+they install it. A review campaign (2026-10-20, recorded under
+`docs/REVIEWS/review-2026-10-20/`) went through the tree looking for claims
+the code cannot back, and this release is the corrections. Nothing here changes
+what the plugin does to a theme; it changes what the project says about it, and
+three package-level defects the same review found.
+
+### Fixed — the public page (README)
+
+- **The README documented a status-bar lightbulb the plugin does not have.**
+  The shipped build renders the **word** `Dark`/`Light` beside the theme name —
+  a codicon that painted as an empty box wherever that font was not loaded was
+  replaced by text in 2.6.0, and the README still described the icon. The
+  section is rewritten around the button that is there, and the FAQ entry that
+  sent a reader looking for a 💡 is gone.
+- **"What it touches" named three of the fourteen localStorage keys the plugin
+  reads or writes.** It now lists all fourteen — the seven `chroma-*` keys the
+  plugin owns and the seven `hermes-desktop-*` / `hermes-boot-*` keys the app
+  already owns — and says plainly that the Desktop half reads no skin
+  directory; the backend does.
+- **The network disclosure was wrong.** It said "one HTTPS `GET` to
+  tweakcn.com". The reachable endpoint set is now named exactly, the request is
+  described as user-initiated, and the disclosure says no credential, cookie or
+  authorisation header travels with it. The same disclosure is in the PR draft,
+  because the catalogue's rule 13 asks for it in both places.
+- **"Two ways to browse" was two of three.** The gallery has three lenses — by
+  skin, by colour family, and by theme pack — and the pack lens was invisible to
+  a reader. The count is fixed and the pack lens is named.
+- **The import formats were listed two different ways.** The Highlights bullet
+  and the FAQ disagreed. One list now, and it matches what the importer sniffs.
+- **A merged heading** — `#### Windows### Linux or manual installation` — rendered
+  as one broken line on the plugin's own catalogue page. The Windows and macOS
+  installer steps are documented again.
+- **The apply scope's default was not disclosed.** It is *Everywhere*; the FAQ
+  now says so.
+- **`design_spec` was described as if v2 skins existed.** Every skin in the
+  catalogue today is `design_spec: v1`; the text says that.
+
+### Fixed — the disclosure register (`docs/DISCLOSURE.md`)
+
+- **A false claim about the SDK is gone.** The document repeated "the public
+  plugin SDK does not expose ThemeContext.setTheme/setMode". The SDK exports
+  `useTheme`, and that context does expose both. What is true is now what the
+  document says: Chroma writes the app's root theme attributes and custom
+  properties — the same `data-hermes-theme` / `data-hermes-mode` / `--theme-*`
+  protocol Desktop's own provider writes — because the SDK's `setTheme` only
+  schedules a repaint on the provider's next render; and Chroma also hands the
+  switch to the provider through `setTheme`/`setMode`, so React state and the
+  painted root tokens stay in step.
+
+### Fixed — the specification, the submission record and the roadmap
+
+- `docs/SPEC.md` carried the wrong plugin version and counted **six**
+  registrations where the build makes **five**. The storage-key list was
+  missing one key; it now names all fourteen.
+- The submission record quoted stale test counts and did not show the admission
+  gate's own output. It now quotes the measured numbers and the gate's real
+  output.
+- The roadmap carried the maintainer's absolute home paths and a local install
+  id. They are `<hermes home>` placeholders now.
+
+### Fixed — the package
+
+- **The admission gate's capability probe now runs.** The package root had no
+  `__init__.py`, so the gate printed
+  `⚠ no __init__.py — capability probe skipped (manifest-only plugin)` and
+  checked *nothing* about the declared capabilities. There is one now, and the
+  gate's `declared tools / hooks / middleware — matches registrations` lines
+  are the check itself.
+- **`plugin.yaml` declared two things the host does not read.** `kind: plugin`
+  is not a Hermes plugin kind (the valid kinds are `standalone`, `backend`,
+  `exclusive`, `platform`, `model-provider`), so the loader warned on every
+  discovery pass; it is `standalone` now. `provides_middleware` is a catalogue
+  field, not a manifest field, so the loader warned and ignored it — the "no
+  middleware" claim lives in the catalogue entry's `capabilities` block, where
+  the catalogue reads it.
+- **The retired v1 `skins/` pair table is archived out of the repository.** It
+  was 150 files the build never read, and it was the bulk of the tree's file
+  count against the install scanner's 400-file structural limit.
+- **`docs/chroma-banner.png` is 402 KB instead of 1.4 MB.** The install scanner
+  flags any single file over 1 MiB. The banner is re-encoded as a 256-colour
+  palette PNG at the same 1536×693, visually unchanged.
+- **The installers say Chroma.** Five files under `install/` still said "Theme
+  Picker" in the strings a user reads.
+
 ## [2.9.0] - 2026-10-19
 
 ### Added

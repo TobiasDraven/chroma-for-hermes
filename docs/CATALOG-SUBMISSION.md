@@ -40,9 +40,10 @@ capabilities:
   requires_env: []
 ```
 
-**Re-pin before you submit.** This value is the tip of `main` when the file was last
-touched; the contract is to pin the tip at the moment you open the PR
-(`git rev-parse origin/main`). A pin one docs-commit behind the tip is fine; a pin that
+**Re-pin before you submit.** The `sha` below is the tip of `main` when this file
+was last touched, and it is **stale** — the tree has moved on since. The final
+value is set at PR time, with `git rev-parse origin/main` (never a short SHA
+and never a branch). A pin one docs-commit behind the tip is fine; a pin that
 does not describe the tree the reviewer will fetch is not.
 
 Rules that shape those values:
@@ -71,21 +72,75 @@ Rules that shape those values:
 |---|---|---|
 | 1 | Human-merged PR only | n/a — the submission act |
 | 2 | Full 40-char SHA pin | generated at submission |
-| 3 | No self-updating code | no fetcher, no remote `plugin.js`, no update check; the only network call is the TweakCN import |
+| 3 | No self-updating code | no fetcher, no remote `plugin.js`, no update check; the only external request is the user-initiated TweakCN import, whose reachable endpoint set is `https://tweakcn.com/r/themes/<name>.json` (Disclosure, below) |
 | 4 | SHA bumps are new PRs | process |
 | 5 | Owner or major contributor submits | repo owner: TobiasDraven |
-| 6 | Declared capabilities match reality | `hermes plugins validate .` → `loadable — entry: desktop/plugin.js`, `built-in tool collisions — no tools to check` |
+| 6 | Declared capabilities match reality | `hermes plugins validate .` → `capability probe -- register() ran in isolation`, `declared tools / hooks / middleware -- matches registrations`, `built-in tool collisions -- no tools to check`. The probe imports the package and diffs the recorded registrations against the manifest, so this check is now **enforced by the gate**, not by inspection. Independently: `ctx.register` × 5 area contributions, `ctx.rest` × 1, and no `register_tool`/`register_hook`/`register_middleware` in either half (`desktop/plugin.template.js:6225-6261`; `rg` over `desktop/plugin.template.js` and `dashboard/plugin_api.py` → no matches) |
 | 7 | Install scanner runs at admission | `hermes plugins validate .` → `security scan — safe`, `Validation passed` |
 | 8 | Desktop plugins stay inside the SDK surface | `hermes plugins validate .` → `desktop surface — stays inside the plugin SDK surface` |
 | 9 | No runtime overrides of Hermes core | `hermes plugins validate .` → `no core override — no runtime rebinds of Hermes core` |
-| 10 | Dependency security policy | no Python dependencies declared (`python dependencies — none declared`) |
+| 10 | Dependency security policy | the Python half imports `fastapi` and `pydantic` (`dashboard/plugin_api.py:240-241`), but `plugin.yaml` declares **no** Python dependencies today, so the gate prints `python dependencies — none declared`. The manifest must declare them as `python_dependencies` with a floor and an upper bound, matching Hermes' own core pins (`fastapi==0.133.1`, `pydantic==2.13.4`); the gate then prints `2 requirements from manifest` |
 | 11 | Credentials come through Hermes | the plugin reads no credential store and declares no `requires_env` |
 | 12 | Approvals and unattended runs respected | the plugin spawns no shell and no child process |
-| 13 | Risky behaviour is disclosed | README §"What it touches" — one HTTPS GET to tweakcn.com on import; local-storage keys; skin YAML writes under the Hermes home |
-| 14 | Compatibility metadata is truthful | `version` 2.9.0 in five places; `requires_hermes: ">=0.22.0"` |
+| 13 | Risky behaviour is disclosed | README §"What it touches" — the reachable TweakCN endpoint set, all fourteen localStorage keys, and the skin YAML writes under the Hermes home; the same disclosure is in the PR body below |
+| 14 | Compatibility metadata is truthful | `version` 2.9.0 agrees across `VERSION`, `plugin.yaml`, `dashboard/manifest.json` and both build stamps (`desktop/plugin.js`, `desktop/plugin.template.js`); `scripts/check-package.py` enforces the first four. `requires_hermes: ">=0.22.0"` |
 | 15 | No skins or forks of bundled plugins | Chroma is a standalone plugin, not a restyled bundled one; the 94 skins were scrubbed of the host's own built-ins in 2.6.0 |
 | 16 | One listing per plugin lineage | checked all 690 catalog entries: no `theme-picker`, no `chroma`. The upstream fork is **not** listed, so we do not compete with a listed entry — the PR will still say "Derived from jdtimothy/hermes-theme-picker (MIT)" |
 | 17 | No unscannable executable payloads | plain source only: `.js`, `.py`, `.yaml`, `.md`. No binaries, no `.pyc`, no archives |
+
+### The gate's own output
+
+The block below is the real `hermes plugins validate .` output against this tree
+(the validator run as a library, because the local CLI is broken — see the note
+at the end of this file). It exits **0** and prints **no warnings**.
+
+```text
+OK manifest -- plugin.yaml parses
+OK manifest fields -- name, version, description present
+OK requires_hermes -- spec '>=0.22.0' parses
+OK config schema -- not declared
+OK requires_env -- all entries UPPER_SNAKE
+OK loadable -- entry: __init__.py, desktop/plugin.js
+OK python dependencies -- none declared
+OK capability probe -- register() ran in isolation
+OK declared tools -- matches registrations
+OK declared hooks -- matches registrations
+OK declared middleware -- matches registrations
+OK built-in tool collisions -- no tools to check
+OK security scan -- safe
+OK no core override -- no runtime rebinds of Hermes core
+OK desktop surface -- stays inside the plugin SDK surface
+Isolation — host (host_ready: True)
+Validation passed.
+```
+
+**The `python dependencies` line is the one still to fix.** It reads **none
+declared** because `plugin.yaml` does not declare the backend's `fastapi` /
+`pydantic` imports; when it does, the gate prints **2 requirements from
+manifest**. The dependency the backend actually has is the one rule 10 asks
+about.
+
+The capability probe is the line that matters most. An earlier tree had no
+`__init__.py`, and the gate then printed
+`⚠ no __init__.py — capability probe skipped (manifest-only plugin)` — meaning
+rule 6 was **not** checked at all, only asserted. The package now carries an
+`__init__.py`, the probe runs, and the three `declared … -- matches
+registrations` lines are the gate's own diff of what the plugin registers
+against what the manifest declares.
+
+The install scanner reports the tree as **`safe`**; its findings are all
+medium or low. Two were ours, and both are now fixed:
+
+- `medium too_many_files` — the tree's file count against the scanner's
+  400-file structural limit. The retired v1 `skins/` table (150 files that the
+  build never read) was archived out of the repository in this campaign; the
+  published tree is now under the limit.
+- `medium oversized_file` — `docs/chroma-banner.png` against the scanner's
+  1 MiB single-file limit. The banner is re-encoded as a 256-colour palette
+  PNG at the same 1536×693 — 402 KB instead of 1.4 MB.
+
+Neither finding changes the verdict: the scanner's verdict is `safe`, and only
+`dangerous` fails the entry (rule 7).
 
 ## PR description draft
 
@@ -98,41 +153,61 @@ Rules that shape those values:
 > six opt-in theme packs. A TweakCN preset can be imported and minted as a real
 > gateway skin.
 >
-> **Surfaces:** Desktop pane (`desktop/plugin.js`), dashboard router
+> **Surfaces:** the agent-plugin entry point (`__init__.py`, which registers no
+> capability), the Desktop pane (`desktop/plugin.js`), and the dashboard router
 > (`dashboard/plugin_api.py`, mounted from `dashboard/manifest.json`). No tools,
 > no hooks, no middleware, no environment variables.
 >
-> **Disclosure:** importing a TweakCN preset makes one HTTPS `GET` to
-> `https://tweakcn.com/r/themes/<name>`. The plugin writes its own keys in
-> Desktop local storage and, through its backend, skin YAML plus a
-> `skins/.chroma/` index under the Hermes home. It reads no credential store, no
-> browser profile, and runs no shell command. No telemetry.
+> **Disclosure:** importing a TweakCN preset makes one `GET`, and the reachable
+> endpoint set is `https://tweakcn.com/r/themes/<name>.json` — a bare preset
+> name is expanded to it, a `tweakcn.com` page URL is rewritten to it, and a URL
+> on any other host, or on any scheme other than `https://`, is refused rather
+> than fetched. The request is user-initiated and carries no credential, cookie
+> or authorisation header; the response is parsed as JSON and never evaluated.
+> The plugin writes fourteen localStorage keys — seven `chroma-*` of its own and
+> seven `hermes-desktop-*` / `hermes-boot-*` the app already owns — and, through
+> its backend, skin YAML plus a `skins/.chroma/` index under the Hermes home.
+> It also writes the app's root theme attributes and custom properties (the
+> same `data-hermes-theme` / `data-hermes-mode` / `--theme-*` protocol Desktop's
+> own provider writes) and hands the switch to the provider through the SDK's
+> `setTheme`/`setMode`. It reads no credential store, no browser profile, and
+> runs no shell command. No telemetry, no analytics, no update check.
 >
 > **Lineage:** derived from jdtimothy/hermes-theme-picker (MIT). The palettes
 > are the upstream authors' MIT work; see `THIRD_PARTY_NOTICES.md`.
 >
-> **Evidence:** `hermes plugins validate .` passes every check including
-> `security scan — safe`; 242 JS tests, 164 backend tests + 5 skin-contract tests,
-> 16 generator tests (19 collected, 3 skipped) and the catalogue and package
-> contract gates are green; the build is reproducible from a clean checkout
-> (byte-identical `plugin.js` and 188 transports).
+> **Evidence:** `hermes plugins validate .` exits 0 with no warnings, and its
+> capability probe runs — `capability probe -- register() ran in isolation`,
+> `declared tools / hooks / middleware -- matches registrations` — as does
+> `security scan -- safe`; the JS suite is **266/266**
+> (`node --test tests/*.test.mjs`) and the Python suite is **217 passed, 4
+> skipped** (`python -m pytest tests/ -q`) with two cases red — see the note
+> below; the catalogue and package contract gates are green; the build is
+> reproducible from a clean checkout (byte-identical `plugin.js` and 188
+> transports).
 >
-> The admission gate is a LOCAL check: the Hermes CLI is not on PyPI
-> (`hermes-agent` 0.19.0 has no `validate` subcommand), so CI runs
-> `scripts/check-package.py` instead — the same facts, without the CLI. Verify with
-> `hermes plugins validate .` on the machine that carries the CLI before opening
-> the PR.
+> The admission gate is a LOCAL check. The Hermes CLI is broken on this
+> machine (`cannot recover dependency publication … run 'hermes pm repair'`), so
+> the validator was run as a library — the exact code path the CLI runs — from
+> the host checkout; CI runs `scripts/check-package.py` instead, which checks
+> the same facts without the CLI. Run `hermes plugins validate .` on the
+> machine that carries the CLI before opening the PR.
 
 ## Procedure
 
-1. Finish the acceptance walk on the target machine. Tag nothing before it.
-2. `git rev-parse HEAD` → the pin. Confirm the tree is clean and CI is green on
+1. **Fix the two red Python cases.** `tests/test_regenerate.py::ThemeCatalogTests::test_cliffwade_v1_1_0_files_match_the_pinned_hash_manifest`
+   and `…::test_updated_cliff_pack_has_fifty_complete_pairs` both read the
+   retired v1 `skins/` table, which this campaign archived out of the
+   repository. Delete them or retarget them at the shipped catalogue; the
+   suite is otherwise 217 passed, 4 skipped, and green at 219.
+2. Finish the acceptance walk on the target machine. Tag nothing before it.
+3. `git rev-parse HEAD` → the pin. Confirm the tree is clean and CI is green on
    that exact commit.
-3. Fork `NousResearch/hermes-agent`; add `plugin-catalog/chroma.yaml` with the
+4. Fork `NousResearch/hermes-agent`; add `plugin-catalog/chroma.yaml` with the
    entry above and the real SHA.
-4. Open the PR with the description above. Expect a reviewer to read the pinned
+5. Open the PR with the description above. Expect a reviewer to read the pinned
    commit range and re-run the scanner.
-5. After merge: `hermes plugins install chroma`. Later updates are SHA-bump PRs,
+6. After merge: `hermes plugins install chroma`. Later updates are SHA-bump PRs,
    never a self-update.
 
 ## What would get us declined

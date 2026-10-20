@@ -1,4 +1,10 @@
 #!/bin/sh
+# Installs the Chroma gateway skin transports into the active Hermes home.
+#
+# These are the MODE-LOCKED transports under gateway-skins/ - the files the
+# gateway reads when a theme is applied. The picker's catalogue (skins-v2/) and
+# the plugin itself are installed by the plugin package; this script only puts
+# the transports where the gateway looks for them.
 set -eu
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
@@ -17,9 +23,9 @@ mkdir -p "$DESTINATION"
 
 # Never follow a destination symlink, including with --force. The bundle owns
 # regular skin files only and must not be able to overwrite an external target.
-# Only the mode-locked transports are installed. The retired v1 pair table
-# (skins/) is kept in the repo for the migration record and must never reach a
-# gateway: it would list 150 single-palette skins the picker does not show.
+# Only the mode-locked transports are installed. The retired v1 pair table was
+# archived out of the repo on 2026-10-20 and must never reach a gateway: it
+# would list 150 single-palette skins the picker does not show.
 for source_dir in "$BUNDLE_DIR/gateway-skins"; do
   [ -d "$source_dir" ] || { printf 'Missing required skin directory: %s\n' "$source_dir" >&2; exit 1; }
   for source in "$source_dir"/*.yaml; do
@@ -34,9 +40,9 @@ done
 
 if [ "$force" -eq 0 ]; then
   collisions=''
-  # Only the mode-locked transports are installed. The retired v1 pair table
-# (skins/) is kept in the repo for the migration record and must never reach a
-# gateway: it would list 150 single-palette skins the picker does not show.
+  # Only the mode-locked transports are installed. The retired v1 pair table was
+# archived out of the repo on 2026-10-20 and must never reach a gateway: it
+# would list 150 single-palette skins the picker does not show.
 for source_dir in "$BUNDLE_DIR/gateway-skins"; do
     [ -d "$source_dir" ] || { printf 'Missing required skin directory: %s\n' "$source_dir" >&2; exit 1; }
     for source in "$source_dir"/*.yaml; do
@@ -55,9 +61,9 @@ for source_dir in "$BUNDLE_DIR/gateway-skins"; do
 fi
 
 count=0
-# Only the mode-locked transports are installed. The retired v1 pair table
-# (skins/) is kept in the repo for the migration record and must never reach a
-# gateway: it would list 150 single-palette skins the picker does not show.
+# Only the mode-locked transports are installed. The retired v1 pair table was
+# archived out of the repo on 2026-10-20 and must never reach a gateway: it
+# would list 150 single-palette skins the picker does not show.
 for source_dir in "$BUNDLE_DIR/gateway-skins"; do
   if [ ! -d "$source_dir" ]; then
     printf 'Missing required skin directory: %s\n' "$source_dir" >&2
@@ -73,5 +79,5 @@ for source_dir in "$BUNDLE_DIR/gateway-skins"; do
   done
 done
 
-printf 'Installed %s Theme Picker gateway skins into: %s\n' "$count" "$DESTINATION"
+printf 'Installed %s Chroma gateway skins into: %s\n' "$count" "$DESTINATION"
 printf 'The next config.set skin request can resolve them without restarting Hermes Desktop.\n'

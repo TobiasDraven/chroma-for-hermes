@@ -12,7 +12,7 @@ optional Python backend is installed — mints real gateway skins so the change
 follows every connected Desktop and the CLI. It is a hard fork of
 `jdtimothy/hermes-theme-picker` (MIT); the fork added the TweakCN importer,
 the skin backend and the skin-management card actions
-(`plugin.yaml:6-8`, `README.md:7-15`).
+(`plugin.yaml:27-31`, `README.md:7-15`).
 
 ## 2. Surfaces it touches
 
@@ -44,28 +44,28 @@ through the optional `window.hermesDesktop` hooks and writes the
 
 **An optional Python backend.** `dashboard/plugin_api.py` declares a FastAPI
 router mounted by the dashboard at `/api/plugins/chroma/` (module docstring,
-`dashboard/plugin_api.py:3`; `router = APIRouter()` at `:245`). Its routes:
+`dashboard/plugin_api.py:3`; `router = APIRouter()` at `:296`). Its routes:
 
 ```
-dashboard/plugin_api.py:248   GET    /skins
-dashboard/plugin_api.py:443   POST   /import
-dashboard/plugin_api.py:654   DELETE /skins/{name}
-dashboard/plugin_api.py:704   POST   /skins/rename
-dashboard/plugin_api.py:786   GET    /export
-dashboard/plugin_api.py:1325  GET    /schema
-dashboard/plugin_api.py:1391  GET    /skins/{name}
-dashboard/plugin_api.py:1419  PUT    /skins/{name}
-dashboard/plugin_api.py:1550  GET    /overrides
-dashboard/plugin_api.py:1560  PUT    /overrides/{scene}
-dashboard/plugin_api.py:1650  DELETE /overrides/{scene}
-dashboard/plugin_api.py:1728  GET    /categories
-dashboard/plugin_api.py:1746  POST   /categories
-dashboard/plugin_api.py:1783  DELETE /categories/{cat_id}
-dashboard/plugin_api.py:1851  POST   /skins/duplicate
-dashboard/plugin_api.py:1988  GET    /packs
-dashboard/plugin_api.py:2055  POST   /packs/export
-dashboard/plugin_api.py:2272  POST   /packs/import
-dashboard/plugin_api.py:2436  DELETE /packs/{slug}
+dashboard/plugin_api.py:299   GET    /skins
+dashboard/plugin_api.py:499   POST   /import
+dashboard/plugin_api.py:762   DELETE /skins/{name}
+dashboard/plugin_api.py:812   POST   /skins/rename
+dashboard/plugin_api.py:910   GET    /export
+dashboard/plugin_api.py:1482  GET    /schema
+dashboard/plugin_api.py:1548  GET    /skins/{name}
+dashboard/plugin_api.py:1576  PUT    /skins/{name}
+dashboard/plugin_api.py:1717  GET    /overrides
+dashboard/plugin_api.py:1727  PUT    /overrides/{scene}
+dashboard/plugin_api.py:1817  DELETE /overrides/{scene}
+dashboard/plugin_api.py:1895  GET    /categories
+dashboard/plugin_api.py:1913  POST   /categories
+dashboard/plugin_api.py:1950  DELETE /categories/{cat_id}
+dashboard/plugin_api.py:2018  POST   /skins/duplicate
+dashboard/plugin_api.py:2155  GET    /packs
+dashboard/plugin_api.py:2222  POST   /packs/export
+dashboard/plugin_api.py:2444  POST   /packs/import
+dashboard/plugin_api.py:2621  DELETE /packs/{slug}
 ```
 
 The pane works **with no backend at all**: the Desktop half applies and
@@ -73,26 +73,29 @@ previews themes locally, and a missing backend raises a known message the UI
 renders as "this Desktop only" instead of implying a sync
 (`desktop/plugin.template.js:60-64`; behaviour covered by `tests/`).
 Install/import/rename/export/delete/duplicate need the backend
-(`desktop/plugin.template.js:60-64`, `933-993`).
+(`desktop/plugin.template.js:60-64`, `933-1547`).
 
 **Storage it owns.**
 
 - `<hermes home>/skins/<name>.yaml` — every backend skin write
-  (`dashboard/plugin_api.py:135-136`; writer at `:1400`, `:1465`, `:1873`),
-  plus the `.chroma` sidecar and its `_trash` subdirectory holding the
+  (`dashboard/plugin_api.py:186-189`; writers at `:618`, `:1352`, `:2062`,
+  `:2538`), plus the `.chroma` sidecar and its `_trash` subdirectory holding the
   provenance index
-  (`dashboard/plugin_api.py:95-97`, `:140-142`, `:236`).
-- Plugin-owned localStorage keys, all prefix `chroma-`: the overrides mirror
-  (`desktop/plugin.template.js:80`), apply scope (`:89`), card shape (`:93`),
-  card size (`:94`), group mode (`:99`), favourites (`:2149`), packs
-  (`:2442`).
+  (`dashboard/plugin_api.py:146`, `:148`, `:192-194`, `:287`).
+- Plugin-owned localStorage keys, all prefix `chroma-` — seven of them: the
+  overrides mirror (`desktop/plugin.template.js:80`), apply scope (`:89`), card
+  shape (`:93`), card size (`:94`), group mode (`:99`), favourites (`:2149`),
+  packs (`:2442`).
 - **App-owned keys Chroma already reads and writes** under §4 of AGENTS.md,
-  not invented ones: the `hermes-desktop-*` theme/mode/profile keys
-  (`desktop/plugin.template.js:72`, `81-84`) and the `hermes-boot-*` boot
-  hints (`desktop/plugin.template.js:1916-1918`). The boot mirror write is
+  not invented ones — seven of them: the `hermes-desktop-*` theme/mode/profile
+  keys (`desktop/plugin.template.js:72`, `81-84`) and the `hermes-boot-*` boot
+  hints (`desktop/plugin.template.js:1917-1918`). The boot mirror write is
   load-bearing: Desktop reads its theme cache before plugins register, so a
   contributed theme not mirrored there is unresolvable at next startup
   (`desktop/plugin.template.js:70-72`, `916-927`).
+
+**Fourteen localStorage keys in all**, and no others: seven `chroma-*` and seven
+`hermes-*`. The plugin never invents an app-owned key.
 
 ## 3. Network behaviour
 
@@ -106,14 +109,18 @@ Three kinds of traffic, and exactly one of them leaves the machine:
    (`desktop/plugin.template.js:2595`).
 2. **Backend calls via `ctx.rest`** — only when the dashboard is mounted;
    localhost, routed to the `/api/plugins/chroma/` router in §2
-   (`desktop/plugin.template.js:933-993`; `dashboard/plugin_api.py:3`).
+   (`desktop/plugin.template.js:933-1547`; `dashboard/plugin_api.py:3`).
 3. **External HTTPS: the TweakCN import.** `fetch` appears exactly once in the
-   build, fetching `https://tweakcn.com/r/themes/<name>.json` — built from
-   `TWEAKCN_BASE` (`desktop/plugin.template.js:380`, `848-859`) — and only
-   when the user pastes a TweakCN preset name or URL in the import form
-   (`desktop/plugin.template.js:872-887`; network `rg -n "fetch\(" desktop/plugin.template.js`
-   → the single match at `:875`). The repo's own submission notes agree:
-   "the only network call is the TweakCN import" (`docs/CATALOG-SUBMISSION.md:78`).
+   build (`desktop/plugin.template.js:875`), and it is called only when the user
+   pastes a TweakCN preset name or URL into the import form
+   (`desktop/plugin.template.js:872-887`). The reachable endpoint set is
+   `https://tweakcn.com/r/themes/<name>.json`, built from `TWEAKCN_BASE`
+   (`desktop/plugin.template.js:380`, `845-860`): a bare preset name is
+   expanded to that URL, a `tweakcn.com` page URL is rewritten to it, and a URL
+   on any other host — or on any scheme other than `https://` — is refused
+   rather than fetched. No credential, cookie or authorisation header is sent
+   with the request, and the response is parsed as JSON and never evaluated as
+   code.
 
 No other external request exists. There is no update check and no analytics:
 `rg -n "(telemetry|analytics|updates)" desktop/plugin.template.js` matches only
@@ -123,8 +130,8 @@ three comments about the localStorage mirror
 ## 4. Data access
 
 Both halves touch only the paths in §2 — the skin tree under `HERMES_HOME`
-(`dashboard/plugin_api.py:29-34` resolves it; `:135-136` and `:142` are the
-only filesystem bases the module builds on) and the `chroma-*`,
+(`dashboard/plugin_api.py:38-56` resolves it, per request; `:187` and `:193` are
+the only filesystem bases the module builds on) and the `chroma-*`,
 `hermes-desktop-*` and `hermes-boot-*` localStorage keys cited above.
 
 The negative claim, from an audit of every host-API call the build makes: the
@@ -143,14 +150,23 @@ host's own memory.
 
 ## 5. Host-markup coupling, and the documented fallback
 
-**The pane does not style its own chrome.** The SDK exposes no decoration slot
-— no `setTheme`/`setMode` on the renderer's ThemeContext is reachable from the
-public plugin surface — so `applyDesktopTheme()` is "a source-faithful port of
-Desktop's applyTheme()" that writes the same root tokens and native hooks
-Desktop's own code writes (`desktop/plugin.template.js:1852-1923`). The class
-list Chroma emits assumes the HOST's compiled Tailwind build still contains
-every utility we name; a plugin class the host's own sources never use has no
-rule and silently falls back to the browser default
+**The pane does not style its own chrome.** The SDK exposes no decoration slot,
+so `applyDesktopTheme()` writes the same root tokens and native hooks
+Desktop's own code writes (`desktop/plugin.template.js:1852-1923`). It does
+write the app's root theme protocol directly — `data-hermes-theme`,
+`data-hermes-mode`, the `--theme-*` / `--dt-*` custom properties and
+`color-scheme` — because the SDK's `setTheme` only schedules a repaint on the
+provider's next render (host `apps/desktop/src/themes/context.tsx:632-637`,
+`setThemeNameState`), and the picker needs the paint now. The SDK **does**
+export `useTheme` (host `apps/desktop/src/sdk/index.ts:2048`), and that context
+**does** expose `setTheme` and `setMode` (host
+`apps/desktop/src/themes/context.tsx:479-480`); the plugin calls both in
+`syncDesktopState()` (`desktop/plugin.template.js:1930-1939`), so React state
+and the painted root tokens stay in step. The attributes written are the ones
+Desktop's own provider writes (host `apps/desktop/src/themes/context.tsx:328`).
+The class list Chroma emits assumes the HOST's compiled Tailwind build still
+contains every utility we name; a plugin class the host's own sources never use
+has no rule and silently falls back to the browser default
 (`scripts/check-host-classes.py:1-16`).
 
 **What breaks if Desktop renames its markup or tokens.** A renamed `--theme-*`
@@ -174,23 +190,23 @@ layout must be an inline style, which no host rebuild can drop
   registration surface is the five areas in §2 (`desktop/plugin.template.js:6225-6261`)
   plus HTTP routes (`dashboard/plugin_api.py`, route list in §2).
 - **No background processes** beyond the optional in-process FastAPI router —
-  `dashboard/plugin_api.py` declares an `APIRouter` (`:245`), never a
+  `dashboard/plugin_api.py` declares an `APIRouter` (`:296`), never a
   daemon/thread of its own; the skin writes it performs are synchronous on
-  request (`:1400`, `:1465`, `:1873`).
+  request (`:618`, `:1352`, `:2062`, `:2538`).
 - **No telemetry, no analytics**: neither half posts anywhere except §3.
 - **No auto-update**: nothing in the repo fetches a newer version of itself
-  (rule 3 in `docs/CATALOG-SUBMISSION.md:73`: "no fetcher, no remote
+  (rule 3 in `docs/CATALOG-SUBMISSION.md`: "no fetcher, no remote
   `plugin.js`, no update check").
 
 ## 7. Compatibility
 
-`requires_hermes: ">=0.22.0"` (`plugin.yaml:3`) — the floor the plugin has
+`requires_hermes: ">=0.22.0"` (`plugin.yaml:26`) — the floor the plugin has
 actually proven, walked by hand on Windows 11 against Desktop 0.22.2
-(`docs/CATALOG-SUBMISSION.md:59`).
+(`docs/CATALOG-SUBMISSION.md`, rule 14).
 
 | Platform | Coverage | Evidence |
 |----------|----------|----------|
-| Windows | CI tests + hand-walked (0.22.2, Windows 11) | `.github/workflows/ci.yml:18-19`; `docs/CATALOG-SUBMISSION.md:59` |
+| Windows | CI tests + hand-walked (0.22.2, Windows 11) | `.github/workflows/ci.yml`; `docs/CATALOG-SUBMISSION.md`, rule 14 |
 | macOS | CI tests only | `.github/workflows/ci.yml:18-19` |
 | Linux | CI tests only | `.github/workflows/ci.yml:18-19` |
 
