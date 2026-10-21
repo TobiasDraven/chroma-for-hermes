@@ -37,6 +37,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          # Full history: tests/test_regenerate.py proves the retired v1 skin
+          # pack is still recoverable by reading it back from the published
+          # commit 9439f41. A depth-1 checkout does not carry that object,
+          # and the guard would fail on a tree that is perfectly correct.
+          fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '22'
@@ -78,6 +84,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          # Full history: tests/test_regenerate.py proves the retired v1 skin
+          # pack is still recoverable by reading it back from the published
+          # commit 9439f41. A depth-1 checkout does not carry that object,
+          # and the guard would fail on a tree that is perfectly correct.
+          fetch-depth: 0
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
@@ -123,6 +135,12 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          # Full history: tests/test_regenerate.py proves the retired v1 skin
+          # pack is still recoverable by reading it back from the published
+          # commit 9439f41. A depth-1 checkout does not carry that object,
+          # and the guard would fail on a tree that is perfectly correct.
+          fetch-depth: 0
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
@@ -212,6 +230,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          # Full history: tests/test_regenerate.py proves the retired v1 skin
+          # pack is still recoverable by reading it back from the published
+          # commit 9439f41. A depth-1 checkout does not carry that object,
+          # and the guard would fail on a tree that is perfectly correct.
+          fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '22'
@@ -242,7 +266,7 @@ jobs:
           import json, os, sys
 
           # The finding set CI is allowed to see, measured on a clean checkout of
-          # 352c3c5 on 2026-10-20. One line per finding:
+          # this branch's tip on 2026-10-21. One line per finding:
           #   id | severity | title | the file it names, or how many it names
           # The line numbers are deliberately NOT in the signature: they move
           # whenever anything above them changes, and a finding that moved is
@@ -254,7 +278,7 @@ jobs:
               "AST_COMPLEXITY_LIMIT_EXCEEDED | medium | More than 5 AST_COMPLEXITY violations in desktop/plugin.template.js | desktop/plugin.template.js",
               "context-window-artifacts | high | Context Window Artifacts | scripts/analyse-palettes.py",
               "context-window-artifacts | high | Context Window Artifacts | tests/helpers/card-cases.mjs",
-              "file-size | low | File Size Limit | CHANGELOG.md;dashboard/plugin_api.py;desktop/plugin.js;desktop/plugin.template.js;docs/PALETTE-ANALYSIS.json;docs/PLANS/CHROMA-EDITOR.md;docs/PLANS/CHROMA-IMPLEMENTATION.md;docs/PLANS/CHROMA-ROADMAP.md;docs/REVIEWS/ARIA-SCOUT-2026-10-19.md;docs/THEME-PACK-CREATION.md;scripts/regenerate.py;tests/fixtures/theme-card-parity.json;tests/test_plugin_api.py;tests/theme-persistence.test.mjs",
+              "file-size | low | File Size Limit | CHANGELOG.md;dashboard/plugin_api.py;desktop/plugin.js;desktop/plugin.template.js;docs/PALETTE-ANALYSIS.json;docs/PLANS/CHROMA-EDITOR.md;docs/PLANS/CHROMA-IMPLEMENTATION.md;docs/PLANS/CHROMA-ROADMAP.md;docs/REVIEWS/ARIA-SCOUT-2026-10-19.md;docs/REVIEWS/review-2026-10-20/review-A-desktop-runtime.md;docs/REVIEWS/review-2026-10-20/review-B-backend-data.md;docs/REVIEWS/review-2026-10-20/review-D-contract-submission.md;docs/REVIEWS/review-2026-10-20/review-E-guidelines.md;docs/REVIEWS/review-2026-10-20/review-F-packaging-gates.md;docs/THEME-PACK-CREATION.md;scripts/regenerate.py;tests/fixtures/theme-card-parity.json;tests/test_backend_data_integrity.py;tests/test_plugin_api.py;tests/test_regenerate.py;tests/theme-persistence.test.mjs",
               "hallucinated-imports | critical | Hallucinated Imports | desktop/plugin.js",
               "hallucinated-imports | critical | Hallucinated Imports | desktop/plugin.template.js",
               "inconsistent-error-handling | high | Inconsistent Error Handling | 5 files",
@@ -345,6 +369,12 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          # Full history: tests/test_regenerate.py proves the retired v1 skin
+          # pack is still recoverable by reading it back from the published
+          # commit 9439f41. A depth-1 checkout does not carry that object,
+          # and the guard would fail on a tree that is perfectly correct.
+          fetch-depth: 0
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
