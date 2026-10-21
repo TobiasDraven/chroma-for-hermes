@@ -55,7 +55,7 @@ import { Component, cloneElement, useCallback, useEffect, useMemo, useRef, useSt
 let _rest = null
 
 // Replaced with the real version at build time (scripts/regenerate.py).
-const BUILD_STAMP = '2.9.0'
+const BUILD_STAMP = '2.9.1'
 
 // The Python half is optional: the Desktop half applies and previews themes
 // with no backend at all. When it is absent every backend call throws this exact
@@ -1930,6 +1930,23 @@ function applyDesktopTheme(theme, mode) {
 function syncDesktopState(name, mode, api) {
   const target = api || desktopThemeApi
   if (!target || typeof target.setTheme !== 'function') return false
+  // The host's setTheme coerces a name it cannot resolve to the DEFAULT skin and
+  // PERSISTS it (context.tsx: normalizeSkin), so handing it an unknown name
+  // rewrites the user's profile. The host's availableThemes is the same merged
+  // set its own resolveTheme searches (built-in + user + backend + registry),
+  // so a name it lists is a name the host can resolve.
+  //
+  // The check is skipped when the host publishes no list. A provider that does
+  // not expose availableThemes cannot answer the question, and refusing there
+  // would block every switch on a host that never had the question. It is also
+  // skipped for an EMPTY list: the host treats an empty list as "nothing to
+  // switch to" (use-skin-command.ts), and a scene Chroma contributed through
+  // THEMES_AREA lands in the list only once the registry has published it.
+  const list = target.availableThemes
+  if (Array.isArray(list) && list.length) {
+    const known = list.some(t => t && (t.name === name || t.label === name))
+    if (!known) return false
+  }
   try {
     target.setTheme(name)
     if (typeof target.setMode === 'function') target.setMode(mode)
@@ -1954,13 +1971,20 @@ function useDesktopThemeApi() {
   const api = useTheme()
   useEffect(() => {
     if (!api || typeof api.setTheme !== 'function') return undefined
-    desktopThemeApi = { setTheme: api.setTheme, setMode: api.setMode }
+    desktopThemeApi = {
+      setTheme: api.setTheme,
+      setMode: api.setMode,
+      // The host's theme list, so syncDesktopState can tell a name the host
+      // can resolve from one it cannot. The provider memoizes the list, so
+      // this stays stable for the life of the mount.
+      availableThemes: api.availableThemes
+    }
     desktopThemeApiConsumers += 1
     return () => {
       desktopThemeApiConsumers = Math.max(0, desktopThemeApiConsumers - 1)
       if (desktopThemeApiConsumers === 0) desktopThemeApi = null
     }
-  }, [api && api.setTheme, api && api.setMode])
+  }, [api && api.setTheme, api && api.setMode, api && api.availableThemes])
   return api
 }
 
