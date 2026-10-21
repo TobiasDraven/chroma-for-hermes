@@ -7,7 +7,7 @@ mint real gateway skins so the CLI and every connected Desktop follow a change.
 A hard fork of "Hermes Theme Picker" by Joshua Timothy (`jdtimothy/hermes-theme-picker`,
 MIT) — see `THIRD_PARTY_NOTICES.md`.
 
-`plugin.yaml`: name `chroma`, version `2.9.0` (matching `VERSION`). The repo root IS the plugin package.
+`plugin.yaml`: name `chroma`, version `2.9.1` (matching `VERSION`). The repo root IS the plugin package.
 
 ## Surfaces it registers
 

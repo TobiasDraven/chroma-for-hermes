@@ -1,6 +1,6 @@
 # Submitting Chroma to the Hermes plugin catalog
 
-Status: **prepared, not submitted.** This file is the record of what the catalog
+Status: **prepared, entry file written, PR to open.** Not submitted. This file is the record of what the catalog
 asks for and where we stand against it. It is not a substitute for the
 authoritative rules.
 
@@ -22,7 +22,7 @@ The entry we will open a PR with:
 ```yaml
 name: chroma
 repo: https://github.com/TobiasDraven/chroma-for-hermes
-sha: 43f8e1ba0ca277825b833cd94aa5a8c395bcd5d0
+sha: <the pushed tip of this repo — pinned at PR time>
 description: >-
   Browse, import and apply Hermes skins from the Desktop, including TweakCN
   imports that mint real gateway skins so the CLI and every connected Desktop
@@ -30,7 +30,7 @@ description: >-
 maintainer: TobiasDraven
 tier: community
 category: desktop
-version: "2.9.0"
+version: "2.9.1"
 requires_hermes: ">=0.22.0"
 readme: true
 capabilities:
@@ -79,11 +79,11 @@ Rules that shape those values:
 | 7 | Install scanner runs at admission | `hermes plugins validate .` → `security scan — safe`, `Validation passed` |
 | 8 | Desktop plugins stay inside the SDK surface | `hermes plugins validate .` → `desktop surface — stays inside the plugin SDK surface` |
 | 9 | No runtime overrides of Hermes core | `hermes plugins validate .` → `no core override — no runtime rebinds of Hermes core` |
-| 10 | Dependency security policy | the Python half imports `fastapi` and `pydantic` (`dashboard/plugin_api.py:240-241`), but `plugin.yaml` declares **no** Python dependencies today, so the gate prints `python dependencies — none declared`. The manifest must declare them as `python_dependencies` with a floor and an upper bound, matching Hermes' own core pins (`fastapi==0.133.1`, `pydantic==2.13.4`); the gate then prints `2 requirements from manifest` |
+| 10 | Dependency security policy | the Python half imports `fastapi` and `pydantic` (`dashboard/plugin_api.py:291-292`), and the manifest declares **no** `python_dependencies`: it sets `python_runtime: external` instead. The host provides both packages — they are Hermes core dependencies (`pyproject.toml:71,137`) and the bundled dashboard plugins (`kanban`, `hermes-achievements`) import them the same way with no declaration. The gate prints `python dependencies — external runtime (plugin manages its own)`. Declaring them would make Chroma a uv workspace member and put it back on the install-time resolver path, which is what this release removes. `tests/test_dependency_contract.py` is the permanent gate. |
 | 11 | Credentials come through Hermes | the plugin reads no credential store and declares no `requires_env` |
 | 12 | Approvals and unattended runs respected | the plugin spawns no shell and no child process |
 | 13 | Risky behaviour is disclosed | README §"What it touches" — the reachable TweakCN endpoint set, all fourteen localStorage keys, and the skin YAML writes under the Hermes home; the same disclosure is in the PR body below |
-| 14 | Compatibility metadata is truthful | `version` 2.9.0 agrees across `VERSION`, `plugin.yaml`, `dashboard/manifest.json` and both build stamps (`desktop/plugin.js`, `desktop/plugin.template.js`); `scripts/check-package.py` enforces the first four. `requires_hermes: ">=0.22.0"` |
+| 14 | Compatibility metadata is truthful | `version` 2.9.1 agrees across `VERSION`, `plugin.yaml`, `dashboard/manifest.json` and both build stamps (`desktop/plugin.js`, `desktop/plugin.template.js`); `scripts/check-package.py` enforces the first four. `requires_hermes: ">=0.22.0"` |
 | 15 | No skins or forks of bundled plugins | Chroma is a standalone plugin, not a restyled bundled one; the 94 skins were scrubbed of the host's own built-ins in 2.6.0 |
 | 16 | One listing per plugin lineage | checked all 690 catalog entries: no `theme-picker`, no `chroma`. The upstream fork is **not** listed, so we do not compete with a listed entry — the PR will still say "Derived from jdtimothy/hermes-theme-picker (MIT)" |
 | 17 | No unscannable executable payloads | plain source only: `.js`, `.py`, `.yaml`, `.md`. No binaries, no `.pyc`, no archives |
