@@ -37,3 +37,9 @@ scratch/
 *.bak
 *.swp
 *~
+
+# The v1 single-palette skin pack (150 files) is RETIRED: the build reads
+# only skins-v2/, and the pack is kept recoverable from the published commit
+# 9439f41 (tests/test_regenerate.py proves it). This entry stops the
+# retired pack from being re-introduced by accident.
+skins/
