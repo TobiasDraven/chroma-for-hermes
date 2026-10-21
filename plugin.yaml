@@ -16,14 +16,30 @@
 #                         hermes_cli/plugins_manifest.py:32-39): the loader warned and
 #                         ignored it. The "no middleware" claim lives in the catalog
 #                         entry's capabilities block, which is where the catalog reads it.
+#   python_runtime    - "external": the plugin's Python half runs inside the HOST's
+#                         own interpreter, and the host already ships every package it
+#                         imports. With no python_dependencies declared here and no
+#                         pyproject.toml at the plugin root, the host's declaration
+#                         reads install_requirements as EMPTY, so Chroma is not a
+#                         workspace member (pm/plugin_declarations.py:63-72):
+#                         installing Chroma never invokes a package resolver - no
+#                         dependency prompt, no uv lock, no frozen lockfile.
+#   python_dependencies - deliberately ABSENT, and it must stay absent. The
+#                         dashboard half imports fastapi and pydantic, which the
+#                         host provides (hermes-agent/pyproject.toml:71,137); the
+#                         bundled dashboard plugins (kanban, hermes-achievements)
+#                         do exactly the same and declare nothing. Naming a
+#                         package here would put Chroma back on the resolver path.
+#                         tests/test_dependency_contract.py is the permanent gate.
 name: chroma
-version: "2.9.0"
+version: "2.9.1"
 manifest_version: 1
 kind: standalone
 provides_tools: []
 provides_hooks: []
 requires_env: []
 requires_hermes: ">=0.22.0"
+python_runtime: external
 description: >-
   Chroma for Hermes — browse, import and manage Hermes skins from the Desktop,
   including TweakCN imports that mint real gateway skins so the CLI and every
