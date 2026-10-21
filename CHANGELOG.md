@@ -5,12 +5,39 @@ Notable changes to Chroma are documented here. This project uses
 
 ## [Unreleased]
 
+## [2.9.1] - 2026-10-21
+
+Chroma now declares that it owns no Python packages, so installing it never
+reaches a package resolver - and the tree that installs is the tree CI proves
+on three operating systems.
+
 The README is the plugin's public catalogue page — a stranger reads it before
 they install it. A review campaign (2026-10-20, recorded under
 `docs/REVIEWS/review-2026-10-20/`) went through the tree looking for claims
 the code cannot back, and this release is the corrections. Nothing here changes
 what the plugin does to a theme; it changes what the project says about it, and
 three package-level defects the same review found.
+
+### Fixed - the install path no longer depends on a package resolver
+
+- **The manifest now SAYS that it owns no Python packages.** Chroma has always
+  imported nothing it did not ship, but the manifest never said so: it
+  declared no `python_dependencies` and no `python_runtime` either, which left
+  the host to infer the plugin's Python contract from silence. It now declares
+  `python_runtime: external` and no dependencies, so the host's declaration
+  reader reports `install_requirements` as EMPTY and Chroma is not a
+  workspace member - no resolver, no dependency prompt, no uv lock, no frozen
+  lockfile. The contract is a permanent gate
+  (`tests/test_dependency_contract.py`), not a comment.
+- **The dashboard half's `fastapi`/`pydantic` are the HOST's, and the manifest
+  now says that too.** Both are Hermes core dependencies, and the bundled
+  dashboard plugins (`kanban`, `hermes-achievements`) import them the same way
+  while declaring nothing. Chroma now follows that pattern instead of implying
+  it owns packages it never installs.
+- **The `availableThemes` guard reached the shipped build.** `syncDesktopState`
+  called `setTheme` with any name it was given; the host coerces an unknown
+  name to the default and persists it, which corrupted the profile. It now
+  checks the name against the host's `availableThemes` first.
 
 ### Fixed — the public page (README)
 
@@ -78,17 +105,43 @@ three package-level defects the same review found.
   is not a Hermes plugin kind (the valid kinds are `standalone`, `backend`,
   `exclusive`, `platform`, `model-provider`), so the loader warned on every
   discovery pass; it is `standalone` now. `provides_middleware` is a catalogue
-  field, not a manifest field, so the loader warned and ignored it — the "no
+  field, not a manifest field, so the loader warned and ignored it - the "no
   middleware" claim lives in the catalogue entry's `capabilities` block, where
-  the catalogue reads it.
-- **The retired v1 `skins/` pair table is archived out of the repository.** It
-  was 150 files the build never read, and it was the bulk of the tree's file
-  count against the install scanner's 400-file structural limit.
+  the catalogue reads it. Neither field ever reached a release: they were
+  introduced and corrected inside this unreleased cycle, so no installed
+  Chroma ever carried them.
 - **`docs/chroma-banner.png` is 402 KB instead of 1.4 MB.** The install scanner
   flags any single file over 1 MiB. The banner is re-encoded as a 256-colour
   palette PNG at the same 1536×693, visually unchanged.
 - **The installers say Chroma.** Five files under `install/` still said "Theme
   Picker" in the strings a user reads.
+
+### Changed - the retired v1 skin pack
+
+- **The 150-file v1 single-palette pack under `skins/` is retired.** The build
+  reads only `skins-v2/`; the v1 pair table is retired with no fallback to it.
+  The published tree tracked 540 files, over the host's 400-file cap
+  (`tools/plugin_guard.py`), which was a standing scan finding on every
+  install. The pack stays recoverable from the published commit `9439f41`, and
+  the pinned hash manifest still proves it: the retirement is a removal, not a
+  loss.
+
+### Added - the gates that keep the above true
+
+- `tests/test_dependency_contract.py` - the zero-resolution contract: the
+  manifest declares no dependencies, no dependency-bearing manifest sits at the
+  plugin root, the agent entry point imports only the standard library, the
+  dashboard imports only host-provided packages, and no shipped entry point
+  names a package manager.
+- `tests/test_crossplatform.py` - one tree, three operating systems: no
+  symlinks, no case-insensitive path collisions, no Windows-reserved names, no
+  trailing space or dot, no machine-specific absolute paths in shipped config,
+  LF-only shell scripts, and a file count the host accepts.
+- `tests/test_build_sync.py` - the shipped build must be byte-identical to what
+  the generator produces. A template edit that was never regenerated used to
+  pass every other gate while shipping the previous build.
+- `tests/test_regenerate.py` - the two v1-pack tests now assert the RETIREMENT
+  and the RECOVERABILITY of the pack, instead of asserting it ships.
 
 ## [2.9.0] - 2026-10-19
 
