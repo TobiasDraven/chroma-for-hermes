@@ -9,6 +9,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+import yaml
+
 
 SCRIPT = Path(__file__).parents[1] / 'scripts' / 'regenerate.py'
 spec = importlib.util.spec_from_file_location('regenerate', SCRIPT)
@@ -16,6 +18,12 @@ if spec is None or spec.loader is None:
     raise RuntimeError(f'Could not load {SCRIPT}')
 regenerate = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(regenerate)
+
+
+# The tree under test. Defaults to this checkout, but an agent may point it at
+# another tree - e.g. an archived commit extracted to a temp dir - to prove a
+# guard FAILS against the old behaviour instead of asserting it in prose.
+REPO_ROOT = Path(os.environ.get('CHROMA_REPO_ROOT', SCRIPT.parents[1]))
 
 
 def _symlinks_supported() -> bool:
@@ -195,22 +203,140 @@ class ThemeCatalogTests(unittest.TestCase):
         )
 
     def test_updated_cliff_pack_has_fifty_complete_pairs(self):
-        skins_dir = SCRIPT.parents[1] / 'skins'
-        available = {path.stem for path in skins_dir.glob('*.yaml')}
+        # The v1 single-palette pack (150 files under skins/) is RETIRED.
+        # The build reads ONLY skins-v2/ (scripts/regenerate.py:765-768: "the
+        # v1 pair table is retired and there is no fallback to it"), and the
+        # published tree tracked 540 files - over the host's
+        # MAX_PLUGIN_FILE_COUNT = 400 cap (tools/plugin_guard.py:106), a
+        # standing scan finding on every install.
+        #
+        # I assert on the ABSENCE OF *.yaml FILES under skins/ rather than on
+        # the absence of the directory itself: git does not track empty
+        # directories, so an empty leftover skins/ can never reach the
+        # published tree, while a single stray .yaml in it would put the
+        # retired pack back into the shipped tree. The file-level check is
+        # the one that carries the guarantee, and it also covers a
+        # half-deleted directory.
+        retired_dir = REPO_ROOT / 'skins'
+        retired_files = []
+        if retired_dir.is_dir():
+            retired_files = sorted(
+                path.relative_to(REPO_ROOT).as_posix()
+                for path in retired_dir.rglob('*.yaml')
+            )
+        self.assertEqual(
+            retired_files, [],
+            f'the retired v1 pack must not ship: {retired_dir} still holds '
+            f'{len(retired_files)} yaml file(s) (e.g. {retired_files[:3]})',
+        )
 
+        # The LIVE catalogue is the v2 dual-mode catalogue: one file per skin,
+        # both palettes authored in the same file.
+        catalogue = REPO_ROOT / 'skins-v2'
+        self.assertTrue(
+            catalogue.is_dir(),
+            f'the live catalogue directory is missing: {catalogue}',
+        )
+        catalogue_files = sorted(catalogue.glob('*.yaml'))
+        self.assertGreaterEqual(
+            len(catalogue_files), 90,
+            f'the live catalogue {catalogue} holds {len(catalogue_files)} yaml '
+            'file(s); the v2 dual-mode catalogue must not shrink below 90',
+        )
+
+        # Every catalogue file must carry BOTH palettes, in the shape
+        # regenerate._load_v2_skins requires: a mapping, schema_version 2 and
+        # non-empty light_colors/dark_colors.
+        for path in catalogue_files:
+            data = yaml.safe_load(path.read_text(encoding='utf-8')) or {}
+            self.assertIsInstance(data, dict, f'{path}: a skin file must be a mapping')
+            self.assertEqual(
+                data.get('schema_version'), 2,
+                f'{path}: schema_version must be 2',
+            )
+            self.assertTrue(
+                data.get('light_colors'),
+                f'{path}: light_colors is required',
+            )
+            self.assertTrue(
+                data.get('dark_colors'),
+                f'{path}: dark_colors is required',
+            )
+
+        # THEME_PAIRS is the historical RECORD of the retired pack: the
+        # canonical light/dark matches from CliffWade v1.1.0, which is what the
+        # v2 migration folded the singles into. The table stays as provenance,
+        # so the guarantee is that the record survives intact - 55 pairs, 110
+        # distinct names. It is deliberately NOT a statement that those files
+        # ship: the singles are retired, and their absence is asserted above.
         self.assertEqual(len(regenerate.THEME_PAIRS), 55, 'the vendored pack pair list')
         paired = {name for pair in regenerate.THEME_PAIRS for name in pair}
         self.assertEqual(len(paired), 110, 'two distinct skins per pair')
-        self.assertEqual(paired - available, set(), 'every paired skin is shipped')
 
     def test_cliffwade_v1_1_0_files_match_the_pinned_hash_manifest(self):
-        repo = SCRIPT.parents[1]
-        manifest = json.loads((repo / 'scripts' / 'cliffwade-v1.1.0-sha256.json').read_text(encoding='utf-8'))
+        # The retired pack is gone from the tree, but its durable record is
+        # not: scripts/cliffwade-v1.1.0-sha256.json pins the sha256 of every
+        # file of the pack, and the pack itself stays recoverable from the
+        # published commit 9439f41. This test is the recoverability proof - if
+        # the archive stops resolving, the manifest is a list of hashes to
+        # nothing and the retired pack is lost for good.
+        manifest_path = REPO_ROOT / 'scripts' / 'cliffwade-v1.1.0-sha256.json'
+        self.assertTrue(
+            manifest_path.is_file(),
+            f'the pinned hash manifest is missing: {manifest_path}',
+        )
+        manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
 
-        self.assertEqual(len(manifest), 100)
+        self.assertEqual(len(manifest), 100, f'{manifest_path} must pin 100 files')
         for name, expected_hash in manifest.items():
-            actual_hash = hashlib.sha256((repo / 'skins' / name).read_bytes()).hexdigest()
-            self.assertEqual(actual_hash, expected_hash, name)
+            self.assertTrue(
+                name.endswith('.yaml'),
+                f'{manifest_path}: key {name!r} must end with .yaml',
+            )
+            self.assertRegex(
+                expected_hash, r'^[0-9a-f]{64}$',
+                f'{manifest_path}: {name} must pin a 64-char lowercase sha256',
+            )
+
+        # The archive commit must resolve locally. A shallow clone (or a tree
+        # extracted with git archive, which carries no .git) cannot serve it,
+        # and the guard must say so rather than quietly passing.
+        probe = subprocess.run(
+            ['git', '-C', str(REPO_ROOT), 'rev-parse', '--verify', '--quiet',
+             '9439f41^{commit}'],
+            capture_output=True,
+        )
+        if probe.returncode != 0:
+            self.fail(
+                'the archive commit 9439f41 is not available in '
+                f'{REPO_ROOT}: the retired v1 pack cannot be read back and this '
+                'guard cannot be proven. Clone with full history '
+                '(git fetch --unshallow) or fetch that commit '
+                '(git fetch origin 9439f41), then re-run. '
+                f'git said: {probe.stderr.decode("utf-8", "replace").strip()}'
+            )
+
+        for name, expected_hash in manifest.items():
+            result = subprocess.run(
+                ['git', '-C', str(REPO_ROOT), 'show', f'9439f41:skins/{name}'],
+                capture_output=True,
+            )
+            self.assertEqual(
+                result.returncode, 0,
+                f'git show 9439f41:skins/{name} failed: '
+                f'{result.stderr.decode("utf-8", "replace").strip()}',
+            )
+            actual_hash = hashlib.sha256(result.stdout).hexdigest()
+            self.assertEqual(
+                actual_hash, expected_hash,
+                f'{name} read back from 9439f41 does not match the pinned hash',
+            )
+            data = yaml.safe_load(result.stdout.decode('utf-8'))
+            self.assertIsInstance(data, dict, f'{name}: the recovered file must be a YAML mapping')
+            self.assertEqual(
+                data.get('name'), name[:-len('.yaml')],
+                f'{name}: the recovered file declares a different name',
+            )
 
     def test_daylight_and_warm_lightmode_are_light_only(self):
         self.assertEqual(regenerate._mode_support('daylight', True), 'light')
