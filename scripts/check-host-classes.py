@@ -31,7 +31,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-BUILD = ROOT / "desktop" / "plugin.js"
+try:
+    from package_paths import BUILD
+except ImportError:  # run from another cwd: add this script's dir to the path
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from package_paths import BUILD
 
 # Classes that are fine to be absent: they are not utilities at all, they are
 # third-party hooks, or the host does not need to style them.

@@ -28,7 +28,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from regenerate import KEEP_KEYS, HEX_RE, _port_palette  # noqa: E402
 
 SKINS = ROOT / "skins"
-BUILD = ROOT / "desktop" / "plugin.js"
+BUILD = ROOT / "chroma" / "desktop" / "plugin.js"
 
 
 def load_catalog() -> list[dict]:

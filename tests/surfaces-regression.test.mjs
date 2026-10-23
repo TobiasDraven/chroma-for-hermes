@@ -90,6 +90,13 @@ async function loadForRegistration() {
     useRef: value => ({ current: value }),
     setTimeout: () => 0,
     clearTimeout: () => {},
+    AbortController: class {
+      constructor() {
+        const signal = { aborted: false, addEventListener: () => {}, removeEventListener: () => {} }
+        this.signal = signal
+        this.abort = () => { signal.aborted = true }
+      }
+    },
     window: {
       localStorage: {
         getItem: key => storage.get(key) ?? null,

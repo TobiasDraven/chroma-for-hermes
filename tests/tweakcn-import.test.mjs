@@ -74,7 +74,17 @@ function loadPlugin(storage = new Map(), fetchImpl = null) {
           setItem: (key, value) => storage.set(key, value)
         }
       },
-      setTimeout: fn => fn()
+      setTimeout: fn => fn(),
+      clearTimeout: () => {},
+      // The build's remote import path aborts a stalled request; the sandbox must
+      // model the renderer's real AbortController or the code throws ReferenceError.
+      AbortController: class {
+        constructor() {
+          const signal = { aborted: false, addEventListener: () => {}, removeEventListener: () => {} }
+          this.signal = signal
+          this.abort = () => { signal.aborted = true }
+        }
+      }
     }
     context.globalThis = context
     vm.runInNewContext(executable, context, { filename: 'plugin.js' })
@@ -222,6 +232,7 @@ test('reports an HTML answer as a bad preset instead of a JSON parse error', asy
   const htmlFetch = async () => ({
     ok: true,
     status: 200,
+    text: async () => '<!DOCTYPE html><html><body>no preset here</body></html>',
     json: async () => { throw new SyntaxError('Unexpected token \'<\', "<!DOCTYPE " is not valid JSON') }
   })
   const { __test } = await loadPlugin(new Map(), htmlFetch)
@@ -235,7 +246,7 @@ test('fetches and converts a preset, and surfaces a bad response', async () => {
   const calls = []
   const okFetch = async url => {
     calls.push(url)
-    return { ok: true, status: 200, json: async () => GRAPHITE }
+    return { ok: true, status: 200, text: async () => JSON.stringify(GRAPHITE), json: async () => GRAPHITE }
   }
   const { __test } = await loadPlugin(new Map(), okFetch)
   const theme = await __test.fetchTweakcnTheme('graphite')
@@ -243,7 +254,7 @@ test('fetches and converts a preset, and surfaces a bad response', async () => {
   assert.deepEqual(calls, ['https://tweakcn.com/r/themes/graphite.json'])
   assert.equal(theme.name, 'graphite')
 
-  const badFetch = async () => ({ ok: false, status: 404, json: async () => ({}) })
+  const badFetch = async () => ({ ok: false, status: 404, text: async () => '{}', json: async () => ({}) })
   const { __test: bad } = await loadPlugin(new Map(), badFetch)
   await assert.rejects(() => bad.fetchTweakcnTheme('nope'), /404/)
 })

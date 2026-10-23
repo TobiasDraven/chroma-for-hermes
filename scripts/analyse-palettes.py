@@ -22,7 +22,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-BUILD = ROOT / "desktop" / "plugin.js"
+BUILD = ROOT / "chroma" / "desktop" / "plugin.js"
 
 # role id -> palette key. "raised" is the chrome surface above the shell.
 SIGNATURE = (

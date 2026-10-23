@@ -1,11 +1,17 @@
-# AGENTS.md — the working contract for this repository
+# AGENTS.md — the binding contract for this repository
 
-Read this before touching anything. It is binding for any agent working here, human or model, and it is
-where a rule that should steer every agent belongs — rather than in a one-off brief.
+This file is the **contract**. The operational handbook — commands, pitfalls, parity
+discipline, delivery contract, gate list, known limitations — lives in
+**`DELEGATEDAGENTS.md`** and is edited freely as the repository changes. Read that one first;
+read this one when a *rule* is at stake, because a rule that should steer every agent
+belongs here rather than in a one-off brief.
+
+Both files describe the same repository. If they disagree, `AGENTS.md` wins — but say so
+rather than editing this file in secret.
 
 **Measured caveat, 2026-10-16:** the Hermes documentation says a delegated child inherits the
 workspace's project context files automatically. Two subagents working in this repository reported that
-**nothing was embedded in their prompts** — they had to read this file from disk. So put the rules here
+**nothing was embedded in their prompts** — they had to read the file from disk. So put the rules here
 AND have the brief name this file; ask a child which context files it was given rather than assuming.
 
 **Project:** Chroma for Hermes — a theme-picker plugin for Hermes Desktop. A hard fork of

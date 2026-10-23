@@ -254,12 +254,17 @@ def test_shell_scripts_use_lf_endings() -> None:
 
 def test_tracked_file_count_is_under_the_host_plugin_cap() -> None:
     """The host refuses a plugin with more than MAX_PLUGIN_FILE_COUNT files."""
-    count = len(tracked_paths())
+    # The host's guard counts files in the PLUGIN DIRECTORY, not the whole repo
+    # (tools/plugin_guard.py scans the plugin package). The shipped package is the
+    # chroma/ subdirectory: the catalog installs it with `subdir: chroma` and the
+    # host sparse-clones only that directory. So count chroma/, not the tree.
+    package = [p for p in tracked_paths() if p.startswith("chroma/")]
+    count = len(package)
     # The host's rule is `if file_count > MAX_PLUGIN_FILE_COUNT`
     # (tools/plugin_guard.py:344), so exactly 400 files is VALID. This
     # assertion mirrors the host's comparison rather than a stricter one.
     assert count <= MAX_PLUGIN_FILE_COUNT, (
-        "the tracked tree holds %d files; the host refuses a plugin with more "
+        "the shipped package holds %d files; the host refuses a plugin with more "
         "than %d (tools/plugin_guard.py: MAX_PLUGIN_FILE_COUNT = %d)"
         % (count, MAX_PLUGIN_FILE_COUNT, MAX_PLUGIN_FILE_COUNT)
     )

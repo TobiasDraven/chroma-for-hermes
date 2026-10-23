@@ -53,6 +53,13 @@ function rendererGlobals() {
     fetch: () => Promise.reject(new Error('no fetch in test')),
     setTimeout: (fn) => { if (typeof fn === 'function') fn(); return 1 },
     clearTimeout() {},
+    AbortController: class {
+      constructor() {
+        const signal = { aborted: false, addEventListener() {}, removeEventListener() {} }
+        this.signal = signal
+        this.abort = () => { signal.aborted = true }
+      }
+    },
     MutationObserver: class { observe() {} disconnect() {} },
     localStorage: {
       getItem: (k) => storage.get(k) ?? null,
