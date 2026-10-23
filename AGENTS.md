@@ -16,11 +16,11 @@ version lives in `VERSION`. Upstream is a different project now — do not "sync
 
 ## 1. The rule that breaks everything
 
-`desktop/plugin.template.js` is the **source of truth**. `desktop/plugin.js` is **generated output**.
+`chroma/desktop/plugin.template.js` is the **source of truth**. `chroma/desktop/plugin.js` is **generated output**.
 
 ```bash
 python scripts/regenerate.py                             # after EVERY edit to the template
-"/c/Program Files/nodejs/node" --check desktop/plugin.js # then prove it parses
+"/c/Program Files/nodejs/node" --check chroma/desktop/plugin.js # then prove it parses
 ```
 
 **Use the SYSTEM node for the syntax check.** The Hermes-bundled node is first on `PATH`, and its
@@ -35,15 +35,24 @@ is not shipped until the build has been regenerated, and the template is the onl
 ## 2. Repository map
 
 ```
-plugin.yaml            manifest (id, version, entry points) — the plugin's contract with Desktop
-VERSION                version, mirrored into plugin.yaml
-desktop/
-  plugin.template.js   SOURCE OF TRUTH: the whole renderer plugin (ESM, jsx() calls, no JSX syntax)
-  plugin.js            GENERATED from the template — never edit
-dashboard/plugin_api.py   FastAPI backend mounted at /api/plugins/chroma/ (skins, import, export, trash)
-scripts/regenerate.py     template -> build; also emits the skin catalog and gateway transports
-skins-v2/ gateway-skins/  the catalogue and its mode-locked transports (data, not code)
+chroma/                   the shipped plugin package — the catalog installs THIS subdirectory
+  plugin.yaml             manifest (id, version, entry points) — the plugin's contract with Desktop
+  __init__.py             agent-plugin entry point (hasYaml + hasInit)
+  README.md               the user-facing readme, including the install URLs
+  LICENSE
+  THIRD_PARTY_NOTICES.md  MIT credits for every idea copied from another project — update it when you copy
+  desktop/
+    plugin.template.js    SOURCE OF TRUTH: the whole renderer plugin (ESM, jsx() calls, no JSX syntax)
+    plugin.js             GENERATED from the template — never edit
+  dashboard/
+    plugin_api.py         FastAPI backend mounted at /api/plugins/chroma/ (skins, import, export, trash)
+    manifest.json         the backend half's manifest
+  install/                platform installers for the plugin and its gateway transports
+VERSION                   version, mirrored into plugin.yaml
+skins-v2/                 the catalogue: one file per skin, both palettes (a build input)
+gateway-skins/            the mode-locked transports, generated from the catalogue (a build output)
 skins/                    retired v1 pair table - not read by the build
+scripts/regenerate.py     template -> build; also emits the skin catalog and gateway transports
 tests/                    node:test suites + helpers; fixtures/ holds pinned parity data
   helpers/load-plugin.mjs THE harness: loads the built plugin into a vm context
 docs/SPEC.md              surfaces, features, backend contract, acceptance commands
@@ -53,9 +62,8 @@ docs/ARCHITECTURE.md      pre-fork reference from upstream (Desktop's three-laye
 docs/DECISIONS.md         numbered decisions and WHY (read before proposing a redesign)
 docs/TASKS.md             open work, adjudicated gate findings, quality-gate debt
 docs/PLANS/               campaign tracker, roadmap, research artifacts
-THIRD_PARTY_NOTICES.md    MIT credits for every idea copied from another project — update it when you copy
+docs/CATALOG-SUBMISSION.md  the catalog entry draft (its subdir field names chroma/)
 rigour.yml                quality gates; committed; NEVER tuned to make a check pass
-install/                  platform installers for the plugin
 ```
 
 ## 3. Non-negotiable constraints
@@ -263,8 +271,9 @@ Behaviour-preserving work is proven, never asserted:
 
 - iTerm2 `.itermcolors` import is **refused by name** (a plist parser with no dependencies, plus a
   perceptual colour matrix, for a format with no Windows relevance) — a v1.1 candidate.
-- VS Code themes that carry their palette through `include` are refused, and the refusal currently
-  **misdiagnoses** them as syntax-only. See `docs/TASKS.md` for the decision this needs.
+- VS Code themes that carry their palette through `include` are still **refused**; the refusal names the
+  include target and explains that a single paste cannot read a second file. See `docs/TASKS.md` for the
+  settled decision (reword, not resolve — resolving the include is deferred).
 - Alpha in colour values is flattened to opaque, because the backend accepts only `#rrggbb`. About a
   fifth of real VS Code values carry alpha — see `docs/PLANS/VSCODE-MAPPING-RESEARCH.md`.
 - Complexity and file-size debt is tracked, not hidden: `desktop/plugin.template.js` is far past the

@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import vm from 'node:vm'
 
-const pluginPath = new URL('../../desktop/plugin.js', import.meta.url)
+const pluginPath = new URL('../../chroma/desktop/plugin.js', import.meta.url)
 
 /**
  * Stands in for React's `$$typeof` marker. Elements the harness builds carry it

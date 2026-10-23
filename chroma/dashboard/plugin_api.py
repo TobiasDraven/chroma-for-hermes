@@ -2094,6 +2094,8 @@ def duplicate_skin(req: DuplicateRequest) -> dict[str, Any]:
 PACKS_DIRNAME = "packs"
 PACK_FORMAT_VERSION = 1
 MAX_PACK_SKINS = 512
+MAX_TOTAL_SKINS = 2048
+TRASH_RETENTION_DAYS = 30
 
 
 def _packs_dir() -> Path:
@@ -2131,11 +2133,12 @@ def _skin_palettes(path: Path) -> tuple[dict[str, str], dict[str, str]]:
 def _free_slug(base: str, skins_dir: Path) -> str:
     """The first free `<base>-N` name, for a preview's rename-to-suffix."""
     n = 2
-    while True:
+    for _ in range(MAX_TOTAL_SKINS):
         candidate = f"{base}-{n}"
         if not (skins_dir / f"{candidate}.yaml").exists():
             return candidate
         n += 1
+    raise RuntimeError(f"could not find a free slug for {base!r}")
 
 
 def _pack_record(
@@ -2426,8 +2429,8 @@ def _restore_categories(original_text: str | None) -> None:
             _unlink_quietly(_categories_path())
         else:
             _atomic_write_text(_categories_path(), original_text)
-    except OSError:
-        pass
+    except OSError as exc:
+        logger.warning("chroma restore categories failed: %s", exc)
 
 
 def _restore_index(original_text: str | None) -> None:
@@ -2437,8 +2440,8 @@ def _restore_index(original_text: str | None) -> None:
             _unlink_quietly(_index_path())
         else:
             _atomic_write_text(_index_path(), original_text)
-    except OSError:
-        pass
+    except OSError as exc:
+        logger.warning("chroma restore index failed: %s", exc)
 
 
 @router.post("/packs/import")
@@ -2613,7 +2616,8 @@ def _restore_trashed_members(trashed_members: list[tuple[Path, Path]]) -> list[s
     for target, trashed in trashed_members:
         try:
             os.replace(trashed, target)
-        except OSError:
+        except OSError as exc:
+            logger.warning("chroma restore trashed member failed at %s: %s", target, exc)
             unrestored.append(target.stem)
     return unrestored
 
@@ -2706,3 +2710,19 @@ def delete_pack(slug: str, withSkins: bool = False) -> dict[str, Any]:
 
     logger.info("deleted pack %s (withSkins=%s, removed %d)", clean, withSkins, len(removed))
     return {"ok": True, "slug": clean, "removedSkins": removed}
+
+@router.post("/trash/purge")
+def purge_trash(retention_days: int = TRASH_RETENTION_DAYS) -> dict[str, Any]:
+    trash = _trash_dir()
+    cutoff = datetime.now(timezone.utc).timestamp() - retention_days * 86400
+    removed = 0
+    for path in trash.iterdir():
+        if not path.is_file():
+            continue
+        try:
+            if path.stat().st_mtime < cutoff:
+                path.unlink()
+                removed += 1
+        except OSError as exc:
+            logger.warning("chroma trash purge failed at %s: %s", path, exc)
+    return {"ok": True, "removed": removed}

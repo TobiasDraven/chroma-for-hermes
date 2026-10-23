@@ -25,11 +25,11 @@ import unittest
 from pathlib import Path
 
 # CHROMA_API_PATH lets a run point at a different revision of the backend (e.g.
-# `git show <rev>:dashboard/plugin_api.py` written to a temp file) so a new test
-# can be shown FAILING against the unfixed code and passing against the fix.
+# `git show <rev>:chroma/dashboard/plugin_api.py` written to a temp file) so a
+# new test can be shown FAILING against the unfixed code and passing against the fix.
 API_PATH = Path(
     os.environ.get("CHROMA_API_PATH")
-    or (Path(__file__).resolve().parents[1] / "dashboard" / "plugin_api.py")
+    or (Path(__file__).resolve().parents[1] / "chroma" / "dashboard" / "plugin_api.py")
 )
 
 
@@ -768,7 +768,7 @@ class SchemaTests(EditorTestCase):
         """Two vocabularies, one of them on each side of the wire. If the pane's
         role table ever falls behind the writer again, this is the test that says so."""
         template = (Path(__file__).resolve().parent.parent
-                    / "desktop" / "plugin.template.js").read_text(encoding="utf-8")
+                    / "chroma" / "desktop" / "plugin.template.js").read_text(encoding="utf-8")
         start = template.index("const EDITOR_ROLES = [")
         end = template.index("\n]", start)
         block = template[start:end]
@@ -1567,9 +1567,9 @@ class CategoryStoreTests(EditorTestCase):
         THEME_CATEGORIES. Reads the pane file read-only so the two cannot drift."""
         import re as _re
 
-        pane = Path(__file__).resolve().parents[1] / "desktop" / "plugin.template.js"
+        pane = Path(__file__).resolve().parents[1] / "chroma" / "desktop" / "plugin.template.js"
         if not pane.is_file():
-            self.skipTest("desktop/plugin.template.js is not present to pin against")
+            self.skipTest("chroma/desktop/plugin.template.js is not present to pin against")
         text = pane.read_text(encoding="utf-8")
         match = _re.search(r"const THEME_CATEGORIES\s*=\s*\[(.*?)\]", text, _re.S)
         if not match:

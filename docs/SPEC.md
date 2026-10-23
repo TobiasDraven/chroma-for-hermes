@@ -7,7 +7,8 @@ mint real gateway skins so the CLI and every connected Desktop follow a change.
 A hard fork of "Hermes Theme Picker" by Joshua Timothy (`jdtimothy/hermes-theme-picker`,
 MIT) — see `THIRD_PARTY_NOTICES.md`.
 
-`plugin.yaml`: name `chroma`, version `2.9.1` (matching `VERSION`). The repo root IS the plugin package.
+`plugin.yaml`: name `chroma`, version `2.9.1` (matching `VERSION`). The `chroma/` subdirectory
+of the repo root is the plugin package.
 
 ## Surfaces it registers
 
@@ -46,7 +47,7 @@ ThemeProvider handoff and the app-owned storage keys are still in the build.
 
 ## Backend contract
 
-`dashboard/plugin_api.py` exposes an `APIRouter` mounted by the host at
+`chroma/dashboard/plugin_api.py` exposes an `APIRouter` mounted by the host at
 `/api/plugins/chroma/`. All responses are JSON, because JSON REST is the only
 channel the pane has back to the backend.
 
@@ -100,7 +101,7 @@ keys in all**:
   survives a restart: `hermes-desktop-user-themes-v1`, `hermes-desktop-theme-v2`,
   `hermes-desktop-mode-v1`, `hermes-desktop-profile-themes-v1`,
   `hermes-desktop-profile-modes-v1`, and the `hermes-boot-background` /
-  `hermes-boot-color-scheme` boot hints (`desktop/plugin.template.js:69-73`).
+  `hermes-boot-color-scheme` boot hints (`chroma/desktop/plugin.template.js:69-73`).
   Desktop reads this cache before plugins register, so the write cannot be
   omitted.
 
@@ -128,7 +129,7 @@ and a gate that everyone knows is red stops being a gate.
 python scripts/regenerate.py                     # after any template edit
 node --test tests/*.test.mjs                    # node suites
 <venv>/python.exe -m pytest tests/ -q            # all three Python suites (CI runs this)
-hermes plugins validate .                        # plugin admission gate (local only)
+hermes plugins validate chroma                        # plugin admission gate (local only)
 python scripts/check-package.py                  # package contract (CI runs this too)
 python scripts/check-packs.py                    # catalogue contract
 ```

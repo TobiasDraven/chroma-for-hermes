@@ -178,6 +178,115 @@ test('a syntax-only VS Code theme is refused rather than imported empty', async 
   )
 })
 
+test('include alone is not a VS Code signal, so tsconfig and random JSON stay generic', async () => {
+  const h = await t()
+  // `include` belongs to tsconfig too, and turns up in arbitrary JSON. Claiming
+  // VS Code from that key alone is the confidently-wrong diagnosis this
+  // dispatcher exists to avoid.
+  const shapes = [
+    { include: './src/**/*', compilerOptions: { strict: true } },
+    { include: './some.json', foo: 'bar' },
+    { include: './base.json' }
+  ]
+  for (const json of shapes) {
+    await assert.rejects(
+      async () => h.parseImportedTheme(JSON.stringify(json)),
+      err => {
+        assert.match(err.message, /neither a Windows Terminal scheme nor a VS Code color theme/)
+        assert.doesNotMatch(err.message, /inherits its palette/)
+        return true
+      },
+      'an include with no theme signal is not recognisably a VS Code theme'
+    )
+  }
+})
+
+test('a VS Code theme that inherits its palette names the include target, not "syntax-only"', async () => {
+  const h = await t()
+  // VS Code resolves `include` recursively, so a theme can be complete while
+  // carrying no palette of its own. A single paste cannot follow the include,
+  // so the refusal must say that rather than misdiagnose the theme.
+  const shapes = [
+    { include: './dark_vs.json', tokenColors: [] },
+    { name: 'Dark+', include: './dark_vs.json', tokenColors: [] }
+  ]
+  for (const json of shapes) {
+    await assert.rejects(
+      async () => h.parseImportedTheme(JSON.stringify(json)),
+      err => {
+        assert.match(err.message, /\.\/dark_vs\.json/, 'the include target is named')
+        assert.match(err.message, /inherits its palette/)
+        assert.doesNotMatch(err.message, /syntax-only/)
+        assert.doesNotMatch(err.message, /neither a Windows Terminal scheme/)
+        return true
+      },
+      'a theme that inherits its palette is a VS Code theme shape, not an unrecognised paste'
+    )
+  }
+})
+
+test('an include with a partial palette explains inheritance and names only the missing key', async () => {
+  const h = await t()
+  await assert.rejects(
+    async () => h.parseImportedTheme(JSON.stringify({
+      include: './base.json',
+      colors: { 'editor.background': '#1e1e1e' }
+    })),
+    err => {
+      assert.match(err.message, /inherits its palette from \.\/base\.json/)
+      assert.match(err.message, /editor\.foreground/, 'the key that is actually missing is named')
+      assert.doesNotMatch(err.message, /no editor\.background/, 'the key that is present must not be reported missing')
+      return true
+    }
+  )
+  await assert.rejects(
+    async () => h.parseImportedTheme(JSON.stringify({ include: './base.json', colors: {} })),
+    err => {
+      assert.match(err.message, /inherits its palette/)
+      assert.match(err.message, /no palette of its own/, 'an empty palette is inherited, not partially present')
+      return true
+    }
+  )
+})
+
+test('an include target is trimmed, and a URL is not called a local file', async () => {
+  const h = await t()
+  await assert.rejects(
+    async () => h.parseImportedTheme(JSON.stringify({ name: 'Blank', include: '', tokenColors: [] })),
+    err => {
+      assert.match(err.message, /inherits its palette/)
+      assert.doesNotMatch(err.message, /from {2,}/, 'an empty target is not spliced into the sentence')
+      assert.match(err.message, /not named here/)
+      return true
+    }
+  )
+  await assert.rejects(
+    async () => h.parseImportedTheme(JSON.stringify({
+      name: 'Remote',
+      include: 'https://example.com/theme.json',
+      tokenColors: []
+    })),
+    err => {
+      assert.match(err.message, /https:\/\/example\.com\/theme\.json/)
+      assert.match(err.message, /URL cannot be fetched from a single paste/)
+      assert.doesNotMatch(err.message, /import that file instead/, 'that advice is only true for a local path')
+      return true
+    }
+  )
+})
+
+test('a VS Code theme with its own palette still parses when it also has an include', async () => {
+  const theme = await t().then(h => h.parseImportedTheme(JSON.stringify({
+    name: 'Inheriting Workbench',
+    include: './base.json',
+    type: 'dark',
+    colors: { 'editor.background': '#1e1e1e', 'editor.foreground': '#d4d4d4' }
+  })))
+  assert.equal(theme.source, 'vscode')
+  assert.equal(theme.colors.background, '#1e1e1e')
+  assert.equal(theme.colors.foreground, '#d4d4d4')
+})
+
 test('iTerm2 is recognised and refused, not half-read', async () => {
   const plist = '<?xml version="1.0"?><plist version="1.0"><dict><key>Background Color</key><dict><key>Red Component</key><real>0.1</real></dict></dict></plist>'
   await assert.rejects(

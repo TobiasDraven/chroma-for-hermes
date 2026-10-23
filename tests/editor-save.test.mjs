@@ -37,7 +37,8 @@ test('an owned skin is written IN PLACE through PUT /skins/{name}', async () => 
   await t.putSkin('ocean-skin', { light: { ui_accent: '#ff00ff' }, dark: {} })
   assert.equal(calls[0].path, 'skins/ocean-skin', 'the in-place route')
   assert.equal(calls[0].options.method, 'PUT')
-  assert.deepEqual(JSON.parse(calls[0].options.body), { light: { ui_accent: '#ff00ff' }, dark: {} })
+  assert.equal(typeof calls[0].options.body, 'object', 'rest() takes a plain object; the bridge serialises it')
+  assert.deepEqual(plain(calls[0].options.body), { light: { ui_accent: '#ff00ff' }, dark: {} })
 
   // The two doors are genuinely different routes.
   await t.putOverride('ocean-skin', { light: {}, dark: {} })

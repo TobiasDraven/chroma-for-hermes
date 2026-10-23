@@ -1,8 +1,8 @@
 """The build-currency gate: the shipped build must match what the generator produces.
 
-`desktop/plugin.js` is COMMITTED, because the installer loads it: the Desktop
-plugin is a build artifact, not a source file. The source of truth is
-`desktop/plugin.template.js` plus the `skins-v2/` catalogue, and
+`chroma/desktop/plugin.js` is COMMITTED, because the installer loads it: the
+Desktop plugin is a build artifact, not a source file. The source of truth is
+`chroma/desktop/plugin.template.js` plus the `skins-v2/` catalogue, and
 `scripts/regenerate.py` turns those into the shipped bytes.
 
 That arrangement has one failure mode, and it is silent: edit the template (or
@@ -14,7 +14,7 @@ the edit. Nothing says "this file is older than the thing that produced it".
 So this module regenerates the build and compares it to what is committed:
 
   1. the generator must run clean in a THROWAWAY COPY of the repo;
-  2. the copy's `desktop/plugin.js` must be BYTE-IDENTICAL to the committed one;
+  2. the copy's `chroma/desktop/plugin.js` must be BYTE-IDENTICAL to the committed one;
   3. the copy's `gateway-skins/` must be the same FILE SET, byte for byte;
   4. the copy's `docs/DERIVED-PALETTES.md` must match the committed one;
   5. the template must still carry the `__SKINS_DATA__` placeholder the
@@ -72,8 +72,8 @@ EXCLUDED_NAMES = (
     "*.pyc",
 )
 
-TEMPLATE_REL = Path("desktop") / "plugin.template.js"
-BUILD_REL = Path("desktop") / "plugin.js"
+TEMPLATE_REL = Path("chroma") / "desktop" / "plugin.template.js"
+BUILD_REL = Path("chroma") / "desktop" / "plugin.js"
 GATEWAY_REL = Path("gateway-skins")
 DERIVED_REL = Path("docs") / "DERIVED-PALETTES.md"
 GENERATOR_REL = Path("scripts") / "regenerate.py"

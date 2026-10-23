@@ -9,7 +9,7 @@
 #   - CLI:     hermes plugins install https://github.com/TobiasDraven/chroma-for-hermes
 # Use this script only when neither is reachable (an air-gapped machine, a mirror).
 #
-# The repository root IS the plugin package:
+# The package root is chroma/, one level up from this script:
 #     __init__.py              <- the agent-plugin entry point (register(ctx))
 #     plugin.yaml              <- the manifest (name: chroma)
 #     desktop/plugin.js        <- the desktop UI half

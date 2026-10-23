@@ -155,7 +155,7 @@ re-probed against a Hermes release this session.
 
 1. **Re-pin the entry.** `git rev-parse HEAD` (or `origin/main`) at the moment of submission; a full
    40-character SHA, never a short one or a branch. Bump `version` in the same PR if the tree moved.
-2. **Run the admission gate on a working machine.** `hermes plugins validate .` before opening the PR;
+2. **Run the admission gate on a working machine.** `hermes plugins validate chroma` before opening the PR;
    the CLI is a local-only dependency and the run above did not complete here.
 3. **One end-to-end install on a clean machine.** Install from the package, enable the desktop pane,
    apply a skin, import a TweakCN preset, restart Desktop and confirm the boot cache resolves the same
@@ -201,7 +201,8 @@ through the same schema the importer writes, so an export is also the format a u
 `4168af8` added Windows Terminal, Base16/24 and VS Code adapters behind one interface, all parsing to
 colours before the shared skin writer. iTerm2 `.itermcolors` remains deliberately refused by name —
 a dependency-free plist parser plus a perceptual colour matrix, for a format with no Windows
-relevance. See `docs/TASKS.md` for the VS Code `include` misdiagnosis, which is a separate decision.
+relevance. See `docs/TASKS.md` for the VS Code `include` refusal: the message names the include target,
+and resolving the include is deferred.
 
 ### F5 — Per-profile skins — DONE as option (b)
 

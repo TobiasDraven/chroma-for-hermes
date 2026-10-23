@@ -108,7 +108,8 @@ test('duplicateSkin posts the exact body through the rest transport', async () =
   await t.duplicateSkin(body.to, body.label, body.light, body.dark)
   assert.equal(calls[0].path, 'skins/duplicate')
   assert.equal(calls[0].options.method, 'POST')
-  assert.deepEqual(plain(JSON.parse(calls[0].options.body)), {
+  assert.equal(typeof calls[0].options.body, 'object', 'rest() takes a plain object; the bridge serialises it')
+  assert.deepEqual(plain(calls[0].options.body), {
     to: 'ocean-skin-copy', label: 'Ocean Skin copy',
     light: { background: '#101010', ui_accent: '#aa00cc' }, dark: { background: '#000000' }
   })
@@ -208,9 +209,9 @@ test('requestPackImport sends dryRun, and the applied notice reports what happen
   const { t, calls } = await withRest(async (path, options) => { calls.push({ path, options }); return { ok: true, applied: [{ name: 'ashes' }], skipped: ['moss'] } })
   await t.requestPackImport(bundle(), true)
   assert.equal(calls[0].path, 'packs/import')
-  assert.equal(JSON.parse(calls[0].options.body).dryRun, true, 'the preview is a dry run')
+  assert.equal(calls[0].options.body.dryRun, true, 'the preview is a dry run')
   await t.requestPackImport(bundle(), false)
-  assert.equal(JSON.parse(calls[1].options.body).dryRun, false, 'confirming is a real write')
+  assert.equal(calls[1].options.body.dryRun, false, 'confirming is a real write')
 
   const t2 = await ctx()
   const notice = t2.packImportNotice({ applied: [{ name: 'ashes' }], skipped: ['moss'] })

@@ -160,7 +160,7 @@ test('the pane wires the star and the rail into the built plugin', async () => {
   // The rail only renders when the list is non-empty, and every card is handed
   // both props. Asserted against the BUILD, because the pane's own body is not
   // reachable through the harness (its hooks are stubbed, so state cannot move).
-  const build = readFileSync('desktop/plugin.js', 'utf8')
+  const build = readFileSync('chroma/desktop/plugin.js', 'utf8')
   assert.ok(build.includes('onToggleFavorite: toggleFavorite'), 'the cards receive the toggle handler')
   assert.ok(build.includes('favorited: favorites.indexOf(scene.name) >= 0'), 'and their own current state')
   assert.ok(build.includes('jsx(FavoritesRail'), 'the rail is rendered beside the gallery')

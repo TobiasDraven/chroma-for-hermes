@@ -7,7 +7,7 @@
 #   - CLI:     hermes plugins install https://github.com/TobiasDraven/chroma-for-hermes
 # Use this script only when neither is reachable.
 #
-# The repo root IS the plugin package:
+# The package root is chroma/, two levels up from this script:
 #     __init__.py             <- the agent-plugin entry point (register(ctx))
 #     plugin.yaml             <- the manifest (name: chroma)
 #     desktop/plugin.js       <- the desktop UI half
@@ -28,7 +28,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-# This file lives in <repo>/install/, so the package root is one level up.
+# This file lives in chroma/install/, so the package root is two levels up.
 $repo = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 
 $desktopHome = Join-Path $env:LOCALAPPDATA 'hermes'

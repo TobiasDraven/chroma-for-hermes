@@ -6,7 +6,8 @@
      the JSONC claim (nord.json fails a strict parse), and the two first-party themes it says we
      refuse (dark_plus.json, light_plus.json, quietlight.json, hc_light.json - all reproduced by
      running the parser on the real files). One wording defect it did not name: our refusal message
-     for the `include` themes misdiagnoses them as syntax-only. See docs/TASKS.md. -->
+     for the `include` themes misdiagnosed them as syntax-only (since reworded to name the include
+     target). See docs/TASKS.md. -->
 
 # VS Code colour-theme JSON → palette mapping: grounded reference
 
@@ -290,8 +291,9 @@ Real inputs found in the downloaded files; each names the file it came from.
 10. **A `colors` block that is syntactically present but has no editor colours** — repo fixture
     `import-formats.test.mjs` line 174 (`{ name:'y', type:'dark', colors:{}, tokenColors:[] }`).
     No real downloaded theme is *strictly* tokenColors-only, but `dark_plus.json`/`light_plus.json`
-    (0 colours) exercise the identical failure path, and the syntax-only shape is the common
-    marketplace case the parser's `looksLikeVsCode` fallback exists to name.
+    (0 colours) exercised the identical failure path before the dedicated `include` refusal, and the
+    syntax-only shape is the common marketplace case the parser's `looksLikeVsCode` fallback exists
+    to name.
 
 ---
 

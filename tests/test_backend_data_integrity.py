@@ -1,6 +1,6 @@
 """Backend data-integrity and hostile-input tests (review lane B).
 
-These cover the findings the backend review raised against `dashboard/plugin_api.py`:
+These cover the findings the backend review raised against `chroma/dashboard/plugin_api.py`:
 
   M1   a failed rename restored the PATH but not the BYTES, so the skin's `name:`
        no longer matched its filename and the CLI listed it under a name it could
@@ -52,7 +52,7 @@ import yaml
 
 API_PATH = Path(
     os.environ.get("CHROMA_API_PATH")
-    or (Path(__file__).resolve().parents[1] / "dashboard" / "plugin_api.py")
+    or (Path(__file__).resolve().parents[1] / "chroma" / "dashboard" / "plugin_api.py")
 )
 
 

@@ -59,7 +59,7 @@ test('hasGatewayBackend tracks the mounted backend slot', async () => {
 })
 
 test('the shipped build never discards a backend failure with .catch(() => null)', async () => {
-  const source = await readFile(new URL('../desktop/plugin.js', import.meta.url), 'utf8')
+  const source = await readFile(new URL('../chroma/desktop/plugin.js', import.meta.url), 'utf8')
   assert.ok(
     !/importThemeIntoSkins\([^)]*\)\.catch\(\(\) => null\)/.test(source),
     'a failed gateway mint must be surfaced, not swallowed by .catch(() => null)'

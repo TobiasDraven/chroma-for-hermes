@@ -1,19 +1,30 @@
 #!/usr/bin/env python3
 """Regenerate the Theme Picker plugin after installing new skins.
 
-Drop new skin YAML files into the Hermes skins folder, then run this script.
+Drop new skin YAML files into the catalogue folder, then run this script.
 It rebuilds plugin.js with the full, current skin catalog embedded, so every
 installed skin appears in the picker as a browseable card.
+
+In a checkout the shipped package is the `chroma/` subdirectory: the template
+and the build live under `chroma/desktop/`, the install files under
+`chroma/install/`. The catalogue (`skins-v2/`), this script, `docs/` and the
+generated `gateway-skins/` stay at the repository root because they are not
+part of the installed package.
 
 Usage:
     python3 regenerate.py [skins_dir] [out_plugin_js]
 
 Defaults:
-    skins_dir   = <hermes home>/skins  (HERMES_HOME, else ~/.hermes)
-    out_plugin  = <hermes home>/desktop/plugin.js
+    skins_dir   = <repo>/skins-v2  (checkout), else <hermes home>/skins
+    out_plugin  = <repo>/chroma/desktop/plugin.js  (checkout),
+                  else <hermes home>/desktop-plugins/theme-picker/plugin.js
+
+The build also writes the mode-locked gateway transports to
+`<repo>/gateway-skins/` and their JSON manifest to
+`<repo>/chroma/install/gateway-skins.json`.
 
 Then copy the output plugin.js to the machine running the desktop app
-(Windows: %LOCALAPPDATA%\\hermes\\desktop-plugins\\theme-picker\\plugin.js)
+(Windows: %LOCALAPPDATA%\\hermes\\desktop-plugins\\chroma\\plugin.js)
 and run "Reload desktop plugins" from the Command Palette (Ctrl+K).
 """
 
@@ -701,11 +712,18 @@ def _backend_builtins() -> list[dict]:
     return builtins
 
 
-def _write_gateway_transport_skins(catalog: list[dict], destination: Path) -> int:
-    """Generate one mode-locked gateway skin for every dynamic variant."""
+def _write_gateway_transport_skins(
+    catalog: list[dict], destination: Path, manifest: Path | None = None
+) -> int:
+    """Generate one mode-locked gateway skin for every dynamic variant.
+
+    When `manifest` is given, the same transports are also written there as one
+    JSON file, so an installer can read them without a YAML parser.
+    """
     assert yaml is not None
     destination.mkdir(parents=True, exist_ok=True)
     expected = set()
+    transports = []
     for scene in catalog:
         if scene.get("modeSupport") != "dynamic":
             continue
@@ -717,12 +735,21 @@ def _write_gateway_transport_skins(catalog: list[dict], destination: Path) -> in
                 "description": f"Theme Picker transport for {scene.get('label', scene['name'])} ({mode})",
                 "colors": scene[f"{mode}Colors"],
             }
+            transports.append(payload)
             text = yaml.safe_dump(payload, sort_keys=False, allow_unicode=True)
             (destination / f"{name}.yaml").write_text(text, encoding="utf-8", newline="\n")
 
     for path in destination.glob("*.yaml"):
         if path.name not in expected:
             path.unlink()
+
+    if manifest is not None:
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text(
+            json.dumps({"schema": 1, "transports": transports},
+                       ensure_ascii=False, separators=(",", ":")) + "\n",
+            encoding="utf-8", newline="\n",
+        )
     return len(expected)
 
 
@@ -756,10 +783,12 @@ def main() -> int:
     default_skins = repo_skins if repo_skins.is_dir() else home / "skins"
     skins_dir = Path(argv[0]) if len(argv) > 0 else default_skins
 
-    # Default output: the repo's desktop/plugin.js when running from a checkout (the package layout).
-    # else the in-place desktop-plugins location.
-    repo_out = script_dir.parent / "desktop" / "plugin.js"
-    default_out = repo_out if (script_dir.parent / "desktop").is_dir() else home / "desktop-plugins" / "theme-picker" / "plugin.js"
+    # Default output: the checkout's chroma/desktop/plugin.js when the package
+    # is present (the shipped tree is the chroma/ subdirectory), else the
+    # in-place desktop-plugins location.
+    package_dir = script_dir.parent / "chroma"
+    repo_out = package_dir / "desktop" / "plugin.js"
+    default_out = repo_out if (package_dir / "desktop").is_dir() else home / "desktop-plugins" / "theme-picker" / "plugin.js"
     out_path = Path(argv[1]) if len(argv) > 1 else (out_override or default_out)
 
     # The catalogue is skins-v2: one file per skin, both palettes. The v1 pair
@@ -785,20 +814,26 @@ def main() -> int:
         print(f"ERROR: no valid bundled skins found in {skins_dir}; refusing to replace {out_path}.", file=sys.stderr)
         return 1
 
-    derived_count = _write_derivation_report(catalog, Path(__file__).resolve().parent.parent / "docs" / "DERIVED-PALETTES.md")
+    # docs/ did not move with the package: the derivation report stays at the
+    # repository root, named explicitly so a future move of the package cannot
+    # redirect it.
+    derivation_report = script_dir.parent / "docs" / "DERIVED-PALETTES.md"
+    derived_count = _write_derivation_report(catalog, derivation_report)
     repo_gateway_skins = script_dir.parent / "gateway-skins"
-    transport_count = _write_gateway_transport_skins(catalog, repo_gateway_skins)
+    transport_count = _write_gateway_transport_skins(
+        catalog, repo_gateway_skins, package_dir / "install" / "gateway-skins.json"
+    )
     # sort_keys=True keeps output byte-stable across runs (matches the shipped
     # plugin.js), so a rebuild with unchanged skins produces an identical file.
     data = json.dumps(catalog, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
 
-    # Template lives in the project's plugin/ dir (repo layout) or next to the
-    # plugin folder root (in-place layout: ../plugin.template.js).
+    # Template lives in the package's desktop/ dir (chroma layout) or next to
+    # the plugin folder root (in-place layout: ../plugin.template.js).
     script_dir = Path(__file__).resolve().parent
     template = template_override or (
-        script_dir.parent / "desktop" / "plugin.template.js"  # repo layout
-        if (script_dir.parent / "desktop" / "plugin.template.js").exists()
-        else script_dir.parent / "plugin.template.js"          # in-place layout
+        package_dir / "desktop" / "plugin.template.js"        # package layout
+        if (package_dir / "desktop" / "plugin.template.js").exists()
+        else script_dir.parent / "plugin.template.js"         # in-place layout
     )
     if not template.exists():
         print(f"ERROR: template not found at {template}", file=sys.stderr)
@@ -815,9 +850,10 @@ def main() -> int:
     print(f"Rebuilt {out_path} with {len(catalog)} scenes from "
           f"{len(user_skins)} bundled skins + {len(builtins)} backend built-ins, "
           f"{derived_count} derived palettes and {transport_count} gateway transports.")
-    print("Next: this repo root IS the plugin package. Install it from Hermes "
-          "Desktop -> Capabilities -> Plugins -> Install, by pasting the repo "
-          "URL (https://github.com/TobiasDraven/chroma-for-hermes). The dialog "
+    print("Next: the plugin package is the chroma/ subdirectory of this repo. "
+          "Install it from Hermes Desktop -> Capabilities -> Plugins -> Install, "
+          "by pasting <repo>/chroma (for example "
+          "https://github.com/TobiasDraven/chroma-for-hermes/chroma). The dialog "
           "enables the plugin and its Desktop half in one step.")
     return 0
 

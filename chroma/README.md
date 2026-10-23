@@ -84,33 +84,35 @@ skins. A skin belongs to exactly one pack and exactly one color family. See
   need them.
 
 The plugin is a package: the Desktop half (the UI) plus a Python half (the
-backend that mints gateway skins). Both live in one directory, `<hermes
-home>/plugins/chroma/`, and Desktop copies the UI half out to
-`desktop-plugins/chroma/` by itself.
+backend that mints gateway skins). The package lives in `chroma/` of the repo,
+and Desktop copies the UI half out to `desktop-plugins/chroma/` by itself.
 
 Open Hermes Desktop, go to **Capabilities -> Plugins -> Install**, and give it
 this URL:
 
 ```text
-https://github.com/TobiasDraven/chroma-for-hermes
+https://github.com/TobiasDraven/chroma-for-hermes/tree/main/chroma
 ```
 
 That is the whole install. The dialog installs the package with the plugin
 enabled and switches on its Desktop half in the same step, so **Chroma appears as
 an enabled row on the Plugins page and its pane joins the sidebar when the
-install finishes**: no file copying, no script, no second toggle. The dialog
-offers **Force reinstall** for replacing an install you already have.
+install finishes**: no manual file copying, no script, no second toggle. The
+dialog offers **Force reinstall** for replacing an install you already have.
 
-From a terminal, the same install is:
+From a terminal, the install is two steps, install and enable, then a Desktop
+reload:
 
 ```bash
-hermes plugins install TobiasDraven/chroma-for-hermes
+hermes plugins install TobiasDraven/chroma-for-hermes/chroma
 hermes plugins enable chroma
 ```
 
 The second line is needed on this route only: a non-interactive install cannot
 answer the "enable now?" prompt, so it installs the plugin disabled. The Desktop
-dialog answers it for you.
+dialog answers it for you. The CLI also does not materialise the Desktop half in
+`desktop-plugins/chroma/`; the Desktop app does that on reload, so reload or
+restart it to see the pane.
 
 A backend that is enabled but not yet mounted needs a full Hermes **restart** (the
 Python half mounts at startup). Until then the picker's themes still apply and
@@ -124,8 +126,8 @@ cannot reach GitHub, or that wants only the UI.
 
 #### Windows
 
-Double-click `install\install-windows.cmd` in Explorer. It runs
-`install\install-windows.ps1`, which places the whole package — `plugin.yaml`,
+Double-click `chroma/install\install-windows.cmd` in Explorer. It runs
+`chroma/install\install-windows.ps1`, which places the whole package — `plugin.yaml`,
 `desktop/`, `dashboard/`, `LICENSE`, `THIRD_PARTY_NOTICES.md` and this README —
 at `<hermes home>\plugins\chroma\`. By default it links that folder to this
 checkout, so editing the checkout and saving hot-reloads the pane; pass `-Copy`
@@ -133,7 +135,7 @@ for a stable copy instead. Restart Hermes Desktop once so the backend mounts.
 
 #### macOS
 
-Double-click `install/install-macos.command` in Finder. It copies the same
+Double-click `chroma/install/install-macos.command` in Finder. It copies the same
 package into `<hermes home>/plugins/chroma/`, honouring `$HERMES_HOME` and
 falling back to `~/.hermes`, then asks you to restart Hermes Desktop once so
 the pane and the backend mount.
@@ -169,7 +171,7 @@ On the machine running your gateway, install the bundled skins and Dynamic
 Theme transport variants:
 
 ```bash
-./install/install-gateway-skins.sh
+chroma/install/install-gateway-skins.sh
 ```
 
 The installer honors `$HERMES_HOME` and otherwise uses `~/.hermes/skins/`. It
@@ -259,7 +261,7 @@ Set-ExecutionPolicy -Scope Process Bypass
 .\install\regenerate-windows.ps1
 ```
 
-If needed, install PyYAML with `py -m pip install --user PyYAML`. The generator
+If needed, install PyYAML with `py -m pip install --user PyYAML==6.0.3`. The generator
 refuses to replace `plugin.js` when no valid skins are found.
 
 For UI changes, edit `desktop/plugin.template.js`, run the generator, then copy
@@ -314,14 +316,32 @@ Chroma is a Desktop plugin. This is everything it does outside its own pane.
 ## Project layout
 
 ```text
-desktop/                      Desktop plugin and source template
-skins-v2/                     The catalogue: one file per skin, both palettes
-gateway-skins/                Mode-locked gateway transport palettes
-scripts/regenerate.py         Catalog generator
-install/                      Desktop and gateway installers
-docs/ARCH.md                  Implementation details
-docs/THEME-PACK-CREATION.md   The skin spec: 43 surfaces, ten for v2, colour science
-THIRD_PARTY_NOTICES.md        Licenses for bundled palettes
+chroma/                          the shipped package; the catalog installs this subdir
+  __init__.py                    the agent-plugin entry point (register(ctx))
+  plugin.yaml                    the manifest (name: chroma)
+  README.md                      this file
+  LICENSE
+  THIRD_PARTY_NOTICES.md         licenses for bundled palettes
+  desktop/                       the Desktop half and its source template
+  dashboard/                     the FastAPI backend
+  install/                       the Desktop and the gateway installers
+docs/                            repo documentation; never shipped
+  SPEC.md                        surfaces, features, backend contract, acceptance commands
+  TASKS.md                       open work, adjudicated gate findings, quality-gate debt
+  ARCH.md                        layout, build pipeline, load-time constraints, test strategy
+  DECISIONS.md                   numbered decisions and WHY
+  THEME-PACK-CREATION.md         the skin spec: 43 surfaces, ten for v2, colour science
+  PLANS/  RESEARCH/  REVIEWS/    campaign plans, research notes and review documents
+skins-v2/                        the catalogue: one file per skin, both palettes
+                                 (a build input; never shipped)
+gateway-skins/                   the mode-locked transports, generated from the
+                                 catalogue by scripts/regenerate.py (never shipped)
+scripts/                         build, regeneration and gate scripts (never shipped)
+tests/                           the Node and Python suites (never shipped)
+.github/workflows/ci.yml         the gates
+VERSION                          the version, mirrored into plugin.yaml
+rigour.yml                       quality gates; committed; NEVER tuned to make a check pass
+CHANGELOG.md                     project-wide change log
 ```
 
 ## Uninstall

@@ -1,14 +1,15 @@
 """Chroma for Hermes — the agent-plugin entry point.
 
-This repository root IS the plugin package. Its work happens in two other
-places, and neither is reached from here:
+This file sits at the root of the plugin package, which is the `chroma/`
+subdirectory of the repo — the repo root is NOT the package. Its work happens in
+two other places, and neither is reached from here:
 
 * ``desktop/plugin.js``      — the Hermes Desktop pane (the picker).
 * ``dashboard/plugin_api.py`` — the FastAPI router mounted at ``/api/plugins/chroma/``.
 
 The Desktop app loads the desktop half out of the package's ``desktop/``
 directory, and the web dashboard discovers the backend half from the package's
-``dashboard/manifest.json``. What this file does is make the root an *agent
+``dashboard/manifest.json``. What this file does is make the package an *agent
 plugin package*, which is what the host checks before it installs one:
 
 * ``apps/desktop/electron/desktop-plugin-install.ts`` —

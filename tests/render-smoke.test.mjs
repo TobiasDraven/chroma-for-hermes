@@ -19,7 +19,7 @@ import { importedNames, loadPlugin } from './helpers/load-plugin.mjs'
  */
 
 test('the shipped build imports every hook it uses', async () => {
-  const source = await readFile(new URL('../desktop/plugin.js', import.meta.url), 'utf8')
+  const source = await readFile(new URL('../chroma/desktop/plugin.js', import.meta.url), 'utf8')
   const names = new Set(importedNames(source))
   for (const hook of ['useRef', 'useCallback', 'useState', 'useEffect', 'useMemo']) {
     assert.ok(names.has(hook), hook + ' is used by the picker but missing from the react import')

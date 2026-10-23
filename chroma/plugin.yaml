@@ -38,7 +38,7 @@ kind: standalone
 provides_tools: []
 provides_hooks: []
 requires_env: []
-requires_hermes: ">=0.22.0"
+requires_hermes: ">=0.22.2"
 python_runtime: external
 description: >-
   Chroma for Hermes — browse, import and manage Hermes skins from the Desktop,

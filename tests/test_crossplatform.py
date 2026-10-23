@@ -62,7 +62,7 @@ WINDOWS_RESERVED_NAMES = (
 # text file in the tree. A skin's palette is data, but it is also a config the
 # build reads on every platform, so it is scanned with the rest.
 CONFIG_SUFFIXES = (".json", ".yaml", ".yml", ".toml")
-NAMED_CONFIG_FILES = ("plugin.yaml", "dashboard/manifest.json")
+NAMED_CONFIG_FILES = ("chroma/plugin.yaml", "chroma/dashboard/manifest.json")
 
 # Absolute paths that only exist on one developer's machine. Each pattern is
 # (what it is, how to recognise it).

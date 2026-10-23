@@ -20,6 +20,12 @@ import { loadPlugin } from './helpers/load-plugin.mjs'
 // node:assert/strict compares prototypes. Round-trip through JSON.
 const plain = (value) => (value === null || value === undefined ? value : JSON.parse(JSON.stringify(value)))
 
+// THEME_CATEGORIES is a module-scope const inside the plugin, so it is NOT a vm
+// global: t.THEME_CATEGORIES is undefined, and schemaCategoryDrift() would
+// silently fall back to its own copy without saying so. Build the object array
+// from the ids instead, so the pane argument is genuinely exercised.
+const paneCategories = (ids) => ids.map((id) => ({ id, title: id }))
+
 async function ctx() {
   const { context } = await loadPlugin()
   return context
@@ -175,13 +181,13 @@ test('buildCategoryGroups: backward compatible with no userCategories argument',
 test('schemaCategoryDrift: empty when backend and pane agree', async () => {
   const t = await ctx()
   const ids = t.builtinCategoryIds()
-  assert.deepEqual(plain(t.schemaCategoryDrift(ids, t.THEME_CATEGORIES)), [])
+  assert.deepEqual(plain(t.schemaCategoryDrift(ids, paneCategories(ids))), [])
 })
 
 test('schemaCategoryDrift: reports pane-only and backend-only ids', async () => {
   const t = await ctx()
   const backendIds = t.builtinCategoryIds().filter(id => id !== 'violet')
-  const drift = t.schemaCategoryDrift(backendIds, t.THEME_CATEGORIES)
+  const drift = t.schemaCategoryDrift(backendIds, paneCategories(t.builtinCategoryIds()))
   assert.ok(drift.find(d => d.id === 'violet' && d.side === 'pane'), 'violet is pane-only')
   assert.equal(drift.length, 1)
 })
@@ -189,7 +195,7 @@ test('schemaCategoryDrift: reports pane-only and backend-only ids', async () => 
 test('schemaCategoryDrift: backend-only id is reported', async () => {
   const t = await ctx()
   const backendIds = t.builtinCategoryIds().concat(['extra-backend-cat'])
-  const drift = t.schemaCategoryDrift(backendIds, t.THEME_CATEGORIES)
+  const drift = t.schemaCategoryDrift(backendIds, paneCategories(t.builtinCategoryIds()))
   assert.ok(drift.find(d => d.id === 'extra-backend-cat' && d.side === 'backend'), 'extra is backend-only')
 })
 
@@ -202,6 +208,31 @@ test('schemaCategoryDriftNotice: null when no drift, warning when drift', async 
   assert.equal(notice.title, 'Chroma category schema drift')
   assert.match(notice.message, /violet/)
   assert.match(notice.message, /pane/)
+})
+
+test('schemaCategoryDrift: a string id list as the pane argument is a BUG, not a pass', async () => {
+  // The field bug (2026-10-21): the pane's mount effect called
+  // schemaCategoryDrift(ids, builtinCategoryIds()). builtinCategoryIds() returns
+  // plain STRINGS, but the pane argument is mapped as category => category.id,
+  // so every entry became `undefined` -> 12 undefined + 12 backend-only = 24
+  // phantom drifts, and the "pane and backend disagree" notice fired on every
+  // editor mount. The contract is OBJECTS; this pins it so the mistake cannot
+  // return quietly. The object array is built from the ids — THEME_CATEGORIES is
+  // not on the vm context, and passing undefined would let the implementation's
+  // fallback silently stand in for the argument under test.
+  const t = await ctx()
+  const ids = t.builtinCategoryIds()
+  const objects = paneCategories(ids)
+  assert.ok(
+    Array.isArray(objects) && objects.every(c => c && typeof c.id === 'string' && typeof c.title === 'string'),
+    'the pane argument must be an object array (the contract), not strings or undefined'
+  )
+  assert.deepEqual(plain(t.schemaCategoryDrift(ids, objects)), [], 'objects agree -> no drift')
+  assert.notDeepEqual(plain(t.schemaCategoryDrift(ids, ids)), [], 'strings MUST NOT read as agreement')
+  // The fallback must not be what made the case above pass: a DIFFERENT object
+  // array has to drift, and name its own id.
+  const foreign = plain(t.schemaCategoryDrift(ids, [{ id: 'not-a-real-category' }]))
+  assert.ok(foreign.find(d => d.id === 'not-a-real-category' && d.side === 'pane'), 'a different object array must drift, naming its id')
 })
 
 // --- categoryCreateFailure -----------------------------------------------------
@@ -278,7 +309,8 @@ test('createCategory: POST /categories with id and title', async () => {
   await t.createCategory('my-cat', 'My Cat')
   assert.equal(calls[0].path, 'categories')
   assert.equal(calls[0].options.method, 'POST')
-  assert.deepEqual(plain(JSON.parse(calls[0].options.body)), { id: 'my-cat', title: 'My Cat' })
+  assert.equal(typeof calls[0].options.body, 'object', 'rest() takes a plain object; the bridge serialises it')
+  assert.deepEqual(plain(calls[0].options.body), { id: 'my-cat', title: 'My Cat' })
 })
 
 test('createCategory: throws when no backend', async () => {
@@ -309,7 +341,7 @@ test('putSkinCategory: PUT /skins/{name} with category field', async () => {
   await t.putSkinCategory('my-skin', 'indigo')
   assert.equal(calls[0].path, 'skins/my-skin')
   assert.equal(calls[0].options.method, 'PUT')
-  assert.deepEqual(plain(JSON.parse(calls[0].options.body)), { category: 'indigo' })
+  assert.deepEqual(plain(calls[0].options.body), { category: 'indigo' })
 })
 
 test('putSkinCategory: empty string clears the assignment', async () => {
@@ -318,7 +350,7 @@ test('putSkinCategory: empty string clears the assignment', async () => {
     return { name: 'my-skin', category: '' }
   })
   await t.putSkinCategory('my-skin', '')
-  assert.deepEqual(plain(JSON.parse(calls[0].options.body)), { category: '' })
+  assert.deepEqual(plain(calls[0].options.body), { category: '' })
 })
 
 test('putSkinCategory: throws when no backend', async () => {

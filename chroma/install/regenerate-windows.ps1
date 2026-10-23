@@ -1,8 +1,11 @@
 # Rebuild the installed Chroma plugin from this checkout's skins-v2 catalogue.
-# Run from PowerShell: .\install\regenerate-windows.ps1
+# Run from PowerShell: .\chroma\install\regenerate-windows.ps1
 $ErrorActionPreference = 'Stop'
 
 $bundle = Split-Path -Parent $MyInvocation.MyCommand.Path
+# This file lives in <checkout>/chroma/install/. The checkout root - which
+# holds skins-v2/ and scripts/ - is two directories above install/.
+$checkout = Split-Path -Parent (Split-Path -Parent $bundle)
 $hermesHome = if ($env:HERMES_HOME) {
   $env:HERMES_HOME
 } else {
@@ -10,10 +13,19 @@ $hermesHome = if ($env:HERMES_HOME) {
 }
 # The catalogue is skins-v2: one file per skin, both palettes. The retired v1
 # pair table (skins/) is not valid input and the generator refuses it.
-$bundledSkins = Join-Path $bundle '..\skins-v2'
+$bundledSkins = Join-Path $checkout 'skins-v2'
 $pluginPath = Join-Path $hermesHome 'desktop-plugins\chroma\plugin.js'
-$regenerator = Join-Path $bundle '..\scripts\regenerate.py'
+$regenerator = Join-Path $checkout 'scripts\regenerate.py'
 $stagingSkins = Join-Path ([System.IO.Path]::GetTempPath()) "hermes-chroma-skins-$PID"
+
+# An installed copy is sparse-cloned from chroma/ and has no skins-v2/ or
+# scripts/; regeneration is a checkout-only operation.
+if (-not (Test-Path -LiteralPath $bundledSkins -PathType Container)) {
+  throw "This script rebuilds from a source checkout and cannot run from an installed copy. Missing: $bundledSkins"
+}
+if (-not (Test-Path -LiteralPath $regenerator -PathType Leaf)) {
+  throw "This script rebuilds from a source checkout and cannot run from an installed copy. Missing: $regenerator"
+}
 
 if (-not (Get-Command py -ErrorAction SilentlyContinue)) {
   throw 'Python launcher (py) was not found. Install Python 3, then run this script again.'

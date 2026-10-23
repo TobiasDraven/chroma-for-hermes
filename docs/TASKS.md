@@ -37,7 +37,7 @@ not workarounds:
 | Finding | Detail |
 |:--|:--|
 | `AST_COMPLEXITY` | **17 functions were over the max of 10, not one** — and the one named is not even the worst. The gate names the **first** over-budget function in SOURCE ORDER and truncates its list at five, so after this batch it names `cssColorToHex` (11) while the actual worst is `ThemeCard` (32).  so measure with a probe that reuses the gate's own parser and rule (`gates/ast-handlers/typescript.js`: start at 1, count if/case/default/loops/ternaries/`&&`/`||`, `??` does not count, nested functions excluded). Batch 1 fixed four - `skinToDesktopTheme` (24), `tweakcnColors` (27), `tweakcnToDesktopTheme` (15), `parseImportedTheme` (20) - by moving repeated ternaries into data tables. **13 remain**, led by `ThemeCard` (32), `vsCodeTheme` (23) and `perform` (20). Reduce real branching; do not put a `??` where a `||` was, and do not move branches into one large helper |
-| `file-size` | `desktop/plugin.js` and `desktop/plugin.template.js` exceed 500 lines. The build is generated from the template; splitting the template is the only real fix |
+| `file-size` | `chroma/desktop/plugin.js` and `chroma/desktop/plugin.template.js` exceed 500 lines. The build is generated from the template; splitting the template is the only real fix |
 | `hallucinated-imports` | Reported for `@hermes/plugin-sdk` and `react`, which the plugin deliberately does not declare as dependencies. Verified false positive: those are the only three specifiers Desktop resolves |
 | `promise-safety` | Three sites, all adjudicated. (1) The plugin's `queued.then(ok, err)` chain: the rejection handler IS the second argument, so converting it would discard that control flow and break the queue it protects. (2) `tests/test_regenerate.py:219` parses the pinned hash manifest — a test SHOULD fail loudly when its fixture is malformed, and swallowing that error would hide a broken pin. This finding is also **pre-existing code relocated**, not new: the same line sat at 193 before this session's edits added lines above it, which is exactly the phantom-NEW trap a line-anchored diff reports. (3) The same shape in `tests/regenerate-scene-parity.mjs` was mine and was removed rather than guarded: the generator re-read the file it had just written, and an awaited write that fails already throws |
 | `prototype-pollution` | A pre-existing `Object.assign` merge, not introduced by this work |
@@ -77,7 +77,7 @@ are decisions the data now makes visible:
 | Finding | Evidence | Decision needed |
 |:--|:--|:--|
 | About a fifth of real colour values carry alpha and we flatten them | 787/3966 values across 20/23 themes; `nord.json` `button.background = #88c0d0ee` (verified) | Keep flattening — the backend `_hex` accepts only `#rrggbb` — or carry alpha through the backend and every palette consumer |
-| Two first-party themes are refused, and the refusal MISDIAGNOSES them | `dark_plus.json` and `light_plus.json` inherit their palette through `include`: we answer "a syntax-only VS Code theme carries no palette to import" (verified by running the parser on the real files) | Reword to name the `include` target ("this theme inherits from ./dark_vs.json"), or resolve `include`, which needs a second file the renderer cannot fetch |
+| Two first-party themes inherit their palette through `include`, which a single paste cannot follow | `dark_plus.json` and `light_plus.json` inherit their palette through `include` (verified by running the parser on the real files). History: the refusal MISDIAGNOSED them as syntax-only - we answered "a syntax-only VS Code theme carries no palette to import" | **Decision: reword, not resolve.** The importer still refuses an `include`-based theme, because a single paste cannot read a second file; the refusal now names the include target and explains that, instead of calling the theme syntax-only. Resolving the `include` (fetching the referenced file) is DEFERRED to a later version: it would require a network fetch inside a paste importer |
 | Some fallback links can never fire in practice | bare `background` is not a documented key at all (0/23); `surface.foreground` 0/23; `sideBar.background` / `panel.background` / bare `foreground` resolve 0/23 *as background or foreground fallbacks* | Keep them (harmless, and they cover hand-written files) or drop the dead links |
 | `workbench.colorCustomizations` is a user setting, never a theme property | 0/23 themes carry it; it is registered through `IConfigurationRegistry` (cited) | Keep the branch — it is what lets a pasted settings snippet import |
 
@@ -127,7 +127,7 @@ the new lower-case compare maps U+212A KELVIN SIGN to `k`, so an input like `'da
 dark where it previously fell through to luminance. Unreachable with real theme data; the new behaviour
 is the more permissive one.
 
-**Hygiene.** The working-tree `desktop/plugin.template.js` carries CRLF on most lines while its git blob
+**Hygiene.** The working-tree `chroma/desktop/plugin.template.js` carries CRLF on most lines while its git blob
 is LF (`text=auto eol=lf`), so `git diff` cannot show it. `scripts/regenerate.py` normalises, so the
 build stays LF and it is harmless - but a reviewer who edits that file through git may be surprised.
 

@@ -14,7 +14,7 @@ not control would have made every upstream change a conflict. Plugin id stays
 The local directory keeps the old name (`hermes-theme-picker`) deliberately:
 renaming it would break Serena's registered project path for no functional gain.
 
-## 2. The repo root IS the plugin package
+## 2. The repo root IS the plugin package *(superseded by 13)*
 
 The Desktop installer resolves the manifest at the URL it is given, so
 `plugin.yaml` has to sit at the root; the UI source was moved from `plugin/` to
@@ -103,3 +103,24 @@ adopted as-is — its thresholds are the standard, and tuning them to pass would
 defeat the gate. The editor-specific integration files that `rigour init` also
 writes were removed: this project's agents are Hermes and Pi, and rigour is
 already an MCP server for them.
+
+## 13. The shipped package moved into `chroma/` (supersedes 2)
+
+Decision 2 said the repo root IS the plugin package. That held while the host
+cloned the whole repo, but the install guard counts every file in the clone
+against a 400-file cap (`tools/plugin_guard.py:106`), and 282 of the 400 files
+were the catalogue and its generated transports — which the runtime never reads.
+The catalog entry now carries `subdir: chroma`, so the host resolves the entry to
+`repo#chroma` and sparse-clones `chroma/` alone
+(`hermes_cli/plugins_cmd_git.py:245-246`). The cap applies to the 15-file package
+instead of the 400-file tree, and adding theme packs no longer touches it.
+
+Cost, all of it deliberate: the repo root is no longer installable by URL, so
+every install path must name the subdirectory; `scripts/`, `tests/`, `skins-v2/`,
+`gateway-skins/` and `docs/` no longer ship, so the manual installers resolve the
+package under `chroma/` and the gateway transports travel as ONE generated JSON
+file expanded at install time; and an EXISTING install must be replaced with
+`hermes plugins install chroma --force`, never updated — an update would pull a
+root with no `plugin.yaml`, publish it wholesale, leave
+`plugins/chroma/chroma/plugin.yaml`, and prune the Desktop half, which does not
+self-heal.

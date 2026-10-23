@@ -68,10 +68,10 @@ class RegenerateSafetyTests(unittest.TestCase):
             (scripts_dir / 'backend-builtins.json').write_bytes(
                 (SCRIPT.parent / 'backend-builtins.json').read_bytes()
             )
-            plugin_dir = repo / 'desktop'
-            plugin_dir.mkdir()
+            plugin_dir = repo / 'chroma' / 'desktop'
+            plugin_dir.mkdir(parents=True)
             (plugin_dir / 'plugin.template.js').write_bytes(
-                (SCRIPT.parents[1] / 'desktop' / 'plugin.template.js').read_bytes()
+                (SCRIPT.parents[1] / 'chroma' / 'desktop' / 'plugin.template.js').read_bytes()
             )
             gateway_dir = repo / 'gateway-skins'
             gateway_dir.mkdir()
@@ -368,11 +368,11 @@ class ThemeCatalogTests(unittest.TestCase):
 
 class WindowsRunnerTests(unittest.TestCase):
     def test_repo_ships_a_runner_that_preserves_bundled_and_installed_skins(self):
-        runner = SCRIPT.parents[1] / 'install' / 'regenerate-windows.ps1'
+        runner = SCRIPT.parents[1] / 'chroma' / 'install' / 'regenerate-windows.ps1'
         source = runner.read_text(encoding='utf-8')
 
         self.assertIn("Join-Path $env:LOCALAPPDATA 'hermes'", source)
-        self.assertIn("Join-Path $bundle '..\\skins-v2'", source)
+        self.assertIn("Join-Path $checkout 'skins-v2'", source)
         self.assertIn("scripts" + chr(92) + "regenerate.py", source)
         self.assertNotIn("Join-Path $hermesHome 'skins'", source,
                          'the runner must not feed retired gateway skins into the catalogue')
@@ -381,8 +381,8 @@ class WindowsRunnerTests(unittest.TestCase):
 @MACOS_ONLY
 class MacInstallerTests(unittest.TestCase):
     def test_installs_the_package_into_explicit_hermes_home(self):
-        installer = SCRIPT.parents[1] / 'install' / 'install-macos.command'
-        source_plugin = SCRIPT.parents[1] / 'desktop' / 'plugin.js'
+        installer = SCRIPT.parents[1] / 'chroma' / 'install' / 'install-macos.command'
+        source_plugin = SCRIPT.parents[1] / 'chroma' / 'desktop' / 'plugin.js'
 
         with tempfile.TemporaryDirectory() as temp_dir:
             hermes_home = Path(temp_dir) / 'custom-hermes-home'
@@ -408,8 +408,8 @@ class MacInstallerTests(unittest.TestCase):
             self.assertIn(f'Installed Chroma into: {package}', result.stdout)
 
     def test_installs_the_package_into_default_home_when_hermes_home_is_unset(self):
-        installer = SCRIPT.parents[1] / 'install' / 'install-macos.command'
-        source_plugin = SCRIPT.parents[1] / 'desktop' / 'plugin.js'
+        installer = SCRIPT.parents[1] / 'chroma' / 'install' / 'install-macos.command'
+        source_plugin = SCRIPT.parents[1] / 'chroma' / 'desktop' / 'plugin.js'
 
         with tempfile.TemporaryDirectory() as temp_dir:
             home = Path(temp_dir) / 'home with spaces'
@@ -434,7 +434,7 @@ class MacInstallerTests(unittest.TestCase):
 class GatewaySkinInstallerTests(unittest.TestCase):
     def test_installs_bundled_and_transport_skins_into_gateway_home(self):
         repo = SCRIPT.parents[1]
-        installer = repo / 'install' / 'install-gateway-skins.sh'
+        installer = repo / 'chroma' / 'install' / 'install-gateway-skins.sh'
         self.assertTrue(os.access(installer, os.X_OK))
 
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -457,7 +457,7 @@ class GatewaySkinInstallerTests(unittest.TestCase):
 
     def test_refuses_modified_collisions_unless_force_is_explicit(self):
         repo = SCRIPT.parents[1]
-        installer = repo / 'install' / 'install-gateway-skins.sh'
+        installer = repo / 'chroma' / 'install' / 'install-gateway-skins.sh'
 
         with tempfile.TemporaryDirectory() as temp_dir:
             hermes_home = Path(temp_dir) / 'gateway'
@@ -490,7 +490,7 @@ class GatewaySkinInstallerTests(unittest.TestCase):
     @unittest.skipUnless(SYMLINKS_SUPPORTED, 'needs symlink creation privilege')
     def test_force_still_refuses_destination_symlinks(self):
         repo = SCRIPT.parents[1]
-        installer = repo / 'install' / 'install-gateway-skins.sh'
+        installer = repo / 'chroma' / 'install' / 'install-gateway-skins.sh'
 
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -517,7 +517,7 @@ class GatewaySkinInstallerTests(unittest.TestCase):
 class RegeneratePreservesOverridesTests(unittest.TestCase):
     """§17.3.1 — a user override is USER DATA and must survive regeneration.
 
-    Regeneration rebuilds desktop/plugin.js and the gateway transport skins from
+    Regeneration rebuilds chroma/desktop/plugin.js and the gateway transport skins from
     the authored catalogue. It must neither read the overrides file into the build
     (one person's taste shipped to everyone) nor delete it. This runs the real
     main() over a temp tree holding a populated overrides file and asserts the file
@@ -531,8 +531,8 @@ class RegeneratePreservesOverridesTests(unittest.TestCase):
         (scripts_dir / 'backend-builtins.json').write_bytes(
             (SCRIPT.parent / 'backend-builtins.json').read_bytes()
         )
-        desktop = repo / 'desktop'
-        desktop.mkdir()
+        desktop = repo / 'chroma' / 'desktop'
+        desktop.mkdir(parents=True)
         # A self-contained template, so this test does not depend on the contents
         # of the in-repo template (another lane owns that file).
         (desktop / 'plugin.template.js').write_text(
@@ -579,7 +579,7 @@ class RegeneratePreservesOverridesTests(unittest.TestCase):
             overrides.write_text(payload, encoding='utf-8')
             before = overrides.read_bytes()
 
-            out = repo / 'desktop' / 'plugin.js'
+            out = repo / 'chroma' / 'desktop' / 'plugin.js'
             with (
                 patch.object(regenerate, '__file__', str(repo / 'scripts' / 'regenerate.py')),
                 patch.object(sys, 'argv', ['regenerate.py', str(skins), str(out)]),

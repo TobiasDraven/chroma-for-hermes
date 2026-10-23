@@ -76,7 +76,7 @@ jobs:
         run: python -m pytest tests/ -q
 
   build-is-current:
-    # desktop/plugin.js is committed because the installer loads it, so a
+    # chroma/desktop/plugin.js is committed because the installer loads it, so a
     # template edit that was never regenerated would ship stale code. Rebuilding
     # must be a no-op. docs/gallery.html is committed for the same reason: it
     # is generated from skins-v2/ and it drifted silently for a long time.
@@ -97,11 +97,13 @@ jobs:
         run: pip install fastapi==0.133.1 PyYAML==6.0.3
       - name: The catalogue obeys its own contract
         run: python scripts/check-packs.py
-      # `hermes plugins validate .` is the catalog admission gate, but the Hermes
-      # CLI is not installable from PyPI yet (hermes-agent 0.19.0 ships no
+      # `hermes plugins validate chroma` is the catalog admission gate, but the
+      # Hermes CLI is not installable from PyPI yet (hermes-agent 0.19.0 ships no
       # `validate` subcommand), so CI cannot run that exact check. This script owns
       # the part of the gate that needs no CLI: every version locus, the manifest
       # fields, the entry points, the committed build's stamp, and tracked junk.
+      # It reads the package from chroma/ itself, so the invocation stays rooted
+      # at the repo.
       - name: The package agrees with itself
         run: python scripts/check-package.py
       - name: Rebuild the shipped plugin
@@ -266,25 +268,26 @@ jobs:
           import json, os, sys
 
           # The finding set CI is allowed to see, measured on a clean checkout of
-          # this branch's tip on 2026-10-21. One line per finding:
+          # this branch's tip on 2026-10-23, after the shipped tree moved into
+          # chroma/. One line per finding:
           #   id | severity | title | the file it names, or how many it names
           # The line numbers are deliberately NOT in the signature: they move
           # whenever anything above them changes, and a finding that moved is
           # not a new finding.
           PINNED = {
-              "AST_COMPLEXITY | medium | Function 'stripJsonNoise' has cyclomatic complexity of 16 (max: 10) | desktop/plugin.js",
-              "AST_COMPLEXITY | medium | Function 'stripJsonNoise' has cyclomatic complexity of 16 (max: 10) | desktop/plugin.template.js",
-              "AST_COMPLEXITY_LIMIT_EXCEEDED | medium | More than 5 AST_COMPLEXITY violations in desktop/plugin.js | desktop/plugin.js",
-              "AST_COMPLEXITY_LIMIT_EXCEEDED | medium | More than 5 AST_COMPLEXITY violations in desktop/plugin.template.js | desktop/plugin.template.js",
+              "AST_COMPLEXITY | medium | Function 'stripJsonNoise' has cyclomatic complexity of 16 (max: 10) | chroma/desktop/plugin.js",
+              "AST_COMPLEXITY | medium | Function 'stripJsonNoise' has cyclomatic complexity of 16 (max: 10) | chroma/desktop/plugin.template.js",
+              "AST_COMPLEXITY_LIMIT_EXCEEDED | medium | More than 5 AST_COMPLEXITY violations in chroma/desktop/plugin.js | chroma/desktop/plugin.js",
+              "AST_COMPLEXITY_LIMIT_EXCEEDED | medium | More than 5 AST_COMPLEXITY violations in chroma/desktop/plugin.template.js | chroma/desktop/plugin.template.js",
               "context-window-artifacts | high | Context Window Artifacts | scripts/analyse-palettes.py",
               "context-window-artifacts | high | Context Window Artifacts | tests/helpers/card-cases.mjs",
-              "file-size | low | File Size Limit | CHANGELOG.md;dashboard/plugin_api.py;desktop/plugin.js;desktop/plugin.template.js;docs/PALETTE-ANALYSIS.json;docs/PLANS/CHROMA-EDITOR.md;docs/PLANS/CHROMA-IMPLEMENTATION.md;docs/PLANS/CHROMA-ROADMAP.md;docs/REVIEWS/ARIA-SCOUT-2026-10-19.md;docs/REVIEWS/review-2026-10-20/review-A-desktop-runtime.md;docs/REVIEWS/review-2026-10-20/review-B-backend-data.md;docs/REVIEWS/review-2026-10-20/review-D-contract-submission.md;docs/REVIEWS/review-2026-10-20/review-E-guidelines.md;docs/REVIEWS/review-2026-10-20/review-F-packaging-gates.md;docs/THEME-PACK-CREATION.md;scripts/regenerate.py;tests/fixtures/theme-card-parity.json;tests/test_backend_data_integrity.py;tests/test_plugin_api.py;tests/test_regenerate.py;tests/theme-persistence.test.mjs",
-              "hallucinated-imports | critical | Hallucinated Imports | desktop/plugin.js",
-              "hallucinated-imports | critical | Hallucinated Imports | desktop/plugin.template.js",
+              "file-size | low | File Size Limit | CHANGELOG.md;chroma/dashboard/plugin_api.py;chroma/desktop/plugin.js;chroma/desktop/plugin.template.js;docs/PALETTE-ANALYSIS.json;docs/PLANS/CHROMA-EDITOR.md;docs/PLANS/CHROMA-IMPLEMENTATION.md;docs/PLANS/CHROMA-ROADMAP.md;docs/REVIEWS/ARIA-SCOUT-2026-10-19.md;docs/REVIEWS/review-2026-10-20/review-A-desktop-runtime.md;docs/REVIEWS/review-2026-10-20/review-B-backend-data.md;docs/REVIEWS/review-2026-10-20/review-D-contract-submission.md;docs/REVIEWS/review-2026-10-20/review-E-guidelines.md;docs/REVIEWS/review-2026-10-20/review-F-packaging-gates.md;docs/THEME-PACK-CREATION.md;scripts/regenerate.py;tests/fixtures/theme-card-parity.json;tests/test_backend_data_integrity.py;tests/test_plugin_api.py;tests/test_regenerate.py;tests/theme-persistence.test.mjs",
+              "hallucinated-imports | critical | Hallucinated Imports | chroma/desktop/plugin.js",
+              "hallucinated-imports | critical | Hallucinated Imports | chroma/desktop/plugin.template.js",
               "inconsistent-error-handling | high | Inconsistent Error Handling | 5 files",
-              "phantom-apis | high | Phantom APIs | dashboard/plugin_api.py",
-              "promise-safety | high | Async & Error Safety Violation | desktop/plugin.js",
-              "promise-safety | high | Async & Error Safety Violation | desktop/plugin.template.js",
+              "phantom-apis | high | Phantom APIs | chroma/dashboard/plugin_api.py",
+              "promise-safety | high | Async & Error Safety Violation | chroma/desktop/plugin.js",
+              "promise-safety | high | Async & Error Safety Violation | chroma/desktop/plugin.template.js",
               "promise-safety | high | Async & Error Safety Violation | scripts/analyse-palettes.py",
               "promise-safety | high | Async & Error Safety Violation | scripts/check-packs.py",
               "promise-safety | high | Async & Error Safety Violation | scripts/classify-skins.py",
@@ -414,7 +417,7 @@ jobs:
           spec = importlib.util.spec_from_file_location("host_classes", "scripts/check-host-classes.py")
           module = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(module)
-          build = pathlib.Path("desktop/plugin.js").read_text(encoding="utf-8")
+          build = pathlib.Path("chroma/desktop/plugin.js").read_text(encoding="utf-8")
           tokens = module.class_tokens(build)
           actual = {token for token in tokens if "[" in token or "(--" in token}
 

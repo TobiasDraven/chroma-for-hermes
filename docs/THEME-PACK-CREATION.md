@@ -469,7 +469,7 @@ python scripts/check-packs.py
 pytest tests/test_skin_contract.py -q
 python scripts/regenerate.py
 node --test tests/*.test.mjs
-hermes plugins validate .
+hermes plugins validate chroma
 ```
 
 8. **Look at it.** Open the editor on the new card in both modes. The gate cannot see
@@ -485,7 +485,7 @@ hermes plugins validate .
 | `check-packs.py` | both palettes present; one pack; one category; core = 30; other packs 10–20; ids and labels unique; both fonts; `energy` valid; `design_spec` ∈ {v1, v2}; a v2 skin carries all ten surfaces in both modes |
 | `tests/test_skin_contract.py` | the catalogue declares a spec; v2 carries the ten; a v2 skin missing a surface is **rejected by name**; an unknown spec is rejected |
 | `tests/*.test.mjs` | the plugin's own contract — cards, editor, packs, override payload |
-| `hermes plugins validate .` | the package is loadable by the host |
+| `hermes plugins validate chroma` | the package is loadable by the host |
 | `rigour check --ci` | known-red, 24 violations recorded in `docs/REVIEWS/`; not a silent pass |
 
 Contrast, as an advisory measure rather than a gate (no skin fails; see §12):

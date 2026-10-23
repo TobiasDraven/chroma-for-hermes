@@ -22,6 +22,7 @@ The entry we will open a PR with:
 ```yaml
 name: chroma
 repo: https://github.com/TobiasDraven/chroma-for-hermes
+subdir: chroma
 sha: <the pushed tip of this repo — pinned at PR time>
 description: >-
   Browse, import and apply Hermes skins from the Desktop, including TweakCN
@@ -75,22 +76,22 @@ Rules that shape those values:
 | 3 | No self-updating code | no fetcher, no remote `plugin.js`, no update check; the only external request is the user-initiated TweakCN import, whose reachable endpoint set is `https://tweakcn.com/r/themes/<name>.json` (Disclosure, below) |
 | 4 | SHA bumps are new PRs | process |
 | 5 | Owner or major contributor submits | repo owner: TobiasDraven |
-| 6 | Declared capabilities match reality | `hermes plugins validate .` → `capability probe -- register() ran in isolation`, `declared tools / hooks / middleware -- matches registrations`, `built-in tool collisions -- no tools to check`. The probe imports the package and diffs the recorded registrations against the manifest, so this check is now **enforced by the gate**, not by inspection. Independently: `ctx.register` × 5 area contributions, `ctx.rest` × 1, and no `register_tool`/`register_hook`/`register_middleware` in either half (`desktop/plugin.template.js:6225-6261`; `rg` over `desktop/plugin.template.js` and `dashboard/plugin_api.py` → no matches) |
-| 7 | Install scanner runs at admission | `hermes plugins validate .` → `security scan — safe`, `Validation passed` |
-| 8 | Desktop plugins stay inside the SDK surface | `hermes plugins validate .` → `desktop surface — stays inside the plugin SDK surface` |
-| 9 | No runtime overrides of Hermes core | `hermes plugins validate .` → `no core override — no runtime rebinds of Hermes core` |
-| 10 | Dependency security policy | the Python half imports `fastapi` and `pydantic` (`dashboard/plugin_api.py:291-292`), and the manifest declares **no** `python_dependencies`: it sets `python_runtime: external` instead. The host provides both packages — they are Hermes core dependencies (`pyproject.toml:71,137`) and the bundled dashboard plugins (`kanban`, `hermes-achievements`) import them the same way with no declaration. The gate prints `python dependencies — external runtime (plugin manages its own)`. Declaring them would make Chroma a uv workspace member and put it back on the install-time resolver path, which is what this release removes. `tests/test_dependency_contract.py` is the permanent gate. |
+| 6 | Declared capabilities match reality | `hermes plugins validate chroma` → `capability probe -- register() ran in isolation`, `declared tools / hooks / middleware -- matches registrations`, `built-in tool collisions -- no tools to check`. The probe imports the package and diffs the recorded registrations against the manifest, so this check is now **enforced by the gate**, not by inspection. Independently: `ctx.register` × 5 area contributions, `ctx.rest` × 1, and no `register_tool`/`register_hook`/`register_middleware` in either half (`chroma/desktop/plugin.template.js:6225-6261`; `rg` over `chroma/desktop/plugin.template.js` and `chroma/dashboard/plugin_api.py` → no matches) |
+| 7 | Install scanner runs at admission | `hermes plugins validate chroma` → `security scan — safe`, `Validation passed` |
+| 8 | Desktop plugins stay inside the SDK surface | `hermes plugins validate chroma` → `desktop surface — stays inside the plugin SDK surface` |
+| 9 | No runtime overrides of Hermes core | `hermes plugins validate chroma` → `no core override — no runtime rebinds of Hermes core` |
+| 10 | Dependency security policy | the Python half imports `fastapi` and `pydantic` (`chroma/dashboard/plugin_api.py:291-292`), and the manifest declares **no** `python_dependencies`: it sets `python_runtime: external` instead. The host provides both packages — they are Hermes core dependencies (`pyproject.toml:71,137`) and the bundled dashboard plugins (`kanban`, `hermes-achievements`) import them the same way with no declaration. The gate prints `python dependencies — external runtime (plugin manages its own)`. Declaring them would make Chroma a uv workspace member and put it back on the install-time resolver path, which is what this release removes. `tests/test_dependency_contract.py` is the permanent gate. |
 | 11 | Credentials come through Hermes | the plugin reads no credential store and declares no `requires_env` |
 | 12 | Approvals and unattended runs respected | the plugin spawns no shell and no child process |
 | 13 | Risky behaviour is disclosed | README §"What it touches" — the reachable TweakCN endpoint set, all fourteen localStorage keys, and the skin YAML writes under the Hermes home; the same disclosure is in the PR body below |
-| 14 | Compatibility metadata is truthful | `version` 2.9.1 agrees across `VERSION`, `plugin.yaml`, `dashboard/manifest.json` and both build stamps (`desktop/plugin.js`, `desktop/plugin.template.js`); `scripts/check-package.py` enforces the first four. `requires_hermes: ">=0.22.0"` |
+| 14 | Compatibility metadata is truthful | `version` 2.9.1 agrees across `VERSION`, `plugin.yaml`, `chroma/dashboard/manifest.json` and both build stamps (`chroma/desktop/plugin.js`, `chroma/desktop/plugin.template.js`); `scripts/check-package.py` enforces the first four. `requires_hermes: ">=0.22.0"` |
 | 15 | No skins or forks of bundled plugins | Chroma is a standalone plugin, not a restyled bundled one; the 94 skins were scrubbed of the host's own built-ins in 2.6.0 |
 | 16 | One listing per plugin lineage | checked all 690 catalog entries: no `theme-picker`, no `chroma`. The upstream fork is **not** listed, so we do not compete with a listed entry — the PR will still say "Derived from jdtimothy/hermes-theme-picker (MIT)" |
 | 17 | No unscannable executable payloads | plain source only: `.js`, `.py`, `.yaml`, `.md`. No binaries, no `.pyc`, no archives |
 
 ### The gate's own output
 
-The block below is the real `hermes plugins validate .` output against this tree
+The block below is the real `hermes plugins validate chroma` output against this tree
 (the validator run as a library, because the local CLI is broken — see the note
 at the end of this file). It exits **0** and prints **no warnings**.
 
@@ -100,7 +101,7 @@ OK manifest fields -- name, version, description present
 OK requires_hermes -- spec '>=0.22.0' parses
 OK config schema -- not declared
 OK requires_env -- all entries UPPER_SNAKE
-OK loadable -- entry: __init__.py, desktop/plugin.js
+OK loadable -- entry: __init__.py, chroma/desktop/plugin.js
 OK python dependencies -- none declared
 OK capability probe -- register() ran in isolation
 OK declared tools -- matches registrations
@@ -154,8 +155,8 @@ Neither finding changes the verdict: the scanner's verdict is `safe`, and only
 > gateway skin.
 >
 > **Surfaces:** the agent-plugin entry point (`__init__.py`, which registers no
-> capability), the Desktop pane (`desktop/plugin.js`), and the dashboard router
-> (`dashboard/plugin_api.py`, mounted from `dashboard/manifest.json`). No tools,
+> capability), the Desktop pane (`chroma/desktop/plugin.js`), and the dashboard router
+> (`chroma/dashboard/plugin_api.py`, mounted from `chroma/dashboard/manifest.json`). No tools,
 > no hooks, no middleware, no environment variables.
 >
 > **Disclosure:** importing a TweakCN preset makes one `GET`, and the reachable
@@ -176,7 +177,7 @@ Neither finding changes the verdict: the scanner's verdict is `safe`, and only
 > **Lineage:** derived from jdtimothy/hermes-theme-picker (MIT). The palettes
 > are the upstream authors' MIT work; see `THIRD_PARTY_NOTICES.md`.
 >
-> **Evidence:** `hermes plugins validate .` exits 0 with no warnings, and its
+> **Evidence:** `hermes plugins validate chroma` exits 0 with no warnings, and its
 > capability probe runs — `capability probe -- register() ran in isolation`,
 > `declared tools / hooks / middleware -- matches registrations` — as does
 > `security scan -- safe`; the JS suite is **266/266**
@@ -190,7 +191,7 @@ Neither finding changes the verdict: the scanner's verdict is `safe`, and only
 > machine (`cannot recover dependency publication … run 'hermes pm repair'`), so
 > the validator was run as a library — the exact code path the CLI runs — from
 > the host checkout; CI runs `scripts/check-package.py` instead, which checks
-> the same facts without the CLI. Run `hermes plugins validate .` on the
+> the same facts without the CLI. Run `hermes plugins validate chroma` on the
 > machine that carries the CLI before opening the PR.
 
 ## Procedure
