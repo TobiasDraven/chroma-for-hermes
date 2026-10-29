@@ -39,7 +39,7 @@ light_colors:
   status_bar_bg: '#e8e8e0'
   status_bar_text: '#445566'
   status_bar_strong: '#1a2a44'
-  status_bar_dim: '#637282'
+  status_bar_dim: '#5b6a7a'
   status_bar_good: '#227744'
   status_bar_warn: '#aa6622'
   status_bar_bad: '#aa4422'
