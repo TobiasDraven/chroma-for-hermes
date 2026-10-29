@@ -32,7 +32,6 @@ import {
   haptic,
   host,
   Input,
-  oklchToHex,
   PALETTE_AREA,
   ROUTES_AREA,
   ScrollArea,
@@ -228,8 +227,122 @@ function ensureContrast(color, bg, min) {
 }
 
 // ---------------------------------------------------------------------------
-// Skin → DesktopTheme — faithful port of skinToDesktopTheme() (themes/skin.ts)
+// OKLCH toolkit — faithful port of the desktop's themes/color.ts, so a derived
+// colour here is numerically the colour the host's own palette machinery would
+// derive. Every constant is bit-identical to upstream (verified against the
+// host source at the pinned tree, 2026-10-29) and is asserted in
+// tests/port-superset-tokens.test.mjs against goldens produced BY the host.
 // ---------------------------------------------------------------------------
+
+const clampChannel = (channel) => Math.min(255, Math.max(0, Math.round(channel)))
+
+// Not the shared `mix`: OKLab is perceptually uniform, so blending toward a
+// surface there keeps the hue instead of drifting it the way an sRGB lerp does.
+function oklchToHex(color) {
+  if (inSrgbGamut(oklchToRgbRaw(color))) {
+    return toHex(oklchToRgbRaw(color).map(c => delinearize01(c) * 255))
+  }
+
+  let lo = 0
+  let hi = color.c
+
+  for (let i = 0; i < 24; i += 1) {
+    const mid = (lo + hi) / 2
+
+    if (inSrgbGamut(oklchToRgbRaw({ ...color, c: mid }))) {
+      lo = mid
+    } else {
+      hi = mid
+    }
+  }
+
+  return toHex(oklchToRgbRaw({ ...color, c: lo }).map(c => delinearize01(c) * 255))
+}
+
+function toHex(rgb) {
+  return '#' + rgb.map(c => clampChannel(c).toString(16).padStart(2, '0')).join('')
+}
+
+const linearize01 = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+const delinearize01 = (c) => (c <= 0.0031308 ? c * 12.92 : 1.055 * c ** (1 / 2.4) - 0.055)
+
+function hexToOklch(hex) {
+  const rgb = hexToRgb(hex)
+  if (!rgb) return null
+
+  const [r, g, b] = rgb.map(v => linearize01(v / 255))
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b)
+  const okA = 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s
+  const okB = 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s
+
+  return { l: 0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s, c: Math.hypot(okA, okB), h: ((Math.atan2(okB, okA) * 180) / Math.PI + 360) % 360 }
+}
+
+function oklchToRgbRaw({ l: okL, c, h }) {
+  const rad = (h * Math.PI) / 180
+  const okA = c * Math.cos(rad)
+  const okB = c * Math.sin(rad)
+
+  const l = (okL + 0.3963377774 * okA + 0.2158037573 * okB) ** 3
+  const m = (okL - 0.1055613458 * okA - 0.0638541728 * okB) ** 3
+  const s = (okL - 0.0894841775 * okA - 1.291485548 * okB) ** 3
+
+  return [
+    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s
+  ]
+}
+
+const inSrgbGamut = (rgb) => rgb.every(c => c >= -0.001 && c <= 1.001)
+
+function maxChroma(l, h) {
+  let lo = 0
+  let hi = 0.4
+
+  for (let i = 0; i < 20; i += 1) {
+    const mid = (lo + hi) / 2
+
+    if (inSrgbGamut(oklchToRgbRaw({ l, c: mid, h }))) {
+      lo = mid
+    } else {
+      hi = mid
+    }
+  }
+
+  return lo
+}
+
+function hueDelta(from, to) {
+  return ((to - from + 540) % 360) - 180
+}
+
+/**
+ * Faithful port of the desktop's `harmonize` (themes/color.ts:239): rotate a
+ * hex's hue part of the way to `accent`, keeping its own lightness and
+ * clamping chroma into the sRGB gamut. At strength 1 it lands on the accent
+ * hue; at 0 nothing moves. Drives --ui-success so a green checkmark settles
+ * into the palette instead of clashing with it.
+ */
+function harmonize(hex, accent, strength) {
+  const base = hexToOklch(hex)
+  const target = hexToOklch(accent)
+
+  if (!base || !target) {
+    return hex
+  }
+
+  const h = (base.h + hueDelta(base.h, target.h) * Math.min(1, Math.max(0, strength)) + 360) % 360
+
+  return oklchToHex({ ...base, c: Math.min(Math.max(base.c, target.c * 0.85), maxChroma(base.l, h)), h })
+}
+
+// The two constants the host's own applyTheme writes these tokens with
+// (themes/context.tsx:279,371-382). They must stay bit-identical to upstream.
+const PRIMARY_SOLID_FG = '#fcfcfc'
+const SUCCESS_SEED = '#10b981'
 
 // The two mix ramps a skin-derived palette is built from, as data. Nine
 // `dark ? a : b` ternaries used to be scattered through the mapper below; as a
@@ -1938,11 +2051,18 @@ function applyDesktopTheme(theme, mode) {
     '--dt-ring': c.ring,
     '--dt-muted': c.muted,
     '--dt-midground-foreground': c.midgroundForeground || readableOn(midground),
+    // The "loud" brand fill and the semantic success colour — the two tokens
+    // the host's own applyTheme paints that our port used to leave at the
+    // previous skin's values. Same constants, same rules, same fallbacks
+    // (context.tsx:371-382) so a Chroma scene owns every token the host paints.
+    '--dt-primary-solid': ensureContrast(c.primary, PRIMARY_SOLID_FG, 4.5),
+    '--dt-primary-solid-foreground': PRIMARY_SOLID_FG,
     '--dt-composer-ring': c.composerRing || midground,
     '--dt-destructive': c.destructive,
     '--dt-destructive-foreground': c.destructiveForeground,
     '--dt-sidebar-border': c.sidebarBorder || c.border,
     '--dt-user-bubble-border': c.userBubbleBorder || c.border,
+    '--ui-success': harmonize(SUCCESS_SEED, midground, 0.25),
     '--dt-font-sans': typo.fontSans,
     '--dt-font-mono': typo.fontMono,
     '--noise-opacity-mul': isDark ? 'calc(0.04 / 0.21)' : 'calc(0.34 / 0.21)'
