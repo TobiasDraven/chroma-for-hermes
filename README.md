@@ -47,7 +47,7 @@ A theme picker plugin for [Hermes Desktop](https://github.com/NousResearch/herme
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/picker.png" alt="The Chroma picker inside Hermes Desktop: a grid of dark skin cards with palette swatches" width="100%">
+  <img src="docs/screenshots/picker.png" alt="The Chroma picker inside Hermes Desktop: favourites in the sidebar, the import bar, and dark skin cards with Edit and Fork actions" width="100%">
   <br>
   <sub>The picker in Hermes Desktop. Search, filter by mode, and apply without leaving the app.</sub>
 </p>
