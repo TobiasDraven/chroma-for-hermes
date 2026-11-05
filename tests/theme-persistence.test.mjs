@@ -14,7 +14,7 @@ function loadPlugin(storage, exposeTestHelpers = false, requestHandler = null, p
       .replace(/import\s+\{[^}]*\}\s+from\s+'react'\n/, '')
       .replace('export default {', 'globalThis.plugin = {')
     if (exposeTestHelpers) {
-      executable += '\nglobalThis.testHelpers = { buildThemeGroups, buildGroups, buildCategoryGroups, sceneCategory, oklch, normaliseHex, readGroupMode, writeGroupMode, GROUP_MODES, THEME_CATEGORIES, persistAppearance, sceneNameFor, sceneToDesktopTheme, desktopModeFor, applyScene, readApplyScope, writeApplyScope, APPLY_SCOPE_LOCAL, APPLY_SCOPE_EVERYWHERE, cardMinFor, cardAspect, cardShapeClasses, readCardShape, writeCardShape, CARD_MIN, CARD_SHAPES, scenes: SKINS }\n'
+      executable += '\nglobalThis.testHelpers = { buildThemeGroups, buildGroups, buildCategoryGroups, sceneCategory, oklch, normaliseHex, readGroupMode, writeGroupMode, GROUP_MODES, THEME_CATEGORIES, persistAppearance, sceneNameFor, sceneToDesktopTheme, desktopModeFor, applyScene, readApplyScope, writeApplyScope, APPLY_SCOPE_LOCAL, APPLY_SCOPE_EVERYWHERE, cardMinFor, cardAspect, cardShapeClasses, readCardShape, writeCardShape, CARD_MIN, CARD_SHAPES, scenes: SKINS, forgetScene, IMPORTED_SKINS }\n'
     }
 
     const css = new Map()
@@ -918,4 +918,25 @@ test('applying a scene without a captured provider still paints (non-React fallb
   assert.doesNotThrow(() => plugin.__test.applyScene(scene, 'light', () => {}))
   assert.equal(plugin.__state.root.dataset.hermesTheme, 'alabaster')
   assert.equal(plugin.__state.root.dataset.hermesMode, 'light')
+})
+
+test('deleting a skin forgets its local scene and its stored theme', async () => {
+  // Field bug: the backend record was deleted and the card stayed on screen,
+  // because the pane's own copies (IMPORTED_SKINS + the boot theme store) were
+  // never purged. A delete must leave no local trace.
+  const storage = new Map()
+  const plugin = await loadPlugin(storage, true)
+  const helpers = plugin.__test
+  storage.set(USER_THEMES_KEY, JSON.stringify({
+    'ghost-skin': { name: 'ghost-skin', themePickerSource: 'owned' },
+    'kept-skin': { name: 'kept-skin', themePickerSource: 'owned' }
+  }))
+  helpers.IMPORTED_SKINS.push({ name: 'ghost-skin', label: 'Ghost', colors: { background: '#101010' } })
+
+  helpers.forgetScene('ghost-skin')
+
+  assert.equal(helpers.IMPORTED_SKINS.some(scene => scene.name === 'ghost-skin'), false)
+  const stored = JSON.parse(storage.get(USER_THEMES_KEY))
+  assert.equal(Object.prototype.hasOwnProperty.call(stored, 'ghost-skin'), false)
+  assert.equal(Object.prototype.hasOwnProperty.call(stored, 'kept-skin'), true, 'other skins survive')
 })

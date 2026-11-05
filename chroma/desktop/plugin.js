@@ -1123,6 +1123,26 @@ function readStoredThemes() {
   } catch (e) { return {} }
 }
 
+/** Forget every local trace of a deleted skin.
+ *
+ *  The backend owns the file; the pane also keeps the scene in IMPORTED_SKINS and
+ *  the theme in the boot store (USER_THEMES_KEY). Removing only the backend record
+ *  left the card on screen — the skin was deleted and still listed, so the delete
+ *  looked like it did nothing at all.
+ */
+function forgetScene(name) {
+  const idx = IMPORTED_SKINS.findIndex(scene => scene && scene.name === name)
+  if (idx >= 0) IMPORTED_SKINS.splice(idx, 1)
+  try {
+    const stored = readStoredThemes()
+    if (Object.prototype.hasOwnProperty.call(stored, name)) {
+      delete stored[name]
+      const l = (typeof window !== 'undefined' && window.localStorage) ? window.localStorage : null
+      if (l) l.setItem(USER_THEMES_KEY, JSON.stringify(stored))
+    }
+  } catch (e) { }
+}
+
 function persistTheme(theme) {
   const stored = readStoredThemes()
   stored[theme.name] = theme
@@ -1159,6 +1179,19 @@ async function listOwnedSkins() {
 /** Whether the Python half is mounted. Chroma's Desktop half works without it,
  *  but only the Python half can mint a real gateway skin or groom one, so the
  *  picker must be able to tell the user which of the two is actually running. */
+/** Is a gateway socket live? `host.state.gateway` is a readonly SDK atom.
+ *  Unknown (harness, older host) answers true: a genuine failure must stay loud,
+ *  and only a POSITIVELY absent gateway earns silence. */
+function gatewayIsLive() {
+  try {
+    const atom = host && host.state && host.state.gateway
+    const value = atom && typeof atom.get === 'function' ? atom.get() : undefined
+    return value === undefined ? true : value === 'open'
+  } catch (e) {
+    return true
+  }
+}
+
 function hasGatewayBackend() {
   return !!_rest
 }
@@ -2043,14 +2076,14 @@ function saveTextFile(filename, text) {
 /** Every provenance tag an imported theme may carry. Stored themes are only
  *  re-hydrated for a tag in this list, so a stray localStorage entry cannot
  *  become a phantom card. */
-const IMPORT_SOURCES = ['tweakcn', 'windows-terminal', 'base16', 'vscode']
+const IMPORT_SOURCES = ['tweakcn', 'windows-terminal', 'base16', 'vscode', 'owned']
 
 let _importedLoaded = false
 function ensureImportedSkinsLoaded() {
   if (_importedLoaded) return
   _importedLoaded = true
   for (const t of Object.values(readStoredThemes())) {
-    if (t && IMPORT_SOURCES.indexOf(t.themePickerSource) >= 0) {
+    if (t && IMPORT_SOURCES.indexOf(t.themePickerSource || t.source) >= 0) {
       const scene = { name: t.name, label: t.label || t.name, description: t.description || 'Imported theme',
         modeSupport: sceneModeSupport(t), palette: sceneModeSupport(t),
         colors: t.colors, lightColors: t.colors, darkColors: t.darkColors, typography: t.typography }
@@ -2291,6 +2324,15 @@ function persistThemesForBoot(themes) {
 
     let changed = false
     for (const theme of themes) {
+      // Provenance is stamped at the WRITER, not guessed at the reader. Only the
+      // TweakCN parser set `themePickerSource`; forks and the VS Code, Base16 and
+      // Windows Terminal importers set `source` (or nothing), so the loader's
+      // IMPORT_SOURCES filter dropped their cards on the next boot and a session-
+      // only fix looked permanent. Every theme written here now carries a tag.
+      if (!theme.themePickerSource) {
+        theme.themePickerSource = theme.source || 'owned'
+        changed = true
+      }
       // Native imports take precedence over a plugin contribution with the same
       // name, matching the desktop's user-theme resolution order.
       const existing = stored[theme.name]
@@ -2976,7 +3018,13 @@ function syncSceneToGateway(scene, mode, profile, generation) {
         syncDesktopState(latest.scene.name, latest.mode)
       }
       persistLatestAppearance(profile)
-      if (isLatest && isActiveProfile) {
+      // Only warn when a gateway exists to have failed. Under the default
+      // `everywhere` scope a gateway-less Desktop throws on EVERY apply, and the
+      // user was told "the gateway could not apply" about a gateway that was
+      // never there. The SDK exposes the socket state: warn on `open`, stay
+      // silent when it is closed/idle. An unknown state keeps the old, loud
+      // behaviour — a real failure must never be swallowed.
+      if (isLatest && isActiveProfile && gatewayIsLive()) {
         host.notify({
           kind: 'warning',
           message: `${scene.label || scene.name} is active here, but the connected gateway could not apply "${skinName}"`
@@ -5290,6 +5338,9 @@ function ThemePicker() {
     try {
       const result = await deleteOwnedSkin(name, active)
       haptic('tap')
+      // The backend half is gone; drop the pane's own copies so the card actually
+      // leaves the list instead of lingering as a scene with no manage actions.
+      forgetScene(name)
       await refreshOwned()
       setImportedTick(n => n + 1)
       host.notify({
@@ -5419,6 +5470,15 @@ function ThemePicker() {
         themePickerSource: theme.source || 'tweakcn'
       }
       if (!IMPORTED_SKINS.some(s => s.name === scene.name)) IMPORTED_SKINS.push(scene)
+      // An import is a save with a different front door. Publish it to the host
+      // registry and cache it for boot HERE, as the E1b save and the fork do:
+      // without the registration, availableThemes never learns the name, the
+      // hand-off is refused, and the provider repaints the previous skin — the
+      // same revert the save path was fixed for.
+      try {
+        reRegisterSceneTheme(scene)
+        persistThemesForBoot([sceneToDesktopTheme(scene)])
+      } catch (e) { }
       // Mint the real gateway skin only if the Python half is mounted, and treat
       // a failure as exactly that: a local-only import, never a success. Swallow
       // nothing - the notice below is chosen from what actually happened.
