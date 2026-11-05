@@ -52,6 +52,11 @@ import { jsx, jsxs } from 'react/jsx-runtime'
 import { Component, cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 let _rest = null
+// The host's own registration function, kept so a scene created or edited
+// mid-session can publish its theme WITHOUT a reload. The loader hands register()
+// one bound function; re-registering the same id replaces the contribution, so a
+// saved font change is visible to the provider's live theme list immediately.
+let _pluginRegister = null
 
 // Replaced with the real version at build time (scripts/regenerate.py).
 const BUILD_STAMP = '2.9.1'
@@ -484,6 +489,47 @@ function sceneToDesktopTheme(scene) {
     typography: safeMerge(SCENE_TYPOGRAPHY[scene.name], scene.typography || {}),
     themePickerManaged: true
   }
+}
+
+/** Publish (or refresh) one scene's Desktop theme now, not at the next boot.
+ *
+ *  register() only runs once, from the static catalogue, so a skin forked or
+ *  edited mid-session was missing from the host's live `availableThemes`. The
+ *  hand-off in syncDesktopState then refused its own name and the provider's
+ *  persisted theme repainted over the pick (the fork reverted to light). The
+ *  host registry replaces a contribution with the same id, so a re-register is
+ *  both safe and idempotent. Returns false when there is nothing to publish. */
+function reRegisterSceneTheme(scene) {
+  if (!_pluginRegister || !scene || !scene.name) return false
+  // Core names stay native; register() filters the same set at boot.
+  if (CORE_DESKTOP_THEMES.has(scene.name)) return false
+  const theme = sceneToDesktopTheme(scene)
+  if (!theme) return false
+  _pluginRegister({ id: `theme:${scene.name}`, area: THEMES_AREA, data: theme })
+  return true
+}
+
+/** The pane's scene for a name, preferring the live (owned/imported) copy. */
+function knownSceneByName(name) {
+  if (!name) return null
+  return IMPORTED_SKINS.find(scene => scene && scene.name === name) ||
+    SKINS.find(scene => scene && scene.name === name) || null
+}
+
+/** Is `name` the ACTIVE skin of `profile`? Latest selection first, then the
+ *  persisted appearance (which may carry a gateway alias for a built-in). */
+function isSceneActive(profile, name) {
+  const latest = latestAppearanceByProfile.get(profile)
+  if (latest && latest.scene && latest.scene.name === name) return true
+  const persisted = readAppearance(profile)
+  return persisted.theme === name || sceneNameFor(persisted.theme) === name
+}
+
+/** The mode to repaint with when `name` is the active scene of `profile`. */
+function activeModeForScene(profile, name) {
+  const latest = latestAppearanceByProfile.get(profile)
+  if (latest && latest.scene && latest.scene.name === name) return latest.mode
+  return readAppearance(profile).mode
 }
 
 // -------------------------------------------------------------------
@@ -1184,9 +1230,15 @@ async function listOverrides() {
  *  built. It is not the skin: the skin files are untouched. */
 async function putOverride(scene, palettes) {
   if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  const body = { light: palettes.light || {}, dark: palettes.dark || {} }
+  // A font-only override carries no colours; the key rides the same payload only
+  // when the user actually set a font, so an old colour-only save is unchanged.
+  if (palettes.typography && Object.keys(palettes.typography).length) {
+    body.typography = palettes.typography
+  }
   return await _rest('overrides/' + encodeURIComponent(scene), {
     method: 'PUT',
-    body: { light: palettes.light || {}, dark: palettes.dark || {} }
+    body
   })
 }
 
@@ -1204,9 +1256,15 @@ async function dropOverride(scene) {
  *  would silently undo an in-place edit). */
 async function putSkin(name, palettes) {
   if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  const body = { light: palettes.light || {}, dark: palettes.dark || {} }
+  // E5 — the fonts ride the SAME skin-keyed payload. Only keys the user set are
+  // included, so a colour-only save keeps its old body exactly.
+  if (palettes.typography && Object.keys(palettes.typography).length) {
+    body.typography = palettes.typography
+  }
   return await _rest('skins/' + encodeURIComponent(name), {
     method: 'PUT',
-    body: { light: palettes.light || {}, dark: palettes.dark || {} }
+    body
   })
 }
 
@@ -1531,7 +1589,8 @@ function foldSavedSkin(name, saved) {
   const pick = value => (value && typeof value === 'object' && Object.keys(value).length ? value : null)
   const light = saved ? pick(saved.light) : null
   const dark = saved ? pick(saved.dark) : null
-  if (!light && !dark) return
+  const typography = saved ? pick(saved.typography) : null
+  if (!light && !dark && !typography) return
   const merged = scene => {
     const next = safeMerge(scene)
     if (light) {
@@ -1539,6 +1598,7 @@ function foldSavedSkin(name, saved) {
       next.colors = next.lightColors
     }
     if (dark) next.darkColors = safeMerge(scene.darkColors || scene.colors || {}, dark)
+    if (typography) next.typography = safeMerge(scene.typography || {}, typography)
     return next
   }
   const index = IMPORTED_SKINS.findIndex(scene => scene && scene.name === name)
@@ -1555,7 +1615,8 @@ function foldSavedSkin(name, saved) {
     modeSupport: light && dark ? 'dynamic' : (light ? 'light' : 'dark'),
     colors: light || dark || {},
     lightColors: light || {},
-    darkColors: dark || undefined
+    darkColors: dark || undefined,
+    typography: typography || undefined
   }))
 }
 
@@ -1600,12 +1661,18 @@ function duplicateLabel(sourceLabel, sourceName) {
 function duplicateBody(draftRoles, to, label, modes, source) {
   const palettes = overridePayload(draftRoles, modes)
   const given = typeof label === 'string' ? label.trim() : ''
-  return {
+  const body = {
     to: to,
     label: given || duplicateLabel(source && source.label, source && source.name),
     light: palettes.light,
     dark: palettes.dark
   }
+  // A fork of a font-edited scene carries the fonts too; an all-colour fork
+  // keeps the exact body it always had.
+  if (palettes.typography && Object.keys(palettes.typography).length) {
+    body.typography = palettes.typography
+  }
+  return body
 }
 
 /** PURE: how a duplicate failure is SHOWN. A 409 is a field-level COLLISION on
@@ -1658,11 +1725,13 @@ function duplicateFailure(error) {
 }
 
 /** POST /skins/duplicate — the one writer E2 adds. */
-async function duplicateSkin(to, label, light, dark) {
+async function duplicateSkin(to, label, light, dark, typography) {
   if (!_rest) throw new Error(BACKEND_MISSING_MESSAGE)
+  const body = { to: to, label: label, light: light || {}, dark: dark || {} }
+  if (typography && Object.keys(typography).length) body.typography = typography
   return await _rest('skins/duplicate', {
     method: 'POST',
-    body: { to: to, label: label, light: light || {}, dark: dark || {} }
+    body
   })
 }
 
@@ -5479,6 +5548,25 @@ function ThemePicker() {
         // actually written rather than leaving the draft disagreeing with a
         // stale scene.
         foldSavedSkin(name, saved)
+        // The saved scene has to reach the provider NOW, not at the next boot:
+        // register() ran from the static catalogue only, so this name may have
+        // been absent from the host's live theme list — and the hand-off below
+        // then refused it, letting the persisted theme repaint over the pick.
+        // Best-effort: a registration failure must not fail a save that already
+        // landed on disk.
+        try {
+          const savedScene = knownSceneByName(name)
+          if (savedScene) {
+            reRegisterSceneTheme(savedScene)
+            if (isSceneActive(profile, name)) {
+              const activeMode = activeModeForScene(profile, name)
+              const theme = sceneToDesktopTheme(savedScene)
+              applyDesktopTheme(theme, activeMode)
+              persistThemesForBoot([theme])
+              syncDesktopState(name, activeMode, desktopTheme)
+            }
+          }
+        } catch (e) { }
         setImportedTick(n => n + 1)
         setEditorEpoch(n => n + 1)
         haptic('tap')
@@ -5507,8 +5595,20 @@ function ThemePicker() {
       writeOverrideMirror(name, effectiveOverride)
       const authoredScene = SKINS.find(scene => scene.name === name)
       if (authoredScene) {
-        const resolved = sceneToDesktopTheme(applyOverride(authoredScene, { [name]: effectiveOverride }))
+        const resolvedScene = applyOverride(authoredScene, { [name]: effectiveOverride })
+        const resolved = sceneToDesktopTheme(resolvedScene)
         if (resolved) persistThemesForBoot([resolved])
+        // A colour or font edit of a built-in must reach the live registry too,
+        // for the same reason an owned save does. Best-effort: the write above
+        // already succeeded.
+        try {
+          reRegisterSceneTheme(resolvedScene)
+          if (isSceneActive(profile, name)) {
+            const activeMode = activeModeForScene(profile, name)
+            applyDesktopTheme(resolved, activeMode)
+            syncDesktopState(name, activeMode, desktopTheme)
+          }
+        } catch (e) { }
       }
       haptic('tap')
       host.notify({
@@ -5574,23 +5674,38 @@ function ThemePicker() {
   // After a successful duplicate the skin is OWNED, so the pane folds it in the
   // same way the E1b in-place save does (foldSavedSkin + a re-read): the card
   // list picks it up, there is no phantom card, and no reload is needed.
-  const foldDuplicate = async (name, light, dark) => {
-    foldSavedSkin(name, { light: light, dark: dark })
+  const foldDuplicate = async (name, light, dark, typography) => {
+    foldSavedSkin(name, { light: light, dark: dark, typography: typography })
     try { setOwned(await listOwnedSkins()) } catch (e) { }
     setImportedTick(n => n + 1)
+    // A fork exists for this session from the moment it is written. Publish its
+    // theme and cache it for boot even before the user applies it; otherwise the
+    // first apply has no registration to hand off to and the provider repaints
+    // the previous (usually light) theme. Best-effort, like every boot write.
+    try {
+      const madeScene = knownSceneByName(name)
+      if (madeScene) {
+        reRegisterSceneTheme(madeScene)
+        persistThemesForBoot([sceneToDesktopTheme(madeScene)])
+      }
+    } catch (e) { }
   }
 
   const duplicateCard = async (scene) => {
     if (!scene || duplicating) return
     // The scene the CARD holds is already the EFFECTIVE palette (groupCards
     // layered the override), so a built-in's duplicate forks override ?? authored.
-    const draftRoles = { light: draftForScene(scene, 'light'), dark: draftForScene(scene, 'dark') }
+    const draftRoles = {
+      light: draftForScene(scene, 'light'),
+      dark: draftForScene(scene, 'dark'),
+      typography: scene.typography || {}
+    }
     const body = duplicateBody(draftRoles, duplicateSlug(scene.name), '', modes, scene)
     setDuplicating(scene.name)
     try {
-      const result = await duplicateSkin(body.to, body.label, body.light, body.dark)
+      const result = await duplicateSkin(body.to, body.label, body.light, body.dark, body.typography)
       const made = (result && result.name) ? result.name : body.to
-      await foldDuplicate(made, body.light, body.dark)
+      await foldDuplicate(made, body.light, body.dark, body.typography)
       haptic('tap')
       host.notify({
         kind: 'success',
@@ -5616,9 +5731,9 @@ function ThemePicker() {
     if (editorBusy) return { ok: false, failure: duplicateFailure({ message: 'a write is already in flight' }) }
     setEditorBusy('fork')
     try {
-      const result = await duplicateSkin(body.to, body.label, body.light, body.dark)
+      const result = await duplicateSkin(body.to, body.label, body.light, body.dark, body.typography)
       const made = (result && result.name) ? result.name : body.to
-      await foldDuplicate(made, body.light, body.dark)
+      await foldDuplicate(made, body.light, body.dark, body.typography)
       haptic('tap')
       host.notify({
         kind: 'success',
@@ -6375,6 +6490,10 @@ export default {
   name: 'Chroma',
   register(ctx) {
     _rest = ctx.rest
+    // Keep the host's registration function, not just the boot-time call. A
+    // fork or a font edit made later in the session has to publish its theme
+    // through this same function (see reRegisterSceneTheme).
+    _pluginRegister = ctx.register
     // A new registration gets a fresh schema: the cache is per session, not per
     // process, so a reload re-reads it.
     _editorSchemaCache = null

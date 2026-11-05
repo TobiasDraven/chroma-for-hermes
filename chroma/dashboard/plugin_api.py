@@ -312,7 +312,19 @@ def list_chroma_skins() -> dict[str, Any]:
     skins = []
     for name, meta in sorted(index.items()):
         record = meta if isinstance(meta, dict) else {}
-        present = (skins_dir / f"{name}.yaml").is_file()
+        path = skins_dir / f"{name}.yaml"
+        present = path.is_file()
+        # Typography is additive on the skin file. A missing or unreadable file
+        # must not take the listing down, so it degrades to {} like an older
+        # skin that never carried fonts.
+        typography: dict[str, str] = {}
+        if present:
+            try:
+                parsed = _read_skin_file(path)
+                if isinstance(parsed.get("typography"), dict):
+                    typography = {str(k): str(v) for k, v in parsed["typography"].items()}
+            except (OSError, HTTPException):
+                typography = {}
         skins.append(
             {
                 "name": name,
@@ -324,6 +336,7 @@ def list_chroma_skins() -> dict[str, Any]:
                 # existed simply has none, and reads back as "" rather than
                 # failing to load (E0).
                 "category": record.get("category") or "",
+                "typography": typography,
                 "owned": True,
                 "cliCapable": present,
                 "missing": not present,
@@ -614,10 +627,12 @@ def import_skin(req: ImportRequest) -> dict[str, Any]:
         if target.exists():
             raise HTTPException(409, f"skin '{name}' already exists")
 
+        _assert_mint_capacity()
+
         try:
             _atomic_write_text(target, _dump_skin_yaml(data))
         except OSError as exc:
-            raise HTTPException(500, f"could not write the skin file {target}: {exc}") from exc
+            raise HTTPException(500, f"could not write the skin file {target.name}: {exc}") from exc
 
         # Record provenance in the same breath as the write. Order matters: the
         # skin file is the thing the engine reads, so it lands first; if we die
@@ -797,7 +812,9 @@ def delete_skin(name: str, active: str = "") -> dict[str, Any]:
         try:
             os.replace(target, trashed)
         except OSError as exc:
-            raise HTTPException(500, f"could not move the skin to the trash ({trashed}): {exc}") from exc
+            raise HTTPException(
+                500, f"could not move the skin to the trash ({trashed.name}): {exc}"
+            ) from exc
 
         index.pop(clean, None)
         _write_index_or_500(index)
@@ -1517,11 +1534,12 @@ def get_schema() -> dict[str, Any]:
 
 
 class ScenePaletteRequest(BaseModel):
-    """A skin-keyed palette the editor sends: the nine roles per mode, plus the
-    identity fields the same save may update."""
+    """A skin-keyed palette the editor sends: the ten roles per mode, the two
+    typography keys, plus the identity fields the same save may update."""
 
     light: dict[str, str] = {}
     dark: dict[str, str] = {}
+    typography: dict[str, str] = {}
     label: str = ""
     description: str = ""
     # The per-skin category assignment. "" clears it — the skin then falls back to
@@ -1561,6 +1579,7 @@ def get_skin(name: str) -> dict[str, Any]:
     colors = data.get("colors") if isinstance(data.get("colors"), dict) else {}
     light = data.get("light_colors") if isinstance(data.get("light_colors"), dict) else colors
     dark = data.get("dark_colors") if isinstance(data.get("dark_colors"), dict) else colors
+    typography = data.get("typography") if isinstance(data.get("typography"), dict) else {}
     return {
         "ok": True,
         "name": clean,
@@ -1570,6 +1589,7 @@ def get_skin(name: str) -> dict[str, Any]:
         "light": light,
         "dark": dark,
         "colors": colors,
+        "typography": {str(k): str(v) for k, v in typography.items()},
     }
 
 
@@ -1580,7 +1600,8 @@ def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
     A SEPARATE writer from `import_skin`, deliberately. That one maps TweakCN
     tokens (`foreground`, `primary`, `cardForeground`), so handing it a scene
     palette would read `ui_accent` as absent and mint `#ffffff` — a silent
-    corruption. This writer speaks the nine skin roles and nothing else.
+    corruption. This writer speaks the skin role palette and the typography keys,
+    and nothing else.
 
     The index is read through the STRICT path under the write lock: a corrupt
     index aborts the write rather than being persisted as {} (the 8a06221 defect).
@@ -1592,19 +1613,21 @@ def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
         raise HTTPException(413, f"palette is too large: {oversized}")
     light = _normalise_palette(req.light, what="light")
     dark = _normalise_palette(req.dark, what="dark")
+    typography = _normalise_typography(req.typography)
     # A category assignment IS an edit, so it counts as content here. Pydantic's
     # `model_fields_set` separates "category omitted" from "category explicitly
     # cleared" -- both are falsy, but only the first means "nothing to write".
     if (
         not light
         and not dark
+        and not typography
         and not req.description
         and not req.label
         and "category" not in req.model_fields_set
     ):
         raise HTTPException(
             400,
-            "nothing to write: send at least one role, a label, a description or a category",
+            "nothing to write: send at least one role, a font, a label, a description or a category",
         )
 
     # A category assignment IS an edit, so it counts as content above. Validate it
@@ -1661,6 +1684,13 @@ def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
         base_dark = existing.get("dark_colors") if isinstance(existing.get("dark_colors"), dict) else {}
         merged_light = {**base_light, **light}
         merged_dark = {**base_dark, **dark}
+        # A font-only save still has to land in the file. Merge over the stored
+        # map the same way the palettes merge, so a save that carries one font
+        # leaves the other one alone.
+        base_typography = (
+            existing.get("typography") if isinstance(existing.get("typography"), dict) else {}
+        )
+        merged_typography = {**base_typography, **typography}
 
         data: dict[str, Any] = {
             "name": clean,
@@ -1671,11 +1701,13 @@ def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
             data["light_colors"] = merged_light
         if merged_dark:
             data["dark_colors"] = merged_dark
+        if merged_typography:
+            data["typography"] = merged_typography
 
         try:
             _atomic_write_text(target, _dump_skin_yaml(data))
         except OSError as exc:
-            raise HTTPException(500, f"could not write the skin file {target}: {exc}") from exc
+            raise HTTPException(500, f"could not write the skin file {target.name}: {exc}") from exc
 
         updated = dict(record)
         if req.label:
@@ -1711,6 +1743,7 @@ def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
         "dark": merged_dark,
         "colors": merged_light,
         "category": updated.get("category") or "",
+        "typography": merged_typography,
     }
 
 
@@ -1977,12 +2010,14 @@ class DuplicateRequest(BaseModel):
     """Fork a palette into a brand-new owned skin.
 
     `light`/`dark` are CONCRETE skin-keyed maps (the same vocabulary
-    `PUT /skins/{name}` accepts), never the pane's logical role ids."""
+    `PUT /skins/{name}` accepts), never the pane's logical role ids. `typography`
+    carries only the font keys the source profile set."""
 
     to: str
     label: str | None = None
     light: dict[str, str] = {}
     dark: dict[str, str] = {}
+    typography: dict[str, str] = {}
 
 
 def _owned_record_template(index: dict[str, Any]) -> dict[str, Any]:
@@ -2031,9 +2066,12 @@ def duplicate_skin(req: DuplicateRequest) -> dict[str, Any]:
     # BY NAME (never silently dropped) and a non-#rrggbb value is named too.
     light = _normalise_palette(req.light, what="light")
     dark = _normalise_palette(req.dark, what="dark")
-    if not light and not dark:
+    typography = _normalise_typography(req.typography)
+    if not light and not dark and not typography:
         raise HTTPException(
-            400, "a duplicate must carry at least one colour in the light or dark palette"
+            400,
+            "a duplicate must carry at least one colour in the light or dark palette, "
+            "or one typography key",
         )
 
     label = (req.label or "").strip()
@@ -2047,6 +2085,8 @@ def duplicate_skin(req: DuplicateRequest) -> dict[str, Any]:
         data["light_colors"] = light
     if dark:
         data["dark_colors"] = dark
+    if typography:
+        data["typography"] = typography
 
     with _INDEX_LOCK:
         try:
@@ -2058,10 +2098,12 @@ def duplicate_skin(req: DuplicateRequest) -> dict[str, Any]:
         if target.exists():
             raise HTTPException(409, f"skin '{to}' already exists; choose another name")
 
+        _assert_mint_capacity()
+
         try:
             _atomic_write_text(target, _dump_skin_yaml(data))
         except OSError as exc:
-            raise HTTPException(500, f"could not write the skin file {target}: {exc}") from exc
+            raise HTTPException(500, f"could not write the skin file {target.name}: {exc}") from exc
 
         index[to] = _new_owned_record(
             index,
@@ -2096,6 +2138,39 @@ PACK_FORMAT_VERSION = 1
 MAX_PACK_SKINS = 512
 MAX_TOTAL_SKINS = 2048
 TRASH_RETENTION_DAYS = 30
+
+
+def _owned_skin_count() -> int:
+    """Skin files Chroma owns, counted on disk.
+
+    The index can lag a crashed write, so the cap guards the disk, not the
+    bookkeeping: count the files themselves.
+    """
+    try:
+        return sum(
+            1
+            for entry in _skins_dir().iterdir()
+            if entry.suffix in (".yaml", ".yml")
+            and not entry.name.startswith(TRANSPORT_PREFIX)
+        )
+    except OSError:
+        return 0
+
+
+def _assert_mint_capacity(additional: int = 1) -> None:
+    """Refuse to mint past MAX_TOTAL_SKINS.
+
+    Call this INSIDE the write lock, before any file lands: a cap checked
+    outside it is a cap that two concurrent imports both pass. The error is a
+    409 with a user-safe message, never a bare 500.
+    """
+    used = _owned_skin_count()
+    if used + max(additional, 0) > MAX_TOTAL_SKINS:
+        raise HTTPException(
+            409,
+            f"skin limit reached ({used} of {MAX_TOTAL_SKINS}); "
+            "delete a skin or export a pack first",
+        )
 
 
 def _packs_dir() -> Path:
@@ -2138,7 +2213,9 @@ def _free_slug(base: str, skins_dir: Path) -> str:
         if not (skins_dir / f"{candidate}.yaml").exists():
             return candidate
         n += 1
-    raise RuntimeError(f"could not find a free slug for {base!r}")
+    raise HTTPException(
+        409, f"no free name left for '{base}' — delete a skin before importing more"
+    )
 
 
 def _pack_record(
@@ -2506,6 +2583,13 @@ def import_pack(req: PackImportRequest) -> dict[str, Any]:
         index_path = _index_path()
         original_index = index_path.read_text(encoding="utf-8") if index_path.is_file() else None
 
+        # One budget check for the whole bundle, counted only over the files the
+        # loop will actually create (it skips byte-identical names), made under
+        # the same lock that writes them.
+        _assert_mint_capacity(
+            sum(1 for skin in parsed if not (skins_dir / f"{skin['name']}.yaml").exists())
+        )
+
         created: list[Path] = []
         imported: list[str] = []
         skipped: list[str] = []
@@ -2678,7 +2762,7 @@ def delete_pack(slug: str, withSkins: bool = False) -> dict[str, Any]:
                     raise HTTPException(
                         500,
                         f"could not move the pack member '{member_name}' to the trash "
-                        f"({trashed}): {exc}",
+                        f"({trashed.name}): {exc}",
                     ) from exc
                 trashed_members.append((target, trashed))
                 index.pop(member_name, None)

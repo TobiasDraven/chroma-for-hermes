@@ -852,8 +852,9 @@ def main() -> int:
           f"{derived_count} derived palettes and {transport_count} gateway transports.")
     print("Next: the plugin package is the chroma/ subdirectory of this repo. "
           "Install it from Hermes Desktop -> Capabilities -> Plugins -> Install, "
-          "by pasting <repo>/chroma (for example "
-          "https://github.com/TobiasDraven/chroma-for-hermes/chroma). The dialog "
+          "by pasting https://github.com/TobiasDraven/chroma-for-hermes#chroma "
+          "(the #chroma fragment selects the package subdirectory; the bare repo "
+          "URL has no plugin.yaml at its root and is refused). The dialog "
           "enables the plugin and its Desktop half in one step.")
     return 0
 
