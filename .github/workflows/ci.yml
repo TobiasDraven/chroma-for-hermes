@@ -292,6 +292,7 @@ jobs:
               "promise-safety | high | Async & Error Safety Violation | scripts/check-packs.py",
               "promise-safety | high | Async & Error Safety Violation | scripts/classify-skins.py",
               "promise-safety | high | Async & Error Safety Violation | scripts/generate-gallery.py",
+              "promise-safety | high | Async & Error Safety Violation | scripts/make-palette-strip.py",
               "promise-safety | high | Async & Error Safety Violation | scripts/migrate-to-skins.py",
               "promise-safety | high | Async & Error Safety Violation | tests/test_regenerate.py",
               "side-effect-analysis | medium | Side-Effect: Resource Leak | scripts/measure/measure-catalogue.py",
