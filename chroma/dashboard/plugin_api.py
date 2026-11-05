@@ -84,6 +84,16 @@ def _refuse_control_characters(text: str, field: str) -> None:
                 f"the {field} may not contain the control character U+{code:04X}; "
                 f"a skin label is single-line text",
             )
+        # `str.splitlines()` breaks on U+0085, U+2028 and U+2029 as well as CR/LF,
+        # and `_read_skin_file` splits on it. A character the READER treats as a
+        # line break can never be written into a single-line scalar: it was written
+        # raw and read back as a fragment ("Inter\u2028Sans" became "'Inter").
+        if ch.splitlines() != [ch]:
+            raise HTTPException(
+                400,
+                f"the {field} may not contain the line separator U+{code:04X}; "
+                f"a skin label is single-line text",
+            )
 
 
 def _yaml_scalar(value: Any, field: str = "value") -> str:
@@ -519,6 +529,7 @@ def import_skin(req: ImportRequest) -> dict[str, Any]:
             "Windows reserved device name (con, nul, com1…)",
         )
     _check_name_length(name, "skin name")
+    _refuse_reserved_prefix(name, "skin name")
     if name in CORE_NAMES:
         raise HTTPException(409, f"'{name}' collides with a built-in skin")
 
@@ -670,12 +681,31 @@ def import_skin(req: ImportRequest) -> dict[str, Any]:
 # created.
 
 
+def _refuse_reserved_prefix(clean: str, field: str) -> None:
+    """Refuse a name in the derived-transport namespace.
+
+    `theme-picker-*` files in the skins dir are mode-locked transports, not owned
+    skins: `_owned_skin_count` excludes them, so a user skin with that prefix was
+    counted nowhere and minted past the cap (five at a cap of one, proven), and one
+    named after a built-in transport could become that built-in's authored palette.
+    The prefix is reserved, so the hole closes at the name gate rather than in the
+    counter.
+    """
+    if clean.startswith(TRANSPORT_PREFIX):
+        raise HTTPException(
+            400,
+            f"{field} may not start with '{TRANSPORT_PREFIX}' — the prefix is reserved "
+            f"for the derived mode transports",
+        )
+
+
 def _guard_name(value: str, *, field: str) -> str:
     """Normalise and vet a user-supplied skin name. The name becomes a path."""
     clean = (value or "").strip().lower()
     if _is_unsafe_name(clean):
         raise HTTPException(400, f"{field} must be a slug (lower-case, hyphens)")
     _check_name_length(clean, field)
+    _refuse_reserved_prefix(clean, field)
     if clean in CORE_NAMES:
         raise HTTPException(409, f"'{clean}' is a built-in skin")
     return clean
@@ -1484,6 +1514,7 @@ def _editor_name(value: str, *, field: str, builtin_hint: bool) -> str:
     if _is_unsafe_name(clean):
         raise HTTPException(400, f"{field} must be a slug (lower-case, hyphens)")
     _check_name_length(clean, field)
+    _refuse_reserved_prefix(clean, field)
     if clean in CORE_NAMES:
         if builtin_hint:
             raise HTTPException(
@@ -2325,14 +2356,19 @@ def export_pack(req: PackExportRequest) -> dict[str, Any]:
             raise HTTPException(400, f"pack member '{clean}' has no skin file")
         _owned_record(clean, index)  # 404 when the skin is not one Chroma manages
         light, dark = _skin_palettes(path)
-        bundle_skins.append(
-            {
-                "name": clean,
-                "label": index.get(clean, {}).get("label") or clean,
-                "light": light,
-                "dark": dark,
-            }
-        )
+        entry: dict[str, Any] = {
+            "name": clean,
+            "label": index.get(clean, {}).get("label") or clean,
+            "light": light,
+            "dark": dark,
+        }
+        # Typography rides with the skin: a pack that exported the palettes and
+        # dropped the fonts re-imported as a different-looking skin that still
+        # reported success.
+        typography = _read_skin_file(path).get("typography") or {}
+        if typography:
+            entry["typography"] = typography
+        bundle_skins.append(entry)
 
     created = datetime.now(timezone.utc).isoformat(timespec="seconds")
     bundle = {
@@ -2357,7 +2393,7 @@ def export_pack(req: PackExportRequest) -> dict[str, Any]:
             + "\n",
         )
     except OSError as exc:
-        raise HTTPException(500, f"could not write the pack record ({_pack_path(slug)}): {exc}") from exc
+        raise HTTPException(500, f"could not write the pack record ({_pack_path(slug).name}): {exc}") from exc
 
     logger.info("exported pack %s (%d skins)", slug, len(bundle_skins))
     return bundle
@@ -2403,6 +2439,7 @@ def _validate_bundle_skins(req: PackImportRequest) -> list[dict[str, Any]]:
         clean = _editor_name(raw_name, field="skin name", builtin_hint=False)
         light = _normalise_palette(entry.get("light") or {}, what=f"light palette of '{clean}'")
         dark = _normalise_palette(entry.get("dark") or {}, what=f"dark palette of '{clean}'")
+        typography = _normalise_typography(entry.get("typography") or {})
         label = entry.get("label")
         label_text = label.strip() if isinstance(label, str) and label.strip() else clean
         # The label becomes the skin file's `description:` — and the writer
@@ -2415,6 +2452,7 @@ def _validate_bundle_skins(req: PackImportRequest) -> list[dict[str, Any]]:
                 "label": label_text,
                 "light": light,
                 "dark": dark,
+                "typography": typography,
             }
         )
     return parsed
@@ -2551,7 +2589,12 @@ def import_pack(req: PackImportRequest) -> dict[str, Any]:
                 status, resolved = "new", skin["name"]
             else:
                 existing_light, existing_dark = _skin_palettes(target)
-                if existing_light == skin["light"] and existing_dark == skin["dark"]:
+                existing_typo = _read_skin_file(target).get("typography") or {}
+                if (
+                    existing_light == skin["light"]
+                    and existing_dark == skin["dark"]
+                    and existing_typo == skin["typography"]
+                ):
                     status, resolved = "identical", skin["name"]
                 else:
                     status, resolved = "collides", _free_slug(skin["name"], skins_dir)
@@ -2604,7 +2647,12 @@ def import_pack(req: PackImportRequest) -> dict[str, Any]:
                 target = skins_dir / f"{skin['name']}.yaml"
                 if target.exists():
                     existing_light, existing_dark = _skin_palettes(target)
-                    if existing_light == skin["light"] and existing_dark == skin["dark"]:
+                    existing_typo = _read_skin_file(target).get("typography") or {}
+                    if (
+                        existing_light == skin["light"]
+                        and existing_dark == skin["dark"]
+                        and existing_typo == skin["typography"]
+                    ):
                         skipped.append(skin["name"])  # byte-identical: skip, do not rewrite
                         continue
                     # A different skin already holds this name. Refuse rather than
@@ -2622,6 +2670,8 @@ def import_pack(req: PackImportRequest) -> dict[str, Any]:
                     data["light_colors"] = skin["light"]
                 if skin["dark"]:
                     data["dark_colors"] = skin["dark"]
+                if skin["typography"]:
+                    data["typography"] = skin["typography"]
                 _atomic_write_text(target, _dump_skin_yaml(data))
                 created.append(target)
                 index[skin["name"]] = _new_owned_record(
@@ -2724,7 +2774,7 @@ def delete_pack(slug: str, withSkins: bool = False) -> dict[str, Any]:
     try:
         record = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
-        raise HTTPException(500, f"the pack record at {path} is unreadable ({exc})") from exc
+        raise HTTPException(500, f"the pack record {path.name} is unreadable ({exc})") from exc
     members = record.get("members") if isinstance(record, dict) else []
     if not isinstance(members, list):
         members = []
@@ -2790,7 +2840,7 @@ def delete_pack(slug: str, withSkins: bool = False) -> dict[str, Any]:
     try:
         path.unlink()
     except OSError as exc:
-        raise HTTPException(500, f"could not remove the pack record {path}: {exc}") from exc
+        raise HTTPException(500, f"could not remove the pack record {path.name}: {exc}") from exc
 
     logger.info("deleted pack %s (withSkins=%s, removed %d)", clean, withSkins, len(removed))
     return {"ok": True, "slug": clean, "removedSkins": removed}

@@ -117,5 +117,81 @@ class GuardTests(unittest.TestCase):
         self.assertTrue(trashed.name.endswith(".yaml"))
 
 
+    # --- line separators (the data-loss blocker) -------------------------------
+
+    def test_a_line_separator_in_type_is_refused_not_written(self):
+        # `_read_skin_file` splits on `str.splitlines()`, which honours U+0085,
+        # U+2028 and U+2029 as well as CR/LF. A font written with one came back
+        # as a fragment ("Inter\u2028Sans" -> "'Inter") — silent data loss.
+        self._import("mine")
+        for ch in ("\u2028", "\u2029", "\u0085"):
+            with self.assertRaises(HTTPException) as ctx:
+                self.api.put_skin(
+                    "mine",
+                    self.api.ScenePaletteRequest(typography={"fontSans": f"Inter{ch}Sans"}),
+                )
+            self.assertEqual(ctx.exception.status_code, 400, f"U+{ord(ch):04X}")
+        # A refused save must not have damaged the palette it was writing beside.
+        self.assertEqual(self.api.get_skin("mine")["light"]["background"], "#101010")
+
+    # --- the reserved transport namespace --------------------------------------
+
+    def test_the_transport_prefix_is_reserved_on_every_mint_path(self):
+        # These files are excluded from the cap count, so without this gate a user
+        # skin with the prefix minted past the cap (five at a cap of one) and one
+        # named after a built-in transport became that built-in's palette.
+        self.api.import_skin(
+            self.api.ImportRequest(
+                name="real",
+                theme={"colors": {"background": "#111111", "ui_accent": "#ff0000"}},
+                description="x",
+            )
+        )
+        self.api.MAX_TOTAL_SKINS = 1
+        for name in ("theme-picker-evil", "theme-picker-nous-light"):
+            with self.assertRaises(HTTPException) as ctx:
+                self._import(name)
+            self.assertEqual(ctx.exception.status_code, 400, name)
+        with self.assertRaises(HTTPException):
+            self.api.duplicate_skin(
+                self.api.DuplicateRequest(
+                    to="theme-picker-fork",
+                    light={"ui_accent": "#00ff00"},
+                    dark={"ui_accent": "#00ff00"},
+                )
+            )
+        self.assertEqual(self.api._owned_skin_count(), 1)
+
+    # --- packs carry typography ------------------------------------------------
+
+    def test_a_pack_round_trip_carries_typography(self):
+        # The bundle used to carry name/label/light/dark only: fonts vanished and
+        # the import still reported success.
+        self._import("typed")
+        self.api.put_skin(
+            "typed",
+            self.api.ScenePaletteRequest(
+                typography={"fontSans": "Comic Sans MS", "fontMono": "Consolas"}
+            ),
+        )
+        bundle = self.api.export_pack(
+            self.api.PackExportRequest(name="p", members=["typed"])
+        )
+        self.assertEqual(
+            bundle["skins"][0]["typography"],
+            {"fontSans": "Comic Sans MS", "fontMono": "Consolas"},
+        )
+
+        other = load_api(Path(tempfile.mkdtemp()))
+        other.import_pack(other.PackImportRequest(**bundle))
+        self.assertEqual(
+            other.get_skin("typed")["typography"],
+            {"fontSans": "Comic Sans MS", "fontMono": "Consolas"},
+        )
+        # And a re-import of the same bundle is `identical`, typography included.
+        again = other.import_pack(other.PackImportRequest(**bundle, dryRun=True))
+        self.assertEqual(again["skins"][0]["status"], "identical")
+
+
 if __name__ == "__main__":
     unittest.main()
