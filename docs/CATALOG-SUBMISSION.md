@@ -1,15 +1,21 @@
 # Submitting Chroma to the Hermes plugin catalog
 
-Status: **prepared, entry file written, PR to open.** Not submitted. This file is the record of what the catalog
+Status: **prepared and re-checked against the live rules on 2026-11-06; PR not opened.** This file is the record of what the catalog
 asks for and where we stand against it. It is not a substitute for the
-authoritative rules.
+authoritative rules. The ready-to-PR entry lives in `docs/catalog/chroma.yaml`.
 
-Authoritative sources (checked 2026-10-19):
+Authoritative sources (read from `origin/main` on 2026-11-06, not from a local
+checkout — the installed tree was a month stale and three rules had moved):
 
-- `NousResearch/hermes-agent` → `plugin-catalog/README.md` — the 17 admission
+- `NousResearch/hermes-agent` → `plugin-catalog/README.md` — the **18** admission
   rules and the entry schema. CI fails if the docs copy drifts from it.
 - `website/docs/developer-guide/plugins/catalog-submission.md` — the step-by-step
   guide and what reviewers look at.
+- `.github/workflows/plugin-catalog-ci.yml` — the two gates an entry PR runs:
+  `structural` (`scripts/validate_plugin_catalog.py plugin-catalog/`) and
+  `pinned-source-validate` (clone at the pin, `hermes plugins validate
+  --install-deps`, payload scan, self-updater scan).
+- Current Hermes release at check time: **v0.23.0** (2026-11-05).
 
 ## The entry
 
@@ -32,7 +38,7 @@ maintainer: TobiasDraven
 tier: community
 category: desktop
 version: "2.9.1"
-requires_hermes: ">=0.22.0"
+requires_hermes: ">=0.22.2"
 readme: true
 capabilities:
   provides_tools: []
@@ -57,15 +63,23 @@ Rules that shape those values:
 - `version` is cosmetic but must match the pinned code. Bump it in the same PR
   that bumps the SHA.
 - `requires_hermes` is a SemVer floor and must not be newer than the current
-  release. `>=0.22.0` is what we have proven; the plugin has only been walked
-  on 0.22.2.
+  release (v0.23.0 at check time). It is now **enforced at install and update**,
+  and the same floor must be declared in `plugin.yaml`, because older Hermes
+  releases enforce only that one. Both files say `>=0.22.2` — the version the
+  plugin was actually walked on.
 - `capabilities` must match what the plugin actually registers. Chroma registers
   a Desktop pane and a dashboard router: no tools, no hooks, no middleware, no
   environment variables. An empty list here is a claim, and capability creep is
   treated as a security issue.
 - `image` and `screenshots` are optional and must be `https` on a GitHub host,
-  pinned to the entry's commit. We ship neither today. The README renders as the
-  plugin page at `/docs/plugins/chroma`.
+  pinned to the entry's commit. We now ship both, pinned to the same pin as the
+  code: the 2.22:1 banner as `image`, and two captures as `screenshots` (the
+  picker grid and the full desktop). All three URLs answer `200` at the pin.
+  The README renders as the plugin page at `/docs/plugins/chroma`.
+- `subdir: chroma` is **required**, not optional: `plugin.yaml` sits in
+  `chroma/`, not at the repo root, and the loader looks for it at the entry's
+  `subdir`. Without it the pinned-source gate fails on a correct tree, and the
+  plugin page renders the wrong README.
 
 ## Admission rules — where we stand
 
@@ -84,25 +98,57 @@ Rules that shape those values:
 | 11 | Credentials come through Hermes | the plugin reads no credential store and declares no `requires_env` |
 | 12 | Approvals and unattended runs respected | the plugin spawns no shell and no child process |
 | 13 | Risky behaviour is disclosed | README §"What it touches" — the reachable TweakCN endpoint set, all fourteen localStorage keys, and the skin YAML writes under the Hermes home; the same disclosure is in the PR body below |
-| 14 | Compatibility metadata is truthful | `version` 2.9.1 agrees across `VERSION`, `plugin.yaml`, `chroma/dashboard/manifest.json` and both build stamps (`chroma/desktop/plugin.js`, `chroma/desktop/plugin.template.js`); `scripts/check-package.py` enforces the first four. `requires_hermes: ">=0.22.0"` |
+| 14 | Compatibility metadata is truthful | `version` 2.9.1 agrees across `VERSION`, `plugin.yaml`, `chroma/dashboard/manifest.json` and both build stamps (`chroma/desktop/plugin.js`, `chroma/desktop/plugin.template.js`); `scripts/check-package.py` enforces the first four. `requires_hermes: ">=0.22.2"` |
 | 15 | No skins or forks of bundled plugins | Chroma is a standalone plugin, not a restyled bundled one; the 94 skins were scrubbed of the host's own built-ins in 2.6.0 |
 | 16 | One listing per plugin lineage | checked all 690 catalog entries: no `theme-picker`, no `chroma`. The upstream fork is **not** listed, so we do not compete with a listed entry — the PR will still say "Derived from jdtimothy/hermes-theme-picker (MIT)" |
-| 17 | No unscannable executable payloads | plain source only: `.js`, `.py`, `.yaml`, `.md`. No binaries, no `.pyc`, no archives |
+| 17 | No unscannable executable payloads | plain source only: `.js`, `.py`, `.yaml`, `.md`. No binaries, no `.pyc`, no archives. Checked at HEAD with `git ls-tree -r --name-only HEAD` filtered to `pyc/pyo/so/dll/exe/node/wasm/zip/tar/gz/whl` → no matches. `chroma/dashboard/__pycache__/` exists untracked on the dev machine and must stay untracked |
+| 18 | Password managers come from their vendor | n/a — Chroma registers no login backend; `register_login_backend` appears nowhere in either half |
+
+### Live drift — what moved since the October reading
+
+The rules are a living document on `origin/main`; the local checkout was a month
+behind. Three changes matter:
+
+1. **Rule 14 grew teeth.** The entry's `requires_hermes` is now enforced at
+   install *and* `hermes plugins update`, and the floor must be declared in
+   `plugin.yaml` too. Both say `>=0.22.2`. Declaring `0.22.0` in the entry while
+   `plugin.yaml` said `0.22.2` was drift, and is fixed.
+2. **Rule 8 now warns on the reviewer's behalf.** The desktop-surface check
+   flags raw `window.hermesDesktop` bridge calls and app markup selected any
+   other way (`[data-slot]`, `[data-tree-*]` in CSS, `closest()`). We have no
+   markup selectors at all — no `[data-slot]`, no `[data-tree-*]`, no
+   `closest(` — and two bridge calls, `setTitleBarTheme` and `setNativeTheme`
+   (`chroma/desktop/plugin.template.js:2178-2179`). Those are the two the
+   Desktop's own theme context calls when it repaints, and the SDK exposes no
+   equivalent (`apps/desktop/src/sdk/index.ts` has neither name). So this is a
+   **warning, not a failure**; it is disclosed in the entry description, and the
+   honest next step is to ask for an SDK hook rather than to patch around it.
+   Removing our calls and letting the app do it is a candidate simplification —
+   it needs a desktop walk before it can be claimed.
+3. **Rule 9 now also flags private methods.** Every call to a private method of
+   a core object the plugin is handed (`db._execute_write(...)`) is reported.
+   `grep -nE "\._[a-z]|^from hermes|^import hermes|setattr\(|sys\.modules"` over
+   `chroma/dashboard/plugin_api.py` finds none, and the gate prints
+   `no core override`.
+
+Rule 18 (password managers) is new and does not apply: Chroma registers no
+login backend.
 
 ### The gate's own output
 
-The block below is the real `hermes plugins validate chroma` output against this tree
-(the validator run as a library, because the local CLI is broken — see the note
-at the end of this file). It exits **0** and prints **no warnings**.
+The block below is the real `hermes plugins validate . --install-deps` output at
+pin `f685593`, run through the Hermes CLI (which works on this host; an earlier
+note calling it broken is obsolete). It exits **0** and prints **no warnings**.
 
 ```text
 OK manifest -- plugin.yaml parses
 OK manifest fields -- name, version, description present
-OK requires_hermes -- spec '>=0.22.0' parses
+OK requires_hermes -- spec '>=0.22.2' parses
 OK config schema -- not declared
 OK requires_env -- all entries UPPER_SNAKE
-OK loadable -- entry: __init__.py, chroma/desktop/plugin.js
-OK python dependencies -- none declared
+OK oauth -- not declared
+OK loadable -- entry: __init__.py, desktop/plugin.js
+OK python dependencies -- external runtime (plugin manages its own)
 OK capability probe -- register() ran in isolation
 OK declared tools -- matches registrations
 OK declared hooks -- matches registrations
@@ -111,15 +157,13 @@ OK built-in tool collisions -- no tools to check
 OK security scan -- safe
 OK no core override -- no runtime rebinds of Hermes core
 OK desktop surface -- stays inside the plugin SDK surface
-Isolation — host (host_ready: True)
+Isolation -- runs in the plugin host (plugins.isolation: host)
 Validation passed.
 ```
 
-**The `python dependencies` line is the one still to fix.** It reads **none
-declared** because `plugin.yaml` does not declare the backend's `fastapi` /
-`pydantic` imports; when it does, the gate prints **2 requirements from
-manifest**. The dependency the backend actually has is the one rule 10 asks
-about.
+The structural gate is green too: `scripts/validate_plugin_catalog.py` (the copy
+from `origin/main`, not the local stale one) against `docs/catalog/chroma.yaml`
+prints `OK: 1 file(s) valid`.
 
 The capability probe is the line that matters most. An earlier tree had no
 `__init__.py`, and the gate then printed
