@@ -40,10 +40,10 @@ A theme picker plugin for [Hermes Desktop](https://github.com/NousResearch/herme
   clear message instead of filling the disk.
 
 <p align="center">
-  <img src="docs/palette-strip.svg" alt="Twelve bundled skins, each shown as a light and a dark palette" width="100%">
+  <img src="docs/palette-strip.svg" alt="Twelve bundled skins, each shown once in its dark palette" width="100%">
   <br>
-  <sub>Twelve of the 94 — each pair is one skin's light (<code>L</code>) and dark (<code>D</code>) palette:
-  background, border, text, accent, ok, error, banner accent, banner title.</sub>
+  <sub>Twelve of the 94, dark palette of each: background, status bar, border, text,
+  accent, ok, error, warn.</sub>
 </p>
 
 <p align="center">

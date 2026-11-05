@@ -1,220 +1,114 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="720" viewBox="0 0 900 720" role="img" aria-label="Twelve bundled skins, light and dark palettes">
-<rect width="900" height="720" fill="#0b0c10"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="912" height="526" viewBox="0 0 912 526" role="img" aria-label="Twelve bundled skins, dark palettes">
+<rect width="912" height="526" fill="#0b0c10"/>
 <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13">
-<text x="12" y="20" fill="#c9ccd6">Alabaster <tspan fill="#6b7280">L</tspan></text>
-<rect x="132" y="3" width="92" height="24" rx="3" fill="#101009"/>
-<rect x="228" y="3" width="92" height="24" rx="3" fill="#909090"/>
-<rect x="324" y="3" width="92" height="24" rx="3" fill="#EEEBE2"/>
-<rect x="420" y="3" width="92" height="24" rx="3" fill="#7CA1FA"/>
-<rect x="516" y="3" width="92" height="24" rx="3" fill="#388040"/>
-<rect x="612" y="3" width="92" height="24" rx="3" fill="#b03838"/>
-<rect x="708" y="3" width="92" height="24" rx="3" fill="#7CA1FA"/>
-<rect x="804" y="3" width="92" height="24" rx="3" fill="#EEEBE2"/>
-<text x="12" y="50" fill="#c9ccd6">Alabaster <tspan fill="#6b7280">D</tspan></text>
-<rect x="132" y="33" width="92" height="24" rx="3" fill="#101009"/>
-<rect x="228" y="33" width="92" height="24" rx="3" fill="#36362E"/>
-<rect x="324" y="33" width="92" height="24" rx="3" fill="#EEEBE2"/>
-<rect x="420" y="33" width="92" height="24" rx="3" fill="#7CA1FA"/>
-<rect x="516" y="33" width="92" height="24" rx="3" fill="#70B975"/>
-<rect x="612" y="33" width="92" height="24" rx="3" fill="#F0726D"/>
-<rect x="708" y="33" width="92" height="24" rx="3" fill="#7CA1FA"/>
-<rect x="804" y="33" width="92" height="24" rx="3" fill="#EEEBE2"/>
-<text x="12" y="80" fill="#c9ccd6">Bone White <tspan fill="#6b7280">L</tspan></text>
-<rect x="132" y="63" width="92" height="24" rx="3" fill="#1a1a1a"/>
-<rect x="228" y="63" width="92" height="24" rx="3" fill="#444a50"/>
-<rect x="324" y="63" width="92" height="24" rx="3" fill="#d8d8d8"/>
-<rect x="420" y="63" width="92" height="24" rx="3" fill="#608088"/>
-<rect x="516" y="63" width="92" height="24" rx="3" fill="#789880"/>
-<rect x="612" y="63" width="92" height="24" rx="3" fill="#987878"/>
-<rect x="708" y="63" width="92" height="24" rx="3" fill="#608088"/>
-<rect x="804" y="63" width="92" height="24" rx="3" fill="#c8d0d8"/>
-<text x="12" y="110" fill="#c9ccd6">Bone White <tspan fill="#6b7280">D</tspan></text>
-<rect x="132" y="93" width="92" height="24" rx="3" fill="#1a1a1a"/>
-<rect x="228" y="93" width="92" height="24" rx="3" fill="#444a50"/>
-<rect x="324" y="93" width="92" height="24" rx="3" fill="#d8d8d8"/>
-<rect x="420" y="93" width="92" height="24" rx="3" fill="#608088"/>
-<rect x="516" y="93" width="92" height="24" rx="3" fill="#789880"/>
-<rect x="612" y="93" width="92" height="24" rx="3" fill="#987878"/>
-<rect x="708" y="93" width="92" height="24" rx="3" fill="#608088"/>
-<rect x="804" y="93" width="92" height="24" rx="3" fill="#c8d0d8"/>
-<text x="12" y="140" fill="#c9ccd6">Catppuccin <tspan fill="#6b7280">L</tspan></text>
-<rect x="132" y="123" width="92" height="24" rx="3" fill="#1e1e2e"/>
-<rect x="228" y="123" width="92" height="24" rx="3" fill="#313244"/>
-<rect x="324" y="123" width="92" height="24" rx="3" fill="#cdd6f4"/>
-<rect x="420" y="123" width="92" height="24" rx="3" fill="#89b4fa"/>
-<rect x="516" y="123" width="92" height="24" rx="3" fill="#a6e3a1"/>
-<rect x="612" y="123" width="92" height="24" rx="3" fill="#f38ba8"/>
-<rect x="708" y="123" width="92" height="24" rx="3" fill="#89b4fa"/>
-<rect x="804" y="123" width="92" height="24" rx="3" fill="#cdd6f4"/>
-<text x="12" y="170" fill="#c9ccd6">Catppuccin <tspan fill="#6b7280">D</tspan></text>
-<rect x="132" y="153" width="92" height="24" rx="3" fill="#1e1e2e"/>
-<rect x="228" y="153" width="92" height="24" rx="3" fill="#313244"/>
-<rect x="324" y="153" width="92" height="24" rx="3" fill="#cdd6f4"/>
-<rect x="420" y="153" width="92" height="24" rx="3" fill="#89b4fa"/>
-<rect x="516" y="153" width="92" height="24" rx="3" fill="#a6e3a1"/>
-<rect x="612" y="153" width="92" height="24" rx="3" fill="#f38ba8"/>
-<rect x="708" y="153" width="92" height="24" rx="3" fill="#89b4fa"/>
-<rect x="804" y="153" width="92" height="24" rx="3" fill="#cdd6f4"/>
-<text x="12" y="200" fill="#c9ccd6">Gruvbox <tspan fill="#6b7280">L</tspan></text>
-<rect x="132" y="183" width="92" height="24" rx="3" fill="#282828"/>
-<rect x="228" y="183" width="92" height="24" rx="3" fill="#504945"/>
-<rect x="324" y="183" width="92" height="24" rx="3" fill="#ebdbb2"/>
-<rect x="420" y="183" width="92" height="24" rx="3" fill="#fabd2f"/>
-<rect x="516" y="183" width="92" height="24" rx="3" fill="#b8bb26"/>
-<rect x="612" y="183" width="92" height="24" rx="3" fill="#fb4934"/>
-<rect x="708" y="183" width="92" height="24" rx="3" fill="#fabd2f"/>
-<rect x="804" y="183" width="92" height="24" rx="3" fill="#ebdbb2"/>
-<text x="12" y="230" fill="#c9ccd6">Gruvbox <tspan fill="#6b7280">D</tspan></text>
-<rect x="132" y="213" width="92" height="24" rx="3" fill="#282828"/>
-<rect x="228" y="213" width="92" height="24" rx="3" fill="#504945"/>
-<rect x="324" y="213" width="92" height="24" rx="3" fill="#ebdbb2"/>
-<rect x="420" y="213" width="92" height="24" rx="3" fill="#fabd2f"/>
-<rect x="516" y="213" width="92" height="24" rx="3" fill="#b8bb26"/>
-<rect x="612" y="213" width="92" height="24" rx="3" fill="#fb4934"/>
-<rect x="708" y="213" width="92" height="24" rx="3" fill="#fabd2f"/>
-<rect x="804" y="213" width="92" height="24" rx="3" fill="#ebdbb2"/>
-<text x="12" y="260" fill="#c9ccd6">Nord <tspan fill="#6b7280">L</tspan></text>
-<rect x="132" y="243" width="92" height="24" rx="3" fill="#2e3440"/>
-<rect x="228" y="243" width="92" height="24" rx="3" fill="#4c566a"/>
-<rect x="324" y="243" width="92" height="24" rx="3" fill="#e5e9f0"/>
-<rect x="420" y="243" width="92" height="24" rx="3" fill="#88c0d0"/>
-<rect x="516" y="243" width="92" height="24" rx="3" fill="#a3be8c"/>
-<rect x="612" y="243" width="92" height="24" rx="3" fill="#bf616a"/>
-<rect x="708" y="243" width="92" height="24" rx="3" fill="#88c0d0"/>
-<rect x="804" y="243" width="92" height="24" rx="3" fill="#e5e9f0"/>
-<text x="12" y="290" fill="#c9ccd6">Nord <tspan fill="#6b7280">D</tspan></text>
-<rect x="132" y="273" width="92" height="24" rx="3" fill="#2e3440"/>
-<rect x="228" y="273" width="92" height="24" rx="3" fill="#4c566a"/>
-<rect x="324" y="273" width="92" height="24" rx="3" fill="#e5e9f0"/>
-<rect x="420" y="273" width="92" height="24" rx="3" fill="#88c0d0"/>
-<rect x="516" y="273" width="92" height="24" rx="3" fill="#a3be8c"/>
-<rect x="612" y="273" width="92" height="24" rx="3" fill="#bf616a"/>
-<rect x="708" y="273" width="92" height="24" rx="3" fill="#88c0d0"/>
-<rect x="804" y="273" width="92" height="24" rx="3" fill="#e5e9f0"/>
-<text x="12" y="320" fill="#c9ccd6">Pastel Powder Blue <tspan fill="#6b7280">L</tspan></text>
-<rect x="132" y="303" width="92" height="24" rx="3" fill="#151E27"/>
-<rect x="228" y="303" width="92" height="24" rx="3" fill="#2C3D4C"/>
-<rect x="324" y="303" width="92" height="24" rx="3" fill="#E7EFF7"/>
-<rect x="420" y="303" width="92" height="24" rx="3" fill="#B4D0EC"/>
-<rect x="516" y="303" width="92" height="24" rx="3" fill="#A2C2AE"/>
-<rect x="612" y="303" width="92" height="24" rx="3" fill="#E0959A"/>
-<rect x="708" y="303" width="92" height="24" rx="3" fill="#B4D0EC"/>
-<rect x="804" y="303" width="92" height="24" rx="3" fill="#E7EFF7"/>
-<text x="12" y="350" fill="#c9ccd6">Pastel Powder Blue <tspan fill="#6b7280">D</tspan></text>
-<rect x="132" y="333" width="92" height="24" rx="3" fill="#151E27"/>
-<rect x="228" y="333" width="92" height="24" rx="3" fill="#2C3D4C"/>
-<rect x="324" y="333" width="92" height="24" rx="3" fill="#E7EFF7"/>
-<rect x="420" y="333" width="92" height="24" rx="3" fill="#B4D0EC"/>
-<rect x="516" y="333" width="92" height="24" rx="3" fill="#A2C2AE"/>
-<rect x="612" y="333" width="92" height="24" rx="3" fill="#E0959A"/>
-<rect x="708" y="333" width="92" height="24" rx="3" fill="#B4D0EC"/>
-<rect x="804" y="333" width="92" height="24" rx="3" fill="#E7EFF7"/>
-<text x="12" y="380" fill="#c9ccd6">Vscode <tspan fill="#6b7280">L</tspan></text>
-<rect x="132" y="363" width="92" height="24" rx="3" fill="#1e1e1e"/>
-<rect x="228" y="363" width="92" height="24" rx="3" fill="#3a3a3a"/>
-<rect x="324" y="363" width="92" height="24" rx="3" fill="#d4d4d4"/>
-<rect x="420" y="363" width="92" height="24" rx="3" fill="#298fd4"/>
-<rect x="516" y="363" width="92" height="24" rx="3" fill="#4ec9b0"/>
-<rect x="612" y="363" width="92" height="24" rx="3" fill="#f48771"/>
-<rect x="708" y="363" width="92" height="24" rx="3" fill="#298fd4"/>
-<rect x="804" y="363" width="92" height="24" rx="3" fill="#d4d4d4"/>
-<text x="12" y="410" fill="#c9ccd6">Vscode <tspan fill="#6b7280">D</tspan></text>
-<rect x="132" y="393" width="92" height="24" rx="3" fill="#1e1e1e"/>
-<rect x="228" y="393" width="92" height="24" rx="3" fill="#3a3a3a"/>
-<rect x="324" y="393" width="92" height="24" rx="3" fill="#d4d4d4"/>
-<rect x="420" y="393" width="92" height="24" rx="3" fill="#298fd4"/>
-<rect x="516" y="393" width="92" height="24" rx="3" fill="#4ec9b0"/>
-<rect x="612" y="393" width="92" height="24" rx="3" fill="#f48771"/>
-<rect x="708" y="393" width="92" height="24" rx="3" fill="#298fd4"/>
-<rect x="804" y="393" width="92" height="24" rx="3" fill="#d4d4d4"/>
-<text x="12" y="440" fill="#c9ccd6">Enchanted Forest <tspan fill="#6b7280">L</tspan></text>
-<rect x="132" y="423" width="92" height="24" rx="3" fill="#0e1814"/>
-<rect x="228" y="423" width="92" height="24" rx="3" fill="#388060"/>
-<rect x="324" y="423" width="92" height="24" rx="3" fill="#c0e0d0"/>
-<rect x="420" y="423" width="92" height="24" rx="3" fill="#c8b040"/>
-<rect x="516" y="423" width="92" height="24" rx="3" fill="#60d8a0"/>
-<rect x="612" y="423" width="92" height="24" rx="3" fill="#d06060"/>
-<rect x="708" y="423" width="92" height="24" rx="3" fill="#c8b040"/>
-<rect x="804" y="423" width="92" height="24" rx="3" fill="#60d8a0"/>
-<text x="12" y="470" fill="#c9ccd6">Enchanted Forest <tspan fill="#6b7280">D</tspan></text>
-<rect x="132" y="453" width="92" height="24" rx="3" fill="#0e1814"/>
-<rect x="228" y="453" width="92" height="24" rx="3" fill="#388060"/>
-<rect x="324" y="453" width="92" height="24" rx="3" fill="#c0e0d0"/>
-<rect x="420" y="453" width="92" height="24" rx="3" fill="#c8b040"/>
-<rect x="516" y="453" width="92" height="24" rx="3" fill="#60d8a0"/>
-<rect x="612" y="453" width="92" height="24" rx="3" fill="#d06060"/>
-<rect x="708" y="453" width="92" height="24" rx="3" fill="#c8b040"/>
-<rect x="804" y="453" width="92" height="24" rx="3" fill="#60d8a0"/>
-<text x="12" y="500" fill="#c9ccd6">Linen Sage <tspan fill="#6b7280">L</tspan></text>
-<rect x="132" y="483" width="92" height="24" rx="3" fill="#120F08"/>
-<rect x="228" y="483" width="92" height="24" rx="3" fill="#889878"/>
-<rect x="324" y="483" width="92" height="24" rx="3" fill="#E8EDE5"/>
-<rect x="420" y="483" width="92" height="24" rx="3" fill="#99AD85"/>
-<rect x="516" y="483" width="92" height="24" rx="3" fill="#588050"/>
-<rect x="612" y="483" width="92" height="24" rx="3" fill="#905048"/>
-<rect x="708" y="483" width="92" height="24" rx="3" fill="#99AD85"/>
-<rect x="804" y="483" width="92" height="24" rx="3" fill="#E8EDE5"/>
-<text x="12" y="530" fill="#c9ccd6">Linen Sage <tspan fill="#6b7280">D</tspan></text>
-<rect x="132" y="513" width="92" height="24" rx="3" fill="#120F08"/>
-<rect x="228" y="513" width="92" height="24" rx="3" fill="#39352D"/>
-<rect x="324" y="513" width="92" height="24" rx="3" fill="#E8EDE5"/>
-<rect x="420" y="513" width="92" height="24" rx="3" fill="#99AD85"/>
-<rect x="516" y="513" width="92" height="24" rx="3" fill="#88B280"/>
-<rect x="612" y="513" width="92" height="24" rx="3" fill="#CF8980"/>
-<rect x="708" y="513" width="92" height="24" rx="3" fill="#99AD85"/>
-<rect x="804" y="513" width="92" height="24" rx="3" fill="#E8EDE5"/>
-<text x="12" y="560" fill="#c9ccd6">Nature Forest <tspan fill="#6b7280">L</tspan></text>
-<rect x="132" y="543" width="92" height="24" rx="3" fill="#0f1a12"/>
-<rect x="228" y="543" width="92" height="24" rx="3" fill="#24382a"/>
-<rect x="324" y="543" width="92" height="24" rx="3" fill="#d9ead9"/>
-<rect x="420" y="543" width="92" height="24" rx="3" fill="#8fe08f"/>
-<rect x="516" y="543" width="92" height="24" rx="3" fill="#4ade80"/>
-<rect x="612" y="543" width="92" height="24" rx="3" fill="#f87171"/>
-<rect x="708" y="543" width="92" height="24" rx="3" fill="#8fe08f"/>
-<rect x="804" y="543" width="92" height="24" rx="3" fill="#d9ead9"/>
-<text x="12" y="590" fill="#c9ccd6">Nature Forest <tspan fill="#6b7280">D</tspan></text>
-<rect x="132" y="573" width="92" height="24" rx="3" fill="#0f1a12"/>
-<rect x="228" y="573" width="92" height="24" rx="3" fill="#24382a"/>
-<rect x="324" y="573" width="92" height="24" rx="3" fill="#d9ead9"/>
-<rect x="420" y="573" width="92" height="24" rx="3" fill="#8fe08f"/>
-<rect x="516" y="573" width="92" height="24" rx="3" fill="#4ade80"/>
-<rect x="612" y="573" width="92" height="24" rx="3" fill="#f87171"/>
-<rect x="708" y="573" width="92" height="24" rx="3" fill="#8fe08f"/>
-<rect x="804" y="573" width="92" height="24" rx="3" fill="#d9ead9"/>
-<text x="12" y="620" fill="#c9ccd6">Peach Fuzz <tspan fill="#6b7280">L</tspan></text>
-<rect x="132" y="603" width="92" height="24" rx="3" fill="#201c18"/>
-<rect x="228" y="603" width="92" height="24" rx="3" fill="#d89070"/>
-<rect x="324" y="603" width="92" height="24" rx="3" fill="#e8d8c8"/>
-<rect x="420" y="603" width="92" height="24" rx="3" fill="#e0a080"/>
-<rect x="516" y="603" width="92" height="24" rx="3" fill="#90c090"/>
-<rect x="612" y="603" width="92" height="24" rx="3" fill="#d07068"/>
-<rect x="708" y="603" width="92" height="24" rx="3" fill="#e0a080"/>
-<rect x="804" y="603" width="92" height="24" rx="3" fill="#f0c8a8"/>
-<text x="12" y="650" fill="#c9ccd6">Peach Fuzz <tspan fill="#6b7280">D</tspan></text>
-<rect x="132" y="633" width="92" height="24" rx="3" fill="#201c18"/>
-<rect x="228" y="633" width="92" height="24" rx="3" fill="#d89070"/>
-<rect x="324" y="633" width="92" height="24" rx="3" fill="#e8d8c8"/>
-<rect x="420" y="633" width="92" height="24" rx="3" fill="#e0a080"/>
-<rect x="516" y="633" width="92" height="24" rx="3" fill="#90c090"/>
-<rect x="612" y="633" width="92" height="24" rx="3" fill="#d07068"/>
-<rect x="708" y="633" width="92" height="24" rx="3" fill="#e0a080"/>
-<rect x="804" y="633" width="92" height="24" rx="3" fill="#f0c8a8"/>
-<text x="12" y="680" fill="#c9ccd6">Sandstone <tspan fill="#6b7280">L</tspan></text>
-<rect x="132" y="663" width="92" height="24" rx="3" fill="#1e1a14"/>
-<rect x="228" y="663" width="92" height="24" rx="3" fill="#b89060"/>
-<rect x="324" y="663" width="92" height="24" rx="3" fill="#e8dcc8"/>
-<rect x="420" y="663" width="92" height="24" rx="3" fill="#c87840"/>
-<rect x="516" y="663" width="92" height="24" rx="3" fill="#80a860"/>
-<rect x="612" y="663" width="92" height="24" rx="3" fill="#b05838"/>
-<rect x="708" y="663" width="92" height="24" rx="3" fill="#c87840"/>
-<rect x="804" y="663" width="92" height="24" rx="3" fill="#d8b880"/>
-<text x="12" y="710" fill="#c9ccd6">Sandstone <tspan fill="#6b7280">D</tspan></text>
-<rect x="132" y="693" width="92" height="24" rx="3" fill="#1e1a14"/>
-<rect x="228" y="693" width="92" height="24" rx="3" fill="#b89060"/>
-<rect x="324" y="693" width="92" height="24" rx="3" fill="#e8dcc8"/>
-<rect x="420" y="693" width="92" height="24" rx="3" fill="#c87840"/>
-<rect x="516" y="693" width="92" height="24" rx="3" fill="#80a860"/>
-<rect x="612" y="693" width="92" height="24" rx="3" fill="#b05838"/>
-<rect x="708" y="693" width="92" height="24" rx="3" fill="#c87840"/>
-<rect x="804" y="693" width="92" height="24" rx="3" fill="#d8b880"/>
-</g></svg>
+<text x="12" y="20" fill="#8b90a0" font-size="11" letter-spacing="0.08em">BG  BAR  RULE  TEXT  ACCENT  OK  ERR  WARN</text>
+<text x="12" y="58" fill="#d7dae3">Alabaster</text>
+<rect x="196" y="42" width="78" height="26" rx="3" fill="#101009" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Alabaster — background #101009</title></rect>
+<rect x="284" y="42" width="78" height="26" rx="3" fill="#1D1C11" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Alabaster — status_bar_bg #1D1C11</title></rect>
+<rect x="372" y="42" width="78" height="26" rx="3" fill="#36362E" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Alabaster — ui_border #36362E</title></rect>
+<rect x="460" y="42" width="78" height="26" rx="3" fill="#EEEBE2" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Alabaster — ui_text #EEEBE2</title></rect>
+<rect x="548" y="42" width="78" height="26" rx="3" fill="#7CA1FA" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Alabaster — ui_accent #7CA1FA</title></rect>
+<rect x="636" y="42" width="78" height="26" rx="3" fill="#70B975" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Alabaster — ui_ok #70B975</title></rect>
+<rect x="724" y="42" width="78" height="26" rx="3" fill="#F0726D" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Alabaster — ui_error #F0726D</title></rect>
+<rect x="812" y="42" width="78" height="26" rx="3" fill="#DAA84F" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Alabaster — ui_warn #DAA84F</title></rect>
+<text x="12" y="98" fill="#d7dae3">Bone White</text>
+<rect x="196" y="82" width="78" height="26" rx="3" fill="#1a1a1a" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Bone White — background #1a1a1a</title></rect>
+<rect x="284" y="82" width="78" height="26" rx="3" fill="#101010" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Bone White — status_bar_bg #101010</title></rect>
+<rect x="372" y="82" width="78" height="26" rx="3" fill="#444a50" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Bone White — ui_border #444a50</title></rect>
+<rect x="460" y="82" width="78" height="26" rx="3" fill="#d8d8d8" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Bone White — ui_text #d8d8d8</title></rect>
+<rect x="548" y="82" width="78" height="26" rx="3" fill="#608088" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Bone White — ui_accent #608088</title></rect>
+<rect x="636" y="82" width="78" height="26" rx="3" fill="#789880" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Bone White — ui_ok #789880</title></rect>
+<rect x="724" y="82" width="78" height="26" rx="3" fill="#987878" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Bone White — ui_error #987878</title></rect>
+<rect x="812" y="82" width="78" height="26" rx="3" fill="#989078" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Bone White — ui_warn #989078</title></rect>
+<text x="12" y="138" fill="#d7dae3">Dark Catppuccin</text>
+<rect x="196" y="122" width="78" height="26" rx="3" fill="#1e1e2e" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Catppuccin — background #1e1e2e</title></rect>
+<rect x="284" y="122" width="78" height="26" rx="3" fill="#1c1c2a" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Catppuccin — status_bar_bg #1c1c2a</title></rect>
+<rect x="372" y="122" width="78" height="26" rx="3" fill="#313244" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Catppuccin — ui_border #313244</title></rect>
+<rect x="460" y="122" width="78" height="26" rx="3" fill="#cdd6f4" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Catppuccin — ui_text #cdd6f4</title></rect>
+<rect x="548" y="122" width="78" height="26" rx="3" fill="#89b4fa" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Catppuccin — ui_accent #89b4fa</title></rect>
+<rect x="636" y="122" width="78" height="26" rx="3" fill="#a6e3a1" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Catppuccin — ui_ok #a6e3a1</title></rect>
+<rect x="724" y="122" width="78" height="26" rx="3" fill="#f38ba8" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Catppuccin — ui_error #f38ba8</title></rect>
+<rect x="812" y="122" width="78" height="26" rx="3" fill="#f9e2af" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Catppuccin — ui_warn #f9e2af</title></rect>
+<text x="12" y="178" fill="#d7dae3">Dark Gruvbox</text>
+<rect x="196" y="162" width="78" height="26" rx="3" fill="#282828" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Gruvbox — background #282828</title></rect>
+<rect x="284" y="162" width="78" height="26" rx="3" fill="#252525" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Gruvbox — status_bar_bg #252525</title></rect>
+<rect x="372" y="162" width="78" height="26" rx="3" fill="#504945" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Gruvbox — ui_border #504945</title></rect>
+<rect x="460" y="162" width="78" height="26" rx="3" fill="#ebdbb2" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Gruvbox — ui_text #ebdbb2</title></rect>
+<rect x="548" y="162" width="78" height="26" rx="3" fill="#fabd2f" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Gruvbox — ui_accent #fabd2f</title></rect>
+<rect x="636" y="162" width="78" height="26" rx="3" fill="#b8bb26" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Gruvbox — ui_ok #b8bb26</title></rect>
+<rect x="724" y="162" width="78" height="26" rx="3" fill="#fb4934" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Gruvbox — ui_error #fb4934</title></rect>
+<rect x="812" y="162" width="78" height="26" rx="3" fill="#fabd2f" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Gruvbox — ui_warn #fabd2f</title></rect>
+<text x="12" y="218" fill="#d7dae3">Dark Nord</text>
+<rect x="196" y="202" width="78" height="26" rx="3" fill="#2e3440" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Nord — background #2e3440</title></rect>
+<rect x="284" y="202" width="78" height="26" rx="3" fill="#2a303b" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Nord — status_bar_bg #2a303b</title></rect>
+<rect x="372" y="202" width="78" height="26" rx="3" fill="#4c566a" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Nord — ui_border #4c566a</title></rect>
+<rect x="460" y="202" width="78" height="26" rx="3" fill="#e5e9f0" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Nord — ui_text #e5e9f0</title></rect>
+<rect x="548" y="202" width="78" height="26" rx="3" fill="#88c0d0" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Nord — ui_accent #88c0d0</title></rect>
+<rect x="636" y="202" width="78" height="26" rx="3" fill="#a3be8c" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Nord — ui_ok #a3be8c</title></rect>
+<rect x="724" y="202" width="78" height="26" rx="3" fill="#bf616a" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Nord — ui_error #bf616a</title></rect>
+<rect x="812" y="202" width="78" height="26" rx="3" fill="#ebcb8b" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Nord — ui_warn #ebcb8b</title></rect>
+<text x="12" y="258" fill="#d7dae3">Dark Pastel Powder Blue</text>
+<rect x="196" y="242" width="78" height="26" rx="3" fill="#151E27" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Pastel Powder Blue — background #151E27</title></rect>
+<rect x="284" y="242" width="78" height="26" rx="3" fill="#1C2833" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Pastel Powder Blue — status_bar_bg #1C2833</title></rect>
+<rect x="372" y="242" width="78" height="26" rx="3" fill="#2C3D4C" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Pastel Powder Blue — ui_border #2C3D4C</title></rect>
+<rect x="460" y="242" width="78" height="26" rx="3" fill="#E7EFF7" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Pastel Powder Blue — ui_text #E7EFF7</title></rect>
+<rect x="548" y="242" width="78" height="26" rx="3" fill="#B4D0EC" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Pastel Powder Blue — ui_accent #B4D0EC</title></rect>
+<rect x="636" y="242" width="78" height="26" rx="3" fill="#A2C2AE" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Pastel Powder Blue — ui_ok #A2C2AE</title></rect>
+<rect x="724" y="242" width="78" height="26" rx="3" fill="#E0959A" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Pastel Powder Blue — ui_error #E0959A</title></rect>
+<rect x="812" y="242" width="78" height="26" rx="3" fill="#E0B981" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Pastel Powder Blue — ui_warn #E0B981</title></rect>
+<text x="12" y="298" fill="#d7dae3">Dark Vscode</text>
+<rect x="196" y="282" width="78" height="26" rx="3" fill="#1e1e1e" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Vscode — background #1e1e1e</title></rect>
+<rect x="284" y="282" width="78" height="26" rx="3" fill="#1c1c1c" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Vscode — status_bar_bg #1c1c1c</title></rect>
+<rect x="372" y="282" width="78" height="26" rx="3" fill="#3a3a3a" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Vscode — ui_border #3a3a3a</title></rect>
+<rect x="460" y="282" width="78" height="26" rx="3" fill="#d4d4d4" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Vscode — ui_text #d4d4d4</title></rect>
+<rect x="548" y="282" width="78" height="26" rx="3" fill="#298fd4" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Vscode — ui_accent #298fd4</title></rect>
+<rect x="636" y="282" width="78" height="26" rx="3" fill="#4ec9b0" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Vscode — ui_ok #4ec9b0</title></rect>
+<rect x="724" y="282" width="78" height="26" rx="3" fill="#f48771" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Vscode — ui_error #f48771</title></rect>
+<rect x="812" y="282" width="78" height="26" rx="3" fill="#dcdcaa" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Dark Vscode — ui_warn #dcdcaa</title></rect>
+<text x="12" y="338" fill="#d7dae3">Enchanted Forest</text>
+<rect x="196" y="322" width="78" height="26" rx="3" fill="#0e1814" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Enchanted Forest — background #0e1814</title></rect>
+<rect x="284" y="322" width="78" height="26" rx="3" fill="#08100c" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Enchanted Forest — status_bar_bg #08100c</title></rect>
+<rect x="372" y="322" width="78" height="26" rx="3" fill="#388060" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Enchanted Forest — ui_border #388060</title></rect>
+<rect x="460" y="322" width="78" height="26" rx="3" fill="#c0e0d0" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Enchanted Forest — ui_text #c0e0d0</title></rect>
+<rect x="548" y="322" width="78" height="26" rx="3" fill="#c8b040" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Enchanted Forest — ui_accent #c8b040</title></rect>
+<rect x="636" y="322" width="78" height="26" rx="3" fill="#60d8a0" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Enchanted Forest — ui_ok #60d8a0</title></rect>
+<rect x="724" y="322" width="78" height="26" rx="3" fill="#d06060" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Enchanted Forest — ui_error #d06060</title></rect>
+<rect x="812" y="322" width="78" height="26" rx="3" fill="#c8b040" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Enchanted Forest — ui_warn #c8b040</title></rect>
+<text x="12" y="378" fill="#d7dae3">Linen Sage</text>
+<rect x="196" y="362" width="78" height="26" rx="3" fill="#120F08" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Linen Sage — background #120F08</title></rect>
+<rect x="284" y="362" width="78" height="26" rx="3" fill="#201B11" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Linen Sage — status_bar_bg #201B11</title></rect>
+<rect x="372" y="362" width="78" height="26" rx="3" fill="#39352D" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Linen Sage — ui_border #39352D</title></rect>
+<rect x="460" y="362" width="78" height="26" rx="3" fill="#E8EDE5" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Linen Sage — ui_text #E8EDE5</title></rect>
+<rect x="548" y="362" width="78" height="26" rx="3" fill="#99AD85" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Linen Sage — ui_accent #99AD85</title></rect>
+<rect x="636" y="362" width="78" height="26" rx="3" fill="#88B280" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Linen Sage — ui_ok #88B280</title></rect>
+<rect x="724" y="362" width="78" height="26" rx="3" fill="#CF8980" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Linen Sage — ui_error #CF8980</title></rect>
+<rect x="812" y="362" width="78" height="26" rx="3" fill="#CDAA81" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Linen Sage — ui_warn #CDAA81</title></rect>
+<text x="12" y="418" fill="#d7dae3">Nature Forest</text>
+<rect x="196" y="402" width="78" height="26" rx="3" fill="#0f1a12" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Nature Forest — background #0f1a12</title></rect>
+<rect x="284" y="402" width="78" height="26" rx="3" fill="#0e1710" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Nature Forest — status_bar_bg #0e1710</title></rect>
+<rect x="372" y="402" width="78" height="26" rx="3" fill="#24382a" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Nature Forest — ui_border #24382a</title></rect>
+<rect x="460" y="402" width="78" height="26" rx="3" fill="#d9ead9" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Nature Forest — ui_text #d9ead9</title></rect>
+<rect x="548" y="402" width="78" height="26" rx="3" fill="#8fe08f" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Nature Forest — ui_accent #8fe08f</title></rect>
+<rect x="636" y="402" width="78" height="26" rx="3" fill="#4ade80" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Nature Forest — ui_ok #4ade80</title></rect>
+<rect x="724" y="402" width="78" height="26" rx="3" fill="#f87171" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Nature Forest — ui_error #f87171</title></rect>
+<rect x="812" y="402" width="78" height="26" rx="3" fill="#fbbf24" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Nature Forest — ui_warn #fbbf24</title></rect>
+<text x="12" y="458" fill="#d7dae3">Peach Fuzz</text>
+<rect x="196" y="442" width="78" height="26" rx="3" fill="#201c18" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Peach Fuzz — background #201c18</title></rect>
+<rect x="284" y="442" width="78" height="26" rx="3" fill="#141210" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Peach Fuzz — status_bar_bg #141210</title></rect>
+<rect x="372" y="442" width="78" height="26" rx="3" fill="#d89070" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Peach Fuzz — ui_border #d89070</title></rect>
+<rect x="460" y="442" width="78" height="26" rx="3" fill="#e8d8c8" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Peach Fuzz — ui_text #e8d8c8</title></rect>
+<rect x="548" y="442" width="78" height="26" rx="3" fill="#e0a080" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Peach Fuzz — ui_accent #e0a080</title></rect>
+<rect x="636" y="442" width="78" height="26" rx="3" fill="#90c090" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Peach Fuzz — ui_ok #90c090</title></rect>
+<rect x="724" y="442" width="78" height="26" rx="3" fill="#d07068" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Peach Fuzz — ui_error #d07068</title></rect>
+<rect x="812" y="442" width="78" height="26" rx="3" fill="#e0b870" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Peach Fuzz — ui_warn #e0b870</title></rect>
+<text x="12" y="498" fill="#d7dae3">Sandstone</text>
+<rect x="196" y="482" width="78" height="26" rx="3" fill="#1e1a14" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Sandstone — background #1e1a14</title></rect>
+<rect x="284" y="482" width="78" height="26" rx="3" fill="#14100c" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Sandstone — status_bar_bg #14100c</title></rect>
+<rect x="372" y="482" width="78" height="26" rx="3" fill="#b89060" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Sandstone — ui_border #b89060</title></rect>
+<rect x="460" y="482" width="78" height="26" rx="3" fill="#e8dcc8" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Sandstone — ui_text #e8dcc8</title></rect>
+<rect x="548" y="482" width="78" height="26" rx="3" fill="#c87840" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Sandstone — ui_accent #c87840</title></rect>
+<rect x="636" y="482" width="78" height="26" rx="3" fill="#80a860" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Sandstone — ui_ok #80a860</title></rect>
+<rect x="724" y="482" width="78" height="26" rx="3" fill="#b05838" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Sandstone — ui_error #b05838</title></rect>
+<rect x="812" y="482" width="78" height="26" rx="3" fill="#d8a040" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1"><title>Sandstone — ui_warn #d8a040</title></rect>
+</g>
+</svg>
