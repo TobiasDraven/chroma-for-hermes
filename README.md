@@ -11,11 +11,18 @@ import and export of TweakCN presets and VS Code themes.
 Hermes Desktop → **Capabilities** → **Plugins** → **Install**, then paste:
 
 ```
-https://github.com/TobiasDraven/chroma-for-hermes/chroma
+https://github.com/TobiasDraven/chroma-for-hermes#chroma
 ```
 
 The plugin package is the `chroma/` subdirectory of this repository. The catalog installs that
 subdirectory and the host sparse-clones only it, so the rest of this repo is not shipped.
+
+> Install the SUBDIRECTORY, not the repository root. A bare repo URL has no `plugin.yaml`
+> and no `desktop/plugin.js` at its root, so the installer correctly reports
+> "no plugin found in this directory". Either form below works:
+>
+> - `https://github.com/TobiasDraven/chroma-for-hermes#chroma`
+> - `https://github.com/TobiasDraven/chroma-for-hermes/tree/main/chroma`
 
 ## Repository layout
 

@@ -8,6 +8,15 @@ fork's work. The bundled `skins-v2/*.yaml` palettes are the work of their
 respective authors and are redistributed here under the terms of their MIT
 licenses, reproduced below.
 
+## TweakCN (external service, no bundled code)
+
+Chroma's importer can fetch a public theme preset from `https://tweakcn.com/r/themes/<name>.json`
+when the user pastes a preset name or a tweakcn.com URL. Nothing from TweakCN is bundled,
+vendored or redistributed with this plugin: the import is a user-initiated HTTPS GET of a public
+JSON document, and the response is mapped onto Chroma's own palette fields. The request is made
+only on that explicit user action; Chroma sends no credentials and no telemetry. TweakCN's own
+terms govern the content it serves should you redistribute a preset you imported.
+
 ## Bundled skins
 
 | Source | Skins included | License |
