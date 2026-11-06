@@ -1,8 +1,8 @@
 # Submitting Chroma to the Hermes plugin catalog
 
-Status: **prepared and re-checked against the live rules on 2026-11-06; PR not opened.** This file is the record of what the catalog
+Status: **PR opened 2026-11-06 — NousResearch/hermes-agent#149767, pinned to `494770b`. Both gates read `action_required`: GitHub holds workflows on a first-time contributor's PR until a Nous maintainer approves the run. Nothing has executed there yet.** This file is the record of what the catalog
 asks for and where we stand against it. It is not a substitute for the
-authoritative rules. The ready-to-PR entry lives in `docs/catalog/chroma.yaml`, pinned to `1d7b5a4`.
+authoritative rules. The ready-to-PR entry lives in `docs/catalog/chroma.yaml`, pinned to `494770b`.
 
 Authoritative sources (read from `origin/main` on 2026-11-06, not from a local
 checkout — the installed tree was a month stale and three rules had moved):
