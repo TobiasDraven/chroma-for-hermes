@@ -2,7 +2,7 @@
 
 Status: **prepared and re-checked against the live rules on 2026-11-06; PR not opened.** This file is the record of what the catalog
 asks for and where we stand against it. It is not a substitute for the
-authoritative rules. The ready-to-PR entry lives in `docs/catalog/chroma.yaml`.
+authoritative rules. The ready-to-PR entry lives in `docs/catalog/chroma.yaml`, pinned to `1d7b5a4`.
 
 Authoritative sources (read from `origin/main` on 2026-11-06, not from a local
 checkout — the installed tree was a month stale and three rules had moved):
@@ -76,6 +76,14 @@ Rules that shape those values:
   code: the 2.22:1 banner as `image`, and two captures as `screenshots` (the
   picker grid and the full desktop). All three URLs answer `200` at the pin.
   The README renders as the plugin page at `/docs/plugins/chroma`.
+- The card image is `docs/catalog-banner.png`, a 1200x600 (true 2:1) crop of the
+  hero. The hero itself is untouched. 315 KB, under the 1 MiB scanner limit.
+- The README now carries **"How this was built"**: significant AI assistance, a
+  hobby-coder maintainer, and the gates named as the proof. The same sentence is
+  in the entry description, so a catalogue visitor sees it before installing.
+- The entry no longer claims "no shell commands". The plugin starts none, but
+  the repository ships optional install helper scripts a user may run, and rule
+  13 punishes exactly that kind of overclaim.
 - `subdir: chroma` is **required**, not optional: `plugin.yaml` sits in
   `chroma/`, not at the repo root, and the loader looks for it at the entry's
   `subdir`. Without it the pinned-source gate fails on a correct tree, and the
@@ -163,7 +171,10 @@ Validation passed.
 
 The structural gate is green too: `scripts/validate_plugin_catalog.py` (the copy
 from `origin/main`, not the local stale one) against `docs/catalog/chroma.yaml`
-prints `OK: 1 file(s) valid`.
+prints `OK: 1 file(s) valid`. The pinned-source gate was replicated by hand at
+the same pin: fresh clone, checkout `1d7b5a4`, `hermes plugins validate .
+--install-deps` in `chroma/` → `Validation passed`, and all three image URLs
+return `200` at that commit.
 
 The capability probe is the line that matters most. An earlier tree had no
 `__init__.py`, and the gate then printed
