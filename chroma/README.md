@@ -403,6 +403,27 @@ themes locally. Gateway sync is optional.
 A: Place a YAML file in `~/.hermes/skins/` and apply it once. It appears in the
 picker after that, not before. See [Add your own skins](#add-your-own-skins) above.
 
+## How this was built
+
+Chroma was built with **significant assistance from AI agents**. The maintainer,
+Tobias Draven, is a **hobby coder**, not a professional software engineer.
+
+The working method is human-in-the-loop. An agent writes a change against a
+written brief; the maintainer reads it, decides, and states what must change.
+The gates are what actually prove the result, not the agent's own report:
+`node --test`, `pytest`, a quality gate, and a three-OS matrix in
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml). A claim without a
+passing gate is treated as unproven.
+
+What that means if you use this plugin:
+
+- Read the code. It is plain ES modules and one FastAPI router, with comments
+  that say why, not only what. Nothing is minified or bundled.
+- Expect hobby-project support, not vendor support. Issues are welcome; fixes
+  arrive when they arrive.
+- The AI wrote most of the code, the tests and the docs. The judgement, the
+  scope and the acceptance of every release were human.
+
 ## Credits
 
 Chroma is a hard fork of [Hermes Theme Picker](https://github.com/jdtimothy/hermes-theme-picker)
