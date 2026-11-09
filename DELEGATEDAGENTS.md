@@ -244,6 +244,18 @@ Environment truths that change the answer:
   command; a relative path or a glob will quietly resolve against the wrong tree.
 - **Do not touch `rigour.yml` thresholds to pass a check.** If a finding is a false positive, adjudicate
   it in `docs/TASKS.md` with the evidence, as the existing entries do.
+- **A skin is NOT single-mode outside the CLI.** The TUI picks a palette by terminal polarity and
+  reads `colors` + `light_colors` + `dark_colors`. Hermes Desktop's converter reads `colors` ALONE and
+  uses it for both of its slots (`apps/desktop/src/themes/skin.ts`: "A skin is single-mode, so both
+  `colors` and `darkColors` get the converted palette"). A skin written in the CLI's pair shape — light
+  in `colors` — therefore paints LIGHT in every mode the moment the host resolves it, however correct
+  the plugin's own paint was. That is what made forked skins revert from dark to light a few seconds
+  after being applied. Every skin this repo owns publishes one single-mode transport per polarity
+  (`<skin>-light`, `<skin>-dark`) and hands the Desktop the one that matches the mode. Any future writer
+  must do the same.
+- **A derived file must not be counted as a skin.** The per-mode transports are projections. The cap
+  counter excludes them, and so must any new inventory: `_derived_transport_names()` is the list, keyed
+  off the index's `gateway` map.
 
 ## 7. Parity discipline — how a change to a mapper or a card is proven
 
