@@ -59,7 +59,7 @@ let _rest = null
 let _pluginRegister = null
 
 // Replaced with the real version at build time (scripts/regenerate.py).
-const BUILD_STAMP = '2.9.1'
+const BUILD_STAMP = '2.9.2'
 
 // The Python half is optional: the Desktop half applies and previews themes
 // with no backend at all. When it is absent every backend call throws this exact
@@ -1167,12 +1167,18 @@ async function importThemeIntoSkins(name, theme) {
  * imported before the index existed has no record either, so it reports as
  * unmanaged — which is honest, and why the picker says so instead of pretending.
  */
+const OWNED_GATEWAY = new Map()
+
 async function listOwnedSkins() {
   if (!_rest) return {}
   const result = await _rest('skins')
   const rows = (result && result.skins) || []
+  OWNED_GATEWAY.clear()
   const owned = {}
-  for (const row of rows) owned[row.name] = row
+  for (const row of rows) {
+    owned[row.name] = row
+    if (row && row.gateway && typeof row.gateway === 'object') OWNED_GATEWAY.set(row.name, row.gateway)
+  }
   return owned
 }
 
@@ -1623,7 +1629,8 @@ function foldSavedSkin(name, saved) {
   const light = saved ? pick(saved.light) : null
   const dark = saved ? pick(saved.dark) : null
   const typography = saved ? pick(saved.typography) : null
-  if (!light && !dark && !typography) return
+  const gateway = saved && saved.gateway && typeof saved.gateway === 'object' ? saved.gateway : null
+  if (!light && !dark && !typography && !gateway) return
   const merged = scene => {
     const next = safeMerge(scene)
     if (light) {
@@ -1632,6 +1639,10 @@ function foldSavedSkin(name, saved) {
     }
     if (dark) next.darkColors = safeMerge(scene.darkColors || scene.colors || {}, dark)
     if (typography) next.typography = safeMerge(scene.typography || {}, typography)
+    if (gateway) {
+      if (gateway.light) next.gatewayLightName = gateway.light
+      if (gateway.dark) next.gatewayDarkName = gateway.dark
+    }
     return next
   }
   const index = IMPORTED_SKINS.findIndex(scene => scene && scene.name === name)
@@ -1639,9 +1650,7 @@ function foldSavedSkin(name, saved) {
     IMPORTED_SKINS[index] = merged(IMPORTED_SKINS[index])
     return
   }
-  // A skin the pane only knew from live discovery: it is still a real scene, so
-  // record what it now holds rather than leaving the gallery on stale colours.
-  IMPORTED_SKINS.push(merged({
+  const scene = merged({
     name: name,
     label: name,
     description: 'Chroma skin',
@@ -1650,7 +1659,12 @@ function foldSavedSkin(name, saved) {
     lightColors: light || {},
     darkColors: dark || undefined,
     typography: typography || undefined
-  }))
+  })
+  if (gateway) {
+    if (gateway.light) scene.gatewayLightName = gateway.light
+    if (gateway.dark) scene.gatewayDarkName = gateway.dark
+  }
+  IMPORTED_SKINS.push(scene)
 }
 
 // ---------------------------------------------------------------------------
@@ -2917,31 +2931,50 @@ function useActiveSkin() {
 }
 
 function normalizeLiveSkin(skin) {
-  const colors = (skin && skin.colors) || {}
+  const lightColors = (skin && (skin.light_colors || skin.colors)) || {}
+  const darkColors = (skin && skin.dark_colors) || null
   const isHex = v => typeof v === 'string' && /^#([0-9a-f]{6})$/i.test(v)
-  const bg = isHex(colors.background) ? colors.background : isHex(colors.status_bar_bg) ? colors.status_bar_bg : ''
-  const text = isHex(colors.banner_text) ? colors.banner_text : isHex(colors.ui_text) ? colors.ui_text : ''
+  const bg = isHex(lightColors.background) ? lightColors.background : isHex(lightColors.status_bar_bg) ? lightColors.status_bar_bg : ''
+  const text = isHex(lightColors.banner_text) ? lightColors.banner_text : isHex(lightColors.ui_text) ? lightColors.ui_text : ''
   const isDark = bg ? luminance(bg) < 0.5 : text ? luminance(text) < 0.5 : true
-  return {
+  const modeSupport = (lightColors && Object.keys(lightColors).length && darkColors && Object.keys(darkColors).length)
+    ? 'dynamic' : (darkColors && Object.keys(darkColors).length ? 'dark' : 'light')
+  const g = (typeof OWNED_GATEWAY !== 'undefined' && OWNED_GATEWAY.get) ? OWNED_GATEWAY.get(skin && skin.name) : null
+  const out = {
     name: skin.name,
     label: skin.name.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
     description: skin.description || 'Newly installed skin',
     category: 'New',
     source: 'live',
-    modeSupport: isDark ? 'dark' : 'light',
-    lightColors: isDark ? null : colors,
-    darkColors: isDark ? colors : null,
-    lightName: isDark ? null : skin.name,
-    darkName: isDark ? skin.name : null,
-    colors
+    modeSupport: modeSupport,
+    lightColors: lightColors,
+    darkColors: darkColors || undefined,
+    lightName: g && g.light ? g.light : (lightColors && Object.keys(lightColors).length ? skin.name : null),
+    darkName: g && g.dark ? g.dark : (darkColors && Object.keys(darkColors).length ? skin.name : null),
+    colors: lightColors
   }
+  if (g) {
+    if (g.light) out.gatewayLightName = g.light
+    if (g.dark) out.gatewayDarkName = g.dark
+  }
+  return out
 }
 
 function gatewaySkinNameFor(scene, mode) {
-  return mode === 'dark'
-    ? scene.gatewayDarkName || scene.darkName || scene.name
-    : scene.gatewayLightName || scene.lightName || scene.name
+  const g = (typeof globalThis !== 'undefined' && globalThis.OWNED_GATEWAY && globalThis.OWNED_GATEWAY.get)
+    ? globalThis.OWNED_GATEWAY.get(scene && scene.name)
+    : ((typeof OWNED_GATEWAY !== 'undefined' && OWNED_GATEWAY && OWNED_GATEWAY.get) ? OWNED_GATEWAY.get(scene && scene.name) : null)
+  if (g) {
+    const v = mode === 'dark' ? g.dark : g.light
+    if (v) return v
+  }
+  if (mode === 'dark') {
+    return scene.gatewayDarkName || scene.darkName || scene.name
+  }
+  return scene.gatewayLightName || scene.lightName || scene.name
 }
+globalThis.OWNED_GATEWAY = OWNED_GATEWAY
+globalThis.gatewaySkinNameFor = gatewaySkinNameFor
 
 function persistLatestAppearance(profile) {
   const latest = latestAppearanceByProfile.get(profile)

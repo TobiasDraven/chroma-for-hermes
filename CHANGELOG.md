@@ -5,6 +5,26 @@ Notable changes to Chroma are documented here. This project uses
 
 ## [Unreleased]
 
+## [2.9.2] - 2026-11-09
+
+A skin you forked or edited no longer reverts from dark to light a few seconds
+after you apply it.
+
+Hermes Desktop's theme converter reads ONE palette from a skin - its `colors`
+key - and uses it for both modes. It never reads the `light_colors` /
+`dark_colors` pair that the CLI uses. Chroma wrote its own skins in the CLI's pair
+shape, with the light palette in `colors`, and then handed that name to the
+Desktop, so every repaint there landed on the light palette.
+
+Every skin Chroma owns now also publishes a single-mode transport per polarity
+(`<skin>-light`, `<skin>-dark`) beside the skin, each carrying its own palette in
+`colors`, and the picker hands the Desktop the transport that matches the mode.
+The bare skin keeps its pair shape, so the CLI and `/skin <name>` are unchanged.
+Skins created before this version are repaired on the next plugin load.
+
+Also fixed: a skin discovered live was recorded as single-mode, so the picker
+could not offer its second palette until a restart.
+
 ## [2.9.1] - 2026-10-21
 
 Chroma now declares that it owns no Python packages, so installing it never

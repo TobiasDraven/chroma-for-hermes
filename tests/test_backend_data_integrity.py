@@ -766,8 +766,12 @@ class DataLossNegativesTests(BackendTestCase):
         original = self.skin_path("doomed").read_bytes()
         self.api.delete_skin("doomed")
         trashed = list(self.trash_dir().glob("doomed-*.yaml"))
-        self.assertEqual(len(trashed), 1)
-        self.assertEqual(trashed[0].read_bytes(), original, "the trash holds the skin's bytes")
+        self.assertEqual(len(trashed), 3, "the skin and both derived transports are recoverable")
+        exact = [p for p in trashed if p.read_bytes() == original]
+        self.assertEqual(len(exact), 1, "the trash holds the skin's bytes")
+        self.assertEqual(
+            list(self.skins_dir().glob("doomed*.yaml")), [], "a delete leaves nothing behind"
+        )
 
     def test_a_corrupt_index_is_quarantined_before_a_refusal(self):
         from fastapi import HTTPException

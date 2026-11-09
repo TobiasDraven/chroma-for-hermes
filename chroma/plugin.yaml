@@ -32,7 +32,7 @@
 #                         package here would put Chroma back on the resolver path.
 #                         tests/test_dependency_contract.py is the permanent gate.
 name: chroma
-version: "2.9.1"
+version: 2.9.2
 manifest_version: 1
 kind: standalone
 provides_tools: []

@@ -844,6 +844,24 @@ def main() -> int:
     # into a blank line after every line of the generated plugin.
     template_text = template.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
     plugin = template_text.replace("__SKINS_DATA__", data)
+
+    # Stamp the build number from VERSION, which is the package's own source of
+    # truth. The panel shows BUILD_STAMP to the user, and a hand-maintained copy
+    # drifted: a 2.9.1 build shipped inside a 2.9.2 tree because nothing tied the
+    # two together. A missing VERSION leaves the template's value alone rather
+    # than failing the build.
+    version_file = next(
+        (path for path in (package_dir / ".." / "VERSION", script_dir.parent / "VERSION") if path.is_file()),
+        None,
+    )
+    if version_file:
+        version = version_file.read_text(encoding="utf-8").strip()
+        plugin = re.sub(
+            r"(?m)^const BUILD_STAMP = '[^']*'$",
+            f"const BUILD_STAMP = '{version}'",
+            plugin,
+            count=1,
+        )
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(plugin, encoding="utf-8", newline="\n")
 

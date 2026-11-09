@@ -317,6 +317,7 @@ def list_chroma_skins() -> dict[str, Any]:
     or a crash between the two writes). Reported rather than hidden, because a
     silently dropped entry is a skin the user cannot explain the absence of.
     """
+    _ensure_owned_pairs()
     skins_dir = _skins_dir()
     index = _read_index()
     skins = []
@@ -350,6 +351,7 @@ def list_chroma_skins() -> dict[str, Any]:
                 "owned": True,
                 "cliCapable": present,
                 "missing": not present,
+                "gateway": record.get("gateway") or _derive_gateway(name, skins_dir),
             }
         )
     return {"ok": True, "count": len(skins), "skins": skins}
@@ -669,6 +671,27 @@ def import_skin(req: ImportRequest) -> dict[str, Any]:
                 f"Fix free space or permissions and retry.",
             ) from exc
 
+        # The Desktop's converter reads only a skin's `colors` key, and this
+        # importer writes the light palette there. Mint the per-mode transports
+        # so the Desktop can resolve each polarity on its own.
+        try:
+            light_map, dark_map = _skin_palettes(target)
+            _mint_owned_pair(name, light_map, dark_map, data["description"])
+            gw = {}
+            if light_map:
+                gw["light"] = f"{name}-light"
+            if dark_map:
+                gw["dark"] = f"{name}-dark"
+            if gw:
+                index[name]["gateway"] = gw
+                _write_index(index)
+        except (OSError, HTTPException) as exc:
+            raise HTTPException(
+                500,
+                f"the skin was imported but its gateway transports were not ({exc}); "
+                "delete it and import again",
+            ) from exc
+
     logger.info("wrote skin %s", target)
     return {"ok": True, "name": name, "path": str(target)}
 
@@ -845,6 +868,13 @@ def delete_skin(name: str, active: str = "") -> dict[str, Any]:
             raise HTTPException(
                 500, f"could not move the skin to the trash ({trashed.name}): {exc}"
             ) from exc
+        for mode in ("light", "dark"):
+            p = skins_dir / f"{clean}-{mode}.yaml"
+            if p.is_file():
+                try:
+                    os.replace(p, _trash_dir() / f"{clean}-{mode}-{stamp}.yaml")
+                except OSError:
+                    pass
 
         index.pop(clean, None)
         _write_index_or_500(index)
@@ -903,6 +933,11 @@ def rename_skin(req: RenameRequest) -> dict[str, Any]:
         # what the engine reads, so it must never point at a file that is not there.
         try:
             os.replace(src, dst)
+            for mode in ("light", "dark"):
+                sp = skins_dir / f"{source}-{mode}.yaml"
+                dp = skins_dir / f"{target}-{mode}.yaml"
+                if sp.is_file():
+                    os.replace(sp, dp)
         except OSError as exc:
             raise HTTPException(500, f"could not move the skin file to {dst}: {exc}") from exc
 
@@ -1740,7 +1775,15 @@ def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
         except OSError as exc:
             raise HTTPException(500, f"could not write the skin file {target.name}: {exc}") from exc
 
+        # The per-mode transports are minted AFTER the index write (below): a
+        # failed index write rolls the skin file back, and transports written
+        # first would then advertise a palette the skin no longer holds.
+
         updated = dict(record)
+        if light:
+            updated.setdefault("gateway", {})["light"] = f"{clean}-light"
+        if dark:
+            updated.setdefault("gateway", {})["dark"] = f"{clean}-dark"
         if req.label:
             updated["label"] = req.label
         # "" is a real value here, not an omission: it clears the assignment.
@@ -1762,6 +1805,20 @@ def put_skin(name: str, req: ScenePaletteRequest) -> dict[str, Any]:
                 f"the skin file was rewritten but the provenance index could not be "
                 f"updated ({exc}); the file was rolled back. Fix free space or "
                 f"permissions and retry.",
+            ) from exc
+
+        # The Desktop's converter reads only a skin's `colors` key, so this
+        # file's pair shape (light in `colors`) paints light in every mode. Mint
+        # one single-mode transport per polarity — that is what it can read.
+        # A failure here is loud: the edit landed, but the Desktop would repaint
+        # from a stale palette, which is the bug this exists to prevent.
+        try:
+            _mint_owned_pair(clean, merged_light, merged_dark, data["description"])
+        except OSError as exc:
+            raise HTTPException(
+                500,
+                f"the skin was saved but its gateway transports were not ({exc}); "
+                "apply another theme before trusting the Desktop to paint this one",
             ) from exc
 
     logger.info("rewrote skin %s", clean)
@@ -2133,6 +2190,7 @@ def duplicate_skin(req: DuplicateRequest) -> dict[str, Any]:
 
         try:
             _atomic_write_text(target, _dump_skin_yaml(data))
+            _mint_owned_pair(to, light if light else {}, dark if dark else {}, label or to)
         except OSError as exc:
             raise HTTPException(500, f"could not write the skin file {target.name}: {exc}") from exc
 
@@ -2142,6 +2200,13 @@ def duplicate_skin(req: DuplicateRequest) -> dict[str, Any]:
             pack=None,
             ts=datetime.now(timezone.utc).isoformat(timespec="seconds"),
         )
+        gw = {}
+        if light:
+            gw["light"] = f"{to}-light"
+        if dark:
+            gw["dark"] = f"{to}-dark"
+        if gw:
+            index[to]["gateway"] = gw
         try:
             _write_index(index)
         except OSError as exc:
@@ -2171,18 +2236,41 @@ MAX_TOTAL_SKINS = 2048
 TRASH_RETENTION_DAYS = 30
 
 
+def _derived_transport_names() -> set[str]:
+    """Stems of the per-mode transports this plugin derived from owned skins.
+
+    A derived transport (`<skin>-light`, `<skin>-dark`) is a projection of a skin
+    Chroma owns, not a second skin: counting them would spend the user's cap
+    twice per skin and let a delete report one file where three exist.
+    """
+    names: set[str] = set()
+    try:
+        index = _read_index()
+    except Exception:
+        return names
+    for record in index.values():
+        gateway = (record or {}).get("gateway") if isinstance(record, dict) else None
+        if isinstance(gateway, dict):
+            names.update(str(v) for v in gateway.values() if v)
+    return names
+
+
 def _owned_skin_count() -> int:
     """Skin files Chroma owns, counted on disk.
 
     The index can lag a crashed write, so the cap guards the disk, not the
-    bookkeeping: count the files themselves.
+    bookkeeping: count the files themselves. Derived transports are excluded —
+    they are projections, named either by the built-in prefix or by an index
+    record's `gateway` map.
     """
     try:
+        derived = _derived_transport_names()
         return sum(
             1
             for entry in _skins_dir().iterdir()
             if entry.suffix in (".yaml", ".yml")
             and not entry.name.startswith(TRANSPORT_PREFIX)
+            and entry.stem not in derived
         )
     except OSError:
         return 0
@@ -2234,6 +2322,82 @@ def _skin_palettes(path: Path) -> tuple[dict[str, str], dict[str, str]]:
         {str(k): str(v) for k, v in light.items() if k in keep},
         {str(k): str(v) for k, v in dark.items() if k in keep},
     )
+
+
+def _mint_owned_pair(name: str, light: dict[str, str], dark: dict[str, str], label: str = "") -> None:
+    """Write the per-mode gateway transports for an owned skin.
+
+    Each transport is a single-mode skin (`colors` = that mode's palette) so the
+    Desktop's converter, which reads only `colors`, paints the right palette in
+    every mode. Only modes actually present are minted; an empty palette deletes
+    any stale transport instead of leaving an orphan.
+    """
+    skins_dir = _skins_dir()
+    pairs = (("light", light), ("dark", dark))
+    for mode, palette in pairs:
+        target = skins_dir / f"{name}-{mode}.yaml"
+        if palette:
+            data = {"name": f"{name}-{mode}", "description": label or name, "colors": palette}
+            _atomic_write_text(target, _dump_skin_yaml(data))
+        else:
+            try:
+                target.unlink()
+            except FileNotFoundError:
+                pass
+
+
+_ENSURE_OWNED_PAIRS_RAN = False
+
+
+def _ensure_owned_pairs() -> None:
+    global _ENSURE_OWNED_PAIRS_RAN
+    with _INDEX_LOCK:
+        if _ENSURE_OWNED_PAIRS_RAN:
+            return
+        _ENSURE_OWNED_PAIRS_RAN = True
+        try:
+            index = _read_index()
+            skins_dir = _skins_dir()
+            for name, meta in list(index.items()):
+                record = meta if isinstance(meta, dict) else {}
+                path = skins_dir / f"{name}.yaml"
+                if not path.is_file():
+                    continue
+                try:
+                    light, dark = _skin_palettes(path)
+                except Exception:
+                    continue
+                if not (skins_dir / f"{name}-light.yaml").is_file() or not (skins_dir / f"{name}-dark.yaml").is_file():
+                    _mint_owned_pair(name, light, dark, record.get("label") or name)
+                gw = {}
+                if light:
+                    gw["light"] = f"{name}-light"
+                if dark:
+                    gw["dark"] = f"{name}-dark"
+                if gw and record.get("gateway") != gw:
+                    record["gateway"] = gw
+                    index[name] = record
+            try:
+                _write_index(index)
+            except OSError as exc:
+                # The transports are on disk and correct; only the bookkeeping
+                # missed. Log it so a repair that keeps failing is visible, and
+                # let the next process try again rather than marking the repair
+                # done on a write that never landed.
+                logger.warning("chroma: could not record gateway names in the index: %s", exc)
+        except Exception as exc:
+            logger.warning("chroma _ensure_owned_pairs failed: %s", exc)
+        # mark ran regardless
+    return
+
+
+def _derive_gateway(name: str, skins_dir: Path) -> dict[str, str]:
+    gw = {}
+    if (skins_dir / f"{name}-light.yaml").is_file():
+        gw["light"] = f"{name}-light"
+    if (skins_dir / f"{name}-dark.yaml").is_file():
+        gw["dark"] = f"{name}-dark"
+    return gw
 
 
 def _free_slug(base: str, skins_dir: Path) -> str:
