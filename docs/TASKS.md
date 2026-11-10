@@ -134,31 +134,28 @@ build stays LF and it is harmless - but a reviewer who edits that file through g
 
 
 
-## rigour logic-drift in ThemePicker (adjudicated 2026-11-10, false positive)
+## rigour logic-drift in ThemePicker (adjudicated 2026-11-10, false positive, NOT pinned)
 
-`rigour check --ci` at 6.4.4 reports, in both `chroma/desktop/plugin.js` and
-`chroma/desktop/plugin.template.js`:
+`rigour check --ci` at 6.4.4 reports, when run against a MODIFIED working tree:
 
 > Logic drift: Comparison operator changed from '>=' to '>' in function 'ThemePicker'.
 
-**Verdict: false positive. No comparison operator changed.** The 2026-11-10 change
-removes hand-painting from Desktop and lets the ThemeProvider be the only painter;
-inside `ThemePicker` its diff is exactly two edits:
+**Verdict: false positive, and it is an artefact of the local tree.** No comparison
+operator changed. The 2026-11-10 change removes hand-painting from Desktop and
+lets the ThemeProvider be the only painter; inside `ThemePicker` its diff is two
+edits: the mode is read from the provider hook instead of
+`documentElement.dataset.hermesMode`, and the `MutationObserver` that watched
+`data-hermes-mode` is deleted.
 
-1. `useState(() => desktopModeFor(profile, document.documentElement.dataset.hermesMode))`
-   becomes `useState(() => desktopModeFor(profile, hostRenderedMode))`, where
-   `hostRenderedMode` is read from the provider hook.
-2. The `MutationObserver` that watched `data-hermes-mode` (and the one in
-   `useActiveSkin` that watched `data-hermes-theme`) is deleted; the hook values are
-   used directly.
+The evidence: `ThemePicker` extracted from `HEAD:chroma/desktop/plugin.template.js`
+and from the working tree carries the same comparison operators, `'>='` included.
+What the detector reacts to is a fall in the raw `'>'` token count in the function
+(JSX text and the deleted observer line carried some), which it maps onto a
+mutation.
 
-Neither adds or removes a comparison. The evidence: `ThemePicker` extracted from
-`HEAD:chroma/desktop/plugin.template.js` and from the working tree carries the same
-comparison operators, `'>='` included (2 occurrences in each). What the detector
-sees is a fall in the raw `'>'` token count inside the function, because JSX text
-and the deleted observer line carried some. It maps a lost `'>'` onto a mutation.
+**It is NOT added to the pin.** The CI job runs on a clean checkout, where the
+detector has no local baseline to diff against and does not report it at all —
+confirmed: the first push of this change pinned both entries and CI failed with
+`STALE PIN ... this finding is no longer reported`. Pinning an artefact of a dirty
+tree teaches the gate to expect something that never happens in CI.
 
-The two signatures are therefore added to the pin in `.github/workflows/ci.yml`,
-with this note, as the pin's own comment prescribes for an adjudicated finding.
-No source change is made to satisfy the detector: bending working code to quiet a
-heuristic that misread a diff is how a gate stops meaning anything.

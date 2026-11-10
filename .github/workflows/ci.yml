@@ -285,19 +285,6 @@ jobs:
               "hallucinated-imports | critical | Hallucinated Imports | chroma/desktop/plugin.js",
               "hallucinated-imports | critical | Hallucinated Imports | chroma/desktop/plugin.template.js",
               "inconsistent-error-handling | high | Inconsistent Error Handling | 5 files",
-              # Adjudicated false positive, 2026-11-10 (docs/TASKS.md, "rigour
-              # logic-drift in ThemePicker"). The detector reports a '>=' to '>'
-              # comparison mutation inside ThemePicker. No comparison operator in
-              # that function changed: its diff reads the provider hook instead of
-              # the DOM attribute and seeds one useState. A token count of '>' in
-              # the function fell by two because the DOM-attribute observer and the
-              # local setState line it guarded were deleted, and the detector maps a
-              # lost '>' onto a mutation. Verified by extracting ThemePicker from
-              # HEAD and the working tree: every comparison operator, '>=' included,
-              # is identical. Both copies are pinned because plugin.js is generated
-              # from plugin.template.js.
-              "logic-drift | high | Logic Drift: Operator Mutation | chroma/desktop/plugin.js",
-              "logic-drift | high | Logic Drift: Operator Mutation | chroma/desktop/plugin.template.js",
               "phantom-apis | high | Phantom APIs | chroma/dashboard/plugin_api.py",
               "promise-safety | high | Async & Error Safety Violation | chroma/desktop/plugin.js",
               "promise-safety | high | Async & Error Safety Violation | chroma/desktop/plugin.template.js",

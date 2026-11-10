@@ -65,7 +65,7 @@ let _pluginRegister = null
 const _publishedThemeNames = new Set()
 
 // Replaced with the real version at build time (scripts/regenerate.py).
-const BUILD_STAMP = '2.9.2'
+const BUILD_STAMP = '2.10.0'
 
 // The Python half is optional: the Desktop half applies and previews themes
 // with no backend at all. When it is absent every backend call throws this exact
