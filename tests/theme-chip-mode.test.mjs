@@ -11,13 +11,20 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { loadPlugin } from './helpers/load-plugin.mjs'
 
-/** The provider the chip captures and hands to applyScene. Records its calls. */
-function provider(mode, calls) {
+/**
+ * The provider the chip captures. `themeName` is the ACTIVE skin, because the
+ * chip asks the provider what is applied rather than sniffing the DOM; `mode`
+ * and `renderedMode` are the live polarity. Calls are recorded, and setMode
+ * mutates the provider so a re-render sees the new state, exactly as the host
+ * does.
+ */
+function provider(frame, calls) {
   return {
-    themeName: 'nous',
-    mode,
+    themeName: frame.themeName,
+    mode: frame.mode,
+    renderedMode: frame.mode,
     setTheme: name => calls.push(['theme', name]),
-    setMode: value => calls.push(['mode', value]),
+    setMode: value => { calls.push(['mode', value]); frame.mode = value },
     previewTheme() {},
     clearThemePreview() {}
   }
@@ -50,7 +57,8 @@ function seedFor(helpers, scene, mode) {
  */
 async function loadAppliedChip({ theme, mode }) {
   const calls = []
-  const { context } = await loadPlugin({ stubbed: { useTheme: () => provider(mode, calls) } })
+  const frame = { themeName: theme, mode }
+  const { context } = await loadPlugin({ stubbed: { useTheme: () => provider(frame, calls) } })
   const helpers = context.testHelpers
   const store = new Map()
   context.window = {
@@ -68,47 +76,47 @@ async function loadAppliedChip({ theme, mode }) {
   }
   const scene = helpers.SKINS.find(item => item.name === theme)
   assert.ok(scene, `the catalog must carry ${theme}`)
-  const desktop = helpers.sceneToDesktopTheme(scene)
   root.dataset.hermesTheme = scene.name
   root.dataset.hermesMode = mode
-  css.set('--theme-background-seed', mode === 'dark' ? desktop.darkColors.background : desktop.colors.background)
   store.set('hermes-desktop-theme-v2', scene.name)
   store.set('hermes-desktop-mode-v1', mode)
-  return { context, helpers, css, root, scene, calls }
+  return { context, helpers, css, root, scene, calls, frame }
 }
 
-test('the lightbulb repaints a scene whose second palette was PORTED (originally dark-only)', async () => {
+test('the lightbulb hands a PORTED scene to the provider in the opposite mode', async () => {
   // amber-terminal was dark-only before every scene became dynamic, so its light
   // palette is derived (derivedLight), not authored.
-  const { helpers, css, root, scene, calls } = await loadAppliedChip({ theme: 'amber-terminal', mode: 'dark' })
+  const { helpers, css, scene, calls } = await loadAppliedChip({ theme: 'amber-terminal', mode: 'dark' })
   assert.equal(scene.derivedLight, true, 'fixture: this scene is a ported one')
-  assert.equal(root.dataset.hermesMode, 'dark', 'fixture: it starts on the dark palette')
 
   lightbulb(helpers.ThemeChip({})).props.onClick()
 
-  assert.equal(root.dataset.hermesMode, 'light', 'the surface must follow the lightbulb to the light palette')
-  assert.equal(root.dataset.hermesTheme, 'amber-terminal', 'and stay on the active scene')
-  assert.equal(css.get('--theme-background-seed'), seedFor(helpers, scene, 'light'))
-  assert.ok(calls.some(call => call[0] === 'mode' && call[1] === 'light'), 'Desktop provider stays in step')
+  assert.ok(calls.some(call => call[0] === 'mode' && call[1] === 'light'),
+    'Desktop is told to render the light palette')
+  assert.ok(calls.some(call => call[0] === 'theme' && call[1] === 'amber-terminal'),
+    'and it is told which scene, so the two cannot drift apart')
+  assert.equal(css.size, 0, 'the chip paints nothing: the provider owns every token')
 })
 
-test('the lightbulb repaints a scene that always shipped a PAIR (authored both ways)', async () => {
-  const { helpers, css, root, scene } = await loadAppliedChip({ theme: 'dark-aubergine', mode: 'dark' })
+test('the lightbulb hands an AUTHORED pair to the provider the same way', async () => {
+  const { helpers, css, scene, calls } = await loadAppliedChip({ theme: 'dark-aubergine', mode: 'dark' })
   assert.notEqual(scene.derivedLight, true, 'fixture: this palette pair is authored')
   assert.notEqual(scene.derivedDark, true, 'fixture: this palette pair is authored')
-  assert.equal(root.dataset.hermesMode, 'dark', 'fixture: it starts on the dark palette')
 
   lightbulb(helpers.ThemeChip({})).props.onClick()
 
-  assert.equal(root.dataset.hermesMode, 'light', 'the surface must follow the lightbulb to the light palette')
-  assert.equal(css.get('--theme-background-seed'), seedFor(helpers, scene, 'light'))
+  assert.ok(calls.some(call => call[0] === 'mode' && call[1] === 'light'),
+    'an authored pair takes the same path as a derived one')
+  assert.ok(calls.some(call => call[0] === 'theme' && call[1] === 'dark-aubergine'))
+  assert.equal(css.size, 0, 'and still paints nothing itself')
 })
 
-test('the lightbulb repaints EVERY dynamic scene, so the failure is not origin-specific', async () => {
-  // Prove the scope of the defect rather than trusting the report's guess that
-  // it only affects single-mode-origin scenes: the same path runs for all 94.
+test('the lightbulb hands EVERY dynamic scene over, so the path is not origin-specific', async () => {
+  // Prove the scope rather than trusting the report's guess that it only affects
+  // single-mode-origin scenes: the same hand-off must run for all 94.
   const calls = []
-  const { context } = await loadPlugin({ stubbed: { useTheme: () => provider('dark', calls) } })
+  const frame = { themeName: 'amber-terminal', mode: 'dark' }
+  const { context } = await loadPlugin({ stubbed: { useTheme: () => provider(frame, calls) } })
   const helpers = context.testHelpers
   const store = new Map()
   context.window = {
@@ -122,26 +130,22 @@ test('the lightbulb repaints EVERY dynamic scene, so the failure is not origin-s
   const failures = []
 
   for (const scene of scenes) {
-    const css = new Map()
+    calls.length = 0
     root.dataset = {}
+    const css = new Map()
     root.style = {
       setProperty: (key, value) => css.set(key, value),
       getPropertyValue: key => css.get(key) ?? ''
     }
-    const desktop = helpers.sceneToDesktopTheme(scene)
-    root.dataset.hermesTheme = scene.name
-    root.dataset.hermesMode = 'dark'
-    css.set('--theme-background-seed', desktop.darkColors.background)
-    store.set('hermes-desktop-theme-v2', scene.name)
-    store.set('hermes-desktop-mode-v1', 'dark')
+    frame.themeName = scene.name
+    frame.mode = 'dark'
     lightbulb(helpers.ThemeChip({})).props.onClick()
-    if (root.dataset.hermesMode !== 'light') failures.push(scene.name)
+
+    const handedMode = calls.some(call => call[0] === 'mode' && call[1] === 'light')
+    const handedTheme = calls.some(call => call[0] === 'theme' && call[1] === scene.name)
+    if (!handedMode || !handedTheme || css.size !== 0) failures.push(scene.name)
   }
 
-  assert.deepEqual(
-    failures,
-    [],
-    `the lightbulb left these scenes on the old palette: ${failures.join(', ')}`
-  )
+  assert.deepEqual(failures, [], `the lightbulb did not hand these scenes over: ${failures.join(', ')}`)
   assert.equal(scenes.length, 94, 'the shipped catalog is 94 skins')
 })

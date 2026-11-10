@@ -84,7 +84,11 @@ function loadPlugin(storage = new Map(), fetchImpl = null) {
           this.signal = signal
           this.abort = () => { signal.aborted = true }
         }
-      }
+      },
+      // The renderer has a real URL, so the sandbox must too: a missing global
+      // here would make a working parser look broken, and a stub that cannot
+      // parse would hide a genuine parse bug.
+      URL
     }
     context.globalThis = context
     vm.runInNewContext(executable, context, { filename: 'plugin.js' })
@@ -221,9 +225,48 @@ test('resolves a preset name to the registry URL and passes a URL through', asyn
     __test.tweakcnUrl('https://www.tweakcn.com/themes/doom-64?ref=x'),
     'https://tweakcn.com/r/themes/doom-64.json'
   )
-  // Not tweakcn: hand the URL through untouched.
-  assert.equal(__test.tweakcnUrl('https://example.com/theme.json'), 'https://example.com/theme.json')
+  // Not tweakcn: refused by name, never fetched.
+  assert.throws(() => __test.tweakcnUrl('https://example.com/theme.json'), /not accepted/)
+  assert.throws(() => __test.tweakcnUrl('http://tweakcn.com/themes/catppuccin'), /must use https/)
+  assert.throws(() => __test.tweakcnUrl('https://user:pw@tweakcn.com/themes/catppuccin'), /username or password/)
+  assert.throws(() => __test.tweakcnUrl('https://tweakcn.com/pricing'), /TweakCN theme URL/)
+  assert.throws(() => __test.tweakcnUrl('https://tweakcn.com/r/themes/a/b'), /TweakCN theme URL/)
   assert.equal(__test.tweakcnUrl('  '), null)
+})
+
+test('a foreign host is refused by name, and a non-string never reaches fetch', async () => {
+  const { __test } = await loadPlugin()
+
+  // The description promised "only https on tweakcn.com"; the code must say it.
+  assert.throws(() => __test.tweakcnUrl('https://tweakcn.com.evil.test/themes/x'), /not accepted/)
+  assert.throws(() => __test.tweakcnUrl('https://tweakcn.com@evil.test/themes/x'), /not accepted|username or password/)
+  assert.throws(() => __test.tweakcnUrl('https://evil.test/themes/tweakcn.com'), /not accepted/)
+  // A non-string is not a preset name. It must not throw a raw TypeError out of
+  // .trim(); the empty answer is the caller's "nothing to fetch".
+  assert.equal(__test.tweakcnUrl(123), null)
+  assert.equal(__test.tweakcnUrl({}), null)
+  assert.equal(__test.tweakcnUrl(null), null)
+  // One slash is not a URL: it must not be slugged into a fetch.
+  assert.throws(() => __test.tweakcnUrl('https:/tweakcn.com/themes/x'), /not a valid URL/)
+})
+
+test('a hosted URL is rebuilt from its slug, never fetched as given', async () => {
+  const { __test } = await loadPlugin()
+
+  // Query strings, fragments and a trailing slash cannot steer the request.
+  assert.equal(
+    __test.tweakcnUrl('https://tweakcn.com/r/themes/custom.json?next=http://evil.test'),
+    'https://tweakcn.com/r/themes/custom.json'
+  )
+  assert.equal(
+    __test.tweakcnUrl('https://TWEAKCN.com/themes/Cosmic%20Night#frag'),
+    'https://tweakcn.com/r/themes/cosmic-night.json'
+  )
+  // Uppercase scheme and host are the same origin, not a bypass.
+  assert.equal(
+    __test.tweakcnUrl('HTTPS://WWW.TWEAKCN.COM/themes/doom-64'),
+    'https://tweakcn.com/r/themes/doom-64.json'
+  )
 })
 
 test('reports an HTML answer as a bad preset instead of a JSON parse error', async () => {

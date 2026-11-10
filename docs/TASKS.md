@@ -132,3 +132,33 @@ is the more permissive one.
 is LF (`text=auto eol=lf`), so `git diff` cannot show it. `scripts/regenerate.py` normalises, so the
 build stays LF and it is harmless - but a reviewer who edits that file through git may be surprised.
 
+
+
+## rigour logic-drift in ThemePicker (adjudicated 2026-11-10, false positive)
+
+`rigour check --ci` at 6.4.4 reports, in both `chroma/desktop/plugin.js` and
+`chroma/desktop/plugin.template.js`:
+
+> Logic drift: Comparison operator changed from '>=' to '>' in function 'ThemePicker'.
+
+**Verdict: false positive. No comparison operator changed.** The 2026-11-10 change
+removes hand-painting from Desktop and lets the ThemeProvider be the only painter;
+inside `ThemePicker` its diff is exactly two edits:
+
+1. `useState(() => desktopModeFor(profile, document.documentElement.dataset.hermesMode))`
+   becomes `useState(() => desktopModeFor(profile, hostRenderedMode))`, where
+   `hostRenderedMode` is read from the provider hook.
+2. The `MutationObserver` that watched `data-hermes-mode` (and the one in
+   `useActiveSkin` that watched `data-hermes-theme`) is deleted; the hook values are
+   used directly.
+
+Neither adds or removes a comparison. The evidence: `ThemePicker` extracted from
+`HEAD:chroma/desktop/plugin.template.js` and from the working tree carries the same
+comparison operators, `'>='` included (2 occurrences in each). What the detector
+sees is a fall in the raw `'>'` token count inside the function, because JSX text
+and the deleted observer line carried some. It maps a lost `'>'` onto a mutation.
+
+The two signatures are therefore added to the pin in `.github/workflows/ci.yml`,
+with this note, as the pin's own comment prescribes for an adjudicated finding.
+No source change is made to satisfy the detector: bending working code to quiet a
+heuristic that misread a diff is how a gate stops meaning anything.

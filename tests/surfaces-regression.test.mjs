@@ -178,14 +178,29 @@ test('gateway sync is still wired into the shipped build', async () => {
 test('applying a skin still hands the switch to the Desktop ThemeProvider', async () => {
   const { source } = await loadForRegistration()
   assert.ok(
-    source.includes('syncDesktopState'),
+    source.includes('handThemeToProvider('),
     'the ThemeProvider handoff is the fix for the reverting-theme bug; it must not be removed'
+  )
+  assert.ok(
+    !source.includes('applyDesktopTheme('),
+    'a second painter would fight the provider: Chroma must not paint root tokens'
   )
 })
 
-test('the app-owned localStorage keys are still untouched', async () => {
+test('Chroma never writes the keys the app owns', async () => {
   const { source } = await loadForRegistration()
-  for (const key of ['hermes-desktop-user-themes-v1', 'hermes-boot-background', 'hermes-boot-color-scheme']) {
-    assert.ok(source.includes(key), `app-owned key lost: ${key}`)
+  // The app's own appearance and boot keys belong to Desktop's ThemeProvider.
+  // Reading the legacy appearance keys once, to seed our own store, is allowed.
+  const forbidden = [
+    /setItem\(\s*SKIN_KEY/,
+    /setItem\(\s*MODE_KEY/,
+    /setItem\(\s*PROFILE_SKINS_KEY/,
+    /setItem\(\s*PROFILE_MODES_KEY/,
+    /setItem\(\s*LEGACY_APP_THEMES_KEY/,
+    /setItem\(\s*'hermes-[^']*'/
+  ]
+  for (const pattern of forbidden) {
+    assert.ok(!pattern.test(source), `app-owned key write survived: ${pattern}`)
   }
+  assert.ok(!source.includes('hermes-boot-'), 'the boot keys are the provider\'s to write')
 })

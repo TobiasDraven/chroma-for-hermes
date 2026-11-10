@@ -5,6 +5,45 @@ Notable changes to Chroma are documented here. This project uses
 
 ## [Unreleased]
 
+## [2.10.0] - 2026-11-10
+
+Chroma no longer paints Desktop's theme itself. The Desktop ThemeProvider is the
+only painter, which is what the plugin catalog review asked for: the app owns the
+root tokens, the native chrome, the boot keys and the persisted choice, and a
+plugin that writes them fights the app it lives in.
+
+### Changed
+
+- Applying a theme is now a hand-off: Chroma names the scene and the polarity and
+  the provider does the rest. Nothing in the plugin writes a CSS token, a
+  `data-hermes-*` attribute or an app-owned localStorage key.
+- A hand-off that cannot land is reported. A card never looks applied while the
+  surface stays put.
+- A name the host cannot resolve is refused before it is handed over, because the
+  host coerces an unknown name to its default skin AND persists that.
+- Chroma's own state lives under `ctx.storage` (`hermes.plugin.chroma.*`), with
+  `chroma-*` localStorage keys as the fallback. Imported themes moved to Chroma's
+  own store; the app's user-theme store is read once, as a seed, and never written.
+- Imported themes are contributed to the theme registry at boot, so a Desktop-only
+  install no longer loses the user's theme on restart.
+- `tweakcnUrl` does what it says: https only, `tweakcn.com` only, and the registry
+  URL is always rebuilt from the preset slug.
+
+### Fixed
+
+- The lightbulb and the mode toggle could show a polarity the surface was not in
+  when the switch was refused.
+- A user on `system` was pinned to explicit light/dark by the first theme applied.
+- A label match could hand the provider a string it cannot resolve.
+- Deleting the last imported theme no longer resurrects it on the next start.
+
+### Removed
+
+- The local paint path and its helpers (`applyDesktopTheme`, `renderedModeFor`,
+  `mixesFor`, `NEUTRAL_CHROME`, `harmonize`, `hexToOklch`, `maxChroma`, `hueDelta`),
+  the boot theme cache (`persistThemesForBoot`) and the legacy alias migration.
+- Both `MutationObserver`s that mirrored `data-hermes-theme` / `data-hermes-mode`.
+
 ## [2.9.2] - 2026-11-09
 
 A skin you forked or edited no longer reverts from dark to light a few seconds

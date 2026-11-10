@@ -25,7 +25,9 @@ async function registeredContext() {
       registered.push(contribution)
       return () => {}
     },
-    storage: { get: async () => null, set: async () => {} }
+    // The host store is synchronous (contrib/plugin.ts): get returns the value,
+    // not a Promise. An async stub would model a contract the app does not have.
+    storage: { get: () => null, set: () => {} }
   })
   // Drop the boot registrations: this file is about the mid-session path.
   registered.length = 0
@@ -49,8 +51,9 @@ test('a scene outside SKINS is refused the hand-off until reRegisterSceneTheme p
     setTheme() { painted += 1 },
     setMode() {}
   }
-  assert.equal(context.syncDesktopState(scene.name, 'dark', hostApi), false,
-    'an unregistered mid-session scene is refused')
+  const refused = context.handThemeToProvider(scene.name, 'dark', hostApi)
+  assert.equal(refused.ok, false, 'an unregistered mid-session scene is refused')
+  assert.equal(refused.reason, 'unresolved', 'and it is refused BY NAME, not by paint')
   assert.equal(painted, 0, 'the refused hand-off does not touch the provider')
 
   assert.equal(context.reRegisterSceneTheme(scene), true)

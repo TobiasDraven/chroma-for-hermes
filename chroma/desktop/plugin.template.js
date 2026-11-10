@@ -33,6 +33,7 @@ import {
   host,
   Input,
   PALETTE_AREA,
+  requestTheme,
   ROUTES_AREA,
   ScrollArea,
   SearchField,
@@ -57,6 +58,11 @@ let _rest = null
 // one bound function; re-registering the same id replaces the contribution, so a
 // saved font change is visible to the provider's live theme list immediately.
 let _pluginRegister = null
+// Every theme name this session has published through ctx.register. The host
+// registry is synchronous, but the `availableThemes` array a component captured
+// at render is a SNAPSHOT: a theme imported one line ago is missing from it. A
+// name in this set is registered, whatever that stale array says.
+const _publishedThemeNames = new Set()
 
 // Replaced with the real version at build time (scripts/regenerate.py).
 const BUILD_STAMP = '2.9.2'
@@ -73,7 +79,14 @@ const IMPORTED_SKINS = []
 const PAGE_PATH = '/chroma'
 // Desktop reads this cache before plugins register, so a selected contributed
 // theme remains resolvable during the next app startup.
-const USER_THEMES_KEY = 'hermes-desktop-user-themes-v1'
+// The app's own user-theme store. Read ONCE to seed our store for existing
+// installations; never written. Core's store belongs to ThemeProvider.
+const LEGACY_APP_THEMES_KEY = 'hermes-desktop-user-themes-v1'
+// Chroma's own imported-theme store. Namespaced to us, so a Desktop update can
+// never trample it and we never trample Desktop's.
+const CHROMA_THEMES_KEY = 'chroma-imported-themes-v1'
+// One-shot: the legacy seed ran. Without it, deleting the last import re-seeds it.
+const CHROMA_SEEDED_KEY = 'chroma-imported-seeded-v1'
 // Boot mirror of the backend override store. The host calls register()
 // SYNCHRONOUSLY and restores its disposer tracker before any await resolves,
 // so register() must not await a network read: a contribution registered after
@@ -131,7 +144,19 @@ const THEME_CATEGORIES = [
   { id: 'neutral', title: 'Neutral' },
 ]
 const MEASURED_CATEGORY_IDS = new Set(THEME_CATEGORIES.map(c => c.id))
-const CORE_DESKTOP_THEMES = new Set(['nous', 'midnight', 'ember', 'mono', 'cyberpunk', 'slate'])
+// Names the HOST owns. Registering one is dropped by the app (themes/
+// user-themes.ts filters BUILTIN_THEMES) while the app still LISTS its built-in
+// under that name, so a contribution that looked registered would paint the
+// built-in. RETIRED_SKINS are listed but rejected by normalizeSkin, which
+// coerces to the default AND persists it. Both lists: themes/presets.ts:444-457
+// and :468. Keep them in step with the host.
+const CORE_DESKTOP_THEMES = new Set([
+  // BUILTIN_THEMES
+  'nous', 'github', 'catppuccin', 'everforest', 'solarized', 'nous-alt',
+  'classic', 'midnight', 'ember', 'mono', 'slate', 'cyberpunk',
+  // RETIRED_SKINS
+  'nous-light', 'default', 'gold'
+])
 const EMOJI_FALLBACK = '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", emoji'
 const DEFAULT_FONT_SANS = '"Segoe WPC", "Segoe UI", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif, ' + EMOJI_FALLBACK
 const DEFAULT_FONT_MONO = 'Menlo, Monaco, "SF Mono", "Courier Prime", monospace, ' + EMOJI_FALLBACK
@@ -271,19 +296,6 @@ function toHex(rgb) {
 const linearize01 = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
 const delinearize01 = (c) => (c <= 0.0031308 ? c * 12.92 : 1.055 * c ** (1 / 2.4) - 0.055)
 
-function hexToOklch(hex) {
-  const rgb = hexToRgb(hex)
-  if (!rgb) return null
-
-  const [r, g, b] = rgb.map(v => linearize01(v / 255))
-  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
-  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
-  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b)
-  const okA = 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s
-  const okB = 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s
-
-  return { l: 0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s, c: Math.hypot(okA, okB), h: ((Math.atan2(okB, okA) * 180) / Math.PI + 360) % 360 }
-}
 
 function oklchToRgbRaw({ l: okL, c, h }) {
   const rad = (h * Math.PI) / 180
@@ -303,51 +315,11 @@ function oklchToRgbRaw({ l: okL, c, h }) {
 
 const inSrgbGamut = (rgb) => rgb.every(c => c >= -0.001 && c <= 1.001)
 
-function maxChroma(l, h) {
-  let lo = 0
-  let hi = 0.4
 
-  for (let i = 0; i < 20; i += 1) {
-    const mid = (lo + hi) / 2
 
-    if (inSrgbGamut(oklchToRgbRaw({ l, c: mid, h }))) {
-      lo = mid
-    } else {
-      hi = mid
-    }
-  }
-
-  return lo
-}
-
-function hueDelta(from, to) {
-  return ((to - from + 540) % 360) - 180
-}
-
-/**
- * Faithful port of the desktop's `harmonize` (themes/color.ts:239): rotate a
- * hex's hue part of the way to `accent`, keeping its own lightness and
- * clamping chroma into the sRGB gamut. At strength 1 it lands on the accent
- * hue; at 0 nothing moves. Drives --ui-success so a green checkmark settles
- * into the palette instead of clashing with it.
- */
-function harmonize(hex, accent, strength) {
-  const base = hexToOklch(hex)
-  const target = hexToOklch(accent)
-
-  if (!base || !target) {
-    return hex
-  }
-
-  const h = (base.h + hueDelta(base.h, target.h) * Math.min(1, Math.max(0, strength)) + 360) % 360
-
-  return oklchToHex({ ...base, c: Math.min(Math.max(base.c, target.c * 0.85), maxChroma(base.l, h)), h })
-}
 
 // The two constants the host's own applyTheme writes these tokens with
 // (themes/context.tsx:279,371-382). They must stay bit-identical to upstream.
-const PRIMARY_SOLID_FG = '#fcfcfc'
-const SUCCESS_SEED = '#10b981'
 
 // The two mix ramps a skin-derived palette is built from, as data. Nine
 // `dark ? a : b` ternaries used to be scattered through the mapper below; as a
@@ -495,7 +467,7 @@ function sceneToDesktopTheme(scene) {
  *
  *  register() only runs once, from the static catalogue, so a skin forked or
  *  edited mid-session was missing from the host's live `availableThemes`. The
- *  hand-off in syncDesktopState then refused its own name and the provider's
+ *  hand-off in handThemeToProvider then refused its own name and the provider's
  *  persisted theme repainted over the pick (the fork reverted to light). The
  *  host registry replaces a contribution with the same id, so a re-register is
  *  both safe and idempotent. Returns false when there is nothing to publish. */
@@ -506,6 +478,7 @@ function reRegisterSceneTheme(scene) {
   const theme = sceneToDesktopTheme(scene)
   if (!theme) return false
   _pluginRegister({ id: `theme:${scene.name}`, area: THEMES_AREA, data: theme })
+  _publishedThemeNames.add(scene.name)
   return true
 }
 
@@ -1033,21 +1006,81 @@ function parseImportedTheme(text) {
   throw new Error('could not recognise this as TweakCN CSS, Windows Terminal, Base16 or VS Code JSON')
 }
 
+/** Percent-decode one path segment, falling back to the raw text. */
+function decodeSegment(value) {
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return value
+  }
+}
+
+/** The preset name a TweakCN URL path names, or a refusal. */
+function tweakcnPathName(pathname) {
+  const segments = pathname.split('/').filter(Boolean)
+  if (segments.length === 2 && segments[0] === 'themes') return decodeSegment(segments[1])
+  if (segments.length === 3 && segments[0] === 'r' && segments[1] === 'themes') return decodeSegment(segments[2])
+  throw new Error('expected a TweakCN theme URL such as https://tweakcn.com/themes/<name>')
+}
+
+/**
+ * Extract the preset name from a parsed TweakCN URL, or refuse it.
+ *
+ * A theme PAGE serves HTML and the registry serves JSON; both forms name the
+ * preset in the path, and both are rebuilt into the registry URL by the caller.
+ * The host check is exact, so a lookalike domain cannot pass as TweakCN.
+ */
+function tweakcnSlugFromUrl(parsed) {
+  if (parsed.protocol !== 'https:') throw new Error('TweakCN URLs must use https')
+  if (parsed.username || parsed.password) throw new Error('TweakCN URLs must not carry a username or password')
+
+  const host = parsed.hostname.toLowerCase()
+  if (host !== 'tweakcn.com' && host !== 'www.tweakcn.com') {
+    throw new Error(`TweakCN is the only supported theme source, so ${host} is not accepted`)
+  }
+
+  const clean = slug(tweakcnPathName(parsed.pathname).replace(/\.json$/i, ''))
+  if (!clean) throw new Error('that TweakCN URL names no preset')
+  return clean
+}
+
+/**
+ * Resolve an import reference to the TweakCN registry URL.
+ *
+ * Accepts a bare preset name, or a TweakCN URL on https and the tweakcn.com host
+ * (or www). Everything else is refused by name: another host, plain http, a
+ * userinfo part, or a path that is not a theme page. The registry URL is always
+ * REBUILT from the slug, so the caller can never be steered at another endpoint.
+ */
 function tweakcnUrl(ref) {
-  ref = (ref || '').trim()
-  if (!ref) return null
-  if (!/^https?:\/\//i.test(ref)) return `${TWEAKCN_BASE}${slug(ref)}.json`
+  // A non-string is not a preset name: without this, 123 or {} throws a raw
+  // TypeError out of .trim() and reaches the user as a crash.
+  const raw = typeof ref === 'string' ? ref.trim() : ''
+  if (!raw) return null
+  // A scheme prefix makes this a URL attempt. Without the two slashes
+  // ('https:/tweakcn.com/x') it must be REFUSED, not slugged into a fetch.
+  const schemePrefix = /^[a-z][a-z0-9+.-]*:/i.test(raw)
+  if (schemePrefix && !/^[a-z][a-z0-9+.-]*:\/\//i.test(raw)) {
+    throw new Error(`that is not a valid URL: ${raw}`)
+  }
+  if (!schemePrefix) {
+    const name = slug(raw)
+    if (!name) throw new Error('a TweakCN preset name needs at least one letter or digit')
+    return `${TWEAKCN_BASE}${name}.json`
+  }
 
-  const bare = ref.split(/[?#]/)[0].replace(/\/+$/, '')
-  // Already a registry endpoint - hand it through untouched.
-  if (/\/r\/themes\/[^/]+$/i.test(bare)) return ref
-  if (!/^https?:\/\/(www\.)?tweakcn\.com\//i.test(bare)) return ref
-
-  // A tweakcn PAGE url (https://tweakcn.com/themes/catppuccin) serves HTML.
-  // The preset name is its last path segment, so rebuild the registry URL.
-  const last = bare.split('/').pop() || ''
-  const name = slug(last.replace(/\.json$/i, ''))
-  return name ? `${TWEAKCN_BASE}${name}.json` : null
+  let parsed
+  try {
+    parsed = new URL(raw)
+  } catch (e) {
+    // A missing URL global is a broken runtime, not a bad paste: only a URL
+    // parse failure may become a message about the input. `instanceof` is
+    // realm-sensitive (a TypeError thrown across a sandbox boundary is not this
+    // realm's TypeError), so the message decides.
+    if (!/invalid url|failed to parse/i.test(String(e && e.message))) throw e
+    throw new Error(`that is not a valid URL: ${raw}`)
+  }
+  return `${TWEAKCN_BASE}${tweakcnSlugFromUrl(parsed)}.json`
 }
 
 /** TweakCN answers a theme PAGE url with an HTML document (HTTP 200) and an
@@ -1060,34 +1093,47 @@ function tweakcnNotJsonError(url, status) {
   )
 }
 
+/** Fetch and size-check one TweakCN document. Nothing in it is trusted yet. */
+async function fetchTweakcnDocument(url) {
+  const MAX_TWEAKCN_BYTES = 1024 * 1024
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 15000)
+  let response
+  try {
+    response = await fetch(url, { signal: controller.signal })
+  } catch (e) {
+    if (e && e.name === 'AbortError') throw new Error('TweakCN request timed out after 15s')
+    throw e
+  } finally {
+    clearTimeout(timer)
+  }
+  if (!response.ok) throw new Error(`TweakCN request failed: ${response.status}`)
+  const text = await response.text()
+  if (text.length > MAX_TWEAKCN_BYTES) {
+    throw new Error(`TweakCN response too large: ${text.length} bytes (cap ${MAX_TWEAKCN_BYTES})`)
+  }
+  try {
+    return JSON.parse(text)
+  } catch (e) {
+    throw tweakcnNotJsonError(url, response.status)
+  }
+}
+
+/** A theme object that can be registered: named, coloured, and not a core skin. */
+function assertImportableTheme(theme) {
+  if (!theme || !theme.name || !theme.colors || !theme.colors.background) {
+    throw new Error('TweakCN response is not a usable theme')
+  }
+  if (CORE_DESKTOP_THEMES && CORE_DESKTOP_THEMES.has(theme.name)) {
+    throw new Error('refusing to shadow a built-in theme')
+  }
+  return theme
+}
+
 async function fetchTweakcnTheme(ref) {
   const url = tweakcnUrl(ref)
   if (!url) throw new Error('provide a TweakCN preset name or URL')
-  const MAX_TWEAKCN_BYTES = 1024 * 1024
-    const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), 15000)
-    let r
-    try {
-      r = await fetch(url, { signal: controller.signal })
-    } catch (e) {
-      if (e && e.name === 'AbortError') throw new Error('TweakCN request timed out after 15s')
-      throw e
-    } finally {
-      clearTimeout(timer)
-    }
-    if (!r.ok) throw new Error(`TweakCN request failed: ${r.status}`)
-    const text = await r.text()
-    if (text.length > MAX_TWEAKCN_BYTES) throw new Error(`TweakCN response too large: ${text.length} bytes (cap ${MAX_TWEAKCN_BYTES})`)
-    let json
-    try {
-      json = JSON.parse(text)
-    } catch (e) {
-      throw tweakcnNotJsonError(url, r.status)
-    }
-  const theme = tweakcnToDesktopTheme(json)
-  if (!theme || !theme.name || !theme.colors || !theme.colors.background) throw new Error('TweakCN response is not a usable theme')
-  if (CORE_DESKTOP_THEMES && CORE_DESKTOP_THEMES.has(theme.name)) throw new Error('refusing to shadow a built-in theme')
-  return theme
+  return assertImportableTheme(tweakcnToDesktopTheme(await fetchTweakcnDocument(url)))
 }
  function parseCssTheme(css, name) {
    if (css == null) return null
@@ -1114,13 +1160,145 @@ function splitCssVars(block) {
   return out
 }
 
-function readStoredThemes() {
+/**
+ * Chroma's own key/value store.
+ *
+ * The host hands every plugin a namespaced store (`ctx.storage`, backed by
+ * localStorage keys under `hermes.plugin.<id>.`) -- the VS Code globalState
+ * analog (contrib/plugin.ts:49-55). That is the sanctioned place for plugin
+ * state, and the app owns the prefix, so no plugin can read or clobber ours.
+ *
+ * `register()` may not run before the UI asks for a value, and the tests load the
+ * module without a host, so the shim falls back to Chroma's own localStorage keys.
+ * Both paths are namespaced to us; neither touches an app key.
+ */
+let _pluginStorage = null
+
+/**
+ * Accept a host store only if it answers synchronously.
+ *
+ * The host contract is synchronous (contrib/plugin.ts: `get<T>(key, fallback): T`).
+ * One probe read decides it once, so the read and the write paths can never
+ * disagree about which store is in use -- a Promise-returning store would
+ * otherwise accept our writes and give back a Promise on read.
+ */
+function synchronousStore(candidate) {
+  if (!candidate || typeof candidate.get !== 'function' || typeof candidate.set !== 'function') return null
+  try {
+    const probe = candidate.get('chroma-probe', null)
+    return probe && typeof probe.then === 'function' ? null : candidate
+  } catch {
+    return null
+  }
+}
+
+/** One decode step, so a double-encoded value cannot empty a whole map. */
+function parseStoredValue(value, fallbackValue) {
+  if (typeof value !== 'string') return value
+  try {
+    const parsed = JSON.parse(value)
+    return parsed === null || parsed === undefined ? fallbackValue : parsed
+  } catch {
+    return fallbackValue
+  }
+}
+
+/** Chroma's own localStorage key, used when the host offers no store. */
+function readOwnKey(key, fallbackValue) {
+  try {
+    const raw = window.localStorage.getItem(key)
+    return raw ? parseStoredValue(raw, fallbackValue) : fallbackValue
+  } catch {
+    return fallbackValue
+  }
+}
+
+function storeRead(key, fallbackValue) {
+  try {
+    if (_pluginStorage && typeof _pluginStorage.get === 'function') {
+      const stored = _pluginStorage.get(key, null)
+      // The host's store is synchronous (contrib/plugin.ts: get<T> returns T). A
+      // thenable means some other contract, so ignore it and read our own key
+      // rather than hand a Promise to the caller as if it were data.
+      if (!stored || typeof stored.then !== 'function') {
+        // A null answer means "nothing under this key HERE". Before falling back
+        // to the default, look for a value our own key holds from a build that
+        // had no ctx.storage -- otherwise gaining a store would silently hide
+        // everything written without one.
+        if (stored !== null && stored !== undefined) return parseStoredValue(stored, fallbackValue)
+      }
+    }
+    return readOwnKey(key, fallbackValue)
+  } catch {
+    return fallbackValue
+  }
+}
+
+function storeWrite(key, value) {
+  try {
+    if (_pluginStorage && typeof _pluginStorage.set === 'function') {
+      _pluginStorage.set(key, value)
+      return true
+    }
+    window.localStorage.setItem(key, JSON.stringify(value))
+    return true
+  } catch {
+    return false
+  }
+}
+
+function readThemesFrom(key) {
+  const parsed = storeRead(key, {})
+  return (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) ? parsed : {}
+}
+
+function writeThemesTo(key, themes) {
+  return storeWrite(key, themes)
+}
+
+/**
+ * Imported themes, from Chroma's own store.
+ *
+ * Earlier builds wrote these into Desktop's user-theme store
+ * (hermes-desktop-user-themes-v1). That store belongs to the ThemeProvider, so a
+ * read of ours must not depend on it and a write of ours must never land in it.
+ * The one-time seed below copies any themes an earlier build left there into our
+ * own key -- read, copy, never write back.
+ */
+/** The app's store, read directly: it is not ours to reach through ctx.storage. */
+function readLegacyAppThemes() {
   try {
     const l = (typeof window !== 'undefined' && window.localStorage) ? window.localStorage : null
-    const raw = l ? l.getItem('hermes-desktop-user-themes-v1') : null
-    const parsed = raw ? JSON.parse(raw) : {}
-    return (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) ? parsed : {}
-  } catch (e) { return {} }
+    const parsed = l ? JSON.parse(l.getItem(LEGACY_APP_THEMES_KEY) || '{}') : {}
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+function readStoredThemes() {
+  const own = readThemesFrom(CHROMA_THEMES_KEY)
+  // Data wins, always: a store with entries is the answer, and the marker is
+  // recorded so a later empty store is not re-seeded.
+  if (Object.keys(own).length) {
+    if (!storeRead(CHROMA_SEEDED_KEY, false)) storeWrite(CHROMA_SEEDED_KEY, true)
+    return own
+  }
+  // Empty is only meaningful once the seed has RUN. Gate on a MARKER, not on
+  // emptiness: "empty" is also the state after the user deletes every import,
+  // and seeding while empty resurrects them from the app key we never modify.
+  if (storeRead(CHROMA_SEEDED_KEY, false)) return own
+
+  const legacy = readLegacyAppThemes()
+  const seeded = {}
+  for (const [name, theme] of Object.entries(legacy)) {
+    if (!theme || typeof theme !== 'object') continue
+    if (IMPORT_SOURCES.indexOf(theme.themePickerSource || theme.source) < 0) continue
+    seeded[name] = theme
+  }
+  if (Object.keys(seeded).length) writeThemesTo(CHROMA_THEMES_KEY, seeded)
+  storeWrite(CHROMA_SEEDED_KEY, true)
+  return seeded
 }
 
 /** Forget every local trace of a deleted skin.
@@ -1137,19 +1315,20 @@ function forgetScene(name) {
     const stored = readStoredThemes()
     if (Object.prototype.hasOwnProperty.call(stored, name)) {
       delete stored[name]
-      const l = (typeof window !== 'undefined' && window.localStorage) ? window.localStorage : null
-      if (l) l.setItem(USER_THEMES_KEY, JSON.stringify(stored))
+      writeThemesTo(CHROMA_THEMES_KEY, stored)
     }
   } catch (e) { }
 }
 
 function persistTheme(theme) {
+  // Provenance is stamped at the WRITER, not guessed at the reader. Only the
+  // TweakCN parser sets `themePickerSource`; forks and the VS Code, Base16 and
+  // Windows Terminal importers set `source` (or nothing), so a reader-side filter
+  // dropped their cards on the next boot and a session-only fix looked permanent.
+  const record = { ...theme, themePickerSource: theme.themePickerSource || theme.source || 'owned' }
   const stored = readStoredThemes()
-  stored[theme.name] = theme
-  try {
-    const l = (typeof window !== 'undefined' && window.localStorage) ? window.localStorage : null
-    if (l) l.setItem('hermes-desktop-user-themes-v1', JSON.stringify(stored))
-  } catch (e) { }
+  stored[record.name] = record
+  writeThemesTo(CHROMA_THEMES_KEY, stored)
   return true
 }
 
@@ -2106,136 +2285,81 @@ function ensureImportedSkinsLoaded() {
   }
 }
 
-function renderedModeFor(colors, mode) {
-  return luminance(colors.background) > 0.5 ? 'light' : hexToRgb(colors.background) ? 'dark' : mode
-}
-
-const NEUTRAL_CHROME = { light: '#f3f3f3', dark: '#0d0d0e' }
-
-function mixesFor(isDark) {
-  return {
-    '--theme-mix-chrome': isDark ? '74%' : '92%',
-    '--theme-mix-sidebar': '100%',
-    '--theme-mix-card': isDark ? '38%' : '22%',
-    '--theme-mix-elevated': isDark ? '46%' : '28%',
-    '--theme-mix-bubble': isDark ? '46%' : '0%'
-  }
-}
-
 /**
- * Immediate local repaint — a source-faithful port of Desktop's applyTheme().
- * The public plugin SDK does not expose ThemeContext.setTheme/setMode, so this
- * updates the same root tokens and native window hooks without navigating or
- * remounting the React app. Persistence is handled separately for next boot.
+ * Hand a scene switch to Desktop's ThemeProvider. This is the ONLY apply path:
+ * the provider paints the root tokens, sets the native chrome, writes the boot
+ * keys and persists the per-profile choice (context.tsx: applyTheme, setTheme).
+ * Chroma keeps no copy of that job.
+ *
+ * Outside React (no captured api yet) the SDK's requestTheme is the same door:
+ * it resolves the name, enqueues it, and the provider drains the queue when it
+ * mounts.
+ *
+ * Returns { ok, reason } so the caller can TELL the user when a switch did not
+ * land, instead of painting a second time behind the provider's back.
  */
-function applyDesktopTheme(theme, mode) {
-  const root = document.documentElement
-  const c = mode === 'dark' ? (theme.darkColors || theme.colors) : theme.colors
-  const typo = {
-    fontSans: DEFAULT_FONT_SANS,
-    fontMono: DEFAULT_FONT_MONO,
-    ...(theme.typography || {})
-  }
-  const rendered = renderedModeFor(c, mode)
-  const isDark = rendered === 'dark'
-  const midground = c.midground || c.ring
-
-  root.style.setProperty('color-scheme', rendered)
-  root.dataset.hermesTheme = theme.name
-  root.dataset.hermesMode = rendered
-  root.classList.toggle('dark', isDark)
-
-  const seeds = {
-    '--theme-foreground': c.foreground,
-    '--theme-primary': c.primary,
-    '--theme-secondary': c.secondary,
-    '--theme-accent-soft': c.accent,
-    '--theme-midground': midground,
-    '--theme-warm': c.primary,
-    '--theme-background-seed': c.background,
-    '--theme-sidebar-seed': c.sidebarBackground || c.background,
-    '--theme-card-seed': c.card,
-    '--theme-elevated-seed': c.popover,
-    '--theme-bubble-seed': c.userBubble || c.popover
-  }
-  const palette = {
-    '--dt-primary-foreground': c.primaryForeground,
-    '--dt-secondary-foreground': c.secondaryForeground,
-    '--dt-accent-foreground': c.accentForeground,
-    '--dt-border': c.border,
-    '--dt-input': c.input,
-    '--dt-ring': c.ring,
-    '--dt-muted': c.muted,
-    '--dt-midground-foreground': c.midgroundForeground || readableOn(midground),
-    // The "loud" brand fill and the semantic success colour — the two tokens
-    // the host's own applyTheme paints that our port used to leave at the
-    // previous skin's values. Same constants, same rules, same fallbacks
-    // (context.tsx:371-382) so a Chroma scene owns every token the host paints.
-    '--dt-primary-solid': ensureContrast(c.primary, PRIMARY_SOLID_FG, 4.5),
-    '--dt-primary-solid-foreground': PRIMARY_SOLID_FG,
-    '--dt-composer-ring': c.composerRing || midground,
-    '--dt-destructive': c.destructive,
-    '--dt-destructive-foreground': c.destructiveForeground,
-    '--dt-sidebar-border': c.sidebarBorder || c.border,
-    '--dt-user-bubble-border': c.userBubbleBorder || c.border,
-    '--ui-success': harmonize(SUCCESS_SEED, midground, 0.25),
-    '--dt-font-sans': typo.fontSans,
-    '--dt-font-mono': typo.fontMono,
-    '--noise-opacity-mul': isDark ? 'calc(0.04 / 0.21)' : 'calc(0.34 / 0.21)'
-  }
-  for (const [key, value] of Object.entries({ ...seeds, ...mixesFor(isDark), ...palette })) {
-    if (value) root.style.setProperty(key, value)
-  }
-
-  const chromeBg = mix(c.background, NEUTRAL_CHROME[isDark ? 'dark' : 'light'], isDark ? 0.26 : 0.08)
-  try {
-    window.hermesDesktop?.setTitleBarTheme?.({ background: chromeBg, foreground: c.foreground })
-    window.hermesDesktop?.setNativeTheme?.(rendered)
-  } catch {
-    // Native chrome hooks are optional; the renderer repaint is already done.
-  }
-  try {
-    window.localStorage.setItem('hermes-boot-background', chromeBg)
-    window.localStorage.setItem('hermes-boot-color-scheme', rendered)
-  } catch {
-    // Restricted storage must not block the current in-place repaint.
-  }
-
-}
-
-/**
- * Hand a scene switch to Desktop's ThemeProvider so React state stops
- * disagreeing with the painted root tokens. Returns false when no provider API
- * is captured, leaving the manual paint as the only change.
- */
-function syncDesktopState(name, mode, api) {
+function handThemeToProvider(name, mode, api) {
   const target = api || desktopThemeApi
-  if (!target || typeof target.setTheme !== 'function') return false
+
+  if (!target || typeof target.setTheme !== 'function') {
+    try {
+      if (typeof requestTheme === 'function' && requestTheme(name)) return { ok: true, reason: 'queued' }
+    } catch {
+      return { ok: false, reason: 'threw' }
+    }
+    return { ok: false, reason: 'no-provider' }
+  }
+
   // The host's setTheme coerces a name it cannot resolve to the DEFAULT skin and
   // PERSISTS it (context.tsx: normalizeSkin), so handing it an unknown name
-  // rewrites the user's profile. The host's availableThemes is the same merged
-  // set its own resolveTheme searches (built-in + user + backend + registry),
-  // so a name it lists is a name the host can resolve.
+  // rewrites the user's profile. availableThemes is the same merged set its own
+  // resolveTheme searches, so a name it lists is a name it can resolve.
   //
-  // The check is skipped when the host publishes no list. A provider that does
-  // not expose availableThemes cannot answer the question, and refusing there
-  // would block every switch on a host that never had the question. It is also
-  // skipped for an EMPTY list: the host treats an empty list as "nothing to
-  // switch to" (use-skin-command.ts), and a scene Chroma contributed through
-  // THEMES_AREA lands in the list only once the registry has published it.
+  // Skipped when the host publishes no list, and when the list is empty: an
+  // empty list means "nothing to switch to" (use-skin-command.ts), and a scene
+  // lands in the list only once THEMES_AREA has published it.
   const list = target.availableThemes
-  if (Array.isArray(list) && list.length) {
-    const known = list.some(t => t && (t.name === name || t.label === name))
-    if (!known) return false
+  let resolvedName = name
+  if (!_publishedThemeNames.has(name) && Array.isArray(list) && list.length) {
+    // Name first, label second: a contribution whose LABEL equals another
+    // theme's NAME must not win on list order.
+    const match = list.find(t => t && t.name === name) || list.find(t => t && t.label === name)
+    if (!match) return { ok: false, reason: 'unresolved' }
+    // Hand over the HOST's name, not the caller's string: setTheme resolves by
+    // name, so a label would be coerced to the default skin and persisted.
+    resolvedName = match.name || name
   }
+
   try {
-    target.setTheme(name)
-    if (typeof target.setMode === 'function') target.setMode(mode)
-    return true
+    target.setTheme(resolvedName)
+    // setMode PERSISTS the polarity it is given. A user on 'system' would be
+    // pinned to explicit light/dark by the first theme they apply, so their
+    // preference is left alone and the provider keeps following the OS.
+    if (typeof target.setMode === 'function' && target.mode !== 'system') target.setMode(mode)
+    return { ok: true, reason: '' }
   } catch {
-    return false
+    return { ok: false, reason: 'threw' }
   }
 }
+
+/**
+ * Why a switch did not land, in the user's words. A silent no-op is the worst
+ * outcome: the card looks applied and the surface does not move.
+ */
+function handOffFailureNotice(scene, reason) {
+  const label = scene && (scene.label || scene.name) ? (scene.label || scene.name) : 'That theme'
+  if (reason === 'unresolved') {
+    return {
+      kind: 'warning',
+      message: label + ' is not registered with Desktop yet, so it cannot be applied. Reload Desktop and try again.'
+    }
+  }
+  return {
+    kind: 'error',
+    message: label + ' could not be handed to Desktop, so the surface did not change. Reload Desktop and try again.'
+  }
+}
+
 
 /**
  * Capture Desktop's theme API for the module while the host component lives.
@@ -2268,38 +2392,6 @@ function useDesktopThemeApi() {
   }, [api && api.setTheme, api && api.setMode, api && api.availableThemes])
   return api
 }
-
-// Is this cached boot entry the pre-2.4.0 single-mode shape that must be
-// repaired?
-//
-// Before 2.4.0 the single-mode scenes were persisted with ONE palette stored as
-// both `colors` and `darkColors` (or with no `darkColors` at all). Desktop's
-// `paletteFor()` returns `seed.darkColors ?? seed.colors` for dark and, for
-// light, `seed.colors` when there is no `darkColors` — so for that entry the
-// lightbulb switches to the SAME palette and is mathematically a no-op. The
-// cache also WINS over our THEMES_AREA contribution at boot, so an unrepaired
-// entry keeps the toggle dead until it is rewritten.
-//
-// The old detector could never fire: it rebuilt the expected label with
-// `charAt(0).toUpperCase()` ("Deep-void") and compared it to the shipped label
-// ("Deep Void"). Detection is by SHAPE now — the cached halves are identical, or
-// the dark half is absent — with the cached palette required to be one this theme
-// actually ships. A cache carrying some other palette is the user's own import,
-// not our stale entry, and is left untouched (that is what keeps the
-// "never overwrite an unrelated user import" guarantees intact).
-function isLegacyPickerTheme(existing, theme) {
-  if (!existing || typeof existing !== 'object' || !theme || !theme.darkColors) return false
-  const cachedColors = existing.colors
-  const cachedDark = existing.darkColors
-  const singlePalette = cachedColors !== undefined && cachedDark !== undefined &&
-    JSON.stringify(cachedColors) === JSON.stringify(cachedDark)
-  const missingDark = cachedDark === undefined
-  if (!singlePalette && !missingDark) return false
-  if (cachedColors === undefined) return false
-  const shipped = [theme.colors, theme.darkColors].map(value => JSON.stringify(value))
-  return shipped.includes(JSON.stringify(cachedColors))
-}
-
 // Synchronous boot read of the override store. Returns {} when there is no
 // mirror or it is unreadable — the authored palettes are the fallback, exactly
 // as when the backend is absent.
@@ -2330,42 +2422,6 @@ function writeOverrideMirror(scene, override) {
   }
 }
 
-function persistThemesForBoot(themes) {
-  try {
-    const raw = window.localStorage.getItem(USER_THEMES_KEY)
-    const parsed = raw ? JSON.parse(raw) : {}
-    const stored = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}
-
-    let changed = false
-    for (const theme of themes) {
-      // Provenance is stamped at the WRITER, not guessed at the reader. Only the
-      // TweakCN parser set `themePickerSource`; forks and the VS Code, Base16 and
-      // Windows Terminal importers set `source` (or nothing), so the loader's
-      // IMPORT_SOURCES filter dropped their cards on the next boot and a session-
-      // only fix looked permanent. Every theme written here now carries a tag.
-      if (!theme.themePickerSource) {
-        theme.themePickerSource = theme.source || 'owned'
-        changed = true
-      }
-      // Native imports take precedence over a plugin contribution with the same
-      // name, matching the desktop's user-theme resolution order.
-      const existing = stored[theme.name]
-      if (!existing || existing.themePickerManaged || isLegacyPickerTheme(existing, theme)) {
-        // Repairing a stale single-mode entry writes the CURRENT pair here. No
-        // reload is issued: Desktop reads $userThemes once at module init, so the
-        // repair lands on the NEXT boot — the accepted cost of a silent fix.
-        stored[theme.name] = theme
-        changed = true
-      }
-    }
-    if (changed) window.localStorage.setItem(USER_THEMES_KEY, JSON.stringify(stored))
-    return true
-  } catch {
-    // Storage is best-effort; the current session can still use contributed themes.
-    return false
-  }
-}
-
 function readRecord(key) {
   try {
     const parsed = JSON.parse(window.localStorage.getItem(key) || '{}')
@@ -2375,30 +2431,47 @@ function readRecord(key) {
   }
 }
 
+/**
+ *  Chroma's record of the last applied scene per profile.
+ *
+ *  This is NOT the app's appearance store and does not replace it: the provider
+ *  persists the active skin itself (skinPref) when setTheme runs, and paints from
+ *  it at boot. Chroma keeps this only for its own defaults -- which card to mark,
+ *  which mode a profile prefers -- so a Desktop update cannot collide with it and
+ *  Chroma cannot collide with Desktop.
+ *
+ *  Upstream review, item 2: a plugin must not write the app's own keys
+ *  (hermes-desktop-theme-v2, hermes-desktop-mode-v1, hermes-desktop-profile-*).
+ *  The legacy read below is the ONE exception, and it only reads: an installation
+ *  that predates this store is seeded from what the app already had.
+ */
+const CHROMA_APPEARANCE_KEY = 'chroma-appearance-v1'
+
+function readAppearanceMap() {
+  const parsed = storeRead(CHROMA_APPEARANCE_KEY, {})
+  return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}
+}
+
 function persistAppearance(themeName, mode, profile = 'default') {
-  try {
-    if (profile === 'default') {
-      window.localStorage.setItem(SKIN_KEY, themeName)
-      window.localStorage.setItem(MODE_KEY, mode)
-      return true
-    }
-    window.localStorage.setItem(PROFILE_SKINS_KEY, JSON.stringify({ ...readRecord(PROFILE_SKINS_KEY), [profile]: themeName }))
-    window.localStorage.setItem(PROFILE_MODES_KEY, JSON.stringify({ ...readRecord(PROFILE_MODES_KEY), [profile]: mode }))
-    return true
-  } catch {
-    return false
-  }
+  const map = readAppearanceMap()
+  map[profile] = { theme: themeName, mode }
+  return storeWrite(CHROMA_APPEARANCE_KEY, map)
 }
 
 function readAppearance(profile = 'default') {
+  const saved = readAppearanceMap()[profile]
+  if (saved && typeof saved === 'object' && saved.theme) {
+    return { theme: saved.theme, mode: saved.mode === 'dark' ? 'dark' : 'light' }
+  }
+  // Seed only. These keys belong to Desktop; read them, never write them.
   try {
-    const theme = profile === 'default'
+    const legacyTheme = profile === 'default'
       ? window.localStorage.getItem(SKIN_KEY)
       : readRecord(PROFILE_SKINS_KEY)[profile] || window.localStorage.getItem(SKIN_KEY)
-    const mode = profile === 'default'
+    const legacyMode = profile === 'default'
       ? window.localStorage.getItem(MODE_KEY)
       : readRecord(PROFILE_MODES_KEY)[profile] || window.localStorage.getItem(MODE_KEY)
-    return { theme: theme || 'nous', mode: mode === 'dark' ? 'dark' : 'light' }
+    return { theme: legacyTheme || 'nous', mode: legacyMode === 'dark' ? 'dark' : 'light' }
   } catch {
     return { theme: 'nous', mode: 'light' }
   }
@@ -2407,7 +2480,7 @@ function readAppearance(profile = 'default') {
 // --- apply scope -----------------------------------------------------------
 //
 // Per-profile Desktop themes are the Desktop's OWN behaviour: ThemeProvider
-// persists the active skin per profile (skinPref -> PROFILE_SKINS_KEY) and Chroma
+// persists the active skin per profile (skinPref -> its own store) and Chroma
 // inherits it because it applies through setTheme(). What flattens the user's
 // per-profile intent is OUR gateway broadcast -- config.set writes the one global
 // display.skin and broadcasts skin.changed, and an inbound broadcast is drained
@@ -2558,67 +2631,6 @@ function sceneForThemeName(themeName) {
 function sceneNameFor(themeName) {
   const scene = sceneForThemeName(themeName)
   return scene ? scene.name : themeName
-}
-
-function migrateAppearanceAliases() {
-  let storedThemes = {}
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(USER_THEMES_KEY) || '{}')
-    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) storedThemes = parsed
-  } catch {
-    // A malformed cache must not block ordinary alias migration.
-  }
-
-  const alias = name => {
-    if (name === 'default') return { name: 'nous', mode: null }
-    const lightScene = SKINS.find(item =>
-      (item.lightName === name && item.lightName !== item.name) || item.gatewayLightName === name
-    )
-    if (lightScene) return { name: lightScene.name, mode: 'light' }
-    // Paired source packs conventionally use the dark source name as the new
-    // combined scene name. Only infer dark mode when the selected cached theme
-    // is the legacy picker-managed single-palette shape; otherwise the same
-    // scene name may be an intentional current Light selection or user import.
-    const canonicalDarkScene = SKINS.find(item =>
-      item.modeSupport === 'dynamic' && item.darkName === name && item.name === name
-    )
-    if (canonicalDarkScene) {
-      const combined = sceneToDesktopTheme(canonicalDarkScene)
-      if (isLegacyPickerTheme(storedThemes[name], combined)) {
-        return { name: canonicalDarkScene.name, mode: 'dark' }
-      }
-    }
-    const darkScene = SKINS.find(item =>
-      (item.darkName === name && item.darkName !== item.name) || item.gatewayDarkName === name
-    )
-    return darkScene ? { name: darkScene.name, mode: 'dark' } : null
-  }
-
-  try {
-    const globalTheme = window.localStorage.getItem(SKIN_KEY)
-    const globalAlias = alias(globalTheme)
-    if (globalAlias) {
-      window.localStorage.setItem(SKIN_KEY, globalAlias.name)
-      if (globalAlias.mode) window.localStorage.setItem(MODE_KEY, globalAlias.mode)
-    }
-
-    const themes = readRecord(PROFILE_SKINS_KEY)
-    const modes = readRecord(PROFILE_MODES_KEY)
-    let changed = false
-    for (const [profile, name] of Object.entries(themes)) {
-      const match = alias(name)
-      if (!match) continue
-      themes[profile] = match.name
-      if (match.mode) modes[profile] = match.mode
-      changed = true
-    }
-    if (changed) {
-      window.localStorage.setItem(PROFILE_SKINS_KEY, JSON.stringify(themes))
-      window.localStorage.setItem(PROFILE_MODES_KEY, JSON.stringify(modes))
-    }
-  } catch {
-    // Migration is best-effort and must not prevent plugin registration.
-  }
 }
 
 /** Grid target width in CSS px, deliberately FIXED rather than derived from a
@@ -2891,21 +2903,20 @@ function buildGroups(scenes, groupMode, userCategories) {
 
 function useActiveSkin() {
   const profile = useValue(host.state.profile) || 'default'
-  const [active, setActive] = useState(() => sceneNameFor(readAppearance(profile).theme))
+  // The provider owns the applied name, so read it rather than watching the DOM
+  // attribute it paints. A MutationObserver here duplicated state the hook
+  // already publishes, and missed changes that did not touch the attribute.
+  const themeApi = useTheme()
+  const hostThemeName = (themeApi && themeApi.themeName) || ''
+  const [active, setActive] = useState(() => sceneNameFor(hostThemeName || readAppearance(profile).theme))
   const [live, setLive] = useState([])
 
   useEffect(() => {
+    setActive(sceneNameFor(hostThemeName || readAppearance(profile).theme))
+  }, [profile, hostThemeName])
+
+  useEffect(() => {
     let mounted = true
-    setActive(sceneNameFor(readAppearance(profile).theme))
-
-    const root = document.documentElement
-    const sync = () => {
-      if (mounted && root.dataset.hermesTheme) setActive(sceneNameFor(root.dataset.hermesTheme))
-    }
-    sync()
-    const observer = new MutationObserver(sync)
-    observer.observe(root, { attributes: true, attributeFilter: ['data-hermes-theme'] })
-
     const off = host.onEvent('skin.changed', event => {
       if (!mounted) return
       const skin = event && event.payload
@@ -2922,7 +2933,6 @@ function useActiveSkin() {
 
     return () => {
       mounted = false
-      observer.disconnect()
       off()
     }
   }, [profile])
@@ -2982,9 +2992,8 @@ function persistLatestAppearance(profile) {
 }
 
 function snapshotPersistedAppearances() {
-  const themes = readRecord(PROFILE_SKINS_KEY)
-  const modes = readRecord(PROFILE_MODES_KEY)
-  const profiles = new Set(['default', ...Object.keys(themes), ...Object.keys(modes)])
+  const themes = readAppearanceMap()
+  const profiles = new Set(['default', ...Object.keys(themes)])
   const snapshot = new Map()
   for (const profile of profiles) {
     const appearance = readAppearance(profile)
@@ -2992,6 +3001,26 @@ function snapshotPersistedAppearances() {
     if (scene) snapshot.set(profile, { scene, mode: appearance.mode })
   }
   return snapshot
+}
+
+/**
+ * Put the user's scene back after the gateway repainted a concrete variant.
+ *
+ * A refused correction used to be silent: the surface kept the transport skin
+ * and the user heard nothing. It is reported now -- but only for the profile the
+ * user is looking at, so a superseded correction on a background profile stays
+ * quiet.
+ */
+function restoreScene(profile, name, mode, generation) {
+  const result = handThemeToProvider(name, mode)
+  if (result.ok) return true
+  const activeProfile = host.state.profile.get() || 'default'
+  const latest = latestAppearanceByProfile.get(profile)
+  const stillLatest = !latest || latest.generation <= generation
+  if (profile === activeProfile && stillLatest) {
+    host.notify(handOffFailureNotice(knownSceneByName(name) || { name }, result.reason))
+  }
+  return false
 }
 
 function syncSceneToGateway(scene, mode, profile, generation) {
@@ -3014,28 +3043,26 @@ function syncSceneToGateway(scene, mode, profile, generation) {
       // never overwrite or repaint over a newer rapid selection.
       const latest = latestAppearanceByProfile.get(profile)
       const activeProfile = host.state.profile.get() || 'default'
-      const isActiveProfile = activeProfile === profile
-      if (latest && isActiveProfile) {
-        applyDesktopTheme(sceneToDesktopTheme(latest.scene), latest.mode)
-        syncDesktopState(latest.scene.name, latest.mode)
-      } else if (!isActiveProfile) {
+      if (latest && activeProfile === profile) {
+        restoreScene(profile, latest.scene.name, latest.mode, generation)
+      } else if (activeProfile !== profile) {
         // config.set broadcasts before resolving, so this old-profile request
         // may have just repainted the profile the user switched into. Restore
-        // that active profile from its own latest selection, never from the
-        // completed request's old-profile map entry.
+        // that profile from ITS OWN record. The 'default' entry is a last resort
+        // for the surface only: writing it into the active profile would record a
+        // choice that profile's user never made.
         const activeRecovery = latestAppearanceByProfile.get(activeProfile) ||
-          recoveryAppearances.get(activeProfile) || recoveryAppearances.get('default')
+          recoveryAppearances.get(activeProfile) ||
+          recoveryAppearances.get('default')
         if (activeRecovery) {
-          applyDesktopTheme(sceneToDesktopTheme(activeRecovery.scene), activeRecovery.mode)
-          syncDesktopState(activeRecovery.scene.name, activeRecovery.mode)
-          persistAppearance(activeRecovery.scene.name, activeRecovery.mode, activeProfile)
+          restoreScene(activeProfile, activeRecovery.scene.name, activeRecovery.mode, generation)
         }
       }
       const durable = persistLatestAppearance(profile)
       if (!durable && latestAppearanceByProfile.get(profile)?.generation === generation) {
         host.notify({
           kind: 'warning',
-          message: `${scene.label || scene.name} synchronized, but its combined skin could not be saved for restart`
+          message: `${scene.label || scene.name} synchronized, but its appearance record could not be saved for restart`
         })
       }
       return true
@@ -3047,8 +3074,7 @@ function syncSceneToGateway(scene, mode, profile, generation) {
         // An older queued request may already have broadcast and repainted the
         // root before this latest request failed. Reassert the user's latest
         // optimistic selection in the live Desktop as well as in persistence.
-        applyDesktopTheme(sceneToDesktopTheme(latest.scene), latest.mode)
-        syncDesktopState(latest.scene.name, latest.mode)
+        restoreScene(profile, latest.scene.name, latest.mode, generation)
       }
       persistLatestAppearance(profile)
       // Only warn when a gateway exists to have failed. Under the default
@@ -3073,20 +3099,24 @@ function syncSceneToGateway(scene, mode, profile, generation) {
 
 function applyScene(scene, mode, setActive, api) {
   const profile = host.state.profile.get() || 'default'
+  // The provider is the only painter. A refused hand-off is reported, never
+  // covered by a second paint of our own: a card that looks applied while the
+  // surface stays put is the failure mode this replaces.
+  const handOff = handThemeToProvider(scene.name, mode, api)
+  if (!handOff.ok) {
+    host.notify(handOffFailureNotice(scene, handOff.reason))
+    return Promise.resolve(false)
+  }
+
+  // Recorded only now: a refused switch must not leave a generation behind for
+  // an older in-flight recovery to restore.
   const generation = ++applyGeneration
   latestAppearanceByProfile.set(profile, { generation, scene, mode })
-  const theme = sceneToDesktopTheme(scene)
-  const bootThemeSaved = CORE_DESKTOP_THEMES.has(scene.name) || persistThemesForBoot([theme])
-  applyDesktopTheme(theme, mode)
-  // Keep Desktop's own React state in step with the paint; otherwise its
-  // provider repaints the previous theme on the next render and the switch
-  // appears to revert (navigation, click, profile switch).
-  syncDesktopState(scene.name, mode, api)
+
   const appearanceSaved = persistAppearance(scene.name, mode, profile)
-  const persisted = bootThemeSaved && appearanceSaved
   haptic('tap')
   setActive(scene.name)
-  if (!persisted) {
+  if (!appearanceSaved) {
     host.notify({
       kind: 'warning',
       message: `${scene.label || scene.name} applied for this session but could not be saved for restart`
@@ -5159,7 +5189,10 @@ function ThemePicker() {
   const [announcement, setAnnouncement] = useState('')
   const [applying, setApplying] = useState(null)
   const profile = useValue(host.state.profile) || 'default'
-  const [mode, setMode] = useState(() => desktopModeFor(profile, document.documentElement.dataset.hermesMode))
+  // The provider publishes the rendered polarity; reading the attribute it paints
+  // was a second copy of the same fact, kept in sync by an observer.
+  const hostRenderedMode = (desktopTheme && desktopTheme.renderedMode) || ''
+  const [mode, setMode] = useState(() => desktopModeFor(profile, hostRenderedMode))
   const [importMode, setImportMode] = useState('url')
   // Scope governs whether a pick is broadcast. Read per profile, so two profiles
   // on one Desktop can answer this differently.
@@ -5454,13 +5487,8 @@ function ThemePicker() {
   useEffect(() => { ensureImportedSkinsLoaded() }, [])
 
   useEffect(() => {
-    const root = document.documentElement
-    const sync = () => setMode(desktopModeFor(profile, root.dataset.hermesMode))
-    sync()
-    const observer = new MutationObserver(sync)
-    observer.observe(root, { attributes: true, attributeFilter: ['data-hermes-mode'] })
-    return () => observer.disconnect()
-  }, [profile])
+    setMode(desktopModeFor(profile, hostRenderedMode))
+  }, [profile, hostRenderedMode])
 
   const { usable: allSkins, unusable: unusableSkins } = useMemo(() => {
     const known = new Set(SKINS.map(s => s.name))
@@ -5510,7 +5538,6 @@ function ThemePicker() {
       // same revert the save path was fixed for.
       try {
         reRegisterSceneTheme(scene)
-        persistThemesForBoot([sceneToDesktopTheme(scene)])
       } catch (e) { }
       // Mint the real gateway skin only if the Python half is mounted, and treat
       // a failure as exactly that: a local-only import, never a success. Swallow
@@ -5603,10 +5630,16 @@ function ThemePicker() {
 
   const onModeChange = next => {
     if (next !== 'light' && next !== 'dark') return
+    const previous = mode
     setMode(next)
     // The effective scene, so switching mode keeps an override in play (§17.1).
     const scene = applyOverride(allSkins.find(item => item.name === active) || null, overrides)
-    if (scene) applyScene(scene, next, setActive, desktopTheme)
+    if (!scene) return
+    // applyScene answers false when Desktop refused the switch. Leaving the
+    // toggle flipped would show a polarity the surface is not in.
+    Promise.resolve(applyScene(scene, next, setActive, desktopTheme)).then(ok => {
+      if (!ok) setMode(previous)
+    })
   }
 
   // --- the editor's write path (§17) -----------------------------------------
@@ -5653,10 +5686,7 @@ function ThemePicker() {
             reRegisterSceneTheme(savedScene)
             if (isSceneActive(profile, name)) {
               const activeMode = activeModeForScene(profile, name)
-              const theme = sceneToDesktopTheme(savedScene)
-              applyDesktopTheme(theme, activeMode)
-              persistThemesForBoot([theme])
-              syncDesktopState(name, activeMode, desktopTheme)
+              handThemeToProvider(name, activeMode, desktopTheme)
             }
           }
         } catch (e) { }
@@ -5690,7 +5720,6 @@ function ThemePicker() {
       if (authoredScene) {
         const resolvedScene = applyOverride(authoredScene, { [name]: effectiveOverride })
         const resolved = sceneToDesktopTheme(resolvedScene)
-        if (resolved) persistThemesForBoot([resolved])
         // A colour or font edit of a built-in must reach the live registry too,
         // for the same reason an owned save does. Best-effort: the write above
         // already succeeded.
@@ -5698,8 +5727,7 @@ function ThemePicker() {
           reRegisterSceneTheme(resolvedScene)
           if (isSceneActive(profile, name)) {
             const activeMode = activeModeForScene(profile, name)
-            applyDesktopTheme(resolved, activeMode)
-            syncDesktopState(name, activeMode, desktopTheme)
+            handThemeToProvider(name, activeMode, desktopTheme)
           }
         } catch (e) { }
       }
@@ -5739,11 +5767,9 @@ function ThemePicker() {
       // Clear the boot mirror with the backend, so the next start resolves the
       // shipped palette rather than the edit just withdrawn.
       writeOverrideMirror(name, null)
-      const authoredScene = SKINS.find(scene => scene.name === name)
-      if (authoredScene) {
-        const shipped = sceneToDesktopTheme(authoredScene)
-        if (shipped) persistThemesForBoot([shipped])
-      }
+      // The boot mirror is cleared above; the next start resolves the shipped
+      // palette. Nothing else needs minting -- the provider paints from the
+      // contribution register() publishes at boot.
       // The fields are seeded from the effective palette, so they have to be
       // re-seeded: the modal is keyed by this epoch and remounts.
       setEditorEpoch(n => n + 1)
@@ -5779,7 +5805,6 @@ function ThemePicker() {
       const madeScene = knownSceneByName(name)
       if (madeScene) {
         reRegisterSceneTheme(madeScene)
-        persistThemesForBoot([sceneToDesktopTheme(madeScene)])
       }
     } catch (e) { }
   }
@@ -6531,10 +6556,10 @@ function ThemeChip() {
   const toggleMode = () => {
     if (!supportsBoth) return
     haptic('tap')
-    // A provider-only setMode repaints whatever theme Desktop happens to hold,
-    // which is not necessarily this scene (a gateway broadcast can leave it on
-    // the single-mode transport skin, and an unresolvable name falls back to the
-    // default). Re-apply the scene so our own root paint is the one the user sees.
+    // Hand BOTH the scene and the polarity to the provider. A bare setMode would
+    // repaint whatever theme Desktop happens to hold -- a gateway broadcast can
+    // leave it on the single-mode transport skin, and an unresolvable name falls
+    // back to the default. The scene is named, so the two cannot drift apart.
     applyScene(activeSkin, mode === 'light' ? 'dark' : 'light', setActive, desktopTheme)
   }
   const activeColors = activeSkin && activeSkin.colors ? activeSkin.colors : null
@@ -6583,6 +6608,10 @@ export default {
   name: 'Chroma',
   register(ctx) {
     _rest = ctx.rest
+    // The host's namespaced store, when it provides one. Chroma's appearance map
+    // and imported themes live here, so every one of our keys sits under
+    // hermes.plugin.chroma.* and no app key is touched.
+    _pluginStorage = synchronousStore(ctx && ctx.storage)
     // Keep the host's registration function, not just the boot-time call. A
     // fork or a font edit made later in the session has to publish its theme
     // through this same function (see reRegisterSceneTheme).
@@ -6590,7 +6619,6 @@ export default {
     // A new registration gets a fresh schema: the cache is per session, not per
     // process, so a reload re-reads it.
     _editorSchemaCache = null
-    migrateAppearanceAliases()
     // E5 — an override must survive a restart. register() is synchronous by
     // host contract (see OVERRIDES_MIRROR_KEY), so the boot read comes from the
     // local mirror the override write updates, never from the network.
@@ -6600,18 +6628,27 @@ export default {
     // without creating duplicate Appearance entries. Core names stay native.
     // applyOverride layers the user's edits onto each scene before the theme
     // is built, so the boot theme carries the override, not the authored value.
-    const userThemes = SKINS
-      .filter(scene => !CORE_DESKTOP_THEMES.has(scene.name))
+    // Imported themes are read synchronously here, and they MUST be contributed
+    // at boot: a skin the user imported last session is the persisted choice at
+    // launch, and a name nothing registers is a name normalizeSkin coerces to the
+    // default. Without this loop a Desktop-only install (no Python backend
+    // minting skins) loses the user's theme on every restart.
+    ensureImportedSkinsLoaded()
+    const bootScenes = SKINS.concat(IMPORTED_SKINS)
+      .filter(scene => scene && !CORE_DESKTOP_THEMES.has(scene.name))
       .map(scene => applyOverride(scene, overrides))
       .map(sceneToDesktopTheme)
       .filter(Boolean)
-    persistThemesForBoot(userThemes)
-    for (const theme of userThemes) {
+    const seenThemes = new Set()
+    for (const theme of bootScenes) {
+      if (seenThemes.has(theme.name)) continue
+      seenThemes.add(theme.name)
       ctx.register({
         id: `theme:${theme.name}`,
         area: THEMES_AREA,
         data: theme
       })
+      _publishedThemeNames.add(theme.name)
     }
 
     // A full page — reachable from the statusbar chip, sidebar nav, and palette.
